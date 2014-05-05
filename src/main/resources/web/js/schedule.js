@@ -29,6 +29,14 @@ $(document).ready(function() {
 function generateHTMLForType(json, type) {
   var jsonType = json[type],
       data = jsonType.data,
+      now = new Date(),
+      splitDateTimeFunc = splitDateTime,
+      getDateFunc = getDate,
+      getDayFunc = getDay,
+      getTimeFunc = getTime,
+      getTitleFunc = getTitle,
+      getPlaceFunc = getPlace,
+      getStaffFunc = getStaff,
       tocHtml = "",
       tablesHtml = "";
   tocHtml += "<h2 class='accordion'>" + scheduleI18n["header-" + type] + "</h2>";
@@ -56,7 +64,8 @@ function generateHTMLForType(json, type) {
       
       if(session.status && session.status === "cancelled") continue; // Don't show
       
-      var dateTime = splitDateTime(session.dtstart, session.dtend);
+      var dateTime = splitDateTimeFunc(session.dtstart, session.dtend);
+      var day = getDayFunc(dateTime.ed, dateTime.et);
 
       var classes = "";
       if(j % 2 == 1) classes = "even";
@@ -64,14 +73,18 @@ function generateHTMLForType(json, type) {
         if(classes !== "") classes += " ";
         classes += "cancelled-vortex";
       }
+      if(day.endTime < now) {
+        if(classes !== "") classes += " ";
+        classes += "passed";
+      }
       
       tablesHtml += classes !== "" ? "<tr class='" + classes + "'>" : "<tr>";
-        tablesHtml += "<td>" + getDate(dateTime.sd, dateTime.ed) + "</td>";
-        tablesHtml += "<td>" + getDay(dateTime.sd, dateTime.ed) + "</td>";
-        tablesHtml += "<td>" + getTime(dateTime.st, dateTime.et) + "</td>";
-        tablesHtml += "<td>" + getTitle(session) + "</td>";
-        tablesHtml += "<td>" + getPlace(session) + "</td>";
-        tablesHtml += "<td>" + getStaff(session) + "</td>";
+        tablesHtml += "<td>" + getDateFunc(dateTime.sd, dateTime.ed) + "</td>";
+        tablesHtml += "<td>" + day.endDay + "</td>";
+        tablesHtml += "<td>" + getTimeFunc(dateTime.st, dateTime.et) + "</td>";
+        tablesHtml += "<td>" + getTitleFunc(session) + "</td>";
+        tablesHtml += "<td>" + getPlaceFunc(session) + "</td>";
+        tablesHtml += "<td>" + getStaffFunc(session) + "</td>";
       tablesHtml += "</tr>";
     }
   }
@@ -90,12 +103,9 @@ function getDate(sd, ed) {
   }
 }
 
-function getDay(sd, ed) {
-  if(sd[0] != ed[0] || sd[1] != ed[1] || sd[2] != ed[2]) {
-    return sd[2] + "." + sd[1] + "." + sd[0] + "&ndash;" + ed[2] + "." + ed[1] + "." + ed[0];
-  } else {
-    return sd[2] + "." + sd[1] + "." + sd[0];
-  }
+function getDay(ed, et) {
+  var endTime = new Date(ed[0], ed[1]-1, ed[2], et[0], et[1], 0, 0);
+  return { endTime: endTime, endDay: scheduleI18n["d" + endTime.getDay()] };
 }
 
 function getTime(st, et) {
@@ -136,8 +146,4 @@ function splitDateTime(s, e) {
   var ed = e.split("T")[0].split("-");
   var et = e.split("T")[1].split(".")[0].split(":");
   return { sd: sd, st: st, ed: ed, et: et };
-}
-
-function formatActivityId() {
-
 }

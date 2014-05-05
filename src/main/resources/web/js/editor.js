@@ -678,11 +678,7 @@ function unsavedChangesInEditor() {
   var vrtxEdit = vrtxEditor;
   
   if(vrtxEdit.editorForm.hasClass("vrtx-course-schedule")) {
-    // Own strategy for non-linear editor
-    
-    
-    
-    return false;
+    return unsavedChangesInCourseSchedule(retrievedScheduleData);
   }
   
   var contents = vrtxAdmin.cachedContent;
@@ -1021,6 +1017,11 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
     vrtxEdit.replaceTag(samletElm, "h1", "h2");
   }
 };
+
+var sessionsLookup = {};
+var lastId = "";
+var lastSessionId = "";
+var lastElm = null;
 
 function courseSchedule() {
   
@@ -16684,7 +16685,7 @@ function courseSchedule() {
   vrtxEditor.editorForm.find(".properties").hide();
     
   initMultipleInputFields();
-   
+
   $.when(retrievedScheduleDeferred, vrtxEditor.multipleFieldsBoxesDeferred).done(function() {
     if(retrievedScheduleData == null)  return;
 
@@ -16718,14 +16719,12 @@ function courseSchedule() {
           "vrtx-resources-title": (isEn ? "Title" : "Tittel"),
           "vrtx-resources-url": (isEn ? "Link" : "Lenke")
         };
-
-    var sessionsLookup = {};
       
     // Generate HTML
     var html = "<div class='accordion-title'>" + i18n.titles.plenary + "</div>" +
-               generateCourseScheduleActivitiesForType(retrievedScheduleData, "plenary", true, sessionsLookup, i18n) +
+               generateCourseScheduleActivitiesForType(retrievedScheduleData, "plenary", true, i18n) +
                "<div class='accordion-title'>" + i18n.titles.group + "</div>" +
-               generateCourseScheduleActivitiesForType(retrievedScheduleData, "group", false, sessionsLookup, i18n);
+               generateCourseScheduleActivitiesForType(retrievedScheduleData, "group", false, i18n);
       
     // Add HTML to DOM
     $(".properties").prepend("<div class='vrtx-grouped'>" + html + "</div>"); 
@@ -16733,9 +16732,17 @@ function courseSchedule() {
     // Accordions
     // TODO: general accordion enhancing
     var accordionOnActivateTier3 = function (id, e, ui, accordion) {
-      if(ui.newHeader[0]) { // Enhance multiple fields in session
+      if(ui.newHeader[0]) { // Enhance multiple fields in session on open
         var sessionId = ui.newHeader[0].id;
         var session = sessionsLookup[id][sessionId];
+        
+        var sessionElm = $(ui.newHeader).closest("div");
+        var content = sessionElm.find("> .accordion-content > div");
+        
+        lastId = id;
+        lastSessionId = sessionId;
+        lastElm = content;
+        
         if(session && !session.isEnhanced) { // If not already enhanced
           var multiples = session.multiples;
           for(var i = multiplesLen = multiples.length; i--;) {
@@ -16743,19 +16750,24 @@ function courseSchedule() {
             enhanceMultipleInputFields(m.name + "-" + sessionId, m.movable, m.browsable, 50, m.json);
           }
           session.isEnhanced = true;
-          
-          var newHeader = $(ui.newHeader);
-          var contentWrp = newHeader.parent().find(".accordion-content");
-          newHeader.closest(".session").addClass("session-touched");
         }
-      } else { // Update custom session title on close
-        var session = $(ui.oldHeader).closest("div");
-        var titleElm = session.find("> .header > .header-title");
-        var newTitle = session.find("> .accordion-content > div:first-child input[type='text']")
+      } else { // Update session and accordion title on close
+        var sessionId = ui.oldHeader[0].id;
+        var sessionElm = $(ui.oldHeader).closest("div");
+        var content = sessionElm.find("> .accordion-content > div");
+        
+        lastId = "";
+        lastSessionId = "";
+        lastElm = null;
+        
+        saveCourseScheduleSession(content, id, sessionId);
+        
+        var titleElm = sessionElm.find("> .header > .header-title");
+        var newTitle = content.filter(":first-child").find("input[type='text']")
         if(newTitle.length && newTitle.val() != "") {
           titleElm.html(newTitle.val());
         } else {
-          titleElm.html(titleElm.attr("data-orig-title"));
+          titleElm.html(sessionsLookup[id][sessionId].rawOrig.title);
         }
       }
     };  
@@ -16839,7 +16851,7 @@ function courseSchedule() {
  * Generate Course Schedule activities for type
  *
  */
-function generateCourseScheduleActivitiesForType(json, type, skipTier, sessionsLookup, i18n) {
+function generateCourseScheduleActivitiesForType(json, type, skipTier, i18n) {
   var generateCourseScheduleDateFunc = generateCourseScheduleDate,
       generateCourseScheduleSessionFunc = generateCourseScheduleSession,
       generateCourseScheduleContentFromSessionDataFunc = generateCourseScheduleContentFromSessionData;
@@ -16866,7 +16878,7 @@ function generateCourseScheduleActivitiesForType(json, type, skipTier, sessionsL
     }
     
     for(var j = 0, sessionsLen = sessions.length; j < sessionsLen; j++) {
-      sessionsHtml += generateCourseScheduleSessionFunc(id, dtShort, sessions[j], sessionsLookup, descs, i18n, skipTier,
+      sessionsHtml += generateCourseScheduleSessionFunc(id, dtShort, sessions[j], descs, i18n, skipTier,
                                                         generateCourseScheduleDateFunc, generateCourseScheduleContentFromSessionDataFunc);
     }
 
@@ -16896,18 +16908,20 @@ function generateCourseScheduleActivitiesForType(json, type, skipTier, sessionsL
  * Generate Course Schedule session
  *
  */
-function generateCourseScheduleSession(id, dtShort, session, sessionsLookup, descs, i18n, skipTier, generateCourseScheduleDateFunc, generateCourseScheduleContentFromSessionDataFunc) {
+function generateCourseScheduleSession(id, dtShort, session, descs, i18n, skipTier, generateCourseScheduleDateFunc, generateCourseScheduleContentFromSessionDataFunc) {
   var sessionId = dtShort + "-" + session.id.replace(/\//g, "-"),
       sessionTitle = generateCourseScheduleDateFunc(session.dtstart, session.dtend, i18n) + " " +
-                     "<span class='header-title' data-orig-title='" + (session.title || session.id) + "'>" + (session["vrtx-title"] || session.title || session.id) + "</span>" +
+                     "<span class='header-title'>" + (session["vrtx-title"] || session.title || session.id) + "</span>" +
                      (session.room ? " - " + (session.room[0].buildingid + " " + i18n.room + " " + session.room[0].roomid) : "") +
                      (session.status && session.status === "cancelled" ? " <span class='header-status'>" + i18n[session.status] + "</span>" : ""),
       sessionContent = generateCourseScheduleContentFromSessionDataFunc(sessionId, session, descs, i18n);
 
-   // Store multiple description for session
+   // Store session information
    sessionsLookup[id][sessionId] = {
      isEnhanced: false,
-     multiples: sessionContent.multiples
+     multiples: sessionContent.multiples,
+     rawPtr: session,
+     rawOrig: jQuery.extend(true, {}, session)
    };
    
    return vrtxEditor.htmlFacade.getAccordionInteraction(!skipTier ? "5" : "4", sessionId, "session", sessionTitle, sessionContent.html);
@@ -16918,63 +16932,46 @@ function generateCourseScheduleSession(id, dtShort, session, sessionsLookup, des
  *
  */
 function saveCourseSchedule(startTime, d) {
-  var updateType = function(type) {
-    var sessions = vrtxEditor.editorForm.find("." + type + " .session-touched .accordion-content");
-    var sessionsTouched = sessions.length;
-    
-    if(!sessionsTouched) return 0;
-    
-    var jsonType = retrievedScheduleData[type];
-    if(!jsonType) return 0;
-    
-    var descs = jsonType["vrtx-editable-description"];
-    var data = jsonType.data;
-    var dataLen = data.length;
-    var saveCourseScheduleFindSessionInDataFunc = saveCourseScheduleFindSessionInData;
-    var saveCourseScheduleExtractSessionFromDOMFunc = saveCourseScheduleExtractSessionFromDOM;
-  
-    // Sessions that has been opened
-    for(var i = 0; i < sessionsTouched; i++) {
-      var content = $(sessions[i]);
-      if(!content.length) continue;
-      
-      var session = saveCourseScheduleFindSessionInDataFunc(content, data, dataLen);
-      var domSessionElms = content.find("> div");
-      for(var j = 0, domSessionElmsLen = domSessionElms.length; j < domSessionElmsLen; j++) {
-        var domSessionElm = $(domSessionElms[j]);
-        
-        for(var name in descs) {
-          var domSessionPropElm = domSessionElm.find("input[name='" + name + "']");
-          if(!domSessionPropElm.length) continue;
+  if(lastElm) {
+    saveCourseScheduleSession(lastElm, lastId, lastSessionId);
+  }
+  vrtxAdmin.serverFacade.postJSONA(this.location.href,
+    JSON.stringify({
+      "resourcetype": "course-schedule",
+      "properties": { "activities": retrievedScheduleData }
+    }, null, 2), {
+    success: function (results, status, resp) {
+      ajaxSaveSuccess(startTime, d, results, status, resp); 
+      changesInCourseScheduleSaved();
+    },
+    error: function (xhr, textStatus)         { ajaxSaveError(d, xhr, textStatus);                    }
+  }, vrtxEditor.editorForm.find("input[name='csrf-prevention-token']").val());
+}
 
-          var val = saveCourseScheduleExtractSessionFromDOMFunc(descs[name], domSessionPropElm);
-          if(val && val.length) { // Update if not empty
-            session[name] = val;
-          } else { // Delete otherwise
-            delete session[name];
-          }
-        }
+function changesInCourseScheduleSaved() {
+  for(var type in sessionsLookup) {
+    for(var session in sessionsLookup[type]) {
+      var sessionObj = sessionsLookup[type][session];
+      if(sessionObj.hasChanges) {
+        sessionObj.rawOrig = sessionObj.rawPtr;
+        sessionObj.hasChanges = false;
       }
     }
-    return sessionsTouched;
-  };
-  
-  var sessionsTouched = updateType("plenary") + updateType("group");
-  
-  vrtxAdmin.log({msg: "Sessions touched: " + sessionsTouched});
-
-  if(sessionsTouched) { // Save
-    vrtxAdmin.serverFacade.postJSONA(this.location.href,
-      JSON.stringify({
-        "resourcetype": "course-schedule",
-        "properties": { "activities": retrievedScheduleData }
-      }, null, 2), {
-      success: function (results, status, resp) { ajaxSaveSuccess(startTime, d, results, status, resp); },
-      error: function (xhr, textStatus)         { ajaxSaveError(d, xhr, textStatus);                    }
-    }, vrtxEditor.editorForm.find("input[name='csrf-prevention-token']").val());
-  } else {
-    d.close();
   }
+}
+
+function unsavedChangesInCourseSchedule() {
+  if(lastElm) {
+    saveCourseScheduleSession(lastElm, lastId, lastSessionId);
+  }
+  for(var type in sessionsLookup) {
+    for(var session in sessionsLookup[type]) {
+      if(sessionsLookup[type][session].hasChanges) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 /*
@@ -16986,8 +16983,7 @@ function generateCourseScheduleDate(s, e, i18n) { /* IE8: http://www.digital-por
   var st = s.split("T")[1].split(".")[0].split(":");
   var ed = e.split("T")[0].split("-");
   var et = e.split("T")[1].split(".")[0].split(":");
-  
-  // Not same day
+
   if(sd[0] != ed[0] || sd[1] != ed[1] || sd[2] != ed[2]) {
     return sd[2] + ". " + i18n[sd[1]] + " " + sd[0] + " kl " + st[0] + ":" + st[1] + "&ndash;" +
            ed[2] + ". " + i18n[ed[1]] + " " + ed[0] + " kl " + et[0] + ":" + et[1];
@@ -16997,27 +16993,60 @@ function generateCourseScheduleDate(s, e, i18n) { /* IE8: http://www.digital-por
 }
 
 /*
- * Save Course Schedule - Find session in data
+ *  Save Course Schedule session
+ *  - on closing of accordion update data if has changed
  *
  */
-function saveCourseScheduleFindSessionInData(content, data, dataLen) {
-  var id = content.attr("aria-labelledby").split("-");
-  var teachingmethod = id[0].toUpperCase();
-  var activityId = id[1] + "-" + id[2];
-  var sessionId = id[1] + "-" + id[2] + "/" + id[3] + "/" + id[4];
-  for(var i = dataLen; i--;) {
-    var dt = data[i];
-    if(dt.teachingmethod === teachingmethod && dt.id === activityId) {
-      var sessions = dt.sessions;
-      for(var j = sessions.length; j--;) {
-        if(sessions[j].id === sessionId)  return sessions[j];
-      }
+function saveCourseScheduleSession(domSessionElms, id, sessionId) {
+  saveMultipleInputFields();
+
+  var sessionLookup = sessionsLookup[id][sessionId];
+  var rawOrig = sessionLookup.rawOrig;
+  var rawPtr = sessionLookup.rawPtr;
+  var saveCourseScheduleExtractSessionFromDOMFunc = saveCourseScheduleExtractSessionFromDOM;
+
+  for(var name in descs) {
+    var domSessionPropElm = domSessionElms.find("input[name='" + name + "']");
+    if(!domSessionPropElm.length) continue;
+
+    var val = saveCourseScheduleExtractSessionFromDOMFunc(descs[name], domSessionPropElm);
+    if(val && val.length) {
+      rawPtr[name] = val;
+    } else {
+      delete rawPtr[name];
     }
+  }
+  
+  var hasChanges = saveCourseScheduleSessionDetectChange(rawPtr, rawOrig);
+  if(hasChanges) {
+    sessionLookup.hasChanges = true;
   }
 }
 
+function saveCourseScheduleSessionDetectChange(o1, o2) {
+  if(typeof o1 === "object" && typeof o2 === "object") {
+    if(o1.length) { // Array
+      if(o1.length !== o2.length) return true;
+      for(var i = 0, len = o1.length; i < len; i++) {
+        if(saveCourseScheduleSessionDetectChange(o1[i], o2[i])) return true;
+      }
+    } else {
+      for(prop in o1) {
+        if(saveCourseScheduleSessionDetectChange(o1[prop], o2[prop])) return true;
+      }
+    }
+  } else if(typeof o1 === "string" && typeof o2 === "string") {
+    if(o1 !== o2) return true;
+  } else if(typeof o1 === "number" && typeof o2 === "number") {
+    if(o1 !== o2) return true;
+  } else if(typeof o1 !== typeof o2) {
+    return true;
+  }
+  return false;
+}
+
 /* 
- * General methods for putting and getting data to/from DOM. 
+ * General methods for data to and from DOM
  * TODO: missing some general variable names
  */
 function generateCourseScheduleContentFromSessionData(id, data, descs, i18n) {
@@ -17028,9 +17057,8 @@ function generateCourseScheduleContentFromSessionData(id, data, descs, i18n) {
         descProps = jQuery.extend(true, [], desc.props),
         val = data[name],
         propsVal = "",
-        browsable = false;
+        browsable = false,
         size = 40;
-        
     if(!val || !val.length) {
       var origName = name.split("vrtx-")[1];
       if(origName) {

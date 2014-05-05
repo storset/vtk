@@ -176,7 +176,7 @@
   padding: 15px 15px 14px 18px;
   margin-top: 2px;
   margin-bottom: -3px;
-  background: #f9f9f9;
+  background: transparent;
   border: 1px solid #d9d9d9;
   font-size: 1.15em;
 }
@@ -204,8 +204,9 @@
 }
 
 .ui-accordion > div > .header.ui-accordion-header .ui-icon {
+  top: 25px;
   left: 11px;
-  height: 14px;
+  height: 16px;
   width: 16px;
 }
 
@@ -215,6 +216,7 @@
 
 .ui-accordion > div > .header.ui-accordion-header .ui-icon.ui-icon-triangle-1-s { /* Expanded */
   background: url(../images/arrow-collapsed-big.gif) no-repeat top left;
+
   transform: rotate(90deg);
   -webkit-transform: rotate(90deg);
   -moz-transform: rotate(90deg);
@@ -227,11 +229,14 @@
   -o-transition: all 600ms ease-in-out;
   -ms-transition: all 600ms ease-in-out;
 
+  /*
   transform-origin: 60% 30%;
   -webkit-transform-origin: 60% 30%;
   -moz-transform-origin: 60% 30%;
   -o-transition-origin: 60% 30%;
   -ms-transform-origin: 60% 30%;
+  */
+  top: 20px;
   left: 13px;
 }
 

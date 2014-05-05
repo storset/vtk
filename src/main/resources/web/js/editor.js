@@ -16748,6 +16748,9 @@ function courseSchedule() {
             enhanceMultipleInputFields(m.name + "-" + sessionId, m.movable, m.browsable, 50, m.json);
           }
           session.isEnhanced = true;
+          if(session.isCancelled) {
+            content.find("button, input").filter(":not(.moveup, .movedown)").attr("disabled", "disabled");
+          }
         }
       } else { // Update session and accordion title on close
         var sessionId = ui.oldHeader[0].id;
@@ -16908,15 +16911,17 @@ function generateCourseScheduleActivitiesForType(json, type, skipTier, i18n) {
  */
 function generateCourseScheduleSession(id, dtShort, session, descs, i18n, skipTier, generateCourseScheduleDateFunc, generateCourseScheduleContentFromSessionDataFunc) {
   var sessionId = dtShort + "-" + session.id.replace(/\//g, "-"),
+      sessionCancelled = session.status && session.status === "cancelled",
       sessionTitle = generateCourseScheduleDateFunc(session.dtstart, session.dtend, i18n) + " " +
                      "<span class='header-title'>" + (session["vrtx-title"] || session.title || session.id) + "</span>" +
                      (session.room ? " - " + (session.room[0].buildingid + " " + i18n.room + " " + session.room[0].roomid) : "") +
-                     (session.status && session.status === "cancelled" ? " <span class='header-status'>" + i18n[session.status] + "</span>" : ""),
+                     (sessionCancelled ? " <span class='header-status'>" + i18n[session.status] + "</span>" : ""),
       sessionContent = generateCourseScheduleContentFromSessionDataFunc(sessionId, session, descs, i18n);
 
    // Store session information
    sessionsLookup[id][sessionId] = {
      isEnhanced: false,
+     isCancelled: sessionCancelled,
      hasChanges: false,
      multiples: sessionContent.multiples,
      rawPtr: session,

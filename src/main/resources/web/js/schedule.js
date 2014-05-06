@@ -21,7 +21,12 @@ $(document).ready(function() {
     }
     var htmlPlenary = generateHTMLForType(retrievedScheduleData, "plenary");
     var htmlGroup = generateHTMLForType(retrievedScheduleData, "group");
-    $("#activities").html(htmlPlenary.tocHtml + htmlGroup.tocHtml + htmlPlenary.tablesHtml + htmlGroup.tablesHtml);
+    var html = htmlPlenary.tocHtml + htmlGroup.tocHtml + htmlPlenary.tablesHtml + htmlGroup.tablesHtml;
+    if(html === "") {
+      $("#activities").html("Ingen data");
+    } else {
+      $("#activities").html(html);
+    }
     scheduleDeferred.resolve();
   });
 });
@@ -39,9 +44,14 @@ function generateHTMLForType(json, type) {
       getStaffFunc = getStaff,
       tocHtml = "",
       tablesHtml = "";
+  
+  if(!data) return { tocHtml: "", tablesHtml: "" };
+  var dataLen = data.length;
+  if(!dataLen) return { tocHtml: "", tablesHtml: "" };
+  
   tocHtml += "<h2 class='accordion'>" + scheduleI18n["header-" + type] + "</h2>";
   tocHtml += "<ul>";
-  for(var i = 0, len = data.length; i < len; i++) {
+  for(var i = 0; i < dataLen; i++) {
     var dt = data[i];
     var sessions = dt.sessions;
     var newTM = dt.teachingmethod.toLowerCase();

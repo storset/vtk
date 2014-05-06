@@ -62,13 +62,13 @@ resourcetype course-schedule {
     table-staff : (en : "Lecturer", no : "Foreleser", nn : "Foreleser"),
     header-plenary : (en : "Plenary sessions", no : "Fellesundervisning", nn : "Fellesundervisning"), 
     header-group : (en : "Group sessions", no : "Gruppeundervisning", nn : "Gruppeundervisning"),
-    dSun : (en : "Sunday",    no : "Søndag",  nn : "Søndag"),
-    dMon : (en : "Monday",    no : "Mandag",  nn : "Mandag"),
-    dTue : (en : "Tuesday",   no : "Tirsdag", nn : "Tirsdag"),
-    dWed : (en : "Wednesday", no : "Onsdag",  nn : "Onsdag"),
-    dThu : (en : "Thursday",  no : "Torsdag", nn : "Torsdag"),
-    dFri : (en : "Friday",    no : "Fredag",  nn : "Fredag"),
-    dSat : (en : "Saturday",  no : "Lørdag",  nn : "Lørdag")
+    dSun : (en : "sunday",    no : "søndag",  nn : "søndag"),
+    dMon : (en : "monday",    no : "mandag",  nn : "mandag"),
+    dTue : (en : "tuesday",   no : "tirsdag", nn : "tirsdag"),
+    dWed : (en : "wednesday", no : "onsdag",  nn : "onsdag"),
+    dThu : (en : "thursday",  no : "torsdag", nn : "torsdag"),
+    dFri : (en : "friday",    no : "fredag",  nn : "fredag"),
+    dSat : (en : "saturday",  no : "lørdag",  nn : "lørdag")
   }
   
 }

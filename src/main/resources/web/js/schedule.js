@@ -7,7 +7,7 @@ var scheduleDeferred = $.Deferred();
 $(document).ready(function() {
   var retrievedScheduleDeferred = $.Deferred();
   var retrievedScheduleData = null;
-  $.getJSON("/vrtx/__vrtx/static-resources/js/tp-test.json", function(data, xhr, textStatus) {
+  $.getJSON(window.location.pathname + "?action=course-schedule", function(data, xhr, textStatus) {
     retrievedScheduleData = data;
     retrievedScheduleDeferred.resolve();
   }).fail(function(xhr, textStatus) {

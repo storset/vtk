@@ -1027,7 +1027,7 @@ var retrievedScheduleData = null;
 function courseSchedule() {
   
   var retrievedScheduleDeferred = $.Deferred();
-  vrtxAdmin.serverFacade.getJSON("/vrtx/__vrtx/static-resources/js/tp-test.json", {
+  vrtxAdmin.serverFacade.getJSON(window.location.pathname + "?action=course-schedule", {
     success: function(data, xhr, textStatus) {
       retrievedScheduleData = data;
       retrievedScheduleDeferred.resolve();

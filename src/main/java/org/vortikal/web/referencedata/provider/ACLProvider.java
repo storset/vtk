@@ -130,8 +130,7 @@ public class ACLProvider implements ReferenceDataProvider {
                 String url = this.aclInheritanceService.constructLink(resource, requestContext.getPrincipal());
                 editURLs.put("inheritance", url);
             }
-        } catch (Exception e) {
-        }
+        } catch (Exception e) {}
 
         Map<String, Privilege> privileges = new HashMap<String, Privilege>();
         Map<String, Principal[]> privilegedUsers = new HashMap<String, Principal[]>();

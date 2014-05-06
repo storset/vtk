@@ -41,15 +41,14 @@ import java.util.Map;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
 
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.validation.BindException;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
@@ -61,7 +60,6 @@ import org.vortikal.resourcemanagement.StructuredResource;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.StructuredResourceManager;
 import org.vortikal.resourcemanagement.property.EditablePropertyDescription;
-import org.vortikal.resourcemanagement.property.EvaluatorResolver;
 import org.vortikal.resourcemanagement.property.JSONPropertyAttributeDescription;
 import org.vortikal.resourcemanagement.property.JSONPropertyDescription;
 import org.vortikal.resourcemanagement.property.PropertyDescription;
@@ -69,79 +67,39 @@ import org.vortikal.security.Principal;
 import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlPageParser;
-import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
-public class StructuredResourceEditor extends SimpleFormController {
+@Controller
+public class StructuredResourceEditor  {
     private StructuredResourceManager resourceManager;
     private HtmlPageFilter safeHtmlFilter;
     private Service listComponentsService;
     private Locale defaultLocale;
+    private String formView;
+    private String successView;
 
-    public StructuredResourceEditor() {
-        super();
-        setCommandName("form");
+    @RequestMapping(method=RequestMethod.GET)
+    public ModelAndView get() throws Exception {
+        FormSubmitCommand cmd = formBackingObject();
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("form", cmd);
+        return new ModelAndView(getFormView(), model);
     }
-
-    @Override
-    protected Object formBackingObject(HttpServletRequest request) throws Exception {
-        lock();
-        RequestContext requestContext = RequestContext.getRequestContext();
-        Path uri = requestContext.getResourceURI();
-        String token = requestContext.getSecurityToken();
-        Repository repository = requestContext.getRepository();
-        Principal principal = requestContext.getPrincipal();
-        Resource resource = repository.retrieve(token, uri, false);
-
-        boolean published = resource.isPublished();
-        boolean hasPublishDate = resource.hasPublishDate();
-        boolean onlyWriteUnpublished = !repository.authorize(principal, resource.getAcl(), Privilege.READ_WRITE);
-
-        Revision workingCopy = null;
-        for (Revision rev : repository.getRevisions(token, uri)) {
-            if (rev.getType() == Revision.Type.WORKING_COPY) {
-                workingCopy = rev;
-                break;
-            }
-        }
-        InputStream stream = null;
-        if (workingCopy != null) {
-            stream = repository.getInputStream(token, uri, true, workingCopy);
-        } else {
-            stream = repository.getInputStream(token, uri, true);
-        }
-        String encoding = resource.getCharacterEncoding();
-        if (encoding == null) {
-            encoding = "utf-8";
-        }
-        StructuredResourceDescription description = this.resourceManager.get(resource.getResourceType());
-        StructuredResource structuredResource = description.buildResource(stream);
-
-        URL url = RequestContext.getRequestContext().getService().constructURL(uri);
-        URL listComponentServiceURL = listComponentsService.constructURL(uri);
-
+    
+    @RequestMapping(method=RequestMethod.POST)
+    public ModelAndView post(HttpServletRequest request) throws Exception {
+        FormSubmitCommand form = formBackingObject();
+        FormDataBinder binder = new FormDataBinder(form, "form", form.getResource().getType());
+        binder.bind(request);
         
-        Locale locale = resource.getContentLocale();
-        if(locale == null) {
-            locale = this.defaultLocale;
-        }
-        
-        return new FormSubmitCommand(structuredResource, url, listComponentServiceURL, workingCopy != null, published,
-                hasPublishDate, onlyWriteUnpublished, locale);
-    }
-
-    @Override
-    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
-            BindException errors) throws Exception {
-        FormSubmitCommand form = (FormSubmitCommand) command;
         if (form.getCancelAction() != null) {
             unlock();
             return new ModelAndView(getSuccessView());
         }
         Map<String, Object> model = new HashMap<String, Object>();
-        model.put("form", command);
+        model.put("form", form);
         form.sync();
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
@@ -166,7 +124,7 @@ public class StructuredResourceEditor extends SimpleFormController {
 
         if (deleteWorkingCopy && workingCopy != null) {
             repository.deleteRevision(token, uri, workingCopy);
-            model.put("form", formBackingObject(request));
+            model.put("form", formBackingObject());
             return new ModelAndView(getFormView(), model);
         }
 
@@ -209,26 +167,65 @@ public class StructuredResourceEditor extends SimpleFormController {
         return new ModelAndView(getFormView(), model);
     }
 
-    @Override
-    protected ServletRequestDataBinder createBinder(HttpServletRequest request, Object command) throws Exception {
-        FormSubmitCommand form = (FormSubmitCommand) command;
-        FormDataBinder binder = new FormDataBinder(command, getCommandName(), form.getResource().getType());
-        prepareBinder(binder);
-        initBinder(request, binder);
-        return binder;
+
+    private FormSubmitCommand formBackingObject() throws Exception {
+        lock();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Path uri = requestContext.getResourceURI();
+        String token = requestContext.getSecurityToken();
+        Repository repository = requestContext.getRepository();
+        Principal principal = requestContext.getPrincipal();
+        Resource resource = repository.retrieve(token, uri, false);
+
+        boolean published = resource.isPublished();
+        boolean hasPublishDate = resource.hasPublishDate();
+        boolean onlyWriteUnpublished = !repository.authorize(principal, resource.getAcl(), Privilege.READ_WRITE);
+
+        Revision workingCopy = null;
+        for (Revision rev : repository.getRevisions(token, uri)) {
+            if (rev.getType() == Revision.Type.WORKING_COPY) {
+                workingCopy = rev;
+                break;
+            }
+        }
+        InputStream stream = null;
+        if (workingCopy != null) {
+            stream = repository.getInputStream(token, uri, true, workingCopy);
+        } else {
+            stream = repository.getInputStream(token, uri, true);
+        }
+        String encoding = resource.getCharacterEncoding();
+        if (encoding == null) {
+            encoding = "utf-8";
+        }
+        StructuredResourceDescription description = resourceManager.get(resource.getResourceType());
+        StructuredResource structuredResource = description.buildResource(stream);
+
+        URL url = RequestContext.getRequestContext().getService().constructURL(uri);
+        URL listComponentServiceURL = listComponentsService.constructURL(uri);
+
+        
+        Locale locale = resource.getContentLocale();
+        if(locale == null) {
+            locale = defaultLocale;
+        }
+        
+        return new FormSubmitCommand(structuredResource, url, listComponentServiceURL, 
+                workingCopy != null, published, hasPublishDate, onlyWriteUnpublished, locale);
     }
 
     private class FormDataBinder extends ServletRequestDataBinder {
         private StructuredResourceDescription description;
 
-        public FormDataBinder(Object target, String objectName, StructuredResourceDescription description) {
+        public FormDataBinder(FormSubmitCommand target, String objectName, 
+                StructuredResourceDescription description) {
             super(target, objectName);
             this.description = description;
         }
 
         @Override
         public void bind(ServletRequest request) {
-            List<PropertyDescription> props = this.description.getAllPropertyDescriptions();
+            List<PropertyDescription> props = description.getAllPropertyDescriptions();
             FormSubmitCommand form = (FormSubmitCommand) getTarget();
             for (PropertyDescription desc : props) {
                 if (desc instanceof EditablePropertyDescription) {
@@ -265,23 +262,34 @@ public class StructuredResourceEditor extends SimpleFormController {
             }
         }
 
-        @SuppressWarnings("unchecked")
         private void buildJSONFromInput(ServletRequest request, FormSubmitCommand form, PropertyDescription desc) {
             JSONPropertyDescription jsonDesc = (JSONPropertyDescription) desc;
 
             if (!jsonDesc.isMultiple()) {
                 JSONObject obj = new JSONObject();
-                for (JSONPropertyAttributeDescription attr : jsonDesc.getAttributes()) {
-                    String param = desc.getName() + "." + attr.getName() + ".0";
-                    String posted = request.getParameter(param);
-                    if (posted != null && !"".equals(posted.trim())) {
-                        obj.put(attr.getName(), posted);
+                if (jsonDesc.isWildcard()) {
+                    String str = request.getParameter(desc.getName());
+                    obj = JSONObject.fromObject(str);
+                    
+                } else {
+                    for (JSONPropertyAttributeDescription attr : jsonDesc.getAttributes()) {
+                        String param = desc.getName() + "." + attr.getName() + ".0";
+                        String posted = request.getParameter(param);
+                        if (posted != null && !"".equals(posted.trim())) {
+                            obj.put(attr.getName(), posted);
+                        }
                     }
                 }
                 bindObjectToForm(form, desc, obj);
                 return;
             }
 
+            if (jsonDesc.isWildcard()) {
+                throw new IllegalStateException(
+                        "Multi-valued properties of type json-wildcard not supported");
+            }
+            
+            @SuppressWarnings("unchecked")
             Enumeration<String> names = request.getParameterNames();
             int maxIndex = 0;
             while (names.hasMoreElements()) {
@@ -364,8 +372,24 @@ public class StructuredResourceEditor extends SimpleFormController {
         return listComponentsService;
     }
     
-    @Required
     public void setDefaultLocale(Locale defaultLocale) {
         this.defaultLocale = defaultLocale;
     }
+
+    public String getFormView() {
+        return formView;
+    }
+
+    public void setFormView(String formView) {
+        this.formView = formView;
+    }
+
+    public String getSuccessView() {
+        return successView;
+    }
+
+    public void setSuccessView(String successView) {
+        this.successView = successView;
+    }
+
 }

@@ -144,6 +144,12 @@
       service framework to function. </description>
   </bean>
 
+  <!-- Method level annotation of controllers (e.g. @RequestMapping(method = RequestMethod.GET)) -->
+  <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
+
+  <!-- Type level annotation is not included as we have the ServiceHandlerMapping: -->
+  <!--bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/-->
+
   <!-- Custom and required Spring HandlerAdapter instances defined here. -->
   <!-- Note that defining even a single instance of a custom HandlerAdapter in will cause
        Spring to disregard its default set of handler adapters, and thus all required

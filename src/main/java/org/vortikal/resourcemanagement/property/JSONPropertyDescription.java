@@ -38,6 +38,13 @@ public class JSONPropertyDescription extends EditablePropertyDescription {
 
     private List<JSONPropertyAttributeDescription> attributes = new ArrayList<JSONPropertyAttributeDescription>();
 
+    /**
+     * Whether this JSON property has a defined structure
+     */
+    public boolean isWildcard() {
+        return attributes.size() == 0;
+    }
+    
     public void addAttribute(JSONPropertyAttributeDescription attribute) {
         this.attributes.add(attribute);
     }

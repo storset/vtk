@@ -186,6 +186,10 @@
           <scanIntervalSeconds>0</scanIntervalSeconds>
           <systemProperties>
             <systemProperty>
+              <name>org.mortbay.jetty.Request.maxFormContentSize</name>
+              <value>-1</value>
+            </systemProperty>
+            <systemProperty>
               <name>org.apache.commons.logging.Log</name>
               <value>org.apache.commons.logging.impl.Log4JLogger</value>
             </systemProperty>

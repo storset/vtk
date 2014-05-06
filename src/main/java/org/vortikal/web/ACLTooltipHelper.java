@@ -8,6 +8,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
+import org.vortikal.text.html.HtmlUtil;
 import org.vortikal.web.service.Service;
 
 public class ACLTooltipHelper {
@@ -32,7 +33,7 @@ public class ACLTooltipHelper {
 
         title.append("<span id=&quot;title-wrapper&quot;>");
         if(name != null) {
-            title.append("<strong id=&quot;title&quot;>" + name + "</strong>");
+            title.append("<strong id=&quot;title&quot;>" + HtmlUtil.encodeBasicEntities(name) + "</strong>");
         }
         if (r.isInheritedAcl()) {
             String inheritedPermissionTitle = getLocalizedTitle(request, "report.list-resources.inherited-permissions", null);
@@ -62,15 +63,15 @@ public class ACLTooltipHelper {
 
         String[] aclFormatted = getAclFormatted(acl, request);
 
-        String read = aclFormatted[0].isEmpty() ? notAssigned : aclFormatted[0];
+        String read = aclFormatted[0].isEmpty() ? notAssigned : HtmlUtil.encodeBasicEntities(aclFormatted[0]);
         title.append("<tr><th scope=&quot;row&quot;>" + getLocalizedTitle(request, "permissions.privilege.read", null)
                 + ":</th><td>" + read + "</td></tr>");
 
-        String write = aclFormatted[1].isEmpty() ? notAssigned : aclFormatted[1];
+        String write = aclFormatted[1].isEmpty() ? notAssigned : HtmlUtil.encodeBasicEntities(aclFormatted[1]);
         title.append("<tr><th scope=&quot;row&quot;>" + getLocalizedTitle(request, "permissions.privilege.read-write", null)
                 + ":</th><td>" + write + "</td></tr>");
 
-        String admin = aclFormatted[2].isEmpty() ? notAssigned : aclFormatted[2];
+        String admin = aclFormatted[2].isEmpty() ? notAssigned : HtmlUtil.encodeBasicEntities(aclFormatted[2]);
         title.append("<tr><th scope=&quot;row&quot;>"
                 + getLocalizedTitle(request, "report.list-resources.admin-permission", null)
                 + ":</th><td>" + admin + "</td></tr>");

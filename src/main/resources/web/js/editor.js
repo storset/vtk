@@ -1027,7 +1027,7 @@ var retrievedScheduleData = null;
 function courseSchedule() {
   
   var retrievedScheduleDeferred = $.Deferred();
-  vrtxAdmin.serverFacade.getJSON(window.location.pathname + "?action=course-schedule", {
+  vrtxAdmin.serverFacade.getJSON("/vrtx/__vrtx/static-resources/js/tp-test.json", {
     success: function(data, xhr, textStatus) {
       retrievedScheduleData = data;
       retrievedScheduleDeferred.resolve();
@@ -1046,6 +1046,8 @@ function courseSchedule() {
 
   $.when(retrievedScheduleDeferred, vrtxEditor.multipleFieldsBoxesDeferred).done(function() {
     if(retrievedScheduleData == null)  return;
+    
+    $(".vrtx-json").remove();
 
     var isEn = vrtxAdmin.lang == "en",
         i18n = {
@@ -1315,24 +1317,10 @@ function generateCourseScheduleDateAndPostFixId(s, e, i18n) { /* IE8: http://www
  * Save Course Schedule
  *
  */
-function saveCourseSchedule(startTime, d) {
+function saveCourseSchedule() {
   if(lastElm) {
     saveCourseScheduleSession(lastElm, lastId, lastSessionId);
   }
-  vrtxAdmin.serverFacade.postJSONA(this.location.href,
-    JSON.stringify({
-      "resourcetype": "course-schedule",
-      "properties": { "activities": retrievedScheduleData }
-    }, null, 2), {
-    success: function (results, status, resp) {
-      ajaxSaveSuccess(startTime, d, results, status, resp); 
-      courseScheduleSaved();
-    },
-    error: function (xhr, textStatus) {
-      vrtxEditor.needToConfirm = true;  
-      ajaxSaveError(d, xhr, textStatus);
-    }
-  }, vrtxEditor.editorForm.find("input[name='csrf-prevention-token']").val());
 }
 
 /*

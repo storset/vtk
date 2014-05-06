@@ -2625,9 +2625,10 @@ function ajaxSave() {
   
   if(!isServerLastModifiedOlderThanClientLastModified(d)) return false;
   
+  var extraData = {};
   if(vrtxEditor.editorForm.hasClass("vrtx-course-schedule")) {
-    saveCourseSchedule(startTime, d);
-    return false;
+    saveCourseSchedule();
+    extraData = { "activities": JSON.stringify(retrievedScheduleData) };
   }
   
   var futureFormAjax = $.Deferred();
@@ -2644,8 +2645,12 @@ function ajaxSave() {
   }
   $.when(futureFormAjax).done(function() {
     _$("#editor").ajaxSubmit({
+      data: extraData,
       success: function(results, status, xhr) { 
         ajaxSaveSuccess(startTime, d, results, status, xhr);
+        if(vrtxEditor.editorForm.hasClass("vrtx-course-schedule")) {
+          courseScheduleSaved();
+        }
       },
       error: function (xhr, textStatus, errMsg) {
         vrtxEditor.needToConfirm = true;

@@ -61,15 +61,14 @@ function generateHTMLForType(json, type) {
     }
     for(var j = 0, len2 = sessions.length; j < len2; j++) {
       var session = sessions[j];
-      
-      if(session.status && session.status === "cancelled") continue; // Don't show
-      
+
       var dateTime = splitDateTimeFunc(session.dtstart, session.dtend);
       var day = getDayFunc(dateTime.ed, dateTime.et);
 
       var classes = "";
       if(j % 2 == 1) classes = "even";
-      if(session["vrtx-status"] && session["vrtx-status"] === "cancelled") { // Grey out
+      if((session.status && session.status === "cancelled") ||
+         (session["vrtx-status"] && session["vrtx-status"] === "cancelled")) { // Grey out
         if(classes !== "") classes += " ";
         classes += "cancelled-vortex";
       }

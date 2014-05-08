@@ -33,11 +33,7 @@ $(document).ready(function() {
     
     $.when(thread1Finished, thread2Finished).done(function() {
       var html = htmlPlenary.tocHtml + htmlGroup.tocHtml + htmlPlenary.tablesHtml + htmlGroup.tablesHtml;
-      if(html === "") {
-        $("#activities").html("Ingen data");
-      } else {
-        $("#activities").html(html);
-      }
+      $("#activities").html(html === "" ? "Ingen data" : html);
       scheduleDeferred.resolve();
     });
   });
@@ -49,7 +45,7 @@ function startThreadGenerateHTMLForType(dta, htmlRef, threadRef) {
     var workerCode = function(e) {
       postMessage(generateHTMLForType(e.data));
     };
-    var blob = new Blob(["onmessage = " + workerCode.toString() + "; " + generateHTMLForType.toString()]);
+    var blob = new Blob(["onmessage = " + workerCode.toString() + "; " + generateHTMLForType.toString()], {type : 'text/javascript'});
     var blobURL = window.URL.createObjectURL(blob);
     
     var worker = new Worker(blobURL);
@@ -74,9 +70,7 @@ function finishedThreadGenerateHTMLForType(data, htmlRef, threadRef) {
 function generateHTMLForType(dta) {
   var json = JSON.parse(dta.json),
       type = dta.type,
-      scheduleI18n = JSON.parse(dta.i18n);
-
-  var jsonType = json[type],
+      scheduleI18n = JSON.parse(dta.i18n),jsonType = json[type],
       data = jsonType.data,
       now = new Date(),
       splitDateTimeFunc = function(s, e) {

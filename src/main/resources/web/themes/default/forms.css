@@ -252,6 +252,31 @@
 
 /* ^ Textfields */
 
+/* Disabled */
+
+.forms-new .vrtx-button[disabled],
+.forms-new .vrtx-focus-button[disabled],
+.forms-new .vrtx-button-small[disabled] {
+  background: #efefef;
+  border: 1px solid #ddd;
+  color: #888;
+}
+
+.forms-new .vrtx-button[disabled]:hover,
+.forms-new .vrtx-focus-button[disabled]:hover,
+.forms-new .vrtx-button-small[disabled]:hover {
+  border: none;
+  cursor: default;
+}
+
+.forms-new .vrtx-textfield[disabled],
+.forms-new .vrtx-textfield-big[disabled] {
+  border: 1px solid #ddd;
+  color: #888;
+}
+
+/* ^ Disabled */
+
 /* jQuery UI dialog, datepicker, accordion etc. */
 
 .forms-new .ui-widget-overlay {

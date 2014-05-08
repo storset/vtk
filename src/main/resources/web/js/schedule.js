@@ -20,16 +20,14 @@ $(document).ready(function() {
       return;
     }
     
-    var thread1Finished = $.Deferred();
-    var thread2Finished = $.Deferred();
-    var htmlPlenary = {};
-    var htmlGroup = {};
+    var thread1Finished = $.Deferred(),
+        thread2Finished = $.Deferred(),
+        htmlPlenary = {}, htmlGroup = {};
     
     startThread({ json: JSON.stringify(retrievedScheduleData), type: "plenary", i18n: JSON.stringify(scheduleI18n)}, htmlPlenary, thread1Finished);
     startThread({ json: JSON.stringify(retrievedScheduleData), type: "group", i18n: JSON.stringify(scheduleI18n)}, htmlGroup, thread2Finished);
     
     $.when(thread1Finished, thread2Finished).done(function() {
-      console.log(htmlPlenary);
       var html = htmlPlenary.tocHtml + htmlGroup.tocHtml + htmlPlenary.tablesHtml + htmlGroup.tablesHtml;
       if(html === "") {
         $("#activities").html("Ingen data");
@@ -42,22 +40,28 @@ $(document).ready(function() {
 });
 
 function startThread(dta, htmlRef, threadRef) {
-  var workerCode = function(e) {
-    var returnData = generateHTMLForType(e.data);
-    postMessage(returnData);
-  };
-  var blob = new Blob(["onmessage = " + workerCode.toString() + "; " + generateHTMLForType.toString()]);
-  var blobURL = window.URL.createObjectURL(blob);
-  var worker = new Worker(blobURL);
-  window.URL.revokeObjectURL(blobURL);
+  if(typeof Blob === "function" && typeof Worker === "function") {
+    var workerCode = function(e) {
+      postMessage(generateHTMLForType(e.data));
+    };
+    var blob = new Blob(["onmessage = " + workerCode.toString() + "; " + generateHTMLForType.toString()]);
+    var blobURL = window.URL.createObjectURL(blob);
+    var worker = new Worker(blobURL);
+    window.URL.revokeObjectURL(blobURL);
   
-  worker.onmessage = function(e) {
-    var receivedData = JSON.parse(e.data);
+    worker.onmessage = function(e) {
+      var receivedData = JSON.parse(e.data);
+      htmlRef.tocHtml = receivedData.tocHtml;
+      htmlRef.tablesHtml = receivedData.tablesHtml;
+      threadRef.resolve();
+    };
+    worker.postMessage(dta);
+  } else {
+    var receivedData = JSON.parse(generateHTMLForType(dta));
     htmlRef.tocHtml = receivedData.tocHtml;
     htmlRef.tablesHtml = receivedData.tablesHtml;
     threadRef.resolve();
-  };
-  worker.postMessage(dta); 
+  }
 }
 
 function generateHTMLForType(dta) {

@@ -292,6 +292,7 @@
   border: 1px solid #d9d9d9 !important;
   border-bottom: none !important;
   border-top: none !important;
+  overflow: hidden;
 }
 
 .ui-accordion > div .ui-accordion > div > .ui-accordion-content {

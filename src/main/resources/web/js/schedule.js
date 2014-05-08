@@ -45,28 +45,30 @@ $(document).ready(function() {
 });
 
 function startThreadGenerateHTMLForType(dta, htmlRef, threadRef) {
-  if(typeof Blob === "function" && typeof Worker === "function") {
+  if(window.URL && window.URL.createObjectURL && typeof Blob === "function" && typeof Worker === "function") { // Use own thread
     var workerCode = function(e) {
       postMessage(generateHTMLForType(e.data));
     };
     var blob = new Blob(["onmessage = " + workerCode.toString() + "; " + generateHTMLForType.toString()]);
     var blobURL = window.URL.createObjectURL(blob);
+    
     var worker = new Worker(blobURL);
-    window.URL.revokeObjectURL(blobURL);
-  
     worker.onmessage = function(e) {
-      var receivedData = JSON.parse(e.data);
-      htmlRef.tocHtml = receivedData.tocHtml;
-      htmlRef.tablesHtml = receivedData.tablesHtml;
-      threadRef.resolve();
+      finishedThreadGenerateHTMLForType(e.data, htmlRef, threadRef);
     };
     worker.postMessage(dta);
-  } else {
-    var receivedData = JSON.parse(generateHTMLForType(dta));
-    htmlRef.tocHtml = receivedData.tocHtml;
-    htmlRef.tablesHtml = receivedData.tablesHtml;
-    threadRef.resolve();
+
+    if(window.URL.revokeObjectURL) window.URL.revokeObjectURL(blobURL);
+  } else { // Use main thread
+    finishedThreadGenerateHTMLForType(generateHTMLForType(dta), htmlRef, threadRef);
   }
+}
+
+function finishedThreadGenerateHTMLForType(data, htmlRef, threadRef) {
+  var receivedData = JSON.parse(data);
+  htmlRef.tocHtml = receivedData.tocHtml;
+  htmlRef.tablesHtml = receivedData.tablesHtml;
+  threadRef.resolve();
 }
 
 function generateHTMLForType(dta) {

@@ -181,6 +181,11 @@
   font-size: 1.15em;
 }
 
+.accordion-title:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
 .ui-accordion > div > .header.ui-accordion-header {
   padding: 15px 15px 14px 40px;
   border-radius: 0px;

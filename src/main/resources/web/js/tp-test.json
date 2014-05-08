@@ -7,10 +7,16 @@
             "type":"string"
          },
          "vrtx-staff":{
-            "type":"string",
+            "type":"json",
             "multiple":{
                "movable":true
             },
+            "props":[
+               {
+                  "name":"id",
+                  "type":"string"
+               }
+            ],
             "autocomplete":"username"
          },
          "vrtx-staff-external":{
@@ -822,10 +828,16 @@
             "type":"string"
          },
          "vrtx-staff":{
-            "type":"string",
+            "type":"json",
             "multiple":{
                "movable":true
             },
+            "props":[
+               {
+                  "name":"id",
+                  "type":"string"
+               }
+            ],
             "autocomplete":"username"
          },
          "vrtx-staff-external":{

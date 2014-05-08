@@ -19,29 +19,101 @@ $(document).ready(function() {
       scheduleDeferred.resolve();
       return;
     }
-    var htmlPlenary = generateHTMLForType(retrievedScheduleData, "plenary");
-    var htmlGroup = generateHTMLForType(retrievedScheduleData, "group");
-    var html = htmlPlenary.tocHtml + htmlGroup.tocHtml + htmlPlenary.tablesHtml + htmlGroup.tablesHtml;
-    if(html === "") {
-      $("#activities").html("Ingen data");
-    } else {
-      $("#activities").html(html);
-    }
-    scheduleDeferred.resolve();
+    
+    var thread1Finished = $.Deferred();
+    var thread2Finished = $.Deferred();
+    var htmlPlenary = {};
+    var htmlGroup = {};
+    
+    startThread({ json: JSON.stringify(retrievedScheduleData), type: "plenary", i18n: JSON.stringify(scheduleI18n)}, htmlPlenary, thread1Finished);
+    startThread({ json: JSON.stringify(retrievedScheduleData), type: "group", i18n: JSON.stringify(scheduleI18n)}, htmlGroup, thread2Finished);
+    
+    $.when(thread1Finished, thread2Finished).done(function() {
+      console.log(htmlPlenary);
+      var html = htmlPlenary.tocHtml + htmlGroup.tocHtml + htmlPlenary.tablesHtml + htmlGroup.tablesHtml;
+      if(html === "") {
+        $("#activities").html("Ingen data");
+      } else {
+        $("#activities").html(html);
+      }
+      scheduleDeferred.resolve();
+    });
   });
 });
 
-function generateHTMLForType(json, type) {
+function startThread(dta, htmlRef, threadRef) {
+  var workerCode = function(e) {
+    var returnData = generateHTMLForType(e.data);
+    postMessage(returnData);
+  };
+  var blob = new Blob(["onmessage = " + workerCode.toString() + "; " + generateHTMLForType.toString()]);
+  var blobURL = window.URL.createObjectURL(blob);
+  var worker = new Worker(blobURL);
+  window.URL.revokeObjectURL(blobURL);
+  
+  worker.onmessage = function(e) {
+    var receivedData = JSON.parse(e.data);
+    htmlRef.tocHtml = receivedData.tocHtml;
+    htmlRef.tablesHtml = receivedData.tablesHtml;
+    threadRef.resolve();
+  };
+  worker.postMessage(dta); 
+}
+
+function generateHTMLForType(dta) {
+  var json = JSON.parse(dta.json),
+      type = dta.type,
+      scheduleI18n = JSON.parse(dta.i18n);
+
   var jsonType = json[type],
       data = jsonType.data,
       now = new Date(),
-      splitDateTimeFunc = splitDateTime,
-      getDateFunc = getDate,
-      getDayFunc = getDay,
-      getTimeFunc = getTime,
-      getTitleFunc = getTitle,
-      getPlaceFunc = getPlace,
-      getStaffFunc = getStaff,
+      splitDateTimeFunc = function(s, e) {
+        var sd = s.split("T")[0].split("-");
+        var st = s.split("T")[1].split(".")[0].split(":");
+        var ed = e.split("T")[0].split("-");
+        var et = e.split("T")[1].split(".")[0].split(":");
+        return { sd: sd, st: st, ed: ed, et: et };
+      },
+      getDateFunc = function(sd, ed) {
+        if(sd[0] != ed[0] || sd[1] != ed[1] || sd[2] != ed[2]) {
+          return sd[2] + "." + sd[1] + "." + sd[0] + "&ndash;" + ed[2] + "." + ed[1] + "." + ed[0];
+        } else {
+          return sd[2] + "." + sd[1] + "." + sd[0];
+        }
+      },
+      getDayFunc = function(ed, et) {
+        var endTime = new Date(ed[0], ed[1]-1, ed[2], et[0], et[1], 0, 0);
+        return { endTime: endTime, endDay: scheduleI18n["d" + endTime.getDay()] };
+      },
+      getTimeFunc = function(st, et) {
+        return st[0] + ":" + st[1] + "&ndash;" + et[0] + ":" + et[1];
+      },
+      getTitleFunc = function(session) {
+        return session["vrtx-title"] || session.title || session.id;
+      },
+      getPlaceFunc = function(session) {
+        var val = "";
+        var room = session.room;
+        if(room && room.length) {
+          for(var i = 0, len = room.length; i < len; i++) {
+            if(i > 0) val += "<br/>";
+            val += room[i].buildingid + " " + room[i].roomid;
+          }
+        }
+        return val;
+      },
+      getStaffFunc = function(session) {
+        var val = "";
+        var staff = session["vrtx-staff"] || session.staff;
+        if(staff && staff.length) {
+          for(var i = 0, len = staff.length; i < len; i++) {
+            if(i > 0) val += "<br/>";
+            val += staff[i].id;
+          }
+        }
+        return val;
+      },
       tocHtml = "",
       tablesHtml = "";
   
@@ -101,58 +173,6 @@ function generateHTMLForType(json, type) {
     tablesHtml += "</tbody></table>";
   }
   tocHtml += "</ul>";
-  return { tocHtml: tocHtml, tablesHtml: tablesHtml };
-}
-
-function getDate(sd, ed) {
-  if(sd[0] != ed[0] || sd[1] != ed[1] || sd[2] != ed[2]) {
-    return sd[2] + "." + sd[1] + "." + sd[0] + "&ndash;" + ed[2] + "." + ed[1] + "." + ed[0];
-  } else {
-    return sd[2] + "." + sd[1] + "." + sd[0];
-  }
-}
-
-function getDay(ed, et) {
-  var endTime = new Date(ed[0], ed[1]-1, ed[2], et[0], et[1], 0, 0);
-  return { endTime: endTime, endDay: scheduleI18n["d" + endTime.getDay()] };
-}
-
-function getTime(st, et) {
-  return st[0] + ":" + st[1] + "&ndash;" + et[0] + ":" + et[1];
-}
-
-function getTitle(session) {
-  return session["vrtx-title"] || session.title || session.id;
-}
-
-function getPlace(session) {
-  var val = "";
-  var room = session.room;
-  if(room && room.length) {
-    for(var i = 0, len = room.length; i < len; i++) {
-      if(i > 0) val += "<br/>";
-      val += room[i].buildingid + " " + room[i].roomid;
-    }
-  }
-  return val;
-}
-
-function getStaff(session) {
-  var val = "";
-  var staff = session["vrtx-staff"] || session.staff;
-  if(staff && staff.length) {
-    for(var i = 0, len = staff.length; i < len; i++) {
-      if(i > 0) val += "<br/>";
-      val += staff[i].id;
-    }
-  }
-  return val;
-}
-
-function splitDateTime(s, e) {
-  var sd = s.split("T")[0].split("-");
-  var st = s.split("T")[1].split(".")[0].split(":");
-  var ed = e.split("T")[0].split("-");
-  var et = e.split("T")[1].split(".")[0].split(":");
-  return { sd: sd, st: st, ed: ed, et: et };
+  
+  return JSON.stringify({ tocHtml: tocHtml, tablesHtml: tablesHtml });
 }

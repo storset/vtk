@@ -24,8 +24,8 @@ $(document).ready(function() {
         thread2Finished = $.Deferred(),
         htmlPlenary = {}, htmlGroup = {};
     
-    startThread({ json: JSON.stringify(retrievedScheduleData), type: "plenary", i18n: JSON.stringify(scheduleI18n)}, htmlPlenary, thread1Finished);
-    startThread({ json: JSON.stringify(retrievedScheduleData), type: "group", i18n: JSON.stringify(scheduleI18n)}, htmlGroup, thread2Finished);
+    startThreadGenerateHTMLForType({ json: JSON.stringify(retrievedScheduleData), type: "plenary", i18n: JSON.stringify(scheduleI18n)}, htmlPlenary, thread1Finished);
+    startThreadGenerateHTMLForType({ json: JSON.stringify(retrievedScheduleData), type: "group", i18n: JSON.stringify(scheduleI18n)}, htmlGroup, thread2Finished);
     
     $.when(thread1Finished, thread2Finished).done(function() {
       var html = htmlPlenary.tocHtml + htmlGroup.tocHtml + htmlPlenary.tablesHtml + htmlGroup.tablesHtml;
@@ -39,7 +39,7 @@ $(document).ready(function() {
   });
 });
 
-function startThread(dta, htmlRef, threadRef) {
+function startThreadGenerateHTMLForType(dta, htmlRef, threadRef) {
   if(typeof Blob === "function" && typeof Worker === "function") {
     var workerCode = function(e) {
       postMessage(generateHTMLForType(e.data));

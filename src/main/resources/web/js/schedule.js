@@ -74,10 +74,12 @@ function generateHTMLForType(dta) {
       data = jsonType.data,
       now = new Date(),
       splitDateTimeFunc = function(s, e) {
-        var sd = s.split("T")[0].split("-");
-        var st = s.split("T")[1].split(".")[0].split(":");
-        var ed = e.split("T")[0].split("-");
-        var et = e.split("T")[1].split(".")[0].split(":");
+        var sdt = s.split("T");
+        var sd = sdt[0].split("-");
+        var st = sdt[1].split(".")[0].split(":");
+        var edt = e.split("T");
+        var ed = edt[0].split("-");
+        var et = edt[1].split(".")[0].split(":");
         return { sd: sd, st: st, ed: ed, et: et };
       },
       getDateFunc = function(sd, ed) {

@@ -143,7 +143,7 @@ function getStaff(session) {
   if(staff && staff.length) {
     for(var i = 0, len = staff.length; i < len; i++) {
       if(i > 0) val += "<br/>";
-      val += staff[i];
+      val += staff[i].id;
     }
   }
   return val;

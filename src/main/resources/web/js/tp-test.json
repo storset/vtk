@@ -77,6 +77,15 @@
                         "id":"rezam"
                      }
                   ],
+                  "vrtx-staff-external":[
+                     {
+                        "name":"Ole Hansen",
+                        "url":"http://ole.hansen"
+                     },
+                     {
+                        "name":"G. Enius"
+                     }
+                  ],
                   "vrtx-title":"Åpningsforelesning",
                   "vrtx-resources":[
                      {

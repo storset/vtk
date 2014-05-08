@@ -1,18 +1,22 @@
 /*
  * Course schedule
  *
+ * - Two threaded parsing/generating of JSON to HTML if supported
+ *   (one pr. type in addition to main thread)
  */
 
 var scheduleDeferred = $.Deferred();
 $(document).ready(function() {
   var retrievedScheduleDeferred = $.Deferred();
   var retrievedScheduleData = null;
+  
   $.getJSON("/vrtx/__vrtx/static-resources/js/tp-test.json", function(data, xhr, textStatus) {
     retrievedScheduleData = data;
     retrievedScheduleDeferred.resolve();
   }).fail(function(xhr, textStatus) {
     retrievedScheduleDeferred.resolve();
   });
+  
   $.when(retrievedScheduleDeferred).done(function() {
     if(retrievedScheduleData == null) {
       $("#activities").html("Ingen data");
@@ -24,7 +28,7 @@ $(document).ready(function() {
         thread2Finished = $.Deferred(),
         htmlPlenary = {}, htmlGroup = {};
     
-    startThreadGenerateHTMLForType({ json: JSON.stringify(retrievedScheduleData), type: "plenary", i18n: JSON.stringify(scheduleI18n)}, htmlPlenary, thread1Finished);
+    startThreadGenerateHTMLForType({ json: JSON.stringify(retrievedScheduleData),type: "plenary", i18n: JSON.stringify(scheduleI18n)}, htmlPlenary, thread1Finished);
     startThreadGenerateHTMLForType({ json: JSON.stringify(retrievedScheduleData), type: "group", i18n: JSON.stringify(scheduleI18n)}, htmlGroup, thread2Finished);
     
     $.when(thread1Finished, thread2Finished).done(function() {
@@ -37,6 +41,7 @@ $(document).ready(function() {
       scheduleDeferred.resolve();
     });
   });
+  
 });
 
 function startThreadGenerateHTMLForType(dta, htmlRef, threadRef) {

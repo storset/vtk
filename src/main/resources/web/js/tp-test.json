@@ -101,6 +101,12 @@
                      {
                         "title":"Pensumliste",
                         "url":"/studier/emner/exphil03/v14/ressurser/pensumliste.pdf"
+                     },
+                     {
+                        "url":"/url-uten-title"
+                     },
+                     {
+                        "title":"Tittel uten url"
                      }
                   ],
                   "vrtx-status":"cancelled"

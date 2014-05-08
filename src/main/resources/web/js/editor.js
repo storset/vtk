@@ -1450,8 +1450,7 @@ function generateCourseScheduleContentFromSessionData(id, data, descs, i18n) {
         if(val) {
           for(var j = 0, propsLen = val.length; j < propsLen; j++) {
             for(i = 0; i < descPropsLen; i++) {
-              var propVal = val[j][descProps[i].name];
-              if(propVal) propsVal += propVal + "###";
+              propsVal += (val[j][descProps[i].name] || "") + "###";
             }
             if(j < (propsLen - 1)) propsVal += "$$$";
           }

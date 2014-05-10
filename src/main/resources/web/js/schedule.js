@@ -26,19 +26,23 @@ $(document).ready(function() {
     
     var thread1Finished = $.Deferred(),
         thread2Finished = $.Deferred(),
-        htmlPlenary = {}, htmlGroup = {};
-    
-    startThreadGenerateHTMLForType({ json: JSON.stringify(retrievedScheduleData),
-                                     type: "plenary",
-                                     i18n: JSON.stringify(scheduleI18n),
-                                     canEdit: schedulePermissions.hasReadWriteNotLocked
-                                   }, htmlPlenary, thread1Finished);
-    
-    startThreadGenerateHTMLForType({ json: JSON.stringify(retrievedScheduleData),
-                                     type: "group",
-                                     i18n: JSON.stringify(scheduleI18n),
-                                     canEdit: schedulePermissions.hasReadWriteNotLocked
-                                   }, htmlGroup, thread2Finished);
+        htmlPlenary = {},
+        htmlGroup = {},
+        plenaryStringified = JSON.stringify({
+          data: retrievedScheduleData,
+          type: "plenary",
+          i18n: scheduleI18n,
+          canEdit: schedulePermissions.hasReadWriteNotLocked
+        }),
+        groupStringified = JSON.stringify({
+          data: retrievedScheduleData,
+          type: "group",
+          i18n: scheduleI18n,
+          canEdit: schedulePermissions.hasReadWriteNotLocked
+        });
+
+    startThreadGenerateHTMLForType(plenaryStringified, htmlPlenary, thread1Finished);
+    startThreadGenerateHTMLForType(groupStringified, htmlGroup, thread2Finished);
     
     $.when(thread1Finished, thread2Finished).done(function() {
       var html = htmlPlenary.tocHtml + htmlGroup.tocHtml + htmlPlenary.tablesHtml + htmlGroup.tablesHtml;
@@ -81,7 +85,7 @@ $(document).ready(function() {
   
 });
 
-function startThreadGenerateHTMLForType(dta, htmlRef, threadRef) {
+function startThreadGenerateHTMLForType(data, htmlRef, threadRef) {
   if(window.URL && window.URL.createObjectURL && typeof Blob === "function" && typeof Worker === "function") { // Use own thread
     var workerCode = function(e) {
       postMessage(generateHTMLForType(e.data));
@@ -93,11 +97,11 @@ function startThreadGenerateHTMLForType(dta, htmlRef, threadRef) {
     worker.onmessage = function(e) {
       finishedThreadGenerateHTMLForType(e.data, htmlRef, threadRef);
     };
-    worker.postMessage(dta);
+    worker.postMessage(data);
 
     if(window.URL.revokeObjectURL) window.URL.revokeObjectURL(blobURL);
   } else { // Use main thread
-    finishedThreadGenerateHTMLForType(generateHTMLForType(dta), htmlRef, threadRef);
+    finishedThreadGenerateHTMLForType(generateHTMLForType(data), htmlRef, threadRef);
   }
 }
 
@@ -108,13 +112,13 @@ function finishedThreadGenerateHTMLForType(data, htmlRef, threadRef) {
   threadRef.resolve();
 }
 
-function generateHTMLForType(dta) {
-  var json = JSON.parse(dta.json),
+function generateHTMLForType(d) {
+  var dta = JSON.parse(d),
       type = dta.type,
-      scheduleI18n = JSON.parse(dta.i18n),
-      jsonType = json[type],
+      scheduleI18n = dta.i18n,
       canEdit = dta.canEdit,
-      data = jsonType.data,
+      dtaType = dta.data[type],
+      data = dtaType.data,
       now = new Date(),
       splitDateTimeFunc = function(s, e) {
         var sdt = s.split("T");

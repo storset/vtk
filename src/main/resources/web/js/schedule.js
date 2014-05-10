@@ -28,12 +28,53 @@ $(document).ready(function() {
         thread2Finished = $.Deferred(),
         htmlPlenary = {}, htmlGroup = {};
     
-    startThreadGenerateHTMLForType({ json: JSON.stringify(retrievedScheduleData),type: "plenary", i18n: JSON.stringify(scheduleI18n)}, htmlPlenary, thread1Finished);
-    startThreadGenerateHTMLForType({ json: JSON.stringify(retrievedScheduleData), type: "group", i18n: JSON.stringify(scheduleI18n)}, htmlGroup, thread2Finished);
+    startThreadGenerateHTMLForType({ json: JSON.stringify(retrievedScheduleData),
+                                     type: "plenary",
+                                     i18n: JSON.stringify(scheduleI18n),
+                                     canEdit: schedulePermissions.hasReadWriteNotLocked
+                                   }, htmlPlenary, thread1Finished);
+    
+    startThreadGenerateHTMLForType({ json: JSON.stringify(retrievedScheduleData),
+                                     type: "group",
+                                     i18n: JSON.stringify(scheduleI18n),
+                                     canEdit: schedulePermissions.hasReadWriteNotLocked
+                                   }, htmlGroup, thread2Finished);
     
     $.when(thread1Finished, thread2Finished).done(function() {
       var html = htmlPlenary.tocHtml + htmlGroup.tocHtml + htmlPlenary.tablesHtml + htmlGroup.tablesHtml;
       $("#activities").html(html === "" ? "Ingen data" : html);
+      
+      // Edit session
+      if(schedulePermissions.hasReadWriteNotLocked) {
+        $(document).on("mouseover mouseout", "tbody tr", function(e) {
+          var row = $(this);
+          var rowStaff = row.find(".course-schedule-table-row-staff");
+          var rowEdit = rowStaff.next();
+          rowStaff.toggle();
+          rowEdit.toggle();
+        });
+        $(document).on("click", ".course-schedule-table-row-edit", function(e) {
+          var row = $(this).closest("tr");
+          var futureSimpleDialogs = $.Deferred();
+          if(typeof VrtxHtmlDialog === "undefined") {
+            $.cachedScript('/vrtx/__vrtx/static-resources/js/vrtx-simple-dialogs.js').done(function() {
+              futureSimpleDialogs.resolve();
+            });
+          } else {
+            futureSimpleDialogs.resolve(); 
+          }
+          $.when(futureSimpleDialogs).done(function() {
+            var d = new VrtxHtmlDialog({
+              title: scheduleI18n["table-edit"] + " " + scheduleI18n["table-edit-activity"],
+              html: "<iframe frameborder='0' scrolling='no' style='width: 730px; height: 450px' src='" + window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + row[0].id + "'></iframe>",
+              width: 740
+            });
+            d.open();
+          });
+          e.stopPropagation();
+          e.preventDefault();
+        });
+      }
       scheduleDeferred.resolve();
     });
   });
@@ -70,7 +111,9 @@ function finishedThreadGenerateHTMLForType(data, htmlRef, threadRef) {
 function generateHTMLForType(dta) {
   var json = JSON.parse(dta.json),
       type = dta.type,
-      scheduleI18n = JSON.parse(dta.i18n),jsonType = json[type],
+      scheduleI18n = JSON.parse(dta.i18n),
+      jsonType = json[type],
+      canEdit = dta.canEdit,
       data = jsonType.data,
       now = new Date(),
       splitDateTimeFunc = function(s, e) {
@@ -82,16 +125,17 @@ function generateHTMLForType(dta) {
         var et = edt[1].split(".")[0].split(":");
         return { sd: sd, st: st, ed: ed, et: et };
       },
-      getDateFunc = function(sd, ed) {
+      getDateFunc = function(sd, ed, st, et) {
         if(sd[0] != ed[0] || sd[1] != ed[1] || sd[2] != ed[2]) {
-          return sd[2] + "." + sd[1] + "." + sd[0] + "&ndash;" + ed[2] + "." + ed[1] + "." + ed[0];
+          var date = sd[2] + "." + sd[1] + "." + sd[0] + "&ndash;" + ed[2] + "." + ed[1] + "." + ed[0];
         } else {
-          return sd[2] + "." + sd[1] + "." + sd[0];
+          var date = sd[2] + "." + sd[1] + "." + sd[0];
         }
+        return { date: date, postFixId: (sd[2] + "-" + sd[1] + "-" + sd[0] + "-" + st[0] + "-" + st[1] + "-" + et[0] + "-" + et[1]) };
       },
       getDayFunc = function(ed, et) {
         var endTime = new Date(ed[0], ed[1]-1, ed[2], et[0], et[1], 0, 0);
-        return { endTime: endTime, endDay: scheduleI18n["d" + endTime.getDay()] };
+        return { endTime: endTime, day: scheduleI18n["d" + endTime.getDay()] };
       },
       getTimeFunc = function(st, et) {
         return st[0] + ":" + st[1] + "&ndash;" + et[0] + ":" + et[1];
@@ -148,11 +192,15 @@ function generateHTMLForType(dta) {
         tablesHtml += "<th class='course-schedule-table-place'>" + scheduleI18n["table-place"] + "</th><th class='course-schedule-table-staff'>" + scheduleI18n["table-staff"] + "</th>";
       tablesHtml += "</tr></thead><tbody>";
     }
+    
     for(var j = 0, len2 = sessions.length; j < len2; j++) {
       var session = sessions[j];
 
       var dateTime = splitDateTimeFunc(session.dtstart, session.dtend);
       var day = getDayFunc(dateTime.ed, dateTime.et);
+      var date = getDateFunc(dateTime.sd, dateTime.ed, dateTime.st, dateTime.et);
+      
+      var sessionId = newTM + "-" + session.id.replace(/\//g, "-") + "-" + date.postFixId; 
 
       var classes = "";
       if(j % 2 == 1) classes = "even";
@@ -166,13 +214,16 @@ function generateHTMLForType(dta) {
         classes += "passed";
       }
       
-      tablesHtml += classes !== "" ? "<tr class='" + classes + "'>" : "<tr>";
-        tablesHtml += "<td>" + getDateFunc(dateTime.sd, dateTime.ed) + "</td>";
-        tablesHtml += "<td>" + day.endDay + "</td>";
+      tablesHtml += classes !== "" ? "<tr id='" + sessionId + "' class='" + classes + "'>" : "<tr>";
+        tablesHtml += "<td>" + date.date + "</td>";
+        tablesHtml += "<td>" + day.day + "</td>";
         tablesHtml += "<td>" + getTimeFunc(dateTime.st, dateTime.et) + "</td>";
         tablesHtml += "<td>" + getTitleFunc(session) + "</td>";
         tablesHtml += "<td>" + getPlaceFunc(session) + "</td>";
-        tablesHtml += "<td>" + getStaffFunc(session) + "</td>";
+        tablesHtml += "<td>";
+          tablesHtml += "<span class='course-schedule-table-row-staff'>" + getStaffFunc(session) + "</span>";
+          tablesHtml += (canEdit ? "<span class='course-schedule-table-row-edit' style='display: none'><a href='javascript:void' class='button'><span>" + scheduleI18n["table-edit"] + "</span></a></span>" : "");
+        tablesHtml += "</td>";
       tablesHtml += "</tr>";
     }
   }

@@ -182,8 +182,13 @@ var VrtxAnimation = function(opts) {
     2. DOM is ready
 \*-------------------------------------------------------------------*/
 
+var isEmbedded = window.location.href.indexOf("&embed") !== -1;
 vrtxAdmin._$(document).ready(function () {
   var startReadyTime = +new Date(), vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
+  
+  if(isEmbedded) {
+    $("html").addClass("embedded"); // Temporary solution
+  }
 
   vrtxAdm.cacheDOMNodesForReuse();
 
@@ -199,18 +204,27 @@ vrtxAdmin._$(document).ready(function () {
                        vrtxAdm.requiredScriptsLoaded);
   vrtxAdm.clientLastModified = $("#resource-last-modified").text().split(",");
   
-  vrtxAdm.initDropdowns();
-  vrtxAdm.initScrollBreadcrumbs();
+  if(!isEmbedded) {
+    vrtxAdm.initDropdowns();
+    vrtxAdm.initScrollBreadcrumbs();
+  }
   vrtxAdm.initDomainsInstant();
-  vrtxAdm.initMiscAdjustments();
-
+  
+  if(!isEmbedded) {
+    vrtxAdm.initMiscAdjustments();
+  }
+  
   var waitALittle = setTimeout(function() {
     vrtxAdm.initTooltips();
-    vrtxAdm.initGlobalDialogs();
+    if(!isEmbedded) {
+      vrtxAdm.initGlobalDialogs();
+    }
   }, 15);
   
   var waitALittleMore = setTimeout(function() {
-    vrtxAdm.initResourceMenus();
+    if(!isEmbedded) {
+      vrtxAdm.initResourceMenus();
+    }
     vrtxAdm.initDomains();
   }, 25);
 
@@ -832,12 +846,15 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
     case "vrtx-edit-plaintext":
     case "vrtx-visual-profile":
       if (_$("form#editor").length) {
+        
         // Dropdowns
-        vrtxAdm.dropdownPlain("#editor-help-menu");
-        vrtxAdm.dropdown({
-          selector: "ul#editor-menu",
-          title: vrtxAdm.messages.dropdowns.editorTitle
-        });
+        if(!isEmbedded) {
+          vrtxAdm.dropdownPlain("#editor-help-menu");
+          vrtxAdm.dropdown({
+            selector: "ul#editor-menu",
+            title: vrtxAdm.messages.dropdowns.editorTitle
+          });
+        }
 
         // Save shortcut and AJAX
         vrtxAdm.cachedDoc.bind('keydown', 'ctrl+s', $.debounce(150, true, function (e) {

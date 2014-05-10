@@ -1023,9 +1023,9 @@ var lastId = "";
 var lastSessionId = "";
 var lastElm = null;
 var retrievedScheduleData = null;
+var onlySessionId = gup("sessionid", window.location.href);
 
 function courseSchedule() {
-  
   var retrievedScheduleDeferred = $.Deferred();
   vrtxAdmin.serverFacade.getJSON("/vrtx/__vrtx/static-resources/js/tp-test.json", {
     success: function(data, xhr, textStatus) {
@@ -1079,126 +1079,129 @@ function courseSchedule() {
           "vrtx-resources-title": (isEn ? "Title" : "Tittel"),
           "vrtx-resources-url": (isEn ? "Link" : "Lenke")
         };
-      
-    // Generate HTML
-    var html = "<div class='accordion-title'>" + i18n.titles.plenary + "</div>" +
-               generateCourseScheduleActivitiesForType(retrievedScheduleData, "plenary", true, i18n) +
-               "<div class='accordion-title'>" + i18n.titles.group + "</div>" +
-               generateCourseScheduleActivitiesForType(retrievedScheduleData, "group", false, i18n);
-      
-    // Add HTML to DOM
-    $(".properties").prepend("<div class='vrtx-grouped'>" + html + "</div>"); 
-       
-    // Accordions - define at run-time
-    var accordionOnActivateTier3 = function (id, e, ui, accordion) {
-      if(ui.newHeader[0]) { // Enhance multiple fields in session on open
-        var sessionId = ui.newHeader[0].id;
-        var sessionElm = $(ui.newHeader).closest("div");
-        var content = sessionElm.find("> .accordion-content");
-        
-        lastId = id;
-        lastSessionId = sessionId;
-        lastElm = content;
-        
-        var session = sessionsLookup[id][sessionId];
-        if(session && !session.isEnhanced) { // If not already enhanced
-          var multiples = session.multiples;
-          for(var i = multiplesLen = multiples.length; i--;) {
-            var m = multiples[i];
-            enhanceMultipleInputFields(m.name + "-" + sessionId, m.movable, m.browsable, 50, m.json);
-          }
-          session.isEnhanced = true;
-          if(session.isCancelled) {
-            content.find("button, input").filter(":not(.moveup, .movedown)").attr("disabled", "disabled");
-          }
-        }
-      } else { // Update session and accordion title on close
-        var sessionId = ui.oldHeader[0].id;
-        var sessionElm = $(ui.oldHeader).closest("div");
-        var content = sessionElm.find("> .accordion-content");
-        
-        lastId = "";
-        lastSessionId = "";
-        lastElm = null;
-        
-        saveCourseScheduleSession(content, id, sessionId);
-        
-        var titleElm = sessionElm.find("> .header > .header-title");
-        var newTitle = content.filter("> div:first-child").find("input[type='text']")
-        if(newTitle.length && newTitle.val() != "") {
-          titleElm.html(newTitle.val());
-        } else {
-          titleElm.html(sessionsLookup[id][sessionId].rawOrig.title);
-        }
-      }
-    };  
     
-    var accordionOnActivateTier2 = function (id, isTier1, e, ui, accordion) {
-      if(isTier1) {
-        accordionOnActivateTier3(id, e, ui, accordion);
-      } else {
+    if(onlySessionId.length) {
+      var html = generateCourseScheduleSessionOnly(retrievedScheduleData, onlySessionId, i18n);
+      $(".properties").prepend(html); 
+    } else {
+      var html = "<div class='accordion-title'>" + i18n.titles.plenary + "</div>" +
+                 generateCourseScheduleActivitiesForType(retrievedScheduleData, "plenary", true, i18n) +
+                 "<div class='accordion-title'>" + i18n.titles.group + "</div>" +
+                 generateCourseScheduleActivitiesForType(retrievedScheduleData, "group", false, i18n);
+      
+      // Add HTML to DOM
+      $(".properties").prepend("<div class='vrtx-grouped'>" + html + "</div>"); 
+       
+      // Accordions - define at run-time
+      var accordionOnActivateTier3 = function (id, e, ui, accordion) {
+        if(ui.newHeader[0]) { // Enhance multiple fields in session on open
+          var sessionId = ui.newHeader[0].id;
+          var sessionElm = $(ui.newHeader).closest("div");
+          var content = sessionElm.find("> .accordion-content");
+        
+          lastId = id;
+          lastSessionId = sessionId;
+          lastElm = content;
+        
+          var session = sessionsLookup[id][sessionId];
+          if(session && !session.isEnhanced) { // If not already enhanced
+            var multiples = session.multiples;
+            for(var i = multiplesLen = multiples.length; i--;) {
+              var m = multiples[i];
+              enhanceMultipleInputFields(m.name + "-" + sessionId, m.movable, m.browsable, 50, m.json);
+            }
+            session.isEnhanced = true;
+            if(session.isCancelled) {
+              content.find("button, input").filter(":not(.moveup, .movedown)").attr("disabled", "disabled");
+            }
+          }
+        } else { // Update session and accordion title on close
+          var sessionId = ui.oldHeader[0].id;
+          var sessionElm = $(ui.oldHeader).closest("div");
+          var content = sessionElm.find("> .accordion-content");
+        
+          lastId = "";
+          lastSessionId = "";
+          lastElm = null;
+        
+          saveCourseScheduleSession(content, id, sessionId);
+        
+          var titleElm = sessionElm.find("> .header > .header-title");
+          var newTitle = content.filter("> div:first-child").find("input[type='text']")
+          if(newTitle.length && newTitle.val() != "") {
+            titleElm.html(newTitle.val());
+          } else {
+            titleElm.html(sessionsLookup[id][sessionId].rawOrig.title);
+          }
+        }
+      };  
+    
+      var accordionOnActivateTier2 = function (id, isTier1, e, ui, accordion) {
+        if(isTier1) {
+          accordionOnActivateTier3(id, e, ui, accordion);
+        } else {
+          if(ui.newHeader[0]) {
+            var contentWrp = $(ui.newHeader[0]).parent().find(".accordion-content");
+            var optsH5 = {
+              elem: contentWrp.find(".vrtx-grouped"),
+              headerSelector: "h5",
+              onActivate: function (e, ui, accordion) {
+                accordionOnActivateTier3(id, e, ui, accordion);
+              },
+              animationSpeed: 200
+            };
+            var accH5 = new VrtxAccordion(optsH5);
+            accH5.create();
+            optsH5.elem.addClass("fast");
+          }
+        }
+      };
+    
+      var accordionOnActivateTier1 = function (isTier1, e, ui, accordion) {
         if(ui.newHeader[0]) {
-          var contentWrp = $(ui.newHeader[0]).parent().find(".accordion-content");
-          var optsH5 = {
+          var id = ui.newHeader[0].id;
+          var contentWrp = $("#" + id).parent().find(".accordion-content");
+          if(isTier1) { // Lookup and add sessions HTML to DOM
+            if(!contentWrp.children().length) { // If not already added
+              contentWrp.html("<div class='vrtx-grouped'>" + sessionsLookup["plenary"].html + "</div>");
+            }
+          }
+          var optsH4 = {
             elem: contentWrp.find(".vrtx-grouped"),
-            headerSelector: "h5",
+            headerSelector: "h4",
             onActivate: function (e, ui, accordion) {
-              accordionOnActivateTier3(id, e, ui, accordion);
+              if(!isTier1 && ui.newHeader[0]) { // Lookup and add sessions HTML to DOM
+                id = ui.newHeader[0].id;
+                var contentWrp = $("#" + id).parent().find(".accordion-content");
+                if(!contentWrp.children().length) { // If not already added
+                  contentWrp.html("<div class='vrtx-grouped'>" + sessionsLookup[id].html + "</div>");
+                }
+              }
+              accordionOnActivateTier2(isTier1 ? "plenary" : id, isTier1, e, ui, accordion);
             },
             animationSpeed: 200
           };
-          var accH5 = new VrtxAccordion(optsH5);
-          accH5.create();
-          optsH5.elem.addClass("fast");
+          var accH4 = new VrtxAccordion(optsH4);
+          accH4.create();
+          optsH4.elem.addClass("fast");
         }
-      }
-    };
+      };
     
-    var accordionOnActivateTier1 = function (isTier1, e, ui, accordion) {
-      if(ui.newHeader[0]) {
-        var id = ui.newHeader[0].id;
-        var contentWrp = $("#" + id).parent().find(".accordion-content");
-        if(isTier1) { // Lookup and add sessions HTML to DOM
-          if(!contentWrp.children().length) { // If not already added
-            contentWrp.html("<div class='vrtx-grouped'>" + sessionsLookup["plenary"].html + "</div>");
+      var optsH3 = {
+        elem: vrtxEditor.editorForm.find(".properties > .vrtx-grouped"),
+        headerSelector: "h3",
+        onActivate: function (e, ui, accordion) {
+          if(ui.newHeader[0]) {
+            var ident = $(ui.newHeader[0]).closest(".accordion-wrapper");
+            accordionOnActivateTier1(ident.hasClass("skip-tier"), e, ui, accordion);
           }
-        }
-        var optsH4 = {
-          elem: contentWrp.find(".vrtx-grouped"),
-          headerSelector: "h4",
-          onActivate: function (e, ui, accordion) {
-            if(!isTier1 && ui.newHeader[0]) { // Lookup and add sessions HTML to DOM
-              id = ui.newHeader[0].id;
-              var contentWrp = $("#" + id).parent().find(".accordion-content");
-              if(!contentWrp.children().length) { // If not already added
-                contentWrp.html("<div class='vrtx-grouped'>" + sessionsLookup[id].html + "</div>");
-              }
-            }
-            accordionOnActivateTier2(isTier1 ? "plenary" : id, isTier1, e, ui, accordion);
-          },
-          animationSpeed: 200
-        };
-        var accH4 = new VrtxAccordion(optsH4);
-        accH4.create();
-        optsH4.elem.addClass("fast");
-      }
-    };
-    
-    var optsH3 = {
-      elem: vrtxEditor.editorForm.find(".properties > .vrtx-grouped"),
-      headerSelector: "h3",
-      onActivate: function (e, ui, accordion) {
-        if(ui.newHeader[0]) {
-          var ident = $(ui.newHeader[0]).closest(".accordion-wrapper");
-          accordionOnActivateTier1(ident.hasClass("skip-tier"), e, ui, accordion);
-        }
-      },
-      animationSpeed: 200
-    };
-    var accH3 = new VrtxAccordion(optsH3);
-    accH3.create();
-    optsH3.elem.addClass("fast");
-
+        },
+        animationSpeed: 200
+      };
+      var accH3 = new VrtxAccordion(optsH3);
+      accH3.create();
+      optsH3.elem.addClass("fast");
+    }
     
     JSON_ELEMENTS_INITIALIZED.resolve();
     
@@ -1206,6 +1209,14 @@ function courseSchedule() {
       vrtxEditor.editorForm.find(".properties").show();
     }, 50);
   });
+}
+
+/*
+ * Generate Course Schedule session only
+ *
+ */
+function generateCourseScheduleSessionOnly(json, sessionId, i18n) {
+  return "<h4>Hei fra Vortex editor iframe</h4><p>TODO: generere edit og cross-com. lagre og avbryt for id:</p><p>" + sessionId + "</p>";
 }
 
 /*

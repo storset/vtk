@@ -25,6 +25,8 @@ resourcetype course-schedule {
             "table-title": "[localized 'table-title']",
             "table-place": "[localized 'table-place']",
             "table-staff": "[localized 'table-staff']",
+            "table-edit": "[localized 'table-edit']",
+            "table-edit-activity": "[localized 'table-edit-activity']",
             "header-plenary": "[localized 'header-plenary']",
             "header-group": "[localized 'header-group']",
             "d0": "[localized 'dSun']",
@@ -34,6 +36,9 @@ resourcetype course-schedule {
             "d4": "[localized 'dThu']",
             "d5": "[localized 'dFri']",
             "d6": "[localized 'dSat']"
+          };
+          var schedulePermissions = {
+            "hasReadWriteNotLocked": [call 'resource:permission-flags']
           };
         // -->
         </script>
@@ -60,6 +65,8 @@ resourcetype course-schedule {
     table-title : (en : "Activity", no : "Aktivitet", nn : "Aktivitet"),
     table-place : (en : "Place", no : "Sted", nn : "Stad"),
     table-staff : (en : "Lecturer", no : "Foreleser", nn : "Foreleser"),
+    table-edit : (en : "Edit", no : "Rediger", nn : "Rediger"),
+    table-edit-activity : (en : "activity", no : "aktivitet", nn : "aktivitet"),
     header-plenary : (en : "Plenary sessions", no : "Fellesundervisning", nn : "Fellesundervisning"), 
     header-group : (en : "Group sessions", no : "Gruppeundervisning", nn : "Gruppeundervisning"),
     dSun : (en : "sunday",    no : "søndag",  nn : "søndag"),

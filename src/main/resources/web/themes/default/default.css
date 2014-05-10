@@ -3162,6 +3162,40 @@ body#vrtx-preview .tabMessage-big {
 
 /* ^ 3.7 Messages */
 
+/* Embedding */
+
+html.embedded {
+  background: #fff;
+}
+
+html.embedded body {
+  min-width: 0;
+}
+
+html.embedded #app-content,
+html.embedded #app-content #main,
+html.embedded #vrtx-editor #editor {
+  width: auto;
+  min-width: 0;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+}
+
+html.embedded #app-head-wrapper,
+html.embedded #app-footer-wrapper,
+html.embedded #title-container,
+html.embedded #vrtx-editor-title-submit-buttons,
+html.embedded #app-tabs,
+html.embedded #active-tab,
+html.embedded .submitButtons {
+  display: none;
+}
+
+/* ^ Embedding */
+
 
 
 /*-----------------------------------------*\

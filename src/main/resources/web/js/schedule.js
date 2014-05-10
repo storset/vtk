@@ -6,23 +6,31 @@
  */
 
 var scheduleDeferred = $.Deferred();
+var startDoc = +new Date();
 $(document).ready(function() {
+  var activitiesElm = $("#activities");
+  
   var retrievedScheduleDeferred = $.Deferred();
   var retrievedScheduleData = null;
-  
+
+  var startAjax = +new Date();
+  var endDoc = startAjax - startDoc;
+
   $.getJSON("/vrtx/__vrtx/static-resources/js/tp-test.json", function(data, xhr, textStatus) {
     retrievedScheduleData = data;
-    retrievedScheduleDeferred.resolve();
-  }).fail(function(xhr, textStatus) {
+  }).always(function() {
     retrievedScheduleDeferred.resolve();
   });
   
   $.when(retrievedScheduleDeferred).done(function() {
     if(retrievedScheduleData == null) {
-      $("#activities").html("Ingen data");
+      activitiesElm.html("Ingen data");
       scheduleDeferred.resolve();
       return;
     }
+    
+    var startParse = +new Date();
+    var endAjax = startParse - startAjax;
     
     var thread1Finished = $.Deferred(),
         thread2Finished = $.Deferred(),
@@ -45,8 +53,10 @@ $(document).ready(function() {
     startThreadGenerateHTMLForType(groupStringified, htmlGroup, thread2Finished);
     
     $.when(thread1Finished, thread2Finished).done(function() {
-      var html = htmlPlenary.tocHtml + htmlGroup.tocHtml + htmlPlenary.tablesHtml + htmlGroup.tablesHtml;
-      $("#activities").html(html === "" ? "Ingen data" : html);
+      var html = "<p>DEBUG: Doc-ready: " + endDoc + "ms. Ajax-request: " + endAjax + "ms. Parsed JSON to HTML: " + (+new Date() - startParse) + "ms.</p>" +
+                 htmlPlenary.tocHtml + htmlGroup.tocHtml + htmlPlenary.tablesHtml + htmlGroup.tablesHtml;
+      
+      activitiesElm.html(html === "" ? "Ingen data" : html);
       
       // Edit session
       if(schedulePermissions.hasReadWriteNotLocked) {

@@ -67,8 +67,23 @@ $(document).ready(function() {
           rowStaff.toggle();
           rowEdit.toggle();
         });
+        $(document).on("click", ".course-schedule-table-toggle-passed", function(e) {
+          var link = $(this);
+          link.next().find("tr.passed").toggle();
+          link.toggleClass("showing-passed");
+          var isShowingPassed = link.hasClass("showing-passed");
+          if(isShowingPassed) {
+            link.text(scheduleI18n["table-hide-passed"]);
+          } else {
+            link.text(scheduleI18n["table-show-passed"]);
+          }   
+          e.stopPropagation();
+          e.preventDefault();
+        });
         $(document).on("click", ".course-schedule-table-row-edit a", function(e) {
           var row = $(this).closest("tr");
+          
+          /*
           var futureSimpleDialogs = $.Deferred();
           if(typeof VrtxHtmlDialog === "undefined") {
             $.cachedScript('/vrtx/__vrtx/static-resources/js/vrtx-simple-dialogs.js').done(function() {
@@ -77,7 +92,7 @@ $(document).ready(function() {
           } else {
             futureSimpleDialogs.resolve(); 
           }
-          $.when(futureSimpleDialogs).done(function() {
+          $.when(futureSimpleDialogs).done(function() { */
             var popupWindowInternal = function (w, h, url, name) {
               var screenWidth = window.screen.width;
               var screenHeight = window.screen.height;
@@ -92,7 +107,7 @@ $(document).ready(function() {
               return openedWindow;
             };
             var openedEditActivityWindow = popupWindowInternal(850, 680, window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + row[0].id, "editActivity");
-          });
+          // });
           e.stopPropagation();
           e.preventDefault();
         });
@@ -210,6 +225,7 @@ function generateHTMLForType(d) {
         tablesHtml += "</tbody></table>";
       }
       tocHtml += "<li><a href='#" + activityId + "'>" + caption + "</a></li>";
+      tablesHtml += "<a class='course-schedule-table-toggle-passed' href='javascript:void(0);'>" + scheduleI18n["table-show-passed"] + "</a>";
       tablesHtml += "<table id='" + activityId + "' class='course-schedule-table table-fixed-layout uio-zebra'><caption>" + caption + "</caption><thead><tr>";
         tablesHtml += "<th class='course-schedule-table-date'>" + scheduleI18n["table-date"] + "</th><th class='course-schedule-table-day'>" + scheduleI18n["table-day"] + "</th>";
         tablesHtml += "<th class='course-schedule-table-time'>" + scheduleI18n["table-time"] + "</th><th class='course-schedule-table-title'>" + scheduleI18n["table-title"] + "</th>";
@@ -233,12 +249,13 @@ function generateHTMLForType(d) {
         if(classes !== "") classes += " ";
         classes += "cancelled-vortex";
       }
-      if(day.endTime < now) {
+      var isPassed = day.endTime < now;
+      if(isPassed) {
         if(classes !== "") classes += " ";
         classes += "passed";
       }
       
-      tablesHtml += classes !== "" ? "<tr id='" + sessionId + "' class='" + classes + "'>" : "<tr>";
+      tablesHtml += classes !== "" ? "<tr id='" + sessionId + "'" + (isPassed ? " style='display: none;'" : "") + " class='" + classes + "'>" : "<tr>";
         tablesHtml += "<td>" + date.date + "</td>";
         tablesHtml += "<td>" + day.day + "</td>";
         tablesHtml += "<td>" + getTimeFunc(dateTime.st, dateTime.et) + "</td>";

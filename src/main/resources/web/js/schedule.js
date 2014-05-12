@@ -80,14 +80,14 @@ $(document).ready(function() {
           $.when(futureSimpleDialogs).done(function() {
             var d = new VrtxHtmlDialog({
               title: scheduleI18n["table-edit"] + " " + scheduleI18n["table-edit-activity"],
-              html: "<iframe frameborder='0' style='width: 850px; height: 540px' src='" + window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + row[0].id + "'></iframe>",
+              html: "<iframe frameborder='0' style='width: 850px; height: 580px' src='" + window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + row[0].id + "'></iframe>",
               width: 850,
               btnTextOk: scheduleI18n["table-edit-save"],
               btnTextCancel: scheduleI18n["table-edit-cancel"],
               onOk: function() {
                 alert("TODO: lagre");
               },
-              onOk: function() {
+              onClose: function() {
                 alert("TODO: avbryt / låse opp");
               }
             });
@@ -200,10 +200,11 @@ function generateHTMLForType(d) {
   for(var i = 0; i < dataLen; i++) {
     var dt = data[i];
     var sessions = dt.sessions;
-    var newTM = dt.teachingmethod.toLowerCase();
-    if(newTM !== "for" || i == 0) {
-      var isFor = newTM === "for";
-      var activityId = isFor ? newTM : newTM + "-" + dt.id;
+    var id = dt.id;
+    var dtShort = dt.teachingmethod.toLowerCase();
+    if(dtShort !== "for" || i == 0) {
+      var isFor = dtShort === "for";
+      var activityId = isFor ? dtShort : dtShort + "-" + dt.id;
       var caption = isFor ? scheduleI18n["table-for"] : sessions[0].title;
       if(i > 0) {
         tablesHtml += "</tbody></table>";
@@ -223,7 +224,7 @@ function generateHTMLForType(d) {
       var day = getDayFunc(dateTime.ed, dateTime.et);
       var date = getDateFunc(dateTime.sd, dateTime.ed, dateTime.st, dateTime.et);
       
-      var sessionId = (skipTier ? type : newTM + "-" + dt.id) + "-" + session.id.replace(/\//g, "-") + "-" + date.postFixId; 
+      var sessionId = (skipTier ? type : dtShort + "-" + id) + "-" + session.id.replace(/\//g, "-") + "-" + date.postFixId;
 
       var classes = "";
       if(j % 2 == 1) classes = "even";

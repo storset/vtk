@@ -314,11 +314,16 @@
   margin-top: 30px;
 }
 
-.ui-accordion > div > .header > .header-title {
+#editor.vrtx-course-schedule .properties .property-label {
+  font-weight: normal;
+  margin: 0 0 25px 0;
+}
+
+#editor.vrtx-course-schedule .properties .header-title {
   padding-left: 50px;
 }
 
-.ui-accordion > div > .header > .header-status {
+#editor.vrtx-course-schedule .properties .header-status {
   color: #777;
 }
 

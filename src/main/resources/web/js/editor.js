@@ -1084,10 +1084,12 @@ function courseSchedule() {
       var sessionOnly = generateCourseScheduleSessionOnly(retrievedScheduleData, onlySessionId, i18n);
       if(!html) html = "Fant ikke aktivitet";
       
-      $(".properties").prepend(sessionOnly.html);
-      
+      $(".properties").prepend("<h4 class='property-label'>" + sessionOnly.title + "</h4>" + sessionOnly.html);
+
       var id = sessionOnly.id;
       var sessionInLookup = sessionsLookup[id][onlySessionId];
+      
+      console.log("in: " + onlySessionId);
       
       if(sessionInLookup && !sessionInLookup.isEnhanced) { // If not already enhanced
         var multiples = sessionInLookup.multiples;
@@ -1236,19 +1238,20 @@ function generateCourseScheduleSessionOnly(json, sessionId, i18n) {
   var sessionData = retrieveCourseScheduleSessionFromId(json, sessionId);
   if(!sessionData) return null;
   
-  var type = sessionData.type;
-  var session = sessionData.data;
   var id = sessionData.id;
+  var session = sessionData.session;
+  var type = sessionData.type;
   var descs = json[type]["vrtx-editable-description"];
-  var sessionCancelled = session.status && session.status === "cancelled";
+  var skipTier = sessionData.skipTier;
   
-  sessionsLookup[id] = {};
-
-  var sessionContent = generateCourseScheduleContentFromSessionData(sessionId, session, descs, i18n);
+  if(!sessionsLookup[id]) {
+    sessionsLookup[id] = {};
+  }
   
-  storeSessionLookup(id, sessionId, session, sessionContent, sessionCancelled);
-  
-  return { id: id, html: sessionContent.html };
+  var sessionHtml = generateCourseScheduleSession(id, session, descs, i18n, skipTier,
+                                                  generateCourseScheduleDateAndPostFixId, generateCourseScheduleContentFromSessionData);
+                                                  
+  return { id: id, html: sessionHtml.html, title: sessionHtml.title };
 }
 
 /*
@@ -1266,8 +1269,8 @@ function retrieveCourseScheduleSessionFromId(json, findSessionId) {
     var skipTier = type === "plenary";
     for(var i = 0, len = data.length; i < len; i++) {
       var dt = data[i];
-      var newTM = dt.teachingmethod.toLowerCase();
-      var id = skipTier ? type : newTM + "-" + dt.id;
+      var dtShort = dt.teachingmethod.toLowerCase();
+      var id = skipTier ? type : dtShort + "-" + dt.id;
       
       var sessions = dt.sessions;
       for(var j = 0, len2 = sessions.length; j < len2; j++) {
@@ -1276,7 +1279,7 @@ function retrieveCourseScheduleSessionFromId(json, findSessionId) {
         var postFixId = generateCourseSchedulePostFixIdFunc(dateTime.sd, dateTime.st, dateTime.ed, dateTime.et);
         var sessionId = id + "-" + session.id.replace(/\//g, "-") + "-" + postFixId;
         if(findSessionId === sessionId) {
-          return { type: type, data: session, id: id};
+          return { id: id, session: session, type: type, skipTier: skipTier };
         }
       }
     }
@@ -1291,7 +1294,7 @@ function retrieveCourseScheduleSessionFromId(json, findSessionId) {
 function generateCourseScheduleActivitiesForType(json, type, skipTier, i18n) {
   var generateCourseScheduleDateAndPostFixIdFunc = generateCourseScheduleDateAndPostFixId,
       generateCourseScheduleSessionFunc = generateCourseScheduleSession,
-      generateCourseScheduleContentFromSessionDataFunc = generateCourseScheduleContentFromSessionData;
+      generateCourseScheduleContentFromSessionDataFunc = generateCourseScheduleContentFromSessionData,
       jsonType = json[type],
       descs = jsonType["vrtx-editable-description"],
       data = jsonType["data"],
@@ -1315,8 +1318,9 @@ function generateCourseScheduleActivitiesForType(json, type, skipTier, i18n) {
     }
     
     for(var j = 0, sessionsLen = sessions.length; j < sessionsLen; j++) {
-      sessionsHtml += generateCourseScheduleSessionFunc(id, dtShort, sessions[j], descs, i18n, skipTier,
-                                                        generateCourseScheduleDateAndPostFixIdFunc, generateCourseScheduleContentFromSessionDataFunc);
+      var sessionHtml = generateCourseScheduleSessionFunc(id, sessions[j], descs, i18n, skipTier,
+                                                          generateCourseScheduleDateAndPostFixIdFunc, generateCourseScheduleContentFromSessionDataFunc);
+      sessionsHtml += vrtxEditor.htmlFacade.getAccordionInteraction(!skipTier ? "5" : "4", sessionHtml.sessionId, "session", sessionHtml.title, sessionHtml.html);
     }
 
     if(!skipTier) {
@@ -1345,9 +1349,9 @@ function generateCourseScheduleActivitiesForType(json, type, skipTier, i18n) {
  * Generate Course Schedule session
  *
  */
-function generateCourseScheduleSession(id, dtShort, session, descs, i18n, skipTier, generateCourseScheduleDateAndPostFixIdFunc, generateCourseScheduleContentFromSessionDataFunc) {
+function generateCourseScheduleSession(id, session, descs, i18n, skipTier, generateCourseScheduleDateAndPostFixIdFunc, generateCourseScheduleContentFromSessionDataFunc) {
   var sessionDatePostFixId = generateCourseScheduleDateAndPostFixIdFunc(session.dtstart, session.dtend, i18n),
-      sessionId = dtShort + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId,
+      sessionId = id + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId,
       sessionCancelled = session.status && session.status === "cancelled",
       sessionTitle = sessionDatePostFixId.date + " " +
                      "<span class='header-title'>" + (session["vrtx-title"] || session.title || session.id) + "</span>" +
@@ -1355,12 +1359,6 @@ function generateCourseScheduleSession(id, dtShort, session, descs, i18n, skipTi
                      (sessionCancelled ? " <span class='header-status'>" + i18n[session.status] + "</span>" : ""),
       sessionContent = generateCourseScheduleContentFromSessionDataFunc(sessionId, session, descs, i18n);
 
-   storeSessionLookup(id, sessionId, session, sessionContent, sessionCancelled);
-   
-   return vrtxEditor.htmlFacade.getAccordionInteraction(!skipTier ? "5" : "4", sessionId, "session", sessionTitle, sessionContent.html);
-}
-
-function storeSessionLookup(id, sessionId, session, sessionContent, sessionCancelled) {
    sessionsLookup[id][sessionId] = {
      isEnhanced: false,
      isCancelled: sessionCancelled,
@@ -1368,11 +1366,13 @@ function storeSessionLookup(id, sessionId, session, sessionContent, sessionCance
      multiples: sessionContent.multiples,
      rawPtr: session,
      rawOrig: jQuery.extend(true, {}, session) // Copy object
-   }; 
+   };
+   
+   return { sessionId: sessionId, html: sessionContent.html, title: sessionTitle };
 }
 
 /*
- *  Generate Course Schedule date (+0100 timezone)
+ *  Generate Course Schedule date and postFixId (+0100 timezone)
  *
  */
 function generateCourseScheduleDateAndPostFixId(s, e, i18n) { /* IE8: http://www.digital-portfolio.net/blog/view/ie8-and-iso-date-format */
@@ -1427,7 +1427,7 @@ function saveCourseSchedule() {
 }
 
 /*
- *  Reset Course Schedule data
+ *  Reset Course Schedule after save
  *
  */
 function courseScheduleSaved() {

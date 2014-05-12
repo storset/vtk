@@ -80,8 +80,8 @@ $(document).ready(function() {
           $.when(futureSimpleDialogs).done(function() {
             var d = new VrtxHtmlDialog({
               title: scheduleI18n["table-edit"] + " " + scheduleI18n["table-edit-activity"],
-              html: "<iframe frameborder='0' scrolling='no' style='width: 730px; height: 450px' src='" + window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + row[0].id + "'></iframe>",
-              width: 740
+              html: "<iframe frameborder='0' style='width: 760px; height: 540px' src='" + window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + row[0].id + "'></iframe>",
+              width: 760
             });
             d.open();
           });
@@ -125,6 +125,7 @@ function finishedThreadGenerateHTMLForType(data, htmlRef, threadRef) {
 function generateHTMLForType(d) {
   var dta = JSON.parse(d),
       type = dta.type,
+      skipTier = type === "plenary",
       scheduleI18n = dta.i18n,
       canEdit = dta.canEdit,
       dtaType = dta.data[type],
@@ -214,7 +215,7 @@ function generateHTMLForType(d) {
       var day = getDayFunc(dateTime.ed, dateTime.et);
       var date = getDateFunc(dateTime.sd, dateTime.ed, dateTime.st, dateTime.et);
       
-      var sessionId = newTM + "-" + session.id.replace(/\//g, "-") + "-" + date.postFixId; 
+      var sessionId = (skipTier ? type : newTM + "-" + dt.id) + "-" + session.id.replace(/\//g, "-") + "-" + date.postFixId; 
 
       var classes = "";
       if(j % 2 == 1) classes = "even";

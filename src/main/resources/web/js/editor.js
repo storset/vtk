@@ -1081,8 +1081,24 @@ function courseSchedule() {
         };
     
     if(onlySessionId.length) {
-      var html = generateCourseScheduleSessionOnly(retrievedScheduleData, onlySessionId, i18n);
-      $(".properties").prepend(html); 
+      var sessionOnly = generateCourseScheduleSessionOnly(retrievedScheduleData, onlySessionId, i18n);
+      if(!html) html = "Fant ikke aktivitet";
+      $(".properties").prepend(sessionOnly.html);
+      
+      var id = sessionOnly.id;
+      var sessionInLookup = sessionsLookup[id][onlySessionId];
+      
+      if(sessionInLookup && !sessionInLookup.isEnhanced) { // If not already enhanced
+        var multiples = sessionInLookup.multiples;
+        for(var i = multiplesLen = multiples.length; i--;) {
+          var m = multiples[i];
+          enhanceMultipleInputFields(m.name + "-" + onlySessionId, m.movable, m.browsable, 50, m.json);
+        }
+        sessionInLookup.isEnhanced = true;
+        if(sessionInLookup.isCancelled) {
+       //   content.find("button, input").filter(":not(.moveup, .movedown)").attr("disabled", "disabled");
+        }
+      }
     } else {
       var html = "<div class='accordion-title'>" + i18n.titles.plenary + "</div>" +
                  generateCourseScheduleActivitiesForType(retrievedScheduleData, "plenary", true, i18n) +
@@ -1216,7 +1232,55 @@ function courseSchedule() {
  *
  */
 function generateCourseScheduleSessionOnly(json, sessionId, i18n) {
-  return "<h4>Hei fra Vortex editor iframe</h4><p>TODO: generere edit og cross-com. lagre og avbryt for id:</p><p>" + sessionId + "</p>";
+  var sessionData = retrieveCourseScheduleSessionFromId(json, sessionId);
+  if(!sessionData) return null;
+  
+  var type = sessionData.type;
+  var session = sessionData.data;
+  var id = sessionData.id;
+  var descs = json[type]["vrtx-editable-description"];
+  var sessionCancelled = session.status && session.status === "cancelled";
+  
+  sessionsLookup[id] = {};
+
+  var sessionContent = generateCourseScheduleContentFromSessionData(sessionId, session, descs, i18n);
+  
+  storeSessionLookup(id, sessionId, session, sessionContent, sessionCancelled);
+  
+  return { id: id, html: sessionContent.html };
+}
+
+/*
+ * Retrieve Course Schedule session from id
+ *
+ */
+function retrieveCourseScheduleSessionFromId(json, findSessionId) {
+  var generateCourseScheduleDateTimeFunc = generateCourseScheduleDateTime;
+  var generateCourseSchedulePostFixIdFunc = generateCourseSchedulePostFixId;
+
+  for(var type in json) {
+    var data = json[type].data;
+    if(!data) continue;
+    
+    var skipTier = type === "plenary";
+    for(var i = 0, len = data.length; i < len; i++) {
+      var dt = data[i];
+      var newTM = dt.teachingmethod.toLowerCase();
+      var id = skipTier ? type : newTM + "-" + dt.id;
+      
+      var sessions = dt.sessions;
+      for(var j = 0, len2 = sessions.length; j < len2; j++) {
+        var session = sessions[j];
+        var dateTime = generateCourseScheduleDateTimeFunc(session.dtstart, session.dtend);
+        var postFixId = generateCourseSchedulePostFixIdFunc(dateTime.sd, dateTime.st, dateTime.ed, dateTime.et);
+        var sessionId = id + "-" + session.id.replace(/\//g, "-") + "-" + postFixId;
+        if(findSessionId === sessionId) {
+          return { type: type, data: session, id: id};
+        }
+      }
+    }
+  }
+  return null;
 }
 
 /*
@@ -1290,7 +1354,12 @@ function generateCourseScheduleSession(id, dtShort, session, descs, i18n, skipTi
                      (sessionCancelled ? " <span class='header-status'>" + i18n[session.status] + "</span>" : ""),
       sessionContent = generateCourseScheduleContentFromSessionDataFunc(sessionId, session, descs, i18n);
 
-   // Store session information
+   storeSessionLookup(id, sessionId, session, sessionContent, sessionCancelled);
+   
+   return vrtxEditor.htmlFacade.getAccordionInteraction(!skipTier ? "5" : "4", sessionId, "session", sessionTitle, sessionContent.html);
+}
+
+function storeSessionLookup(id, sessionId, session, sessionContent, sessionCancelled) {
    sessionsLookup[id][sessionId] = {
      isEnhanced: false,
      isCancelled: sessionCancelled,
@@ -1298,9 +1367,7 @@ function generateCourseScheduleSession(id, dtShort, session, descs, i18n, skipTi
      multiples: sessionContent.multiples,
      rawPtr: session,
      rawOrig: jQuery.extend(true, {}, session) // Copy object
-   };
-   
-   return vrtxEditor.htmlFacade.getAccordionInteraction(!skipTier ? "5" : "4", sessionId, "session", sessionTitle, sessionContent.html);
+   }; 
 }
 
 /*
@@ -1308,10 +1375,11 @@ function generateCourseScheduleSession(id, dtShort, session, descs, i18n, skipTi
  *
  */
 function generateCourseScheduleDateAndPostFixId(s, e, i18n) { /* IE8: http://www.digital-portfolio.net/blog/view/ie8-and-iso-date-format */
-  var sd = s.split("T")[0].split("-");
-  var st = s.split("T")[1].split(".")[0].split(":");
-  var ed = e.split("T")[0].split("-");
-  var et = e.split("T")[1].split(".")[0].split(":");
+  var dateTime = generateCourseScheduleDateTime(s, e);
+  var sd = dateTime.sd;
+  var st = dateTime.st;
+  var ed = dateTime.ed;
+  var et = dateTime.et;
 
   if(sd[0] != ed[0] || sd[1] != ed[1] || sd[2] != ed[2]) {
     var strDate = sd[2] + ". " + i18n[sd[1]] + " " + sd[0] + " kl " + st[0] + ":" + st[1] + "&ndash;" +
@@ -1321,7 +1389,30 @@ function generateCourseScheduleDateAndPostFixId(s, e, i18n) { /* IE8: http://www
                   st[0] + ":" + st[1] + "&ndash;" + et[0] + ":" + et[1];
   }
   
-  return { date: strDate, postFixId: (sd[2] + "-" + sd[1] + "-" + sd[0] + "-" + st[0] + "-" + st[1] + "-" + et[0] + "-" + et[1]) };
+  var postFixId = generateCourseSchedulePostFixId(sd, st, ed, et);
+  
+  return { date: strDate, postFixId: generateCourseSchedulePostFixId(sd, st, ed, et) };
+}
+
+/*
+ *  Generate Course Schedule dateTime
+ *
+ */
+function generateCourseScheduleDateTime(s, e) {
+  var sd = s.split("T")[0].split("-");
+  var st = s.split("T")[1].split(".")[0].split(":");
+  var ed = e.split("T")[0].split("-");
+  var et = e.split("T")[1].split(".")[0].split(":");
+  
+  return { sd: sd, st: st, ed: ed, et: et };
+}
+
+/*
+ *  Generate Course Schedule postFixId
+ *
+ */
+function generateCourseSchedulePostFixId(sd, st, ed, et) {
+  return sd[2] + "-" + sd[1] + "-" + sd[0] + "-" + st[0] + "-" + st[1] + "-" + et[0] + "-" + et[1];
 }
 
 /*

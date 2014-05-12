@@ -69,10 +69,9 @@ $(document).ready(function() {
         });
         $(document).on("click", ".course-schedule-table-toggle-passed", function(e) {
           var link = $(this);
-          link.next().find("tr.passed").toggle();
-          link.toggleClass("showing-passed");
-          var isShowingPassed = link.hasClass("showing-passed");
-          if(isShowingPassed) {
+          var table = link.next();
+          table.toggleClass("showing-passed");
+          if(table.hasClass("showing-passed")) {
             link.text(scheduleI18n["table-hide-passed"]);
           } else {
             link.text(scheduleI18n["table-show-passed"]);
@@ -222,15 +221,16 @@ function generateHTMLForType(d) {
       var activityId = isFor ? dtShort : dtShort + "-" + dt.id;
       var caption = isFor ? scheduleI18n["table-for"] : sessions[0].title;
       if(i > 0) {
-        tablesHtml += "</tbody></table>";
+        tablesHtml += "</tbody></table></div>";
       }
       tocHtml += "<li><a href='#" + activityId + "'>" + caption + "</a></li>";
-      tablesHtml += "<a class='course-schedule-table-toggle-passed' href='javascript:void(0);'>" + scheduleI18n["table-show-passed"] + "</a>";
-      tablesHtml += "<table id='" + activityId + "' class='course-schedule-table table-fixed-layout uio-zebra'><caption>" + caption + "</caption><thead><tr>";
-        tablesHtml += "<th class='course-schedule-table-date'>" + scheduleI18n["table-date"] + "</th><th class='course-schedule-table-day'>" + scheduleI18n["table-day"] + "</th>";
-        tablesHtml += "<th class='course-schedule-table-time'>" + scheduleI18n["table-time"] + "</th><th class='course-schedule-table-title'>" + scheduleI18n["table-title"] + "</th>";
-        tablesHtml += "<th class='course-schedule-table-place'>" + scheduleI18n["table-place"] + "</th><th class='course-schedule-table-staff'>" + scheduleI18n["table-staff"] + "</th>";
-      tablesHtml += "</tr></thead><tbody>";
+      tablesHtml += "<div class='course-schedule-table-wrapper'>";
+        tablesHtml += "<a class='course-schedule-table-toggle-passed' href='javascript:void(0);'>" + scheduleI18n["table-show-passed"] + "</a>";
+        tablesHtml += "<table id='" + activityId + "' class='course-schedule-table table-fixed-layout uio-zebra'><caption>" + caption + "</caption><thead><tr>";
+          tablesHtml += "<th class='course-schedule-table-date'>" + scheduleI18n["table-date"] + "</th><th class='course-schedule-table-day'>" + scheduleI18n["table-day"] + "</th>";
+          tablesHtml += "<th class='course-schedule-table-time'>" + scheduleI18n["table-time"] + "</th><th class='course-schedule-table-title'>" + scheduleI18n["table-title"] + "</th>";
+          tablesHtml += "<th class='course-schedule-table-place'>" + scheduleI18n["table-place"] + "</th><th class='course-schedule-table-staff'>" + scheduleI18n["table-staff"] + "</th>";
+        tablesHtml += "</tr></thead><tbody>";
     }
     
     for(var j = 0, len2 = sessions.length; j < len2; j++) {
@@ -249,13 +249,12 @@ function generateHTMLForType(d) {
         if(classes !== "") classes += " ";
         classes += "cancelled-vortex";
       }
-      var isPassed = day.endTime < now;
-      if(isPassed) {
+      if(day.endTime < now) {
         if(classes !== "") classes += " ";
         classes += "passed";
       }
       
-      tablesHtml += classes !== "" ? "<tr id='" + sessionId + "'" + (isPassed ? " style='display: none;'" : "") + " class='" + classes + "'>" : "<tr>";
+      tablesHtml += classes !== "" ? "<tr id='" + sessionId + "' class='" + classes + "'>" : "<tr>";
         tablesHtml += "<td>" + date.date + "</td>";
         tablesHtml += "<td>" + day.day + "</td>";
         tablesHtml += "<td>" + getTimeFunc(dateTime.st, dateTime.et) + "</td>";
@@ -269,7 +268,7 @@ function generateHTMLForType(d) {
     }
   }
   if(i > 0) {
-    tablesHtml += "</tbody></table>";
+    tablesHtml += "</tbody></table></div>";
   }
   tocHtml += "</ul>";
   

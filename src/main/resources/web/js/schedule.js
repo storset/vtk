@@ -36,6 +36,8 @@ $(document).ready(function() {
       return;
     }
     
+    var startMakingThreadsTime = +new Date();
+    
     var thread1Finished = $.Deferred(),
         thread2Finished = $.Deferred(),
         htmlPlenary = {},
@@ -56,9 +58,11 @@ $(document).ready(function() {
     startThreadGenerateHTMLForType(plenaryStringified, htmlPlenary, thread1Finished);
     startThreadGenerateHTMLForType(groupStringified, htmlGroup, thread2Finished);
     
+    var endMakingThreadsTime = +new Date() - startMakingThreadsTime;
+    
     $.when(thread1Finished, thread2Finished, scheduleDocumentReady).done(function() {
       var html = "<p>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
-                 "ms) && (AJAX-complete: " + endAjaxTime + "ms => (Plenary: " + htmlPlenary.time + "ms && Group: " + htmlGroup.time + "ms)))</p>" +
+                 "ms) || (AJAX-complete: " + endAjaxTime + "ms + Threads invoking: " + endMakingThreadsTime + "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))</p>" +
                  htmlPlenary.tocHtml + htmlGroup.tocHtml + htmlPlenary.tablesHtml + htmlGroup.tablesHtml;
       
       $("#activities").html(html === "" ? "Ingen data" : html);
@@ -151,15 +155,15 @@ function finishedThreadGenerateHTMLForType(data, htmlRef, threadRef) {
 }
 
 function generateHTMLForType(d) {
-  var dta = JSON.parse(d),
+  var now = new Date(),
+      startGenHtmlForTypeTime = +now,
+      dta = JSON.parse(d),
       type = dta.type,
       skipTier = type === "plenary",
       scheduleI18n = dta.i18n,
       canEdit = dta.canEdit,
       dtaType = dta.data[type],
       data = dtaType.data,
-      now = new Date(),
-      startGenHtmlForTypeTime = +now,
       splitDateTimeFunc = function(s, e) {
         var sdt = s.split("T");
         var sd = sdt[0].split("-");

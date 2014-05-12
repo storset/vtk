@@ -6,31 +6,35 @@
  */
 
 var scheduleDeferred = $.Deferred();
-var startDoc = +new Date();
+var scheduleDocumentReady = $.Deferred();
+var scheduleStartTime = +new Date();
+var scheduleDocReadyEndTime = 0;
 $(document).ready(function() {
-  var activitiesElm = $("#activities");
-  
+  scheduleDocumentReady.resolve();
+  scheduleDocReadyEndTime = +new Date() - scheduleStartTime;
+});
+
+(function() {
   var retrievedScheduleDeferred = $.Deferred();
   var retrievedScheduleData = null;
 
-  var startAjax = +new Date();
-  var endDoc = startAjax - startDoc;
+  var endAjaxTime = 0;
 
   $.getJSON("/vrtx/__vrtx/static-resources/js/tp-test.json", function(data, xhr, textStatus) {
     retrievedScheduleData = data;
   }).always(function() {
     retrievedScheduleDeferred.resolve();
+    endAjaxTime = +new Date() - scheduleStartTime;
   });
   
   $.when(retrievedScheduleDeferred).done(function() {
     if(retrievedScheduleData == null) {
-      activitiesElm.html("Ingen data");
+      $.when(scheduleDocumentReady).done(function() {
+        $("#activities").html("Ingen data");
+      });
       scheduleDeferred.resolve();
       return;
     }
-    
-    var startParse = +new Date();
-    var endAjax = startParse - startAjax;
     
     var thread1Finished = $.Deferred(),
         thread2Finished = $.Deferred(),
@@ -52,11 +56,12 @@ $(document).ready(function() {
     startThreadGenerateHTMLForType(plenaryStringified, htmlPlenary, thread1Finished);
     startThreadGenerateHTMLForType(groupStringified, htmlGroup, thread2Finished);
     
-    $.when(thread1Finished, thread2Finished).done(function() {
-      var html = "<p>DEBUG: Doc-ready: " + endDoc + "ms. Ajax-request: " + endAjax + "ms. Parsed JSON to HTML: " + (+new Date() - startParse) + "ms.</p>" +
+    $.when(thread1Finished, thread2Finished, scheduleDocumentReady).done(function() {
+      var html = "<p>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
+                 "ms) && (AJAX-complete: " + endAjaxTime + "ms => (Plenary: " + htmlPlenary.time + "ms && Group: " + htmlGroup.time + "ms)))</p>" +
                  htmlPlenary.tocHtml + htmlGroup.tocHtml + htmlPlenary.tablesHtml + htmlGroup.tablesHtml;
       
-      activitiesElm.html(html === "" ? "Ingen data" : html);
+      $("#activities").html(html === "" ? "Ingen data" : html);
       
       // Edit session
       if(schedulePermissions.hasReadWriteNotLocked) {
@@ -115,7 +120,7 @@ $(document).ready(function() {
     });
   });
   
-});
+})();
 
 function startThreadGenerateHTMLForType(data, htmlRef, threadRef) {
   if(window.URL && window.URL.createObjectURL && typeof Blob === "function" && typeof Worker === "function") { // Use own thread
@@ -141,6 +146,7 @@ function finishedThreadGenerateHTMLForType(data, htmlRef, threadRef) {
   var receivedData = JSON.parse(data);
   htmlRef.tocHtml = receivedData.tocHtml;
   htmlRef.tablesHtml = receivedData.tablesHtml;
+  htmlRef.time = receivedData.time;
   threadRef.resolve();
 }
 
@@ -153,6 +159,7 @@ function generateHTMLForType(d) {
       dtaType = dta.data[type],
       data = dtaType.data,
       now = new Date(),
+      startGenHtmlForTypeTime = +now,
       splitDateTimeFunc = function(s, e) {
         var sdt = s.split("T");
         var sd = sdt[0].split("-");
@@ -170,9 +177,9 @@ function generateHTMLForType(d) {
         }
         return { date: date, postFixId: (sd[2] + "-" + sd[1] + "-" + sd[0] + "-" + st[0] + "-" + st[1] + "-" + et[0] + "-" + et[1]) };
       },
-      getDayFunc = function(ed, et) {
+      getDayFunc = function(ed, et, i18n) {
         var endTime = new Date(ed[0], ed[1]-1, ed[2], et[0], et[1], 0, 0);
-        return { endTime: endTime, day: scheduleI18n["d" + endTime.getDay()] };
+        return { endTime: endTime, day: i18n["d" + endTime.getDay()] };
       },
       getTimeFunc = function(st, et) {
         return st[0] + ":" + st[1] + "&ndash;" + et[0] + ":" + et[1];
@@ -202,6 +209,19 @@ function generateHTMLForType(d) {
         }
         return val;
       },
+      getTableStartHtml = function(activityId, caption, isAllPassed, i18n) {
+        var html = "<div class='course-schedule-table-wrapper'>";
+        html += "<a class='course-schedule-table-toggle-passed' href='javascript:void(0);'>" + i18n["table-show-passed"] + "</a>";
+        html += "<table id='" + activityId + "' class='course-schedule-table table-fixed-layout uio-zebra" + (isAllPassed ? " all-passed" : "") + "'><caption>" + caption + "</caption><thead><tr>";
+          html += "<th class='course-schedule-table-date'>" + i18n["table-date"] + "</th><th class='course-schedule-table-day'>" + i18n["table-day"] + "</th>";
+          html += "<th class='course-schedule-table-time'>" + i18n["table-time"] + "</th><th class='course-schedule-table-title'>" + i18n["table-title"] + "</th>";
+          html += "<th class='course-schedule-table-place'>" + i18n["table-place"] + "</th><th class='course-schedule-table-staff'>" + i18n["table-staff"] + "</th>";
+        html += "</tr></thead><tbody>";
+        return html;
+      },
+      getTableEndHtml = function() {
+        return "</tbody></table></div>";
+      },
       tocHtml = "",
       tablesHtml = "";
   
@@ -211,33 +231,29 @@ function generateHTMLForType(d) {
   
   tocHtml += "<h2 class='accordion'>" + scheduleI18n["header-" + type] + "</h2>";
   tocHtml += "<ul>";
+  var lastDtShort = "";
   for(var i = 0; i < dataLen; i++) {
     var dt = data[i];
     var sessions = dt.sessions;
     var id = dt.id;
     var dtShort = dt.teachingmethod.toLowerCase();
     if(dtShort !== "for" || i == 0) {
+      if(lastDtShort === "for") {
+        tablesHtml += getTableStartHtml(activityId, caption, (passedCount === sessionsCount), scheduleI18n) + sessionsHtml + getTableEndHtml();
+      }
       var isFor = dtShort === "for";
       var activityId = isFor ? dtShort : dtShort + "-" + dt.id;
       var caption = isFor ? scheduleI18n["table-for"] : sessions[0].title;
-      if(i > 0) {
-        tablesHtml += "</tbody></table></div>";
-      }
+      var sessionsHtml = "";
+      var passedCount = 0;
+      var sessionsCount = 0;
       tocHtml += "<li><a href='#" + activityId + "'>" + caption + "</a></li>";
-      tablesHtml += "<div class='course-schedule-table-wrapper'>";
-        tablesHtml += "<a class='course-schedule-table-toggle-passed' href='javascript:void(0);'>" + scheduleI18n["table-show-passed"] + "</a>";
-        tablesHtml += "<table id='" + activityId + "' class='course-schedule-table table-fixed-layout uio-zebra'><caption>" + caption + "</caption><thead><tr>";
-          tablesHtml += "<th class='course-schedule-table-date'>" + scheduleI18n["table-date"] + "</th><th class='course-schedule-table-day'>" + scheduleI18n["table-day"] + "</th>";
-          tablesHtml += "<th class='course-schedule-table-time'>" + scheduleI18n["table-time"] + "</th><th class='course-schedule-table-title'>" + scheduleI18n["table-title"] + "</th>";
-          tablesHtml += "<th class='course-schedule-table-place'>" + scheduleI18n["table-place"] + "</th><th class='course-schedule-table-staff'>" + scheduleI18n["table-staff"] + "</th>";
-        tablesHtml += "</tr></thead><tbody>";
     }
-    
     for(var j = 0, len2 = sessions.length; j < len2; j++) {
       var session = sessions[j];
 
       var dateTime = splitDateTimeFunc(session.dtstart, session.dtend);
-      var day = getDayFunc(dateTime.ed, dateTime.et);
+      var day = getDayFunc(dateTime.ed, dateTime.et, scheduleI18n);
       var date = getDateFunc(dateTime.sd, dateTime.ed, dateTime.st, dateTime.et);
       
       var sessionId = (skipTier ? type : dtShort + "-" + id) + "-" + session.id.replace(/\//g, "-") + "-" + date.postFixId;
@@ -252,25 +268,32 @@ function generateHTMLForType(d) {
       if(day.endTime < now) {
         if(classes !== "") classes += " ";
         classes += "passed";
+        passedCount++;
       }
+      sessionsCount++;
       
-      tablesHtml += classes !== "" ? "<tr id='" + sessionId + "' class='" + classes + "'>" : "<tr>";
-        tablesHtml += "<td>" + date.date + "</td>";
-        tablesHtml += "<td>" + day.day + "</td>";
-        tablesHtml += "<td>" + getTimeFunc(dateTime.st, dateTime.et) + "</td>";
-        tablesHtml += "<td>" + getTitleFunc(session) + "</td>";
-        tablesHtml += "<td>" + getPlaceFunc(session) + "</td>";
-        tablesHtml += "<td>";
-          tablesHtml += "<span class='course-schedule-table-row-staff'>" + getStaffFunc(session) + "</span>";
-          tablesHtml += (canEdit ? "<span class='course-schedule-table-row-edit' style='display: none'><a href='javascript:void'>" + scheduleI18n["table-edit"] + "</a></span>" : "");
-        tablesHtml += "</td>";
-      tablesHtml += "</tr>";
+      sessionsHtml += classes !== "" ? "<tr id='" + sessionId + "' class='" + classes + "'>" : "<tr>";
+        sessionsHtml += "<td>" + date.date + "</td>";
+        sessionsHtml += "<td>" + day.day + "</td>";
+        sessionsHtml += "<td>" + getTimeFunc(dateTime.st, dateTime.et) + "</td>";
+        sessionsHtml += "<td>" + getTitleFunc(session) + "</td>";
+        sessionsHtml += "<td>" + getPlaceFunc(session) + "</td>";
+        sessionsHtml += "<td>";
+          sessionsHtml += "<span class='course-schedule-table-row-staff'>" + getStaffFunc(session) + "</span>";
+          sessionsHtml += (canEdit ? "<span class='course-schedule-table-row-edit' style='display: none'><a href='javascript:void'>" + scheduleI18n["table-edit"] + "</a></span>" : "");
+        sessionsHtml += "</td>";
+      sessionsHtml += "</tr>";
     }
+    
+    if(dtShort !== "for") {
+      tablesHtml += getTableStartHtml(activityId, caption, (passedCount === sessionsCount), scheduleI18n) + sessionsHtml + getTableEndHtml();
+    }
+    lastDtShort = dtShort;
   }
-  if(i > 0) {
-    tablesHtml += "</tbody></table></div>";
+  if(dtShort === "for") {
+    tablesHtml += getTableStartHtml(activityId, caption, (passedCount === sessionsCount), scheduleI18n) + sessionsHtml + getTableEndHtml();
   }
   tocHtml += "</ul>";
   
-  return JSON.stringify({ tocHtml: tocHtml, tablesHtml: tablesHtml });
+  return JSON.stringify({ tocHtml: tocHtml, tablesHtml: tablesHtml, time: (+new Date() - startGenHtmlForTypeTime) });
 }

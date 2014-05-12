@@ -78,20 +78,20 @@ $(document).ready(function() {
             futureSimpleDialogs.resolve(); 
           }
           $.when(futureSimpleDialogs).done(function() {
-            var d = new VrtxHtmlDialog({
-              title: scheduleI18n["table-edit"] + " " + scheduleI18n["table-edit-activity"],
-              html: "<iframe frameborder='0' style='width: 850px; height: 580px' src='" + window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + row[0].id + "'></iframe>",
-              width: 850,
-              btnTextOk: scheduleI18n["table-edit-save"],
-              btnTextCancel: scheduleI18n["table-edit-cancel"],
-              onOk: function() {
-                alert("TODO: lagre");
-              },
-              onCancel: function() {
-                alert("TODO: avbryt / låse opp");
+            var popupWindowInternal = function (w, h, url, name) {
+              var screenWidth = window.screen.width;
+              var screenHeight = window.screen.height;
+              if (h > (screenHeight - 300)) {
+                h = screenHeight - 300;
+                w += 20;
               }
-            });
-            d.open();
+              var width = (screenWidth - w) / 2;
+              var height = (screenHeight - h) / 2;
+              var openedWindow = window.open(url, name, "status=no,height=" + h + ",width=" + w + ",resizable=no" + ",left=" + width + ",top=" + height + ",screenX=" + width + ",screenY=" + height + ",toolbar=no,menubar=no,scrollbars=yes,location=no,directories=no");
+              openedWindow.focus();
+              return openedWindow;
+            };
+            var openedEditActivityWindow = popupWindowInternal(850, 680, window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + row[0].id, "editActivity");
           });
           e.stopPropagation();
           e.preventDefault();

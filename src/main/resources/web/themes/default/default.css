@@ -3164,12 +3164,14 @@ body#vrtx-preview .tabMessage-big {
 
 /* Embedding */
 
-html.embedded {
+html.embedded,
+html.embedded body {
   background: #fff;
 }
 
 html.embedded body {
   min-width: 0;
+  padding: 20px;
 }
 
 html.embedded #app-content,
@@ -3190,7 +3192,9 @@ html.embedded #title-container,
 html.embedded #vrtx-editor-title-submit-buttons,
 html.embedded #app-tabs,
 html.embedded #active-tab,
-html.embedded .submitButtons {
+html.embedded .submitButtons #saveAndViewButton,
+html.embedded .submitButtons #buttons-or-text,
+html.embedded .submitButtons #saveWorkingCopyAction {
   display: none;
 }
 

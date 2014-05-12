@@ -1248,6 +1248,10 @@ function generateCourseScheduleSessionOnly(json, sessionId, i18n) {
   
   var sessionHtml = generateCourseScheduleSession(id, session, descs, i18n, skipTier,
                                                   generateCourseScheduleDateAndPostFixId, generateCourseScheduleContentFromSessionData);
+        
+  lastElm = $(".properties"); 
+  lastId = id;
+  lastSessionId = sessionId;
                                                   
   return { id: id, html: sessionHtml.html, title: sessionHtml.title };
 }
@@ -1363,6 +1367,7 @@ function generateCourseScheduleSession(id, session, descs, i18n, skipTier, gener
      hasChanges: false,
      multiples: sessionContent.multiples,
      rawPtr: session,
+     descsPtr: descs,
      rawOrig: jQuery.extend(true, {}, session) // Copy object
    };
    
@@ -1468,13 +1473,14 @@ function saveCourseScheduleSession(domSessionElms, id, sessionId) {
   var sessionLookup = sessionsLookup[id][sessionId];
   var rawOrig = sessionLookup.rawOrig;
   var rawPtr = sessionLookup.rawPtr;
+  var descsPtr = sessionLookup.descsPtr;
   var saveCourseScheduleExtractSessionFieldFromDOMFunc = saveCourseScheduleExtractSessionFieldFromDOM;
 
-  for(var name in descs) {
+  for(var name in descsPtr) {
     var domSessionPropElm = domSessionElms.find("input[name='" + name + "']");
     if(!domSessionPropElm.length) continue; // This should not happen
 
-    var val = saveCourseScheduleExtractSessionFieldFromDOMFunc(descs[name], domSessionPropElm);
+    var val = saveCourseScheduleExtractSessionFieldFromDOMFunc(descsPtr[name], domSessionPropElm);
     if(val && val.length && saveCourseScheduleSessionDetectChange(val, rawOrig[name.split("vrtx-")[1]])) {
       rawPtr[name] = val;
     } else {

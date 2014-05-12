@@ -67,7 +67,7 @@ $(document).ready(function() {
           rowStaff.toggle();
           rowEdit.toggle();
         });
-        $(document).on("click", ".course-schedule-table-row-edit", function(e) {
+        $(document).on("click", ".course-schedule-table-row-edit a", function(e) {
           var row = $(this).closest("tr");
           var futureSimpleDialogs = $.Deferred();
           if(typeof VrtxHtmlDialog === "undefined") {
@@ -80,8 +80,16 @@ $(document).ready(function() {
           $.when(futureSimpleDialogs).done(function() {
             var d = new VrtxHtmlDialog({
               title: scheduleI18n["table-edit"] + " " + scheduleI18n["table-edit-activity"],
-              html: "<iframe frameborder='0' style='width: 760px; height: 540px' src='" + window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + row[0].id + "'></iframe>",
-              width: 760
+              html: "<iframe frameborder='0' style='width: 850px; height: 540px' src='" + window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + row[0].id + "'></iframe>",
+              width: 850,
+              btnTextOk: scheduleI18n["table-edit-save"],
+              btnTextCancel: scheduleI18n["table-edit-cancel"],
+              onOk: function() {
+                alert("TODO: lagre");
+              },
+              onOk: function() {
+                alert("TODO: avbryt / låse opp");
+              }
             });
             d.open();
           });
@@ -237,7 +245,7 @@ function generateHTMLForType(d) {
         tablesHtml += "<td>" + getPlaceFunc(session) + "</td>";
         tablesHtml += "<td>";
           tablesHtml += "<span class='course-schedule-table-row-staff'>" + getStaffFunc(session) + "</span>";
-          tablesHtml += (canEdit ? "<span class='course-schedule-table-row-edit' style='display: none'><a href='javascript:void' class='button'><span>" + scheduleI18n["table-edit"] + "</span></a></span>" : "");
+          tablesHtml += (canEdit ? "<span class='course-schedule-table-row-edit' style='display: none'><a href='javascript:void'>" + scheduleI18n["table-edit"] + "</a></span>" : "");
         tablesHtml += "</td>";
       tablesHtml += "</tr>";
     }

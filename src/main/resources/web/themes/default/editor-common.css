@@ -112,6 +112,14 @@ h2 {
   margin-left: 0px;
 }
 
+.vrtx-multipleinputfield label {
+  display: none;
+}
+
+.vrtx-multipleinputfield.first label {
+  display: block;
+}
+
 /* Sticky title and editor save/cancel buttons */
 
 .properties > *:first-child,

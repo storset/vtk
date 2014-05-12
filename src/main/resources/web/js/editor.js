@@ -1083,6 +1083,7 @@ function courseSchedule() {
     if(onlySessionId.length) {
       var sessionOnly = generateCourseScheduleSessionOnly(retrievedScheduleData, onlySessionId, i18n);
       if(!html) html = "Fant ikke aktivitet";
+      
       $(".properties").prepend(sessionOnly.html);
       
       var id = sessionOnly.id;
@@ -1096,7 +1097,7 @@ function courseSchedule() {
         }
         sessionInLookup.isEnhanced = true;
         if(sessionInLookup.isCancelled) {
-       //   content.find("button, input").filter(":not(.moveup, .movedown)").attr("disabled", "disabled");
+          $(".properties").find("button, input").filter(":not(.moveup, .movedown)").attr("disabled", "disabled");
         }
       }
     } else {
@@ -1822,6 +1823,7 @@ function enhanceMultipleInputFields(name, isMovable, isBrowsable, limit, json) {
   }
   html = $.parseHTML(html, document, true);
   $(html).insertBefore("#vrtx-" + name + "-add");
+  inputFieldParent.find(".vrtx-multipleinputfield").addClass("first");
   
   // Hide add button if limit is reached or gone over
   if(len >= vrtxEditor.multipleFieldsBoxes[name].limit) {
@@ -1881,8 +1883,15 @@ function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown
         last.append(moveDownButton);
       }
     }
+    
     var addBtn = $("#vrtx-" + name + "-add");
     $($.parseHTML(html, document, true)).insertBefore(addBtn);
+    
+    fields = $("." + name + " div.vrtx-multipleinputfield");
+    
+    if(len === 0) {
+      fields.filter(":first").addClass("first");
+    }
     
     autocompleteUsername(".vrtx-autocomplete-username", idstr + i);
     
@@ -1893,8 +1902,7 @@ function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown
 
     // Hide add button if limit is reached
     if((len == (vrtxEditor.multipleFieldsBoxes[name].limit - 1))) {
-      var moreBtn = $("#vrtx-" + name + "-add");
-      $("<p class='vrtx-" + name + "-limit-reached'>" + vrtxAdmin.multipleFormGroupingMessages.limitReached + "</p>").insertBefore(moreBtn);
+      $("<p class='vrtx-" + name + "-limit-reached'>" + vrtxAdmin.multipleFormGroupingMessages.limitReached + "</p>").insertBefore(addBtn);
       moreBtn.hide();
     }
   } else {
@@ -1911,6 +1919,9 @@ function removeFormField(input) {
   var fields = parent.find(".vrtx-multipleinputfield");
   var firstField = fields.filter(":first");
   if(firstField.length) {
+    if(!firstField.hasClass("first")) {
+      firstField.addClass("first");
+    }
     var focusable = firstField.find("input[type='text'], select").filter(":first");
     if(focusable.length) {
       focusable[0].focus();

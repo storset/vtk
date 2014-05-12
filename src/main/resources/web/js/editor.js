@@ -1088,9 +1088,7 @@ function courseSchedule() {
 
       var id = sessionOnly.id;
       var sessionInLookup = sessionsLookup[id][onlySessionId];
-      
-      console.log("in: " + onlySessionId);
-      
+
       if(sessionInLookup && !sessionInLookup.isEnhanced) { // If not already enhanced
         var multiples = sessionInLookup.multiples;
         for(var i = multiplesLen = multiples.length; i--;) {

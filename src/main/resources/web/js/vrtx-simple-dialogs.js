@@ -169,12 +169,14 @@ var VrtxHtmlDialog = dejavu.Class.declare({
       height: opts.height,
       onOk: opts.onOk,
       onOkOpts: opts.onOkOpts,
+      onCancel: opts.onCancel,
       hasOk: opts.btnTextOk,
       hasCancel: opts.btnTextCancel,
       btnTextOk: opts.btnTextOk,
       btnTextCancel: opts.btnTextCancel,
       requiresDatepicker: opts.requiresDatepicker,
-      onOpen: opts.onOpen
+      onOpen: opts.onOpen,
+      onClose: opts.onClose
     });
   }
 });

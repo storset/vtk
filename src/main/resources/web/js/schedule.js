@@ -87,7 +87,7 @@ $(document).ready(function() {
               onOk: function() {
                 alert("TODO: lagre");
               },
-              onClose: function() {
+              onCancel: function() {
                 alert("TODO: avbryt / låse opp");
               }
             });

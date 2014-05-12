@@ -62,7 +62,8 @@ $(document).ready(function() {
     
     $.when(thread1Finished, thread2Finished, scheduleDocumentReady).done(function() {
       var html = "<p>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
-                 "ms) || (AJAX-complete: " + endAjaxTime + "ms + Threads invoking: " + endMakingThreadsTime + "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))</p>" +
+                 "ms) || (AJAX-complete: " + endAjaxTime + "ms + Threads invoking/serializing: " + (endMakingThreadsTime + htmlPlenary.parseRetrievedJSONTime + htmlGroup.parseRetrievedJSONTime) +
+                 "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))</p>" +
                  htmlPlenary.tocHtml + htmlGroup.tocHtml + htmlPlenary.tablesHtml + htmlGroup.tablesHtml;
       
       $("#activities").html(html === "" ? "Ingen data" : html);
@@ -147,10 +148,12 @@ function startThreadGenerateHTMLForType(data, htmlRef, threadRef) {
 }
 
 function finishedThreadGenerateHTMLForType(data, htmlRef, threadRef) {
+  var startFinishedCode = +new Date();
   var receivedData = JSON.parse(data);
   htmlRef.tocHtml = receivedData.tocHtml;
   htmlRef.tablesHtml = receivedData.tablesHtml;
   htmlRef.time = receivedData.time;
+  htmlRef.parseRetrievedJSONTime = (+new Date() - startFinishedCode);
   threadRef.resolve();
 }
 

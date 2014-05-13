@@ -866,7 +866,8 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
           var link = _$(this);
           vrtxAdm.editorSaveButtonName = link.attr("name");
           vrtxAdm.editorSaveButton = link;
-          vrtxAdm.editorSaveIsRedirectView = (this.id === "saveAndViewButton" || this.id === "saveViewAction") && !vrtxEditor.editorForm.hasClass("vrtx-course-schedule");
+          vrtxAdm.editorSaveIsRedirectView = (this.id === "saveAndViewButton" || this.id === "saveViewAction")
+                                             && (typeof vrtxEditor === "undefined" || !vrtxEditor.editorForm.hasClass("vrtx-course-schedule"));
           ajaxSave();
           _$.when(vrtxAdm.asyncEditorSavedDeferred).done(function () {
             vrtxAdm.removeMsg("error");
@@ -2621,7 +2622,7 @@ function ajaxSave() {
 
   vrtxAdm.asyncEditorSavedDeferred = _$.Deferred();
 
-  if(typeof CKEDITOR != "undefined") {
+  if(typeof CKEDITOR != "undefined" && typeof vrtxEditor != "undefined") {
     vrtxEditor.richtextEditorFacade.updateInstances();
   }
   var startTime = new Date();
@@ -2644,7 +2645,7 @@ function ajaxSave() {
   if(!isServerLastModifiedOlderThanClientLastModified(d)) return false;
   
   var extraData = {};
-  if(vrtxEditor.editorForm.hasClass("vrtx-course-schedule")) {
+  if(typeof vrtxEditor != "undefined" && vrtxEditor.editorForm.hasClass("vrtx-course-schedule")) {
     saveCourseSchedule();
     extraData = { "activities": JSON.stringify(retrievedScheduleData) };
   }
@@ -2666,12 +2667,14 @@ function ajaxSave() {
       data: extraData,
       success: function(results, status, xhr) { 
         ajaxSaveSuccess(startTime, d, results, status, xhr);
-        if(vrtxEditor.editorForm.hasClass("vrtx-course-schedule")) {
+        if(typeof vrtxEditor != "undefined" && vrtxEditor.editorForm.hasClass("vrtx-course-schedule")) {
           courseScheduleSaved();
         }
       },
       error: function (xhr, textStatus, errMsg) {
-        vrtxEditor.needToConfirm = true;
+        if(typeof vrtxEditor != "undefined") {
+          vrtxEditor.needToConfirm = true;
+        }
         ajaxSaveError(d, xhr, textStatus);
       }
     });

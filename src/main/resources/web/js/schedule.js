@@ -68,6 +68,20 @@ $(document).ready(function() {
       
       $("#activities").html(html === "" ? "Ingen data" : html);
       
+      // Toggle passed
+      $(document).on("click", ".course-schedule-table-toggle-passed", function(e) {
+        var link = $(this);
+        var table = link.next();
+        table.toggleClass("showing-passed");
+        if(table.hasClass("showing-passed")) {
+          link.text(scheduleI18n["table-hide-passed"]);
+        } else {
+          link.text(scheduleI18n["table-show-passed"]);
+        }   
+        e.stopPropagation();
+        e.preventDefault();
+      });
+      
       // Edit session
       if(schedulePermissions.hasReadWriteNotLocked) {
         $(document).on("mouseover mouseout", "tbody tr", function(e) {
@@ -76,18 +90,6 @@ $(document).ready(function() {
           var rowEdit = rowStaff.next();
           rowStaff.toggle();
           rowEdit.toggle();
-        });
-        $(document).on("click", ".course-schedule-table-toggle-passed", function(e) {
-          var link = $(this);
-          var table = link.next();
-          table.toggleClass("showing-passed");
-          if(table.hasClass("showing-passed")) {
-            link.text(scheduleI18n["table-hide-passed"]);
-          } else {
-            link.text(scheduleI18n["table-show-passed"]);
-          }   
-          e.stopPropagation();
-          e.preventDefault();
         });
         $(document).on("click", ".course-schedule-table-row-edit a", function(e) {
           var row = $(this).closest("tr");
@@ -102,6 +104,7 @@ $(document).ready(function() {
             futureSimpleDialogs.resolve(); 
           }
           $.when(futureSimpleDialogs).done(function() { */
+
             var popupWindowInternal = function (w, h, url, name) {
               var screenWidth = window.screen.width;
               var screenHeight = window.screen.height;

@@ -3192,10 +3192,13 @@ html.embedded #title-container,
 html.embedded #vrtx-editor-title-submit-buttons,
 html.embedded #app-tabs,
 html.embedded #active-tab,
-html.embedded .submitButtons #saveAndViewButton,
-html.embedded .submitButtons #buttons-or-text,
-html.embedded .submitButtons #saveWorkingCopyAction {
+html.embedded .submitButtons > * {
   display: none;
+}
+
+html.embedded .submitButtons .vrtx-save-button:first-child,
+html.embedded .submitButtons #cancelAction {
+  display: inline-block;
 }
 
 /* ^ Embedding */

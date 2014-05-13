@@ -866,7 +866,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
           var link = _$(this);
           vrtxAdm.editorSaveButtonName = link.attr("name");
           vrtxAdm.editorSaveButton = link;
-          vrtxAdm.editorSaveIsRedirectView = (this.id === "saveAndViewButton" || this.id === "saveViewAction");
+          vrtxAdm.editorSaveIsRedirectView = (this.id === "saveAndViewButton" || this.id === "saveViewAction") && vrtxEditor.editorForm.hasClass("vrtx-course-schedule");
           ajaxSave();
           _$.when(vrtxAdm.asyncEditorSavedDeferred).done(function () {
             vrtxAdm.removeMsg("error");
@@ -2711,9 +2711,10 @@ function isServerLastModifiedOlderThanClientLastModified(d) {
     async: false,
     cache: false,
     success: function (results, status, resp) {
-      vrtxAdmin.serverNowTime = $($.parseHTML(results)).find("#server-now-time").text().split(",");
-      vrtxAdmin.serverLastModified = $($.parseHTML(results)).find("#resource-last-modified").text().split(",");
-      vrtxAdmin.serverModifiedBy = $($.parseHTML(results)).find("#resource-last-modified-by").text();
+      var parsedResults = $($.parseHTML(results));
+      vrtxAdmin.serverNowTime = parsedResults.find("#server-now-time").text().split(",");
+      vrtxAdmin.serverLastModified = parsedResults.find("#resource-last-modified").text().split(",");
+      vrtxAdmin.serverModifiedBy = parsedResults.find("#resource-last-modified-by").text();
       if(isServerLastModifiedNewerThanClientLastModified(olderThanMs)) {
         d.close();
         vrtxAdmin.asyncEditorSavedDeferred.rejectWith(this, ["UPDATED_IN_BACKGROUND", ""]);

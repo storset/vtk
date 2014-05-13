@@ -1267,15 +1267,17 @@ function retrieveCourseScheduleSessionFromId(json, findSessionId) {
   for(var type in json) {
     var data = json[type].data;
     if(!data) continue;
+    var dataLen = data.length;
+    if(!dataLen) continue;
     
     var skipTier = type === "plenary";
-    for(var i = 0, len = data.length; i < len; i++) {
+    for(var i = 0; i < dataLen; i++) {
       var dt = data[i];
       var dtShort = dt.teachingmethod.toLowerCase();
       var id = skipTier ? type : dtShort + "-" + dt.id;
       
       var sessions = dt.sessions;
-      for(var j = 0, len2 = sessions.length; j < len2; j++) {
+      for(var j = 0, sessionsLen = sessions.length; j < sessionsLen; j++) {
         var session = sessions[j];
         var dateTime = generateCourseScheduleDateTimeFunc(session.dtstart, session.dtend);
         var postFixId = generateCourseSchedulePostFixIdFunc(dateTime.sd, dateTime.st, dateTime.ed, dateTime.et);
@@ -1442,6 +1444,12 @@ function courseScheduleSaved() {
         sessionObj.hasChanges = false;
       }
     }
+  }
+  if(onlySessionId.length) {
+    if (top.opener && !top.opener.closed) {
+      try { opener.location.reload(1); } catch(e) {  }
+    }
+    window.close();
   }
 }
 

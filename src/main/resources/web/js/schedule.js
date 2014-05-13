@@ -20,7 +20,15 @@ $(document).ready(function() {
 
   var endAjaxTime = 0;
 
-  $.getJSON("/vrtx/__vrtx/static-resources/js/tp-test.json", function(data, xhr, textStatus) {
+  var url = window.location.href;
+  if(/\/$/.test(url)) {
+    url += "index.html";
+  }
+  url += "?action=course-schedule";
+  
+  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+
+  $.getJSON(url, function(data, xhr, textStatus) {
     retrievedScheduleData = data;
   }).always(function() {
     retrievedScheduleDeferred.resolve();

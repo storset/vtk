@@ -1027,7 +1027,15 @@ var onlySessionId = gup("sessionid", window.location.href);
 
 function courseSchedule() {
   var retrievedScheduleDeferred = $.Deferred();
-  vrtxAdmin.serverFacade.getJSON("/vrtx/__vrtx/static-resources/js/tp-test.json", {
+  var url = window.location.pathname;
+  if(/\/$/.test(url)) {
+    url += "index.html";
+  }
+  url += "?action=course-schedule";
+  
+  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  
+  vrtxAdmin.serverFacade.getJSON(url, {
     success: function(data, xhr, textStatus) {
       retrievedScheduleData = data;
       retrievedScheduleDeferred.resolve();
@@ -1325,13 +1333,16 @@ function generateCourseScheduleActivitiesForType(json, type, skipTier, i18n) {
       jsonType = json[type],
       descs = jsonType["vrtx-editable-description"],
       data = jsonType["data"],
+      dataLen = data.length,
       dtShortLast = "",
       html = "",
       htmlMiddle = "",
       sessionsHtml = "";
       
+  if(!dataLen) return html;
+      
   // Store sessions HTML and multiple descriptions in lookup object
-  for(var i = 0, len = data.length; i < len; i++) {
+  for(var i = 0; i < dataLen; i++) {
     var dt = data[i],
         dtShort = dt.teachingmethod.toLowerCase(),
         id = skipTier ? type : dtShort + "-" + dt.id,
@@ -1361,7 +1372,7 @@ function generateCourseScheduleActivitiesForType(json, type, skipTier, i18n) {
     dtShortLast = dtShort;
   }
   if(!skipTier) {
-    if(len > 0) {
+    if(dataLen > 0) {
       html += vrtxEditor.htmlFacade.getAccordionInteraction("3", dtShort, type, dt.teachingmethodname, "<div class='vrtx-grouped'>" + htmlMiddle + "</div>");
     }
   } else {
@@ -1477,7 +1488,7 @@ function courseScheduleSaved() {
  */
 function courseScheduleClose() {
   if(onlySessionId.length) {
-    if (top.opener && !top.opener.closed) {
+    if (top.opener && !top.opener.closed) { // Try to refresh opener (not possible cross-origin)
       try { opener.location.reload(1); } catch(e) {  }
     }
     window.close();

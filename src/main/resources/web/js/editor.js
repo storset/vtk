@@ -1472,7 +1472,7 @@ function courseScheduleSaved() {
 }
 
 /*
- *  Course Schedule only session close
+ *  Course Schedule only session close popup window
  *
  */
 function courseScheduleClose() {

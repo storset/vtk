@@ -866,10 +866,11 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
           var link = _$(this);
           vrtxAdm.editorSaveButtonName = link.attr("name");
           vrtxAdm.editorSaveButton = link;
-          vrtxAdm.editorSaveIsRedirectView = (this.id === "saveAndViewButton" || this.id === "saveViewAction") && vrtxEditor.editorForm.hasClass("vrtx-course-schedule");
+          vrtxAdm.editorSaveIsRedirectView = (this.id === "saveAndViewButton" || this.id === "saveViewAction") && !vrtxEditor.editorForm.hasClass("vrtx-course-schedule");
           ajaxSave();
           _$.when(vrtxAdm.asyncEditorSavedDeferred).done(function () {
             vrtxAdm.removeMsg("error");
+            // Redirect after save
             if(vrtxAdm.editorSaveIsRedirectView) {
               var isCollection = _$("#resource-title.true").length;
               if(isCollection) {

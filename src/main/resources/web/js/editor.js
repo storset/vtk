@@ -1100,6 +1100,29 @@ function courseSchedule() {
           $(".properties").find("button, input").filter(":not(.moveup, .movedown)").attr("disabled", "disabled");
         }
       }
+      
+      var newButtonsHtml = "<input class='vrtx-focus-button vrtx-embedded-button' id='vrtx-embedded-save-button' type='submit' value='Lagre' />";
+         newButtonsHtml += "<input class='vrtx-button vrtx-embedded-button' id='vrtx-embedded-cancel-button' type='submit' value='Avbryt' />";
+      $(".submitButtons").prepend(newButtonsHtml);
+      
+      $("#editor").on("click", "#vrtx-embedded-save-button", function(e) {
+        $(".submitButtons #saveAndViewButton").trigger("click");
+        e.stopPropagation();
+        e.preventDefault();
+      });
+      
+      $("#editor").on("click", "#vrtx-embedded-cancel-button", function(e) {
+        var form = $("form[name='unlockForm']");
+        var url = form.attr("action");
+        var dataString = form.serialize();
+        vrtxAdmin.serverFacade.postHtml(url, dataString, {
+          success: function (results, status, resp) {
+            courseScheduleClose();
+          }
+        });
+        e.stopPropagation();
+        e.preventDefault();
+      });
     } else {
       var html = "<div class='accordion-title'>" + i18n.titles.plenary + "</div>" +
                  generateCourseScheduleActivitiesForType(retrievedScheduleData, "plenary", true, i18n) +
@@ -1445,6 +1468,14 @@ function courseScheduleSaved() {
       }
     }
   }
+  courseScheduleClose();
+}
+
+/*
+ *  Course Schedule only session close
+ *
+ */
+function courseScheduleClose() {
   if(onlySessionId.length) {
     if (top.opener && !top.opener.closed) {
       try { opener.location.reload(1); } catch(e) {  }

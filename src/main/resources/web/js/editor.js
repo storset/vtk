@@ -1048,7 +1048,8 @@ function courseSchedule() {
     }
   });
   
-  vrtxEditor.editorForm.find(".properties").hide();
+  var editorProperties = vrtxEditor.editorForm.find(".properties");
+  editorProperties.hide();
     
   initMultipleInputFields();
 
@@ -1087,39 +1088,32 @@ function courseSchedule() {
           "vrtx-resources-title": (isEn ? "Title" : "Tittel"),
           "vrtx-resources-url": (isEn ? "Link" : "Lenke")
         };
-    
+
     if(onlySessionId.length) {
       var sessionOnly = generateCourseScheduleSessionOnly(retrievedScheduleData, onlySessionId, i18n);
       if(!html) html = "Fant ikke aktivitet";
+
+      var editorSubmitButtons = vrtxEditor.editorForm.find(".submitButtons");
       
-      $(".properties").prepend("<h4 class='property-label'>" + sessionOnly.title + "</h4>" + sessionOnly.html);
+      editorProperties.prepend("<h4 class='property-label'>" + sessionOnly.title + "</h4>" + sessionOnly.html);
 
       var id = sessionOnly.id;
-      var sessionInLookup = sessionsLookup[id][onlySessionId];
 
-      if(sessionInLookup && !sessionInLookup.isEnhanced) { // If not already enhanced
-        var multiples = sessionInLookup.multiples;
-        for(var i = multiplesLen = multiples.length; i--;) {
-          var m = multiples[i];
-          enhanceMultipleInputFields(m.name + "-" + onlySessionId, m.movable, m.browsable, 50, m.json);
-        }
-        sessionInLookup.isEnhanced = true;
-        if(sessionInLookup.isCancelled) {
-          $(".properties").find("button, input").filter(":not(.moveup, .movedown)").attr("disabled", "disabled");
-        }
-      }
+      generateCourseScheduleEnhanceSession(id, onlySessionId, editorProperties);
       
       var newButtonsHtml = "<input class='vrtx-focus-button vrtx-embedded-button' id='vrtx-embedded-save-button' type='submit' value='Lagre' />";
          newButtonsHtml += "<input class='vrtx-button vrtx-embedded-button' id='vrtx-embedded-cancel-button' type='submit' value='Avbryt' />";
-      $(".submitButtons").prepend(newButtonsHtml);
+      editorSubmitButtons.prepend(newButtonsHtml);
       
-      $("#editor").on("click", "#vrtx-embedded-save-button", function(e) {
-        $(".submitButtons #saveAndViewButton").trigger("click");
+      /* Save and unlock */
+      vrtxEditor.editorForm.on("click", "#vrtx-embedded-save-button", function(e) {
+        editorSubmitButtons.find("#saveAndViewButton").trigger("click");
         e.stopPropagation();
         e.preventDefault();
       });
       
-      $("#editor").on("click", "#vrtx-embedded-cancel-button", function(e) {
+      /* Cancel is unlock */
+      vrtxEditor.editorForm.on("click", "#vrtx-embedded-cancel-button", function(e) {
         var form = $("form[name='unlockForm']");
         var url = form.attr("action");
         var dataString = form.serialize();
@@ -1138,7 +1132,7 @@ function courseSchedule() {
                  generateCourseScheduleActivitiesForType(retrievedScheduleData, "group", false, i18n);
       
       // Add HTML to DOM
-      $(".properties").prepend("<div class='vrtx-grouped'>" + html + "</div>"); 
+      editorProperties.prepend("<div class='vrtx-grouped'>" + html + "</div>"); 
        
       // Accordions - define at run-time
       var accordionOnActivateTier3 = function (id, e, ui, accordion) {
@@ -1150,19 +1144,8 @@ function courseSchedule() {
           lastId = id;
           lastSessionId = sessionId;
           lastElm = content;
-        
-          var session = sessionsLookup[id][sessionId];
-          if(session && !session.isEnhanced) { // If not already enhanced
-            var multiples = session.multiples;
-            for(var i = multiplesLen = multiples.length; i--;) {
-              var m = multiples[i];
-              enhanceMultipleInputFields(m.name + "-" + sessionId, m.movable, m.browsable, 50, m.json);
-            }
-            session.isEnhanced = true;
-            if(session.isCancelled) {
-              content.find("button, input").filter(":not(.moveup, .movedown)").attr("disabled", "disabled");
-            }
-          }
+          
+          generateCourseScheduleEnhanceSession(id, sessionId, content);
         } else { // Update session and accordion title on close
           var sessionId = ui.oldHeader[0].id;
           var sessionElm = $(ui.oldHeader).closest("div");
@@ -1236,7 +1219,7 @@ function courseSchedule() {
       };
     
       var optsH3 = {
-        elem: vrtxEditor.editorForm.find(".properties > .vrtx-grouped"),
+        elem: editorProperties.find("> .vrtx-grouped"),
         headerSelector: "h3",
         onActivate: function (e, ui, accordion) {
           if(ui.newHeader[0]) {
@@ -1254,7 +1237,7 @@ function courseSchedule() {
     JSON_ELEMENTS_INITIALIZED.resolve();
     
     var waitALittle = setTimeout(function() {
-      vrtxEditor.editorForm.find(".properties").show();
+      editorProperties.show();
     }, 50);
   });
 }
@@ -1320,6 +1303,23 @@ function retrieveCourseScheduleSessionFromId(json, findSessionId) {
     }
   }
   return null;
+}
+
+
+function generateCourseScheduleEnhanceSession(id, sessionId, contentElm) {
+  var session = sessionsLookup[id][sessionId];
+  if(session && !session.isEnhanced) { // If not already enhanced
+    var multiples = session.multiples;
+    var enhanceMultipleInputFieldsFunc = enhanceMultipleInputFields;
+    for(var i = multiplesLen = multiples.length; i--;) {
+      var m = multiples[i];
+      enhanceMultipleInputFieldsFunc(m.name + "-" + sessionId, m.movable, m.browsable, 50, m.json);
+    }
+    session.isEnhanced = true;
+    if(session.isCancelled) {
+      contentElm.find("button, input").filter(":not(.moveup, .movedown)").attr("disabled", "disabled");
+    }
+  }
 }
 
 /*

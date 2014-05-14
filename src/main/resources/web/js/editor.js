@@ -1456,9 +1456,6 @@ function courseScheduleSaved() {
 
 function courseScheduleClose() {
   if(onlySessionId.length) {
-    if (top.opener && !top.opener.closed) { // Try to refresh opener (not possible cross-origin)
-      try { opener.location.reload(1); } catch(e) {  }
-    }
     window.close();
   }
 }

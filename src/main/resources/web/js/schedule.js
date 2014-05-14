@@ -39,7 +39,7 @@ $(document).ready(function() {
   $.when(retrievedScheduleDeferred).done(function() {
     if(retrievedScheduleData == null) {
       $.when(scheduleDocumentReady).done(function() {
-        $("#activities").html("Ingen data");
+        $("#activities").html(scheduleI18n["no-data"]);
       });
       scheduleDeferred.resolve();
       return;
@@ -70,23 +70,19 @@ $(document).ready(function() {
     var endMakingThreadsTime = +new Date() - startMakingThreadsTime;
     
     $.when(thread1Finished, thread2Finished, scheduleDocumentReady).done(function() {
-      var html = "<p>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
-                 "ms) || (AJAX-complete: " + endAjaxTime + "ms + Threads invoking/serializing: " + (endMakingThreadsTime + htmlPlenary.parseRetrievedJSONTime + htmlGroup.parseRetrievedJSONTime) +
-                 "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))</p>" +
-                 htmlPlenary.tocHtml + htmlGroup.tocHtml + htmlPlenary.tablesHtml + htmlGroup.tablesHtml;
-      
-      $("#activities").html(html === "" ? "Ingen data" : html);
+      var html = htmlPlenary.tocHtml + htmlGroup.tocHtml + htmlPlenary.tablesHtml + htmlGroup.tablesHtml;
+      if(html === "") html = scheduleI18n["no-data"];
+
+      $("#activities").html("<p>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
+                            "ms) || (AJAX-complete: " + endAjaxTime + "ms + Threads invoking/serializing: " + (endMakingThreadsTime + htmlPlenary.parseRetrievedJSONTime + htmlGroup.parseRetrievedJSONTime) +
+                            "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))</p>" + html);
       
       // Toggle passed
       $(document).on("click", ".course-schedule-table-toggle-passed", function(e) {
         var link = $(this);
         var table = link.next();
-        table.toggleClass("showing-passed");
-        if(table.hasClass("showing-passed")) {
-          link.text(scheduleI18n["table-hide-passed"]);
-        } else {
-          link.text(scheduleI18n["table-show-passed"]);
-        }   
+        table.toggleClass("showing-passed"); 
+        link.text(table.hasClass("showing-passed") ? scheduleI18n["table-hide-passed"] : scheduleI18n["table-show-passed"]);
         e.stopPropagation();
         e.preventDefault();
       });
@@ -173,11 +169,11 @@ function generateHTMLForType(d) {
   var now = new Date(),
       startGenHtmlForTypeTime = +now,
       dta = JSON.parse(d),
+      data = dta.data,
       type = dta.type,
-      skipTier = type === "plenary",
       scheduleI18n = dta.i18n,
       canEdit = dta.canEdit,
-      data = dta.data,
+      skipTier = type === "plenary",
       splitDateTimeFunc = function(s, e) {
         var sdt = s.split("T");
         var sd = sdt[0].split("-");

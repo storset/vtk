@@ -52,13 +52,13 @@ $(document).ready(function() {
         htmlPlenary = {},
         htmlGroup = {},
         plenaryStringified = JSON.stringify({
-          data: retrievedScheduleData,
+          data: retrievedScheduleData["plenary"].data,
           type: "plenary",
           i18n: scheduleI18n,
           canEdit: schedulePermissions.hasReadWriteNotLocked
         }),
         groupStringified = JSON.stringify({
-          data: retrievedScheduleData,
+          data: retrievedScheduleData["group"].data,
           type: "group",
           i18n: scheduleI18n,
           canEdit: schedulePermissions.hasReadWriteNotLocked
@@ -161,7 +161,7 @@ function startThreadGenerateHTMLForType(data, htmlRef, threadRef) {
 
 function finishedThreadGenerateHTMLForType(data, htmlRef, threadRef) {
   var startFinishedCode = +new Date();
-  var receivedData = JSON.parse(data);
+  var receivedData = data;
   htmlRef.tocHtml = receivedData.tocHtml;
   htmlRef.tablesHtml = receivedData.tablesHtml;
   htmlRef.time = receivedData.time;
@@ -177,8 +177,7 @@ function generateHTMLForType(d) {
       skipTier = type === "plenary",
       scheduleI18n = dta.i18n,
       canEdit = dta.canEdit,
-      dtaType = dta.data[type],
-      data = dtaType.data,
+      data = dta.data,
       splitDateTimeFunc = function(s, e) {
         var sdt = s.split("T");
         var sd = sdt[0].split("-");
@@ -314,5 +313,5 @@ function generateHTMLForType(d) {
   }
   tocHtml += "</ul>";
   
-  return JSON.stringify({ tocHtml: tocHtml, tablesHtml: tablesHtml, time: (+new Date() - startGenHtmlForTypeTime) });
+  return { tocHtml: tocHtml, tablesHtml: tablesHtml, time: (+new Date() - startGenHtmlForTypeTime) };
 }

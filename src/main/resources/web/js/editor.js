@@ -1080,6 +1080,7 @@ function courseSchedule() {
             "plenary": (isEn ? "Plenary teaching" : "Fellesundervisning"),
             "group": (isEn ? "Group teaching" : "Partiundervisning")
           },
+          "no-session-data": (isEn ? "No activity data" : "Ingen aktivitetsdata"),
           "cancelled": (isEn ? "(cancelled in scheduling system)" : "(avlyst i timeplanleggingssystemet)"),
           "vrtx-title": (isEn ? "Title:" : "Tittel:"),
           "vrtx-staff": (isEn ? "Staff:" : "Forelesere:"),
@@ -1094,7 +1095,7 @@ function courseSchedule() {
 
     if(onlySessionId.length) {
       var sessionOnly = generateCourseScheduleSessionOnly(retrievedScheduleData, onlySessionId, i18n);
-      if(!html) html = "Fant ikke aktivitet";
+      if(!html) html = i18n["no-session-data"];
 
       var editorSubmitButtons = vrtxEditor.editorForm.find(".submitButtons");
       

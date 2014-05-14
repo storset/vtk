@@ -1,8 +1,7 @@
 /*
  * Course schedule
  *
- * - Two threaded parsing/generating of JSON to HTML if supported
- *   (one pr. type in addition to main thread)
+ * - Two threaded parsing/generating of JSON to HTML if supported (one pr. type in addition to main thread)
  */
 
 var scheduleDeferred = $.Deferred();
@@ -15,20 +14,19 @@ $(document).ready(function() {
 });
 
 (function() {
-  var retrievedScheduleDeferred = $.Deferred();
   var retrievedScheduleData = null;
-
-  var endAjaxTime = 0;
 
   var url = window.location.href;
   if(/\/$/.test(url)) {
     url += "index.html";
   }
   url += "?action=course-schedule";
-  
   // Debug: local development
   url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
-
+  
+  var endAjaxTime = 0;
+  
+  var retrievedScheduleDeferred = $.Deferred();
   $.getJSON(url, function(data, xhr, textStatus) {
     retrievedScheduleData = data;
   }).always(function() {
@@ -39,7 +37,7 @@ $(document).ready(function() {
   $.when(retrievedScheduleDeferred).done(function() {
     if(retrievedScheduleData == null) {
       $.when(scheduleDocumentReady).done(function() {
-        $("#activities").html(scheduleI18n["no-data"]);
+        $("#activities").html("<p>" + scheduleI18n["no-data"] + "</p>");
       });
       scheduleDeferred.resolve();
       return;
@@ -77,7 +75,7 @@ $(document).ready(function() {
                             "ms) || (AJAX-complete: " + endAjaxTime + "ms + Threads invoking/serializing: " + (endMakingThreadsTime + htmlPlenary.parseRetrievedJSONTime + htmlGroup.parseRetrievedJSONTime) +
                             "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))</p>" + html);
       
-      // Toggle passed
+      // Toggle passed sessions
       $(document).on("click", ".course-schedule-table-toggle-passed", function(e) {
         var link = $(this);
         var table = link.next();

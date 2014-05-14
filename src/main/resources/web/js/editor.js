@@ -1028,16 +1028,15 @@ var retrievedScheduleData = null;
 var onlySessionId = gup("sessionid", window.location.href);
 
 function courseSchedule() {
-  var retrievedScheduleDeferred = $.Deferred();
   var url = window.location.pathname;
   if(/\/$/.test(url)) {
     url += "index.html";
   }
   url += "?action=course-schedule";
-  
   // Debug: local development
   url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
+  var retrievedScheduleDeferred = $.Deferred();
   vrtxAdmin.serverFacade.getJSON(url, {
     success: function(data, xhr, textStatus) {
       retrievedScheduleData = data;
@@ -1057,10 +1056,6 @@ function courseSchedule() {
   initMultipleInputFields();
 
   $.when(retrievedScheduleDeferred, vrtxEditor.multipleFieldsBoxesDeferred).done(function() {
-    if(retrievedScheduleData == null)  return;
-    
-    $(".vrtx-json").remove();
-
     var isEn = vrtxAdmin.lang == "en",
         i18n = {
           "01": "jan",
@@ -1080,6 +1075,7 @@ function courseSchedule() {
             "plenary": (isEn ? "Plenary teaching" : "Fellesundervisning"),
             "group": (isEn ? "Group teaching" : "Partiundervisning")
           },
+          "no-data": (isEn ? "No data" : "Ingen data"),
           "no-session-data": (isEn ? "No activity data" : "Ingen aktivitetsdata"),
           "cancelled": (isEn ? "(cancelled in scheduling system)" : "(avlyst i timeplanleggingssystemet)"),
           "vrtx-title": (isEn ? "Title:" : "Tittel:"),
@@ -1092,21 +1088,26 @@ function courseSchedule() {
           "vrtx-resources-title": (isEn ? "Title" : "Tittel"),
           "vrtx-resources-url": (isEn ? "Link" : "Lenke")
         };
+    
+    if(retrievedScheduleData == null) {
+      editorProperties.prepend("<p>" + i18n["no-data"] + "</p>");
+      return;
+    }
+    
+    $(".vrtx-json").remove();
 
     if(onlySessionId.length) {
       var sessionOnly = generateCourseScheduleSessionOnly(retrievedScheduleData, onlySessionId, i18n);
-      if(!html) html = i18n["no-session-data"];
+      var html = sessionOnly.html;
+      if(!html) html = "<p>" + i18n["no-session-data"] + "</p>";
 
+      editorProperties.prepend("<h4 class='property-label'>" + sessionOnly.title + "</h4>" + html);
+      generateCourseScheduleEnhanceSession(sessionOnly.id, onlySessionId, editorProperties);
+      
       var editorSubmitButtons = vrtxEditor.editorForm.find(".submitButtons");
       
-      editorProperties.prepend("<h4 class='property-label'>" + sessionOnly.title + "</h4>" + sessionOnly.html);
-
-      var id = sessionOnly.id;
-
-      generateCourseScheduleEnhanceSession(id, onlySessionId, editorProperties);
-      
-      var newButtonsHtml = "<input class='vrtx-focus-button vrtx-embedded-button' id='vrtx-embedded-save-button' type='submit' value='Lagre' />";
-         newButtonsHtml += "<input class='vrtx-button vrtx-embedded-button' id='vrtx-embedded-cancel-button' type='submit' value='Avbryt' />";
+      var newButtonsHtml = "<input class='vrtx-focus-button vrtx-embedded-button' id='vrtx-embedded-save-button' type='submit' value='Lagre' />" +
+                           "<input class='vrtx-button vrtx-embedded-button' id='vrtx-embedded-cancel-button' type='submit' value='Avbryt' />";
       editorSubmitButtons.prepend(newButtonsHtml);
       
       /* Save and unlock */
@@ -1160,10 +1161,12 @@ function courseSchedule() {
           lastElm = null;
         
           saveCourseScheduleSession(content, id, sessionId);
-        
+          
+          // Update title
           var titleElm = sessionElm.find("> .header > .header-title");
-          var newTitle = content.filter("> div:first-child").find("input[type='text']")
+          var newTitle = content.find("> div:first-child input[type='text']")
           if(newTitle.length && newTitle.val() != "") {
+            console.log("Test");
             titleElm.html(newTitle.val());
           } else {
             titleElm.html(sessionsLookup[id][sessionId].rawOrig.title);

@@ -1018,6 +1018,8 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
   }
 };
 
+/* Course schedule */
+
 var sessionsLookup = {};
 var lastId = "";
 var lastSessionId = "";
@@ -1242,10 +1244,6 @@ function courseSchedule() {
   });
 }
 
-/*
- * Generate Course Schedule session only
- *
- */
 function generateCourseScheduleSessionOnly(json, sessionId, i18n) {
   var sessionData = retrieveCourseScheduleSessionFromId(json, sessionId);
   if(!sessionData) return null;
@@ -1270,10 +1268,6 @@ function generateCourseScheduleSessionOnly(json, sessionId, i18n) {
   return { id: id, html: sessionHtml.html, title: sessionHtml.title };
 }
 
-/*
- * Retrieve Course Schedule session from id
- *
- */
 function retrieveCourseScheduleSessionFromId(json, findSessionId) {
   var generateCourseScheduleDateTimeFunc = generateCourseScheduleDateTime;
   var generateCourseSchedulePostFixIdFunc = generateCourseSchedulePostFixId;
@@ -1322,10 +1316,6 @@ function generateCourseScheduleEnhanceSession(id, sessionId, contentElm) {
   }
 }
 
-/*
- * Generate Course Schedule activities for type
- *
- */
 function generateCourseScheduleActivitiesForType(json, type, skipTier, i18n) {
   var generateCourseScheduleDateAndPostFixIdFunc = generateCourseScheduleDateAndPostFixId,
       generateCourseScheduleSessionFunc = generateCourseScheduleSession,
@@ -1383,10 +1373,6 @@ function generateCourseScheduleActivitiesForType(json, type, skipTier, i18n) {
   return html;
 }
 
-/*
- * Generate Course Schedule session
- *
- */
 function generateCourseScheduleSession(id, session, descs, i18n, skipTier, generateCourseScheduleDateAndPostFixIdFunc, generateCourseScheduleContentFromSessionDataFunc) {
   var sessionDatePostFixId = generateCourseScheduleDateAndPostFixIdFunc(session.dtstart, session.dtend, i18n),
       sessionId = id + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId,
@@ -1410,10 +1396,6 @@ function generateCourseScheduleSession(id, session, descs, i18n, skipTier, gener
    return { sessionId: sessionId, html: sessionContent.html, title: sessionTitle };
 }
 
-/*
- *  Generate Course Schedule date and postFixId (+0100 timezone)
- *
- */
 function generateCourseScheduleDateAndPostFixId(s, e, i18n) { /* IE8: http://www.digital-portfolio.net/blog/view/ie8-and-iso-date-format */
   var dateTime = generateCourseScheduleDateTime(s, e);
   var sd = dateTime.sd;
@@ -1434,10 +1416,6 @@ function generateCourseScheduleDateAndPostFixId(s, e, i18n) { /* IE8: http://www
   return { date: strDate, postFixId: generateCourseSchedulePostFixId(sd, st, ed, et) };
 }
 
-/*
- *  Generate Course Schedule dateTime
- *
- */
 function generateCourseScheduleDateTime(s, e) {
   var sd = s.split("T")[0].split("-");
   var st = s.split("T")[1].split(".")[0].split(":");
@@ -1447,28 +1425,16 @@ function generateCourseScheduleDateTime(s, e) {
   return { sd: sd, st: st, ed: ed, et: et };
 }
 
-/*
- *  Generate Course Schedule postFixId
- *
- */
 function generateCourseSchedulePostFixId(sd, st, ed, et) {
   return sd[2] + "-" + sd[1] + "-" + sd[0] + "-" + st[0] + "-" + st[1] + "-" + et[0] + "-" + et[1];
 }
 
-/*
- * Save Course Schedule
- *
- */
 function saveCourseSchedule() {
   if(lastElm) {
     saveCourseScheduleSession(lastElm, lastId, lastSessionId);
   }
 }
 
-/*
- *  Reset Course Schedule after save
- *
- */
 function courseScheduleSaved() {
   for(var type in sessionsLookup) {
     for(var session in sessionsLookup[type]) {
@@ -1482,10 +1448,6 @@ function courseScheduleSaved() {
   courseScheduleClose();
 }
 
-/*
- *  Course Schedule only session close popup window
- *
- */
 function courseScheduleClose() {
   if(onlySessionId.length) {
     if (top.opener && !top.opener.closed) { // Try to refresh opener (not possible cross-origin)
@@ -1495,10 +1457,6 @@ function courseScheduleClose() {
   }
 }
 
-/*
- *  Check if Course Schedule has changes
- *
- */
 function unsavedChangesInCourseSchedule() {
   if(lastElm) {
     saveCourseScheduleSession(lastElm, lastId, lastSessionId);
@@ -1513,10 +1471,6 @@ function unsavedChangesInCourseSchedule() {
   return false;
 }
 
-/*
- *  Save Course Schedule session (mark it if has changes)
- *
- */
 function saveCourseScheduleSession(domSessionElms, id, sessionId) {
   saveMultipleInputFields(domSessionElms, "$$$");
 
@@ -1541,10 +1495,6 @@ function saveCourseScheduleSession(domSessionElms, id, sessionId) {
   sessionLookup.hasChanges = saveCourseScheduleSessionDetectChange(rawPtr, rawOrig);
 }
 
-/*
- * Recursively check if new data (rawPtr) differs from original data (rawOrig)
- *
- */
 function saveCourseScheduleSessionDetectChange(o1, o2) {
   if(typeof o1 === "object" && typeof o2 === "object") {
     if(o1.length) { // Array
@@ -1574,9 +1524,6 @@ function saveCourseScheduleSessionDetectChange(o1, o2) {
   return false;
 }
 
-/* 
- * Generate HTML and multiples definition for session
- */
 function generateCourseScheduleContentFromSessionData(id, data, descs, i18n) {
   var html = "";
   var multiples = [];
@@ -1646,9 +1593,6 @@ function generateCourseScheduleContentFromSessionData(id, data, descs, i18n) {
   return { html: html, multiples: multiples };
 }
 
-/* 
- * Extract session field from DOM
- */
 function saveCourseScheduleExtractSessionFieldFromDOM(desc, elm) {
   var val = "";
   if(desc.type === "checkbox") {
@@ -1682,6 +1626,8 @@ function saveCourseScheduleExtractSessionFieldFromDOM(desc, elm) {
   }
   return val;
 }
+
+/* ^ Course schedule */
 
 /*
  * Boolean switch show/hide

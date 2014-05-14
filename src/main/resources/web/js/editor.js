@@ -1074,10 +1074,10 @@ function courseSchedule() {
           "10": (isEn ? "oct" : "okt"),
           "11": (isEn ? "nov" : "nov"),
           "12": (isEn ? "dec" : "des"),
-          room: (isEn ? "room" : "rom"),
-          titles: {
-            plenary: (isEn ? "Plenary teaching" : "Fellesundervisning"),
-            group: (isEn ? "Group teaching" : "Partiundervisning")
+          "room: (isEn ? "room" : "rom"),
+          "titles": {
+            "plenary": (isEn ? "Plenary teaching" : "Fellesundervisning"),
+            "group": (isEn ? "Group teaching" : "Partiundervisning")
           },
           "cancelled": (isEn ? "(cancelled in scheduling system)" : "(avlyst i timeplanleggingssystemet)"),
           "vrtx-title": (isEn ? "Title:" : "Tittel:"),

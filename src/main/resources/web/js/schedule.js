@@ -26,6 +26,7 @@ $(document).ready(function() {
   
   var endAjaxTime = 0;
   
+  // Get schedule JSON
   var retrievedScheduleDeferred = $.Deferred();
   $.getJSON(url, function(data, xhr, textStatus) {
     retrievedScheduleData = data;

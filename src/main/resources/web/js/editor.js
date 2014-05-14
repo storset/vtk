@@ -1036,6 +1036,7 @@ function courseSchedule() {
   // Debug: local development
   url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
+  // Get schedule JSON
   var retrievedScheduleDeferred = $.Deferred();
   vrtxAdmin.serverFacade.getJSON(url, {
     success: function(data, xhr, textStatus) {
@@ -1111,14 +1112,14 @@ function courseSchedule() {
       editorSubmitButtons.prepend(newButtonsHtml);
       
       /* Save and unlock */
-      vrtxEditor.editorForm.on("click", "#vrtx-embedded-save-button", function(e) {
+      editorSubmitButtons.on("click", "#vrtx-embedded-save-button", function(e) {
         editorSubmitButtons.find("#saveAndViewButton").trigger("click");
         e.stopPropagation();
         e.preventDefault();
       });
       
       /* Cancel is unlock */
-      vrtxEditor.editorForm.on("click", "#vrtx-embedded-cancel-button", function(e) {
+      editorSubmitButtons.on("click", "#vrtx-embedded-cancel-button", function(e) {
         var form = $("form[name='unlockForm']");
         var url = form.attr("action");
         var dataString = form.serialize();

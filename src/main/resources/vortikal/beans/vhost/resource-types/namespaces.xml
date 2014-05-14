@@ -119,5 +119,10 @@
     <constructor-arg value="student-exchange-agreement-listing" />
     <constructor-arg value="http://www.uio.no/resource-types/student-exchange-agreement-listing" />
   </bean>
+
+  <bean id="FIXED_RESOURCES_COLLECTION_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="fixed-resources-collection" />
+    <constructor-arg value="http://www.uio.no/resource-types/fixed-resources-collection" />
+  </bean>
   
 </beans>

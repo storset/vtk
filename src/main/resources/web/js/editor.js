@@ -1033,7 +1033,7 @@ function courseSchedule() {
   }
   url += "?action=course-schedule";
   
-  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   vrtxAdmin.serverFacade.getJSON(url, {
     success: function(data, xhr, textStatus) {

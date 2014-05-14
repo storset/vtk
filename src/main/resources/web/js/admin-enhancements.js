@@ -2666,7 +2666,18 @@ function ajaxSave() {
     _$("#editor").ajaxSubmit({
       data: extraData,
       success: function(results, status, xhr) { 
-        ajaxSaveSuccess(startTime, d, results, status, xhr);
+        vrtxAdmin.clientLastModified = $($.parseHTML(results)).find("#resource-last-modified").text().split(",");
+        var endTime = new Date() - startTime;
+        var waitMinMs = 800;
+        if (endTime >= waitMinMs) { // Wait minimum 0.8s
+          d.close();
+          vrtxAdmin.asyncEditorSavedDeferred.resolve();
+        } else {
+          var waitMinTimer = setTimeout(function () {
+            d.close();
+            vrtxAdmin.asyncEditorSavedDeferred.resolve();
+          }, Math.round(waitMinMs - endTime));
+        }
         if(typeof vrtxEditor != "undefined" && vrtxEditor.editorForm.hasClass("vrtx-course-schedule")) {
           courseScheduleSaved();
         }
@@ -2675,30 +2686,11 @@ function ajaxSave() {
         if(typeof vrtxEditor != "undefined") {
           vrtxEditor.needToConfirm = true;
         }
-        ajaxSaveError(d, xhr, textStatus);
+        d.close();
+        vrtxAdmin.asyncEditorSavedDeferred.rejectWith(this, [xhr, textStatus]);
       }
     });
   });
-}
-
-function ajaxSaveSuccess(startTime, d, results, status, xhr) {
-  vrtxAdmin.clientLastModified = $($.parseHTML(results)).find("#resource-last-modified").text().split(",");
-  var endTime = new Date() - startTime;
-  var waitMinMs = 800;
-  if (endTime >= waitMinMs) { // Wait minimum 0.8s
-    d.close();
-    vrtxAdmin.asyncEditorSavedDeferred.resolve();
-  } else {
-    var waitMinTimer = setTimeout(function () {
-      d.close();
-      vrtxAdmin.asyncEditorSavedDeferred.resolve();
-    }, Math.round(waitMinMs - endTime));
-  }
-}
-
-function ajaxSaveError(d, xhr, textStatus) {
-  d.close();
-  vrtxAdmin.asyncEditorSavedDeferred.rejectWith(this, [xhr, textStatus]);
 }
 
 function updateClientLastModifiedAlreadyRetrieved() {

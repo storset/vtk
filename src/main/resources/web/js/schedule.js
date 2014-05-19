@@ -22,7 +22,7 @@ $(document).ready(function() {
   }
   url += "?action=course-schedule";
   // Debug: local development
-  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   var endAjaxTime = 0;
   
@@ -43,9 +43,7 @@ $(document).ready(function() {
       scheduleDeferred.resolve();
       return;
     }
-    
-    console.log("Cc");
-    
+
     var startMakingThreadsTime = +new Date();
     
     var thread1Finished = $.Deferred(),

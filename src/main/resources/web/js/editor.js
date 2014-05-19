@@ -1029,6 +1029,7 @@ var lastSessionId = "";
 var lastElm = null;
 var retrievedScheduleData = null;
 var onlySessionId = gup("sessionid", window.location.href);
+console.log(onlySessionId);
 
 function courseSchedule() {
   var url = window.location.pathname;
@@ -1170,7 +1171,6 @@ function courseSchedule() {
           var titleElm = sessionElm.find("> .header > .header-title");
           var newTitle = content.find("> div:first-child input[type='text']")
           if(newTitle.length && newTitle.val() != "") {
-            console.log("Test");
             titleElm.html(newTitle.val());
           } else {
             titleElm.html(sessionsLookup[id][sessionId].rawOrig.title);
@@ -1283,7 +1283,7 @@ function retrieveCourseScheduleSessionFromId(json, findSessionId) {
 
   for(var type in json) {
     var data = json[type];
-    if(!data) continue;
+    if(!data || !(data instanceof Array)) continue;
     var dataLen = data.length;
     if(!dataLen) continue;
     

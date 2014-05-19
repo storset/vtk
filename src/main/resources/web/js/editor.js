@@ -1032,9 +1032,9 @@ function courseSchedule() {
   if(/\/$/.test(url)) {
     url += "index.html";
   }
-  url += "?action=course-schedule";
+  url += "?action=course-schedule&mode=edit";
   // Debug: local development
-  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   // Get schedule JSON
   var retrievedScheduleDeferred = $.Deferred();
@@ -1328,14 +1328,17 @@ function generateCourseScheduleActivitiesForType(json, type, skipTier, i18n) {
       generateCourseScheduleContentFromSessionDataFunc = generateCourseScheduleContentFromSessionData,
       jsonType = json[type],
       descs = jsonType["vrtx-editable-description"],
-      data = jsonType["data"],
-      dataLen = data.length,
+      data = jsonType["data"];
+      
+  if(!data) return "";
+      
+  var dataLen = data.length,
       dtShortLast = "",
       html = "",
       htmlMiddle = "",
       sessionsHtml = "";
       
-  if(!dataLen) return html;
+  if(!dataLen) return "";
       
   // Store sessions HTML and multiple descriptions in lookup object
   for(var i = 0; i < dataLen; i++) {

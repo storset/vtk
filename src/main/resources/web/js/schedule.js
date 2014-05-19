@@ -22,7 +22,7 @@ $(document).ready(function() {
   }
   url += "?action=course-schedule";
   // Debug: local development
-  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   var endAjaxTime = 0;
   

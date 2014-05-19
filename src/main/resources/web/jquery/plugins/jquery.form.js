@@ -228,6 +228,26 @@ $.fn.ajaxSubmit = function(options) {
 			cache: false,
 			type: 'POST'
 		});
+		
+	  // USIT added from newest jquery.form.js: fix for upload progress
+	  if (options.uploadProgress) {
+            // workaround because jqXHR does not expose upload property
+            s.xhr = function() {
+                var xhr = $.ajaxSettings.xhr();
+                if (xhr.upload) {
+                    xhr.upload.addEventListener('progress', function(event) {
+                        var percent = 0;
+                        var position = event.loaded || event.position; /*event.position is deprecated*/
+                        var total = event.total;
+                        if (event.lengthComputable) {
+                            percent = Math.ceil(position / total * 100);
+                        }
+                        options.uploadProgress(event, position, total, percent);
+                    }, false);
+                }
+                return xhr;
+            };
+      }
 
       s.context = s.context || s;
 
@@ -243,6 +263,7 @@ $.fn.ajaxSubmit = function(options) {
           if(beforeSend)
               beforeSend.call(o, xhr, options);
       };
+
       $.ajax(s);
    }
 

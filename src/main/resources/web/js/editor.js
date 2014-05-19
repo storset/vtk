@@ -1088,7 +1088,7 @@ function courseSchedule() {
           "edit-only-session-title": (isEn ? "Edit activity" : "Rediger aktivitet"),
           "no-data": (isEn ? "No data" : "Ingen data"),
           "no-session-data": (isEn ? "No activity data" : "Ingen aktivitetsdata"),
-          "cancelled": (isEn ? "(cancelled in scheduling system)" : "(avlyst i timeplanleggingssystemet)"),
+          "cancelled": (isEn ? "CANCELLED" : "AVLYST"),
           "vrtx-title": (isEn ? "Title:" : "Tittel:"),
           "vrtx-staff": (isEn ? "Staff:" : "Forelesere:"),
           "vrtx-staff-external": (isEn ? "External staff:" : "Eksterne forelesere:"),
@@ -1399,9 +1399,8 @@ function generateCourseScheduleSession(id, session, descs, i18n, skipTier, gener
       sessionId = id + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId,
       sessionCancelled = session.status && session.status === "cancelled",
       sessionTitle = sessionDatePostFixId.date + " " +
-                     "<span class='header-title'>" + (session["vrtx-title"] || session.title || session.id) + "</span>" +
-                     (session.room ? " - " + (session.room[0].buildingid + " " + i18n.room + " " + session.room[0].roomid) : "") +
-                     (sessionCancelled ? " <span class='header-status'>" + i18n[session.status] + "</span>" : ""),
+                     "<span class='header-title'>" + (sessionCancelled ? " <span class='header-status'>" + i18n[session.status] + "</span> - " : "") + (session["vrtx-title"] || session.title || session.id) + "</span>" +
+                     (session.room ? " - " + (session.room[0].buildingid + " " + i18n.room + " " + session.room[0].roomid) : ""),
       sessionContent = generateCourseScheduleContentFromSessionDataFunc(sessionId, session, descs, i18n);
 
    sessionsLookup[id][sessionId] = {

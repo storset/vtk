@@ -80,8 +80,8 @@ $(document).ready(function() {
       $(document).on("click", ".course-schedule-table-toggle-passed", function(e) {
         var link = $(this);
         var table = link.next();
-        table.toggleClass("showing-passed"); 
-        link.text(table.hasClass("showing-passed") ? scheduleI18n["table-hide-passed"] : scheduleI18n["table-show-passed"]);
+        table.toggleClass("hiding-passed"); 
+        link.text(table.hasClass("hiding-passed") ? scheduleI18n["table-show-passed"] : scheduleI18n["table-hide-passed"]);
         e.stopPropagation();
         e.preventDefault();
       });
@@ -260,7 +260,7 @@ function generateHTMLForType(d) {
       getTableStartHtml = function(activityId, caption, isAllPassed, i18n) {
         var html = "<div class='course-schedule-table-wrapper'>";
         html += "<a class='course-schedule-table-toggle-passed' href='javascript:void(0);'>" + i18n["table-show-passed"] + "</a>";
-        html += "<table id='" + activityId + "' class='course-schedule-table table-fixed-layout uio-zebra" + (isAllPassed ? " all-passed" : "") + "'><caption>" + caption + "</caption><thead><tr>";
+        html += "<table id='" + activityId + "' class='course-schedule-table table-fixed-layout uio-zebra hiding-passed" + (isAllPassed ? " all-passed" : "") + "'><caption>" + caption + "</caption><thead><tr>";
           html += "<th class='course-schedule-table-date'>" + i18n["table-date"] + "</th><th class='course-schedule-table-day'>" + i18n["table-day"] + "</th>";
           html += "<th class='course-schedule-table-time'>" + i18n["table-time"] + "</th><th class='course-schedule-table-title'>" + i18n["table-title"] + "</th>";
           html += "<th class='course-schedule-table-place'>" + i18n["table-place"] + "</th><th class='course-schedule-table-staff'>" + i18n["table-staff"] + "</th>";

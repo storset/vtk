@@ -1182,13 +1182,14 @@ function courseSchedule() {
           var titleElm = sessionElm.find("> .header > .header-title");
           var newTitle = content.find("> div:first-child input[type='text']");
           
-          var sessionCancelled = content.find("input[name='vrtx-status']")[0].checked || (session.rawPtr.status && session.rawPtr.status === "cancelled");
-          session.isCancelled = sessionCancelled;
-
+          var cancelledElm = content.find("input[name='vrtx-status']");
+          if(cancelledElm.length) {
+            session.isCancelled = cancelledElm[0].checked;
+          }
           if(newTitle.length && newTitle.val() != "") {
-            titleElm.html((sessionCancelled ? " <span class='header-status'>" + i18n["cancelled"] + "</span> - " : "") + newTitle.val());
+            titleElm.html((session.isCancelled ? " <span class='header-status'>" + i18n["cancelled"] + "</span> - " : "") + newTitle.val());
           } else {
-            titleElm.html((sessionCancelled ? " <span class='header-status'>" + i18n["cancelled"] + "</span> - " : "") + session.rawOrig.title);
+            titleElm.html((session.isCancelled ? " <span class='header-status'>" + i18n["cancelled"] + "</span> - " : "") + session.rawOrig.title);
           }
         }
       };  

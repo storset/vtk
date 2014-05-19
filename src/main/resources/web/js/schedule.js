@@ -90,7 +90,7 @@ $(document).ready(function() {
       if(schedulePermissions.hasReadWriteNotLocked) {
         $(document).on("mouseover mouseout", "tbody tr", function(e) {
           var row = $(this);
-          var rowStaff = row.find(".course-schedule-table-row-staff");
+          var rowStaff = row.find(".course-schedule-table-row-resources");
           var rowEdit = rowStaff.next();
           rowStaff.toggle();
           rowEdit.toggle();
@@ -335,11 +335,11 @@ function generateHTMLForType(d) {
         sessionsHtml += "<td>" + dateTime.time + "</td>";
         sessionsHtml += "<td>" + getTitleFunc(session, isCancelled, scheduleI18n) + "</td>";
         sessionsHtml += "<td>" + getPlaceFunc(session) + "</td>";
+        sessionsHtml += "<td>" + getStaffFunc(session) + "</td>";
         sessionsHtml += "<td>";
-          sessionsHtml += "<span class='course-schedule-table-row-staff'>" + getStaffFunc(session) + "</span>";
+          sessionsHtml += "<span class='course-schedule-table-row-resources'>" + getResourcesFunc(session) + "</span>";
           sessionsHtml += (canEdit ? "<span class='course-schedule-table-row-edit' style='display: none'><a href='javascript:void'>" + scheduleI18n["table-edit"] + "</a></span>" : "");
         sessionsHtml += "</td>";
-        sessionsHtml += "<td>" + getResourcesFunc(session) + "</td>";
       sessionsHtml += "</tr>";
     
       if(tocTimeCount < tocTimeMax && !isCancelled) {

@@ -345,10 +345,10 @@ function generateHTMLForType(d) {
           split2 = split1 + Math.ceil((len3 - split1) / 2);
           tocHtml += "<p>" + dtLong + "</p>";
           // TODO: fix .thirds-<pos> outside frontpage
-          tocHtml += "<div style='float: left; width: 100%; clear: both'><ul class='thirds-left' style='width: 193px;'>";
+          tocHtml += "<div class='course-schedule-thirds'><ul class='thirds-left'>";
           for(k = 0; k < len3; k++) {
-            if(k === split1) tocHtml += "</ul><ul class='thirds-middle' style='width: 193px'>";
-            if(k === split2) tocHtml += "</ul><ul class='thirds-right' style='width: 193px'>";
+            if(k === split1) tocHtml += "</ul><ul class='thirds-middle'>";
+            if(k === split2) tocHtml += "</ul><ul class='thirds-right'>";
             tocHtml += tocHtmlArr[k];
           }
           tocHtml += "</ul></div>";

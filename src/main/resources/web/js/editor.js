@@ -1178,12 +1178,17 @@ function courseSchedule() {
           saveCourseScheduleSession(content, id, sessionId);
           
           // Update title
+          var session = sessionsLookup[id][sessionId];
           var titleElm = sessionElm.find("> .header > .header-title");
-          var newTitle = content.find("> div:first-child input[type='text']")
+          var newTitle = content.find("> div:first-child input[type='text']");
+          
+          var sessionCancelled = content.find("input[name='vrtx-status']")[0].checked || (session.rawPtr.status && session.rawPtr.status === "cancelled");
+          session.isCancelled = sessionCancelled;
+
           if(newTitle.length && newTitle.val() != "") {
-            titleElm.html(newTitle.val());
+            titleElm.html((sessionCancelled ? " <span class='header-status'>" + i18n["cancelled"] + "</span> - " : "") + newTitle.val());
           } else {
-            titleElm.html(sessionsLookup[id][sessionId].rawOrig.title);
+            titleElm.html((sessionCancelled ? " <span class='header-status'>" + i18n["cancelled"] + "</span> - " : "") + session.rawOrig.title);
           }
         }
       };  
@@ -1329,9 +1334,11 @@ function generateCourseScheduleEnhanceSession(id, sessionId, contentElm) {
       enhanceMultipleInputFieldsFunc(m.name + "-" + sessionId, m.movable, m.browsable, 50, m.json);
     }
     session.isEnhanced = true;
+    /*
     if(session.isCancelled) {
       contentElm.find("button, input").filter(":not(.moveup, .movedown)").attr("disabled", "disabled");
     }
+    */
   }
 }
 
@@ -1397,9 +1404,9 @@ function generateCourseScheduleActivitiesForType(json, type, skipTier, i18n) {
 function generateCourseScheduleSession(id, session, descs, i18n, skipTier, generateCourseScheduleDateAndPostFixIdFunc, generateCourseScheduleContentFromSessionDataFunc) {
   var sessionDatePostFixId = generateCourseScheduleDateAndPostFixIdFunc(session.dtstart, session.dtend, i18n),
       sessionId = id + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId,
-      sessionCancelled = session.status && session.status === "cancelled",
+      sessionCancelled = (session["vrtx-status"] && session["vrtx-status"] === "cancelled") || (session.status && session.status === "cancelled"),
       sessionTitle = sessionDatePostFixId.date + " " +
-                     "<span class='header-title'>" + (sessionCancelled ? " <span class='header-status'>" + i18n[session.status] + "</span> - " : "") + (session["vrtx-title"] || session.title || session.id) + "</span>" +
+                     "<span class='header-title'>" + (sessionCancelled ? "<span class='header-status'>" + i18n["cancelled"] + "</span> - " : "") + (session["vrtx-title"] || session.title || session.id) + "</span>" +
                      (session.room ? " - " + (session.room[0].buildingid + " " + i18n.room + " " + session.room[0].roomid) : ""),
       sessionContent = generateCourseScheduleContentFromSessionDataFunc(sessionId, session, descs, i18n);
 
@@ -1548,14 +1555,17 @@ function generateCourseScheduleContentFromSessionData(id, data, descs, i18n) {
     var desc = descs[name],
         descProps = jQuery.extend(true, [], desc.props),
         val = data[name],
+        origVal = "",
         propsVal = "",
         browsable = false,
+        hasOrig = false,
         size = 40;
-    if(!val || !val.length) {
-      var origName = name.split("vrtx-")[1];
-      if(origName) {
-        var origVal = data[name.split("vrtx-")[1]];
-        if(origVal != "") {
+    
+    var origName = name.split("vrtx-")[1];
+    if(origName) {
+      var origVal = data[name.split("vrtx-")[1]];
+      if(origVal != "") {
+        if(!val || !val.length) {
           val = origVal;
         }
       }
@@ -1596,11 +1606,13 @@ function generateCourseScheduleContentFromSessionData(id, data, descs, i18n) {
                                                      }, name);
         break;
       case "checkbox":
-        html += vrtxEditor.htmlFacade.getCheckboxField({ title: i18n[name],
-                                                         name: name + "-" + id,
-                                                         id: name + "-" + id,
-                                                         checked: (val === "active" ? null : val)
-                                                       }, name);
+        if(!origVal || origVal !== "cancelled") {
+          html += vrtxEditor.htmlFacade.getCheckboxField({ title: i18n[name],
+                                                           name: name + "-" + id,
+                                                           id: name + "-" + id,
+                                                           checked: (val === "active" ? null : val)
+                                                         }, name);
+        }
         break;
       default:
         break;

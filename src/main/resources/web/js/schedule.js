@@ -211,8 +211,8 @@ function generateHTMLForType(d) {
         
         return { date: date, endDateTime: endDateTime, day: day, time: time, postFixId: postFixId };
       },
-      getTitleFunc = function(session) {
-        return session["vrtx-title"] || session.title || session.id;
+      getTitleFunc = function(session, isCancelled, i18n) {
+        return (isCancelled ? "<span class='course-schedule-table-status'>" + i18n["table-cancelled"] + "</span>" : "") + (session["vrtx-title"] || session.title || session.id);
       },
       getPlaceFunc = function(session) {
         var val = "";
@@ -236,6 +236,27 @@ function generateHTMLForType(d) {
         }
         return val;
       },
+      getResourcesFunc = function(session) {
+        var val = "";
+        var resources = session["vrtx-resources"];
+        if(resources && resources.length) {
+          var resourcesLen = resources.length;
+          if(resourcesLen > 1) val = "<ul>";
+          for(var i = 0; i < resourcesLen; i++) {
+            if(resourcesLen > 1) val += "<li>";
+            if(resources[i].title && resources[i].url) {
+              val += "<a href='" + resources[i].url + "'>" + resources[i].title + "</a>";
+            } else if(resources[i].url) {
+              val += "<a href='" + resources[i].url + "'>" + resources[i].url + "</a>";
+            } else if(resources[i].title) {
+              val += resources[i].title;
+            }
+            if(resourcesLen > 1) val += "</li>";
+          }
+          if(resourcesLen > 1) val += "</ul>";
+        }
+        return val;
+      },
       getTableStartHtml = function(activityId, caption, isAllPassed, i18n) {
         var html = "<div class='course-schedule-table-wrapper'>";
         html += "<a class='course-schedule-table-toggle-passed' href='javascript:void(0);'>" + i18n["table-show-passed"] + "</a>";
@@ -243,6 +264,7 @@ function generateHTMLForType(d) {
           html += "<th class='course-schedule-table-date'>" + i18n["table-date"] + "</th><th class='course-schedule-table-day'>" + i18n["table-day"] + "</th>";
           html += "<th class='course-schedule-table-time'>" + i18n["table-time"] + "</th><th class='course-schedule-table-title'>" + i18n["table-title"] + "</th>";
           html += "<th class='course-schedule-table-place'>" + i18n["table-place"] + "</th><th class='course-schedule-table-staff'>" + i18n["table-staff"] + "</th>";
+           html += "<th class='course-schedule-table-resources'>" + i18n["table-resources"] + "</th>";
         html += "</tr></thead><tbody>";
         return html;
       },
@@ -311,12 +333,13 @@ function generateHTMLForType(d) {
         sessionsHtml += "<td>" + dateTime.date + "</td>";
         sessionsHtml += "<td>" + dateTime.day + "</td>";
         sessionsHtml += "<td>" + dateTime.time + "</td>";
-        sessionsHtml += "<td>" + getTitleFunc(session) + "</td>";
+        sessionsHtml += "<td>" + getTitleFunc(session, isCancelled, scheduleI18n) + "</td>";
         sessionsHtml += "<td>" + getPlaceFunc(session) + "</td>";
         sessionsHtml += "<td>";
           sessionsHtml += "<span class='course-schedule-table-row-staff'>" + getStaffFunc(session) + "</span>";
           sessionsHtml += (canEdit ? "<span class='course-schedule-table-row-edit' style='display: none'><a href='javascript:void'>" + scheduleI18n["table-edit"] + "</a></span>" : "");
         sessionsHtml += "</td>";
+        sessionsHtml += "<td>" + getResourcesFunc(session) + "</td>";
       sessionsHtml += "</tr>";
     
       if(tocTimeCount < tocTimeMax && !isCancelled) {

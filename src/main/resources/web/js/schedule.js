@@ -22,7 +22,7 @@ $(document).ready(function() {
   }
   url += "?action=course-schedule";
   // Debug: local development
-  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   var endAjaxTime = 0;
   
@@ -44,6 +44,8 @@ $(document).ready(function() {
       return;
     }
     
+    console.log("Cc");
+    
     var startMakingThreadsTime = +new Date();
     
     var thread1Finished = $.Deferred(),
@@ -51,13 +53,13 @@ $(document).ready(function() {
         htmlPlenary = {},
         htmlGroup = {},
         plenaryStringified = JSON.stringify({
-          data: retrievedScheduleData["plenary"].data,
+          data: retrievedScheduleData["plenary"],
           type: "plenary",
           i18n: scheduleI18n,
           canEdit: schedulePermissions.hasReadWriteNotLocked
         }),
         groupStringified = JSON.stringify({
-          data: retrievedScheduleData["group"].data,
+          data: retrievedScheduleData["group"],
           type: "group",
           i18n: scheduleI18n,
           canEdit: schedulePermissions.hasReadWriteNotLocked
@@ -72,9 +74,9 @@ $(document).ready(function() {
       var html = htmlPlenary.tocHtml + htmlGroup.tocHtml + htmlPlenary.tablesHtml + htmlGroup.tablesHtml;
       if(html === "") html = scheduleI18n["no-data"];
 
-      $("#activities").html(/*"<p>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
+      $("#activities").html("<p>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
                             "ms) || (AJAX-complete: " + endAjaxTime + "ms + Threads invoking/serializing: " + (endMakingThreadsTime + htmlPlenary.parseRetrievedJSONTime + htmlGroup.parseRetrievedJSONTime) +
-                            "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))</p>" + */ html);
+                            "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))</p>" + html);
       
       // Toggle passed sessions
       $(document).on("click", ".course-schedule-table-toggle-passed", function(e) {
@@ -88,9 +90,6 @@ $(document).ready(function() {
       
       // Edit session
       if(schedulePermissions.hasReadWriteNotLocked) {
-        var thisWindowHasFocus = true;
-        $(window).focus(function() { thisWindowHasFocus = true; })
-                 .blur(function()  { thisWindowHasFocus = false; });
         $(document).on("mouseover mouseout", "tbody tr", function(e) {
           var row = $(this);
           var rowStaff = row.find(".course-schedule-table-row-staff");
@@ -112,8 +111,20 @@ $(document).ready(function() {
           var openedEditActivityWindow = popupWindowInternal(850, 680, window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + row[0].id, "editActivity");
           
           // Refresh when gets refocused
+          var isVisible = false;
+          var waitVisibility = setTimeout(function() {
+            if(document.addEventListener) {
+              var detectVisibilityChange = function() {
+                isVisible = !document.hidden;
+                if(isVisible && document.removeEventListener) {
+                  document.removeEventListener("visibilitychange", detectVisibilityChange);
+                }
+              }
+              document.addEventListener("visibilitychange", detectVisibilityChange, false);
+            }
+          }, 450);
           var waitForClose = setTimeout(function() {
-            if(document.hasFocus()) {
+            if(document.hasFocus() || isVisible) {
               window.location.reload(1);
             } else {
               setTimeout(arguments.callee, 50); 

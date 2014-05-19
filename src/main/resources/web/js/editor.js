@@ -97,7 +97,7 @@ $(document).ready(function () {
     autocompleteTags(".vrtx-autocomplete-tag");
     vrtxEdit.initSendToApproval();
     
-    if(!isEmbedded) {
+    if(!vrtxEdit.isInAdmin || (vrtxEdit.isInAdmin && !isEmbedded)) {
       var getScriptFn = (typeof $.cachedScript === "function") ? $.cachedScript : $.getScript;
       var futureStickyBar = (typeof VrtxStickyBar === "undefined") ? getScriptFn("/vrtx/__vrtx/static-resources/js/vrtx-sticky-bar.js") : $.Deferred().resolve();
       $.when(futureStickyBar).done(function() {     
@@ -1260,7 +1260,7 @@ function generateCourseScheduleSessionOnly(json, sessionId, i18n) {
   var id = sessionData.id;
   var session = sessionData.session;
   var type = sessionData.type;
-  var descs = json[type]["vrtx-editable-description"];
+  var descs = json["vrtx-editable-description"][type];
   var skipTier = sessionData.skipTier;
   
   if(!sessionsLookup[id]) {
@@ -1282,7 +1282,7 @@ function retrieveCourseScheduleSessionFromId(json, findSessionId) {
   var generateCourseSchedulePostFixIdFunc = generateCourseSchedulePostFixId;
 
   for(var type in json) {
-    var data = json[type].data;
+    var data = json[type];
     if(!data) continue;
     var dataLen = data.length;
     if(!dataLen) continue;
@@ -1329,9 +1329,8 @@ function generateCourseScheduleActivitiesForType(json, type, skipTier, i18n) {
   var generateCourseScheduleDateAndPostFixIdFunc = generateCourseScheduleDateAndPostFixId,
       generateCourseScheduleSessionFunc = generateCourseScheduleSession,
       generateCourseScheduleContentFromSessionDataFunc = generateCourseScheduleContentFromSessionData,
-      jsonType = json[type],
-      descs = jsonType["vrtx-editable-description"],
-      data = jsonType["data"];
+      descs = json["vrtx-editable-description"][type],
+      data = json[type];
       
   if(!data) return "";
       

@@ -1029,7 +1029,6 @@ var lastSessionId = "";
 var lastElm = null;
 var retrievedScheduleData = null;
 var onlySessionId = gup("sessionid", window.location.href);
-console.log(onlySessionId);
 
 function courseSchedule() {
   var url = window.location.pathname;
@@ -1040,6 +1039,12 @@ function courseSchedule() {
   // Debug: local development
   url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
+  var contents = $("#contents");
+
+  if(onlySessionId.length) {
+    contents.hide();
+  }
+
   // Get schedule JSON
   var retrievedScheduleDeferred = $.Deferred();
   vrtxAdmin.serverFacade.getJSON(url, {
@@ -1080,6 +1085,7 @@ function courseSchedule() {
             "plenary": (isEn ? "Plenary teaching" : "Fellesundervisning"),
             "group": (isEn ? "Group teaching" : "Partiundervisning")
           },
+          "edit-only-session-title": (isEn ? "Edit activity" : "Rediger aktivitet"),
           "no-data": (isEn ? "No data" : "Ingen data"),
           "no-session-data": (isEn ? "No activity data" : "Ingen aktivitetsdata"),
           "cancelled": (isEn ? "(cancelled in scheduling system)" : "(avlyst i timeplanleggingssystemet)"),
@@ -1106,6 +1112,8 @@ function courseSchedule() {
       var html = sessionOnly.html;
       if(!html) html = "<p>" + i18n["no-session-data"] + "</p>";
 
+      contents.find("#vrtx-editor-title-submit-buttons-inner-wrapper > h2")
+              .text(i18n["edit-only-session-title"]);
       editorProperties.prepend("<h4 class='property-label'>" + sessionOnly.title + "</h4>" + html);
       generateCourseScheduleEnhanceSession(sessionOnly.id, onlySessionId, editorProperties);
       
@@ -1114,6 +1122,8 @@ function courseSchedule() {
       var newButtonsHtml = "<input class='vrtx-focus-button vrtx-embedded-button' id='vrtx-embedded-save-button' type='submit' value='Lagre' />" +
                            "<input class='vrtx-button vrtx-embedded-button' id='vrtx-embedded-cancel-button' type='submit' value='Avbryt' />";
       editorSubmitButtons.prepend(newButtonsHtml);
+      
+      contents.show();
       
       /* Save and unlock */
       editorSubmitButtons.on("click", "#vrtx-embedded-save-button", function(e) {

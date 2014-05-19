@@ -1,10 +1,15 @@
 resourcetype course-schedule {
 
   properties {
+    tittel : string,
+    title : derived (tittel) eval ("course-schedule"?localized) overrides title,
     activities : json
   }
   
   edit-rules {
+    tittel (size[1]),
+    tittel (class[ui-helper-hidden]),
+    title (class[ui-helper-hidden]),
     activities (class[ui-helper-hidden])
   }
   
@@ -13,7 +18,7 @@ resourcetype course-schedule {
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <title>[localized 'title']</title>
+        <title>[call "resource:contextual-title-new"]</title>
         <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/include-jquery.js"></script>
         <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/schedule.js"></script>
         <script type="text/javascript"><!--
@@ -51,11 +56,9 @@ resourcetype course-schedule {
           };
         // -->
         </script>
-        
-        
       </head>
       <body id="vrtx-course-schedule">
-        <h1>[localized 'title']</h1>
+        <h1>[call "resource:property" {"id":"title"}]</h1>
         <div id="activities">
         
         </div>
@@ -66,7 +69,6 @@ resourcetype course-schedule {
   
   localization {
     header : (en : "Edit course schedule", no : "Rediger emnetimeplan", nn : "Rediger emnetimeplan"),
-    title : (en : "Time and place for", no : "Tid og sted for", nn : "Tid og stad for"),
     table-for : (en : "Lectures", no : "Forelesninger", nn : "Forelesninger"),
     table-date : (en : "Date", no : "Dato", nn : "Dato"),
     table-day : (en : "Day", no : "Dag", nn : "Dag"),
@@ -93,7 +95,8 @@ resourcetype course-schedule {
     dWed : (en : "Wednesday", no : "Onsdag",  nn : "Onsdag"),
     dThu : (en : "Thursday",  no : "Torsdag", nn : "Torsdag"),
     dFri : (en : "Friday",    no : "Fredag",  nn : "Fredag"),
-    dSat : (en : "Saturday",  no : "Lørdag",  nn : "Lørdag")
+    dSat : (en : "Saturday",  no : "Lørdag",  nn : "Lørdag"),
+    course-schedule : (en : "Schedule", no : "Timeplan", nn : "Timeplan")
   }
   
 }

@@ -5,6 +5,9 @@
 3. jquery.vortexTips.js is a modified version of jquery.tinyTips.js for use in Vortex (see file)
 
 4. jquery.forms.js has this added to it in $.fn.ajaxSubmit():
+
+   NOTE: upgrading to newest jquery.form.js will break IE8 saving
+
    ------------------------------------------------------------------------------------
    // USIT added name of clicked button
    if(typeof vrtxAdmin !== "undefined" && vrtxAdmin.editorSaveButtonName != "") {
@@ -37,6 +40,29 @@
       vrtxAdmin.log({msg: err});
     }
    return val;
+   ------------------------------------------------------------------------------------
+   
+   and in fileUploadXhr(a):
+   ------------------------------------------------------------------------------------
+   // USIT added from newest jquery.form.js: fix for upload progress
+   if (options.uploadProgress) {
+       // workaround because jqXHR does not expose upload property
+       s.xhr = function() {
+           var xhr = $.ajaxSettings.xhr();
+           if (xhr.upload) {
+               xhr.upload.addEventListener('progress', function(event) {
+                   var percent = 0;
+                   var position = event.loaded || event.position; /*event.position is deprecated*/
+                   var total = event.total;
+                   if (event.lengthComputable) {
+                       percent = Math.ceil(position / total * 100);
+                   }
+                   options.uploadProgress(event, position, total, percent);
+               }, false);
+           }
+           return xhr;
+       };
+   }
    ------------------------------------------------------------------------------------
    
    API: http://malsup.com/jquery/form/#api

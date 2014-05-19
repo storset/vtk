@@ -306,12 +306,13 @@ resourcetype course-description {
         [def url view-url(semester)]
         [def term resource-prop-obj-val(semester, "semesterContext.semesterTerm")]
         [def year resource-prop-obj-val(semester, "semesterContext.semesterYear")]
+        [def termNumber resource-prop-obj-val(semester, "semesterContext.semesterTermNumber")]
         [if _index < 4]
           <li>
         [else]
           <li class="course-more-semesters">
         [endif]
-          <a href="[val url]">[if term != null && term != "" && year != null && year != ""][if term = "v"][localized 'spring'][else][localized 'autumn'][endif] [val year][else][val url][endif]</a>
+          <a href="[val url]">[if term != null && term != "" && year != null && year != ""][if term = "v"][localized 'spring'][else][localized 'autumn'][endif] [val year][if termNumber != null] - [localized 'termNumber'] [val termNumber][endif][else][val url][endif]</a>
         </li>
         [if _index = (_size - 1)]
           </ul>
@@ -886,6 +887,7 @@ resourcetype course-description {
     autumn : (en : "Autumn", no : "Høst", nn : "Haust"),
     spring : (en : "Spring", no : "Vår", nn : "Vår"),
     year : (en : "Year", no : "År", nn : "År"),
+    termNumber : (en : "Term", no : "Termin", nn : "Termin"),
     
     term-more-toggle-show : (en : "Show previous semesters", no : "Vis tidligere semestre", nn : "Vis tidlegare semester"),
 

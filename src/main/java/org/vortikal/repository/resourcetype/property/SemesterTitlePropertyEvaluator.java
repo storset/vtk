@@ -35,6 +35,7 @@ import java.util.Locale;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.context.MessageSource;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
@@ -42,11 +43,13 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
 public class SemesterTitlePropertyEvaluator implements PropertyEvaluator {
 
-    private static Log logger = LogFactory.getLog(SemesterTitlePropertyEvaluator.class);
+    private static final Log logger = LogFactory.getLog(SemesterTitlePropertyEvaluator.class);
 
     private PropertyTypeDefinition semesterTermPropDef;
     private PropertyTypeDefinition semesterYearPropDef;
+    private PropertyTypeDefinition semesterTermNumberPropDef;
     private Locale defaultLocale;
+    private MessageSource messageSource;
 
     @Required
     public void setSemesterTermPropDef(PropertyTypeDefinition semesterTermPropDef) {
@@ -58,14 +61,26 @@ public class SemesterTitlePropertyEvaluator implements PropertyEvaluator {
         this.semesterYearPropDef = semesterYearPropDef;
     }
 
+    @Required
+    public void setSemesterTermNumberPropDef(PropertyTypeDefinition semesterTermNumberPropDef) {
+        this.semesterTermNumberPropDef = semesterTermNumberPropDef;
+    }
+
+    @Required
+    public void setMessageSource(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
+
+    @Override
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
-        if (semesterTermPropDef == null || semesterYearPropDef == null) {
-            logger.warn("semesterTermPropDef or semesterYearPropDef is null.");
+        if (semesterTermPropDef == null || semesterYearPropDef == null || semesterTermNumberPropDef == null) {
+            logger.warn("semesterTermPropDef, semesterYearPropDef or semesterTermNumberPropDef is null.");
             return false;
         }
 
         Property year = ctx.getSuppliedResource().getProperty(semesterYearPropDef);
         Property term = ctx.getSuppliedResource().getProperty(semesterTermPropDef);
+        Property termNumberProp = ctx.getSuppliedResource().getProperty(semesterTermNumberPropDef);
         Locale locale = ctx.getSuppliedResource().getContentLocale();
         if (locale == null) {
             locale = defaultLocale;
@@ -76,7 +91,14 @@ public class SemesterTitlePropertyEvaluator implements PropertyEvaluator {
             return false;
         }
 
-        property.setStringValue(term.getFormattedValue("localized", locale) + " " + year.getFormattedValue());
+        String termNumber = "";
+        if (termNumberProp != null) {
+            termNumber = " - " + messageSource.getMessage("semester.termNumber", null, "Term", locale) + " "
+                    + termNumberProp.getIntValue();
+        }
+
+        property.setStringValue(term.getFormattedValue("localized", locale) + " " + year.getFormattedValue()
+                + termNumber);
         return true;
     }
 

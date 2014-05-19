@@ -3175,8 +3175,7 @@ html.embedded body {
 }
 
 html.embedded #app-content,
-html.embedded #app-content #main,
-html.embedded #vrtx-editor #editor {
+html.embedded #app-content #main {
   width: auto;
   min-width: 0;
   max-width: none;
@@ -3189,11 +3188,15 @@ html.embedded #vrtx-editor #editor {
 html.embedded #app-head-wrapper,
 html.embedded #app-footer-wrapper,
 html.embedded #title-container,
-html.embedded #vrtx-editor-title-submit-buttons,
+html.embedded #vrtx-editor-title-submit-buttons .submitButtons,
 html.embedded #app-tabs,
 html.embedded #active-tab,
 html.embedded .submitButtons > * {
   display: none;
+}
+
+html.embedded #vrtx-editor-title-submit-buttons-inner-wrapper {
+  padding-top: 0;
 }
 
 html.embedded .submitButtons .vrtx-embedded-button {

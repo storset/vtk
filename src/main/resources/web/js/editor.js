@@ -96,16 +96,19 @@ $(document).ready(function () {
     autocompleteUsernames(".vrtx-autocomplete-username");
     autocompleteTags(".vrtx-autocomplete-tag");
     vrtxEdit.initSendToApproval();
-    var getScriptFn = (typeof $.cachedScript === "function") ? $.cachedScript : $.getScript;
-    var futureStickyBar = (typeof VrtxStickyBar === "undefined") ? getScriptFn("/vrtx/__vrtx/static-resources/js/vrtx-sticky-bar.js") : $.Deferred().resolve();
-    $.when(futureStickyBar).done(function() {     
-      var editorStickyBar = new VrtxStickyBar({
-        wrapperId: "#vrtx-editor-title-submit-buttons",
-        stickyClass: "vrtx-sticky-editor-title-submit-buttons",
-        contentsId: "#contents",
-        outerContentsId: "#main"
+    
+    if(!isEmbedded) {
+      var getScriptFn = (typeof $.cachedScript === "function") ? $.cachedScript : $.getScript;
+      var futureStickyBar = (typeof VrtxStickyBar === "undefined") ? getScriptFn("/vrtx/__vrtx/static-resources/js/vrtx-sticky-bar.js") : $.Deferred().resolve();
+      $.when(futureStickyBar).done(function() {     
+        var editorStickyBar = new VrtxStickyBar({
+          wrapperId: "#vrtx-editor-title-submit-buttons",
+          stickyClass: "vrtx-sticky-editor-title-submit-buttons",
+          contentsId: "#contents",
+          outerContentsId: "#main"
+        });
       });
-    });
+    }
   }, 15);
 
   vrtxEdit.initEnhancements();
@@ -1034,7 +1037,7 @@ function courseSchedule() {
   }
   url += "?action=course-schedule&mode=edit";
   // Debug: local development
-  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   // Get schedule JSON
   var retrievedScheduleDeferred = $.Deferred();

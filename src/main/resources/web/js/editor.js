@@ -588,7 +588,8 @@ VrtxEditor.prototype.classifyEditorInstance = function classifyEditorInstance(op
                            vrtxEdit.contains(name, "resource.video-description") ||
                            vrtxEdit.contains(name, "resource.audio-description");
   classification.isCaption = vrtxEdit.contains(name, "caption");
-  classification.isMessage = vrtxEdit.contains(name, "message");
+  classification.isMessage = vrtxEdit.contains(name, "message") ||
+                             vrtxEdit.contains(name, "vrtxResourcesText");
   classification.isSupervisorBox = vrtxEdit.contains("supervisor-box");
   
   // Studies
@@ -1036,7 +1037,7 @@ function courseSchedule() {
     url += "index.html";
   }
   url += "?action=course-schedule&mode=edit";
-  // Debug: local development
+  // Debug: Local development
   url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   var contents = $("#contents");
@@ -1086,37 +1087,38 @@ function courseSchedule() {
             "plenary": (isEn ? "Plenary teaching" : "Fellesundervisning"),
             "group": (isEn ? "Group teaching" : "Partiundervisning")
           },
-          "edit-only-session-title": (isEn ? "Edit activity" : "Rediger aktivitet"),
-          "no-data": (isEn ? "No data" : "Ingen data"),
-          "no-session-data": (isEn ? "No activity data" : "Ingen aktivitetsdata"),
+          "editOnlySessionTitle": (isEn ? "Edit activity" : "Rediger aktivitet"),
+          "noData": (isEn ? "No data" : "Ingen data"),
+          "noSessionData": (isEn ? "No activity data" : "Ingen aktivitetsdata"),
           "cancelled": (isEn ? "CANCELLED" : "AVLYST"),
-          "vrtx-title": (isEn ? "Title:" : "Tittel:"),
-          "vrtx-staff": (isEn ? "Staff:" : "Forelesere:"),
-          "vrtx-staff-external": (isEn ? "External staff:" : "Eksterne forelesere:"),
-          "vrtx-resources": (isEn ? "Resources:" : "Ressurser:"),
-          "vrtx-resources-text": (isEn ? "Text resources:" : "Fritekst ressurser:"),
-          "vrtx-resources-fixed": (isEn ? "Fixed resources:" : "Faste ressurser:"),
-          "vrtx-status": (isEn ? "Cancel" : "Avlys"),
-          "vrtx-staff-external-name": (isEn ? "Name" : "Navn"),
-          "vrtx-staff-external-url": (isEn ? "Link" : "Lenke"),
-          "vrtx-resources-title": (isEn ? "Title" : "Tittel"),
-          "vrtx-resources-url": (isEn ? "Link" : "Lenke")
+          "vrtxTitle": (isEn ? "Title:" : "Tittel:"),
+          "vrtxStaff": (isEn ? "Staff:" : "Forelesere:"),
+          "vrtxStaffExternal": (isEn ? "External staff:" : "Eksterne forelesere:"),
+          "vrtxResources": (isEn ? "Resources:" : "Ressurser:"),
+          "vrtxResourcesText": (isEn ? "Text resources:" : "Fritekst ressurser:"),
+          "vrtxResourcesFixed": (isEn ? "Fixed resources:" : "Faste ressurser:"),
+          "vrtxStatus": (isEn ? "Cancel" : "Avlys"),
+          "vrtxStaffExternalName": (isEn ? "Name" : "Navn"),
+          "vrtxStaffExternalUrl": (isEn ? "Link" : "Lenke"),
+          "vrtxResourcesTitle": (isEn ? "Title" : "Tittel"),
+          "vrtxResourcesUrl": (isEn ? "Link" : "Lenke")
         };
     
     if(retrievedScheduleData == null) {
-      editorProperties.prepend("<p>" + i18n["no-data"] + "</p>");
+      editorProperties.prepend("<p>" + i18n["noData"] + "</p>");
       return;
     }
     
+    // Remove - TODO: don't generate
     $(".vrtx-json").remove();
 
     if(onlySessionId.length) {
       var sessionOnly = generateCourseScheduleSessionOnly(retrievedScheduleData, onlySessionId, i18n);
       var html = sessionOnly.html;
-      if(!html) html = "<p>" + i18n["no-session-data"] + "</p>";
+      if(!html) html = "<p>" + i18n["noSessionData"] + "</p>";
 
       contents.find("#vrtx-editor-title-submit-buttons-inner-wrapper > h2")
-              .text(i18n["edit-only-session-title"]);
+              .text(i18n["editOnlySessionTitle"]);
       editorProperties.prepend("<h4 class='property-label'>" + sessionOnly.title + "</h4>" + html);
       generateCourseScheduleEnhanceSession(sessionOnly.id, onlySessionId, editorProperties);
       
@@ -1185,7 +1187,7 @@ function courseSchedule() {
           var titleElm = sessionElm.find("> .header > .header-title");
           var newTitle = content.find("> div:first-child input[type='text']");
           
-          var cancelledElm = content.find("input[name='vrtx-status']");
+          var cancelledElm = content.find("input[name='vrtxStatus']");
           if(cancelledElm.length) {
             session.isCancelled = cancelledElm[0].checked;
           }
@@ -1271,6 +1273,7 @@ function courseSchedule() {
     
     var waitALittle = setTimeout(function() {
       editorProperties.show();
+      vrtxEditor.richtextEditorFacade.setupMultiple(false);
     }, 50);
   });
 }
@@ -1282,7 +1285,7 @@ function generateCourseScheduleSessionOnly(json, sessionId, i18n) {
   var id = sessionData.id;
   var session = sessionData.session;
   var type = sessionData.type;
-  var descs = json["vrtx-editable-description"][type];
+  var descs = json["vrtxEditableDescription"][type];
   var skipTier = sessionData.skipTier;
   
   if(!sessionsLookup[id]) {
@@ -1329,7 +1332,6 @@ function retrieveCourseScheduleSessionFromId(json, findSessionId) {
   }
   return null;
 }
-
 
 function generateCourseScheduleEnhanceSession(id, sessionId, contentElm) {
   var session = sessionsLookup[id][sessionId];
@@ -1411,7 +1413,7 @@ function generateCourseScheduleActivitiesForType(json, type, skipTier, i18n) {
 function generateCourseScheduleSession(id, session, descs, i18n, skipTier, generateCourseScheduleDateAndPostFixIdFunc, generateCourseScheduleContentFromSessionDataFunc) {
   var sessionDatePostFixId = generateCourseScheduleDateAndPostFixIdFunc(session.dtstart, session.dtend, i18n),
       sessionId = id + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId,
-      sessionCancelled = (session["vrtx-status"] && session["vrtx-status"] === "cancelled") || (session.status && session.status === "cancelled"),
+      sessionCancelled = (session["vrtxStatus"] && session["vrtxStatus"] === "cancelled") || (session.status && session.status === "cancelled"),
       sessionTitle = sessionDatePostFixId.date + " " +
                      "<span class='header-title'>" + (sessionCancelled ? "<span class='header-status'>" + i18n["cancelled"] + "</span> - " : "") + (session["vrtx-title"] || session.title || session.id) + "</span>" +
                      (session.room ? " - " + (session.room[0].buildingid + " " + i18n.room + " " + session.room[0].roomid) : ""),
@@ -1568,9 +1570,9 @@ function generateCourseScheduleContentFromSessionData(id, data, descs, i18n) {
         hasOrig = false,
         size = 40;
     
-    var origName = name.split("vrtx-")[1];
+    var origName = name.split("vrtx")[1];
     if(origName) {
-      var origVal = data[name.split("vrtx-")[1]];
+      var origVal = data[name.split("vrtx")[1]];
       if(origVal != "") {
         if(!val || !val.length) {
           val = origVal;
@@ -1611,6 +1613,21 @@ function generateCourseScheduleContentFromSessionData(id, data, descs, i18n) {
                                                        val: val,
                                                        size: size
                                                      }, name);
+        break;
+      case "html":
+        html += vrtxEditor.htmlFacade.getSimpleHtmlField({ title: i18n[name],
+                                                           name: name + "-" + id,
+                                                           id: name + "-" + id,
+                                                           val: val
+                                                         }, name);
+        vrtxEditor.richtextEditorFacade.editorsForInit.push({
+          name: name,
+          isCompleteEditor: false,
+          isWithoutSubSuper: false,
+          defaultLanguage: vrtxAdmin.lang,
+          cssFileList: cssFileList,
+          simple: true
+        });
         break;
       case "checkbox":
         if(!origVal || origVal !== "cancelled") {
@@ -2382,7 +2399,9 @@ VrtxEditor.prototype.htmlFacade = {
     return vrtxAdmin.templateEngineFacade.render(vrtxEditor.multipleFieldsBoxesTemplates["html"], {
       classes: htmlType + " " + elem.name,
       elemTitle: elem.title,
-      inputFieldName: inputFieldName
+      inputFieldName: inputFieldName,
+      elemId: elem.id || inputFieldName,
+      elemVal: elem.val
     });
   },
   getBooleanField: function (elem, inputFieldName) {

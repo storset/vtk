@@ -21,7 +21,7 @@ $(document).ready(function() {
     url += "index.html";
   }
   url += "?action=course-schedule";
-  // Debug: local development
+  // Debug: Local development
   url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   var endAjaxTime = 0;
@@ -110,6 +110,7 @@ $(document).ready(function() {
           
           // Refresh when gets refocused
           var isVisible = false;
+          var delayCheckVisibility = 450;
           var waitVisibility = setTimeout(function() {
             if(document.addEventListener) {
               var detectVisibilityChange = function() {
@@ -120,14 +121,14 @@ $(document).ready(function() {
               }
               document.addEventListener("visibilitychange", detectVisibilityChange, false);
             }
-          }, 450);
+          }, delayCheckVisibility);
           var waitForClose = setTimeout(function() {
             if(document.hasFocus() || isVisible) {
               window.location.reload(1);
             } else {
               setTimeout(arguments.callee, 50); 
             }
-          }, 450);
+          }, delayCheckVisibility);
           
           e.stopPropagation();
           e.preventDefault();
@@ -183,7 +184,7 @@ function generateHTMLForType(d) {
   var now = new Date(),
       startGenHtmlForTypeTime = +now,
       dta = JSON.parse(d),
-      data = dta.data,
+      data = dta.data["activities"],
       type = dta.type,
       scheduleI18n = dta.i18n,
       canEdit = dta.canEdit,
@@ -212,7 +213,7 @@ function generateHTMLForType(d) {
         return { date: date, endDateTime: endDateTime, day: day, time: time, postFixId: postFixId };
       },
       getTitleFunc = function(session, isCancelled, i18n) {
-        return (isCancelled ? "<span class='course-schedule-table-status'>" + i18n["table-cancelled"] + "</span>" : "") + (session["vrtx-title"] || session.title || session.id);
+        return (isCancelled ? "<span class='course-schedule-table-status'>" + i18n["table-cancelled"] + "</span>" : "") + (session["vrtxTitle"] || session.title || session.id);
       },
       getPlaceFunc = function(session) {
         var val = "";
@@ -227,7 +228,7 @@ function generateHTMLForType(d) {
       },
       getStaffFunc = function(session) {
         var val = "";
-        var staff = session["vrtx-staff"] || session.staff;
+        var staff = session["vrtxStaff"] || session.staff;
         if(staff && staff.length) {
           for(var i = 0, len = staff.length; i < len; i++) {
             if(i > 0) val += "<br/>";
@@ -238,7 +239,7 @@ function generateHTMLForType(d) {
       },
       getResourcesFunc = function(session) {
         var val = "";
-        var resources = session["vrtx-resources"];
+        var resources = session["vrtxResources"];
         if(resources && resources.length) {
           var resourcesLen = resources.length;
           if(resourcesLen > 1) val = "<ul>";
@@ -314,7 +315,7 @@ function generateHTMLForType(d) {
       dateTime = getDateTimeFunc(session.dtstart, session.dtend, scheduleI18n);
       sessionId = (skipTier ? type : dtShort + "-" + id) + "-" + session.id.replace(/\//g, "-") + "-" + dateTime.postFixId;
       isCancelled = (session.status && session.status === "cancelled") ||
-                    (session["vrtx-status"] && session["vrtx-status"] === "cancelled");
+                    (session["vrtxStatus"] && session["vrtxStatus"] === "cancelled");
       
       classes = "";
       if(j & 1) classes = "even";

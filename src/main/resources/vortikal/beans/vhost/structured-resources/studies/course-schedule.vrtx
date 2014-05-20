@@ -2,7 +2,7 @@ resourcetype course-schedule {
 
   properties {
     tittel : string,
-    title : derived (tittel) eval ("course-schedule"?localized) overrides title,
+    title : derived (tittel) eval ("schedule"?localized) overrides title,
     activities : json
   }
   
@@ -68,6 +68,8 @@ resourcetype course-schedule {
   }
   
   localization {
+    schedule : (en : "Schedule", no : "Timeplan", nn : "Timeplan"),
+    title : (en : "Title", no : "Tittel", nn : "Tittel"),
     header : (en : "Edit course schedule", no : "Rediger emnetimeplan", nn : "Rediger emnetimeplan"),
     table-for : (en : "Lectures", no : "Forelesninger", nn : "Forelesninger"),
     table-date : (en : "Date", no : "Dato", nn : "Dato"),
@@ -95,8 +97,7 @@ resourcetype course-schedule {
     dWed : (en : "Wednesday", no : "Onsdag",  nn : "Onsdag"),
     dThu : (en : "Thursday",  no : "Torsdag", nn : "Torsdag"),
     dFri : (en : "Friday",    no : "Fredag",  nn : "Fredag"),
-    dSat : (en : "Saturday",  no : "Lørdag",  nn : "Lørdag"),
-    course-schedule : (en : "Schedule", no : "Timeplan", nn : "Timeplan")
+    dSat : (en : "Saturday",  no : "Lørdag",  nn : "Lørdag")
   }
   
 }

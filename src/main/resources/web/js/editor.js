@@ -1194,6 +1194,7 @@ function courseSchedule() {
         }
       };  
     
+      // Tier 2
       var accordionOnActivateTier2 = function (id, isTier1, e, ui, accordion) {
         if(isTier1) {
           accordionOnActivateTier3(id, e, ui, accordion);
@@ -1214,7 +1215,8 @@ function courseSchedule() {
           }
         }
       };
-    
+      
+      // Tier 1
       var accordionOnActivateTier1 = function (isTier1, e, ui, accordion) {
         if(ui.newHeader[0]) {
           var id = ui.newHeader[0].id;
@@ -1245,6 +1247,7 @@ function courseSchedule() {
         }
       };
     
+      // Tier 0
       var optsH3 = {
         elem: editorProperties.find("> .vrtx-grouped"),
         headerSelector: "h3",

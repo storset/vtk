@@ -285,20 +285,20 @@ function generateHTMLForType(d) {
   if(skipTier) tocHtml += "<ul>";
   
   // Scope all variables to function (and outside loops)
-  var i, j, len2, k, len3, split1, split1, dt, sessions, id, dtShort, lastDtShort = "", dtLong, isFor, activityId, caption, sessionsHtml, passedCount, sessionsCount,
+  var i, j, seqsLen, sessionsLen, k, len3, split1, split1, dt, id, dtShort, lastDtShort = "", dtLong, isFor, activityId, caption, sessionsHtml, passedCount, sessionsCount,
       session, dateTime, sessionId, classes, tocTime, tocTimeCount, tocTimeMax = 3, newTocTime, isCancelled, tocHtmlArr = [];
   for(i = 0; i < dataLen; i++) {
     dt = data[i];
-    sessions = dt.sessions;
     id = dt.id;
-    dtShort = dt.teachingmethod.toLowerCase();
+    dtShort = dt.teachingMethod.toLowerCase();
     isFor = dtShort === "for";
-    dtLong = dt.teachingmethodname;
+    dtLong = dt.teachingMethodName;
     if(!isFor || i == 0) {
       if(lastDtShort === "for") {
         tablesHtml += getTableStartHtml(activityId, caption, (passedCount === sessionsCount), scheduleI18n) + sessionsHtml + getTableEndHtml();
       }
       activityId = isFor ? dtShort : dtShort + "-" + dt.id;
+      sessions = [];
       sessionsHtml = "";
       passedCount = 0;
       sessionsCount = 0;
@@ -311,13 +311,19 @@ function generateHTMLForType(d) {
       tocTime = "";
       tocTimeCount = 0;
     }
+    // Add together sessions from sequences
+    for(j = 0, seqsLen = dt.sequences.length; j < seqsLen; j++) {
+      sessions = sessions.concat(dt.sequences[j].sessions);
+    }
     // Generate sessions HTML
-    for(j = 0, len2 = sessions.length; j < len2; j++) {
+    for(j = 0, sessionsLen = sessions.length; j < sessionsLen; j++) {
       session = sessions[j];
-      dateTime = getDateTimeFunc(session.dtstart, session.dtend, scheduleI18n);
+      dateTime = getDateTimeFunc(session.dtStart, session.dtEnd, scheduleI18n);
       sessionId = (skipTier ? type : dtShort + "-" + id) + "-" + session.id.replace(/\//g, "-") + "-" + dateTime.postFixId;
       isCancelled = (session.status && session.status === "cancelled") ||
-                    (session["vrtxStatus"] && session["vrtxStatus"] === "cancelled");
+                    (session.vrtxStatus && session.vrtxStatus === "cancelled");
+      
+      console.log(j + " " + sessionId);
       
       classes = "";
       if(j & 1) classes = "even";
@@ -342,7 +348,7 @@ function generateHTMLForType(d) {
         sessionsHtml += "<td class='course-schedule-table-staff'>";
           sessionsHtml += "<span class='course-schedule-table-row-staff'>" + getStaffFunc(session)  + "</span>";
           sessionsHtml += (canEdit ? "<span class='course-schedule-table-row-edit' style='display: none'><a href='javascript:void'>" + scheduleI18n["table-edit"] + "</a></span>" : "");
-        sessionsHtml += "</td>"
+        sessionsHtml += "</td>";
       sessionsHtml += "</tr>";
     
       if(tocTimeCount < tocTimeMax && !isCancelled) {
@@ -359,7 +365,7 @@ function generateHTMLForType(d) {
     }
     
     // Generate ToC HTML
-    if(!isFor || (isFor && (!data[i+1] || data[i+1].teachingmethod.toLowerCase() !== "for"))) {
+    if(!isFor || (isFor && (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== "for"))) {
       tocTime = tocTime.replace(/,([^,]+)$/, " " + scheduleI18n["and"] + "$1");
       if(skipTier) {
         tocHtml += "<li><a href='#" + activityId + "'>" + dtLong + "</a> - " + tocTime + "</li>";
@@ -370,7 +376,7 @@ function generateHTMLForType(d) {
           split1 = Math.ceil(len3 / 3);
           split2 = split1 + Math.ceil((len3 - split1) / 2);
           tocHtml += "<p>" + dtLong + "</p>";
-          // TODO: fix .thirds-<pos> outside frontpage
+          // TODO: Fix .thirds-<pos> outside frontpage
           tocHtml += "<div class='course-schedule-thirds'><ul class='thirds-left'>";
           for(k = 0; k < len3; k++) {
             if(k === split1) tocHtml += "</ul><ul class='thirds-middle'>";

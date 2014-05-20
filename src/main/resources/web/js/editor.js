@@ -1530,7 +1530,11 @@ function saveCourseScheduleSession(domSessionElms, id, sessionId) {
   var saveCourseScheduleExtractSessionFieldFromDOMFunc = saveCourseScheduleExtractSessionFieldFromDOM;
 
   for(var name in descsPtr) {
-    var domSessionPropElm = domSessionElms.find("input[name^='" + name + "']");
+    if(descsPtr[name].type === "html") {
+      var domSessionPropElm = domSessionElms.find("textarea[name^='" + name + "']");
+    } else {
+      var domSessionPropElm = domSessionElms.find("input[name^='" + name + "']");
+    }
     if(!domSessionPropElm.length) continue; // This should not happen
 
     var val = saveCourseScheduleExtractSessionFieldFromDOMFunc(descsPtr[name], domSessionPropElm);
@@ -1663,6 +1667,8 @@ function saveCourseScheduleExtractSessionFieldFromDOM(desc, elm) {
     if(elm[0].checked) {
       val = "cancelled"; // TODO: Not very general
     }
+  } else if(desc.type === "html") {
+    val = vrtxEditor.richtextEditorFacade.getInstanceValue(elm.attr("name"));
   } else {
     val = elm.val(); // To string (string)
     if(desc.multiple && val.length) { // To array (multiple)

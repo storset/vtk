@@ -51,8 +51,11 @@
                }
             ]
          },
+         "vrtx-resources-text":{
+           "type":"html"
+         },
          "vrtx-status":{
-            "type":"checkbox"
+           "type":"checkbox"
          }
       },
       "group": {
@@ -103,6 +106,9 @@
                   "type":"resource_ref"
                }
             ]
+         },
+         "vrtx-resources-text":{
+           "type":"html"
          },
          "vrtx-status":{
             "type":"checkbox"

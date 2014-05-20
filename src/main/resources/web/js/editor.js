@@ -1066,6 +1066,7 @@ function courseSchedule() {
   initMultipleInputFields();
 
   $.when(retrievedScheduleDeferred, vrtxEditor.multipleFieldsBoxesDeferred).done(function() {
+    // TODO: new-norwegian
     var isEn = vrtxAdmin.lang == "en",
         i18n = {
           "01": "jan",
@@ -1093,8 +1094,8 @@ function courseSchedule() {
           "vrtx-staff": (isEn ? "Staff:" : "Forelesere:"),
           "vrtx-staff-external": (isEn ? "External staff:" : "Eksterne forelesere:"),
           "vrtx-resources": (isEn ? "Resources:" : "Ressurser:"),
-          "vrtx-text-resources": (isEn ? "Text resources:" : "Fritekst ressurser:"),
-          "vrtx-fixed-resources": (isEn ? "Fixed resources:" : "Faste ressurser:"),
+          "vrtx-resources-text": (isEn ? "Text resources:" : "Fritekst ressurser:"),
+          "vrtx-resources-fixed": (isEn ? "Fixed resources:" : "Faste ressurser:"),
           "vrtx-status": (isEn ? "Cancel" : "Avlys"),
           "vrtx-staff-external-name": (isEn ? "Name" : "Navn"),
           "vrtx-staff-external-url": (isEn ? "Link" : "Lenke"),

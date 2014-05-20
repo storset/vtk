@@ -231,12 +231,32 @@ function generateHTMLForType(d) {
       getStaffFunc = function(session) {
         var val = "";
         var staff = session.vrtxStaff || session.staff;
+        var externalStaff = session.vrtxStaffExternal;
+        var allStaffLen = 0;
+        if(staff) allStaffLen += staff.length;
+        if(externalStaff) allStaffLen += externalStaff.length;
+        if(allStaffLen > 1) val = "<ul>";
         if(staff && staff.length) {
           for(var i = 0, len = staff.length; i < len; i++) {
-            if(i > 0) val += "<br/>";
+            if(allStaffLen > 1) val += "<li>";
             val += staff[i].id;
+            if(allStaffLen > 1) val += "</li>";
           }
         }
+        if(externalStaff && externalStaff.length) {
+          for(i = 0, len = externalStaff.length; i < len; i++) {
+            if(allStaffLen > 1) val += "<li>";
+            if(externalStaff[i].name && externalStaff[i].url) {
+              val += "<a href='" + externalStaff[i].url + "'>" + externalStaff[i].name + "</a>";
+            } else if(resources[i].url) {
+              val += "<a href='" + externalStaff[i].url + "'>" + externalStaff[i].url + "</a>";
+            } else if(externalStaff[i].name) {
+              val += externalStaff[i].name;
+            }
+            if(allStaffLen > 1) val += "</li>";
+          }
+        }
+        if(allStaffLen > 1) val += "</ul>";
         return val;
       },
       getResourcesFunc = function(session) {

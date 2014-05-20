@@ -1285,7 +1285,7 @@ function generateCourseScheduleSessionOnly(json, sessionId, i18n) {
   var id = sessionData.id;
   var session = sessionData.session;
   var type = sessionData.type;
-  var descs = json["vrtxEditableDescription"][type];
+  var descs = json[type]["vrtxEditableDescription"];
   var skipTier = sessionData.skipTier;
   
   if(!sessionsLookup[id]) {

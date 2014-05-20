@@ -1082,7 +1082,7 @@ function courseSchedule() {
           "10": (isEn ? "oct" : "okt"),
           "11": (isEn ? "nov" : "nov"),
           "12": (isEn ? "dec" : "des"),
-          "room": (isEn ? "room" : "rom"),
+          "rooms": (isEn ? "rooms" : "rom"),
           "titles": {
             "plenary": (isEn ? "Plenary teaching" : "Fellesundervisning"),
             "group": (isEn ? "Group teaching" : "Partiundervisning")
@@ -1187,7 +1187,7 @@ function courseSchedule() {
           var titleElm = sessionElm.find("> .header > .header-title");
           var newTitle = content.find("> div:first-child input[type='text']");
           
-          var cancelledElm = content.find("input[name='vrtxStatus']");
+          var cancelledElm = content.find("input[name^='vrtxStatus']");
           if(cancelledElm.length) {
             session.isCancelled = cancelledElm[0].checked;
           }
@@ -1428,10 +1428,10 @@ function generateCourseScheduleActivitiesForType(json, type, skipTier, i18n) {
 function generateCourseScheduleSession(id, session, descs, i18n, skipTier, generateCourseScheduleDateAndPostFixIdFunc, generateCourseScheduleContentFromSessionDataFunc) {
   var sessionDatePostFixId = generateCourseScheduleDateAndPostFixIdFunc(session.dtStart, session.dtEnd, i18n),
       sessionId = id + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId,
-      sessionCancelled = (session["vrtxStatus"] && session["vrtxStatus"] === "cancelled") || (session.status && session.status === "cancelled"),
+      sessionCancelled = (session.vrtxStatus && session.vrtxStatus === "cancelled") || (session.status && session.status === "cancelled"),
       sessionTitle = sessionDatePostFixId.date + " " +
-                     "<span class='header-title'>" + (sessionCancelled ? "<span class='header-status'>" + i18n["cancelled"] + "</span> - " : "") + (session["vrtx-title"] || session.title || session.id) + "</span>" +
-                     (session.room ? " - " + (session.room[0].buildingid + " " + i18n.room + " " + session.room[0].roomid) : ""),
+                     "<span class='header-title'>" + (sessionCancelled ? "<span class='header-status'>" + i18n["cancelled"] + "</span> - " : "") + (session.vrtxTitle || session.title || session.id) + "</span>" +
+                     (session.rooms ? " - " + (session.rooms[0].buildingId + " " + i18n.rooms + " " + session.rooms[0].roomId) : ""),
       sessionContent = generateCourseScheduleContentFromSessionDataFunc(sessionId, session, descs, i18n);
 
    sessionsLookup[id][sessionId] = {
@@ -1534,7 +1534,7 @@ function saveCourseScheduleSession(domSessionElms, id, sessionId) {
     if(!domSessionPropElm.length) continue; // This should not happen
 
     var val = saveCourseScheduleExtractSessionFieldFromDOMFunc(descsPtr[name], domSessionPropElm);
-    if(val && val.length && saveCourseScheduleSessionDetectChange(val, rawOrig[name.split("vrtx-")[1]])) {
+    if(val && val.length && saveCourseScheduleSessionDetectChange(val, rawOrig[name.split("vrtx")[1].toLowerCase()])) {
       rawPtr[name] = val;
     } else {
       delete rawPtr[name];
@@ -1589,11 +1589,12 @@ function generateCourseScheduleContentFromSessionData(id, data, descs, i18n) {
     
     var origName = name.split("vrtx")[1];
     if(origName) {
-      var origVal = data[name.split("vrtx")[1]];
-      if(origVal != "") {
+      var origVal = data[origName.toLowerCase()];
+      if(origVal && origVal != "") {
         if(!val || !val.length) {
           val = origVal;
         }
+        hasOrig = true;
       }
     }
     switch(desc.type) {

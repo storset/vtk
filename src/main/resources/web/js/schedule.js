@@ -215,22 +215,22 @@ function generateHTMLForType(d) {
         return { date: date, endDateTime: endDateTime, day: day, time: time, postFixId: postFixId };
       },
       getTitleFunc = function(session, isCancelled, i18n) {
-        return (isCancelled ? "<span class='course-schedule-table-status'>" + i18n["table-cancelled"] + "</span>" : "") + (session["vrtxTitle"] || session.title || session.id);
+        return (isCancelled ? "<span class='course-schedule-table-status'>" + i18n["table-cancelled"] + "</span>" : "") + (session.vrtxTitle || session.title || session.id);
       },
       getPlaceFunc = function(session) {
         var val = "";
-        var room = session.room;
-        if(room && room.length) {
-          for(var i = 0, len = room.length; i < len; i++) {
+        var rooms = session.rooms;
+        if(rooms && rooms.length) {
+          for(var i = 0, len = rooms.length; i < len; i++) {
             if(i > 0) val += "<br/>";
-            val += room[i].buildingid + " " + room[i].roomid;
+            val += rooms[i].buildingId + " " + rooms[i].roomId;
           }
         }
         return val;
       },
       getStaffFunc = function(session) {
         var val = "";
-        var staff = session["vrtxStaff"] || session.staff;
+        var staff = session.vrtxStaff || session.staff;
         if(staff && staff.length) {
           for(var i = 0, len = staff.length; i < len; i++) {
             if(i > 0) val += "<br/>";
@@ -241,7 +241,7 @@ function generateHTMLForType(d) {
       },
       getResourcesFunc = function(session) {
         var val = "";
-        var resources = session["vrtxResources"];
+        var resources = session.vrtxResources;
         if(resources && resources.length) {
           var resourcesLen = resources.length;
           if(resourcesLen > 1) val = "<ul>";
@@ -257,6 +257,10 @@ function generateHTMLForType(d) {
             if(resourcesLen > 1) val += "</li>";
           }
           if(resourcesLen > 1) val += "</ul>";
+        }
+        var resourcesText = session.vrtxResourcesText;
+        if(resourcesText && resourcesText.length) {
+          val += resourcesText;
         }
         return val;
       },
@@ -285,7 +289,7 @@ function generateHTMLForType(d) {
   if(skipTier) tocHtml += "<ul>";
   
   // Scope all variables to function (and outside loops)
-  var i, j, seqsLen, sessionsLen, k, len3, split1, split1, dt, id, dtShort, lastDtShort = "", dtLong, isFor, activityId, caption, sessionsHtml, passedCount, sessionsCount,
+  var i, j, l, seqsLen, sessionsLen, k, len3, split1, split1, dt, id, dtShort, lastDtShort = "", dtLong, isFor, activityId, caption, sessionsHtml, passedCount, sessionsCount,
       session, dateTime, sessionId, classes, tocTime, tocTimeCount, tocTimeMax = 3, newTocTime, isCancelled, tocHtmlArr = [];
   for(i = 0; i < dataLen; i++) {
     dt = data[i];
@@ -316,17 +320,18 @@ function generateHTMLForType(d) {
       sessions = sessions.concat(dt.sequences[j].sessions);
     }
     // Generate sessions HTML
-    for(j = 0, sessionsLen = sessions.length; j < sessionsLen; j++) {
-      session = sessions[j];
+    for(l = 0, sessionsLen = sessions.length; l < sessionsLen; l++) {
+      session = sessions[l];
       dateTime = getDateTimeFunc(session.dtStart, session.dtEnd, scheduleI18n);
       sessionId = (skipTier ? type : dtShort + "-" + id) + "-" + session.id.replace(/\//g, "-") + "-" + dateTime.postFixId;
       isCancelled = (session.status && session.status === "cancelled") ||
                     (session.vrtxStatus && session.vrtxStatus === "cancelled");
-      
-      console.log(j + " " + sessionId);
-      
-      classes = "";
-      if(j & 1) classes = "even";
+
+      if(l & 1) {
+        classes = "even";
+      } else {
+        classes = "odd";
+      }
       if(isCancelled) {
         if(classes !== "") classes += " ";
         classes += "cancelled";

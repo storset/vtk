@@ -70,12 +70,25 @@
           "dtStart": "2014-08-18T12:15:00.000+02:00",
           "dtEnd": "2014-08-18T14:00:00.000+02:00",
           "weekNr": 34,
-          "status": "active",
+          "status": "cancelled",
           "title": "Forelesning II",
           "rooms": [{
             "buildingId": "BL27",
             "roomId": "1501"
-          }]
+          }],
+          "vrtxTitle": "Åpningsforelesning",
+          "vrtxStaff": [
+            { "id": "rezam" },
+            { "id": "oyvihatl" }
+          ],
+          "vrtxStaffExternal": [
+            { "name": "Gunnar Flaksnes", "url": "http://www.nrk.no/" },
+            { "name": "Roger Rabbit", "url": "http://www.aftenposten.no/" }
+          ],
+          "vrtxResources": [
+            { "title": "Pensumlitteratur (PDF)", "url": "http://www.vg.no/" }
+          ],
+          "vrtxResourcesText": "<ul><li>listepunkt #1</li><li>listepunkt #2</li></ul>"
         }, {
           "id": "14H-EXPHIL03-1-1-1-2-1/35",
           "dtStart": "2014-08-25T12:15:00.000+02:00",

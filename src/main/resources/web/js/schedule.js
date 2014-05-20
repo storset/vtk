@@ -90,7 +90,7 @@ $(document).ready(function() {
       if(schedulePermissions.hasReadWriteNotLocked) {
         $(document).on("mouseover mouseout", "tbody tr", function(e) {
           var row = $(this);
-          var rowStaff = row.find(".course-schedule-table-row-resources");
+          var rowStaff = row.find(".course-schedule-table-row-staff");
           var rowEdit = rowStaff.next();
           rowStaff.toggle();
           rowEdit.toggle();
@@ -260,11 +260,11 @@ function generateHTMLForType(d) {
       getTableStartHtml = function(activityId, caption, isAllPassed, i18n) {
         var html = "<div class='course-schedule-table-wrapper'>";
         html += "<a class='course-schedule-table-toggle-passed' href='javascript:void(0);'>" + i18n["table-show-passed"] + "</a>";
-        html += "<table id='" + activityId + "' class='course-schedule-table table-fixed-layout uio-zebra hiding-passed" + (isAllPassed ? " all-passed" : "") + "'><caption>" + caption + "</caption><thead><tr>";
+        html += "<table id='" + activityId + "' class='course-schedule-table uio-zebra hiding-passed" + (isAllPassed ? " all-passed" : "") + "'><caption>" + caption + "</caption><thead><tr>";
           html += "<th class='course-schedule-table-date'>" + i18n["table-date"] + "</th><th class='course-schedule-table-day'>" + i18n["table-day"] + "</th>";
           html += "<th class='course-schedule-table-time'>" + i18n["table-time"] + "</th><th class='course-schedule-table-title'>" + i18n["table-title"] + "</th>";
-          html += "<th class='course-schedule-table-place'>" + i18n["table-place"] + "</th><th class='course-schedule-table-staff'>" + i18n["table-staff"] + "</th>";
-           html += "<th class='course-schedule-table-resources'>" + i18n["table-resources"] + "</th>";
+          html += "<th class='course-schedule-table-resources'>" + i18n["table-resources"] + "</th><th class='course-schedule-table-place'>" + i18n["table-place"] + "</th>";
+          html += "<th class='course-schedule-table-staff'>" + i18n["table-staff"] + "</th>";
         html += "</tr></thead><tbody>";
         return html;
       },
@@ -317,7 +317,7 @@ function generateHTMLForType(d) {
                     (session["vrtx-status"] && session["vrtx-status"] === "cancelled");
       
       classes = "";
-      if(j % 2 == 1) classes = "even";
+      if(j & 1) classes = "even";
       if(isCancelled) {
         if(classes !== "") classes += " ";
         classes += "cancelled";
@@ -330,16 +330,16 @@ function generateHTMLForType(d) {
       sessionsCount++;
       
       sessionsHtml += classes !== "" ? "<tr id='" + sessionId + "' class='" + classes + "'>" : "<tr>";
-        sessionsHtml += "<td>" + dateTime.date + "</td>";
-        sessionsHtml += "<td>" + dateTime.day + "</td>";
-        sessionsHtml += "<td>" + dateTime.time + "</td>";
-        sessionsHtml += "<td>" + getTitleFunc(session, isCancelled, scheduleI18n) + "</td>";
-        sessionsHtml += "<td>" + getPlaceFunc(session) + "</td>";
-        sessionsHtml += "<td>" + getStaffFunc(session) + "</td>";
-        sessionsHtml += "<td>";
-          sessionsHtml += "<span class='course-schedule-table-row-resources'>" + getResourcesFunc(session) + "</span>";
+        sessionsHtml += "<td class='course-schedule-table-date'>" + dateTime.date + "</td>";
+        sessionsHtml += "<td class='course-schedule-table-day'>" + dateTime.day + "</td>";
+        sessionsHtml += "<td class='course-schedule-table-time'>" + dateTime.time + "</td>";
+        sessionsHtml += "<td class='course-schedule-table-title'>" + getTitleFunc(session, isCancelled, scheduleI18n) + "</td>";
+        sessionsHtml += "<td class='course-schedule-table-resources'>" + getResourcesFunc(session) + "</td>";
+        sessionsHtml += "<td class='course-schedule-table-place'>" + getPlaceFunc(session) + "</td>";
+        sessionsHtml += "<td class='course-schedule-table-staff'>";
+          sessionsHtml += "<span class='course-schedule-table-row-staff'>" + getStaffFunc(session)  + "</span>";
           sessionsHtml += (canEdit ? "<span class='course-schedule-table-row-edit' style='display: none'><a href='javascript:void'>" + scheduleI18n["table-edit"] + "</a></span>" : "");
-        sessionsHtml += "</td>";
+        sessionsHtml += "</td>"
       sessionsHtml += "</tr>";
     
       if(tocTimeCount < tocTimeMax && !isCancelled) {

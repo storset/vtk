@@ -1053,7 +1053,7 @@ function courseSchedule() {
       retrievedScheduleDeferred.resolve();
     },
     error: function(xhr, textStatus) {
-      if(textStatus === "parsererror") { // Running Vortikal
+      if(textStatus === "parsererror") { // Running Vortikal or invalid JSON
         retrievedScheduleDeferred.resolve();
         vrtxAdmin.displayErrorMsg(textStatus);
       }
@@ -1093,6 +1093,8 @@ function courseSchedule() {
           "vrtx-staff": (isEn ? "Staff:" : "Forelesere:"),
           "vrtx-staff-external": (isEn ? "External staff:" : "Eksterne forelesere:"),
           "vrtx-resources": (isEn ? "Resources:" : "Ressurser:"),
+          "vrtx-text-resources": (isEn ? "Text resources:" : "Fritekst ressurser:"),
+          "vrtx-fixed-resources": (isEn ? "Fixed resources:" : "Faste ressurser:"),
           "vrtx-status": (isEn ? "Cancel" : "Avlys"),
           "vrtx-staff-external-name": (isEn ? "Name" : "Navn"),
           "vrtx-staff-external-url": (isEn ? "Link" : "Lenke"),

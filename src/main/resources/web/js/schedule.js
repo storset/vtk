@@ -111,6 +111,7 @@ $(document).ready(function() {
           // Refresh when gets refocused
           var isVisible = false;
           var delayCheckVisibility = 450;
+          
           var waitVisibility = setTimeout(function() {
             if(document.addEventListener) {
               var detectVisibilityChange = function() {
@@ -122,6 +123,7 @@ $(document).ready(function() {
               document.addEventListener("visibilitychange", detectVisibilityChange, false);
             }
           }, delayCheckVisibility);
+          
           var waitForClose = setTimeout(function() {
             if(document.hasFocus() || isVisible) {
               window.location.reload(1);

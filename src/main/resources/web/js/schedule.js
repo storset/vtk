@@ -289,7 +289,7 @@ function generateHTMLForType(d) {
   if(skipTier) tocHtml += "<ul>";
   
   // Scope all variables to function (and outside loops)
-  var i, j, l, seqsLen, sessionsLen, k, len3, split1, split1, dt, id, dtShort, lastDtShort = "", dtLong, isFor, activityId, caption, sessionsHtml, passedCount, sessionsCount,
+  var i, j, len, k, len3, split1, split1, dt, id, dtShort, lastDtShort = "", dtLong, isFor, activityId, caption, sessions, sessionsHtml, passedCount, sessionsCount,
       session, dateTime, sessionId, classes, tocTime, tocTimeCount, tocTimeMax = 3, newTocTime, isCancelled, tocHtmlArr = [];
   for(i = 0; i < dataLen; i++) {
     dt = data[i];
@@ -302,7 +302,6 @@ function generateHTMLForType(d) {
         tablesHtml += getTableStartHtml(activityId, caption, (passedCount === sessionsCount), scheduleI18n) + sessionsHtml + getTableEndHtml();
       }
       activityId = isFor ? dtShort : dtShort + "-" + dt.id;
-      sessions = [];
       sessionsHtml = "";
       passedCount = 0;
       sessionsCount = 0;
@@ -316,18 +315,19 @@ function generateHTMLForType(d) {
       tocTimeCount = 0;
     }
     // Add together sessions from sequences
-    for(j = 0, seqsLen = dt.sequences.length; j < seqsLen; j++) {
+    sessions = [];
+    for(j = 0, len = dt.sequences.length; j < len; j++) {
       sessions = sessions.concat(dt.sequences[j].sessions);
     }
     // Generate sessions HTML
-    for(l = 0, sessionsLen = sessions.length; l < sessionsLen; l++) {
-      session = sessions[l];
+    for(j = 0, len = sessions.length; j < len; j++) {
+      session = sessions[j];
       dateTime = getDateTimeFunc(session.dtStart, session.dtEnd, scheduleI18n);
       sessionId = (skipTier ? type : dtShort + "-" + id) + "-" + session.id.replace(/\//g, "-") + "-" + dateTime.postFixId;
       isCancelled = (session.status && session.status === "cancelled") ||
                     (session.vrtxStatus && session.vrtxStatus === "cancelled");
 
-      if(l & 1) {
+      if(j & 1) {
         classes = "even";
       } else {
         classes = "odd";
@@ -356,7 +356,7 @@ function generateHTMLForType(d) {
         sessionsHtml += "</td>";
       sessionsHtml += "</tr>";
     
-      if(tocTimeCount < tocTimeMax && !isCancelled) {
+      if(tocTimeCount < tocTimeMax) {
         newTocTime = dateTime.day.toLowerCase().substring(0,3) + " " + dateTime.time;
         if(tocTime.indexOf(newTocTime) === -1) {
           if(tocTimeCount > 0) tocTime += ", ";

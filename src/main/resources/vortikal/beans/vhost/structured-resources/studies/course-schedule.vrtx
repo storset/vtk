@@ -20,7 +20,6 @@ resourcetype course-schedule {
       <head>
         <title>[call "resource:contextual-title-new"]</title>
         <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/include-jquery.js"></script>
-        <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/schedule.js"></script>
         <script type="text/javascript"><!--
           var scheduleI18n = {
             "table-for": "[localized 'table-for']",
@@ -56,6 +55,7 @@ resourcetype course-schedule {
           };
         // -->
         </script>
+        <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/schedule.js"></script>
       </head>
       <body id="vrtx-course-schedule">
         <h1>[call "resource:property" {"id":"title"}]</h1>

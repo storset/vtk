@@ -141,7 +141,7 @@ function initSchedule() {
 }
 
 function startThreadGenerateHTMLForType(data, htmlRef, threadRef) {
-  if(window.URL && window.URL.createObjectURL && typeof Blob === "function" && typeof Worker === "function") { // Use own thread
+  if(false && window.URL && window.URL.createObjectURL && typeof Blob === "function" && typeof Worker === "function") { // Use own thread
     var workerCode = function(e) {
       postMessage(generateHTMLForType(e.data));
     };
@@ -199,6 +199,16 @@ function scheduleUtils() {
           '.' + (date.getUTCMilliseconds() / 1000).toFixed(3).slice(2, 5) +
           'Z';
   },
+  formatName = function(name) {
+    var nameArr = name.split(" ");
+    if(!nameArr.length) return name;
+    
+    var val = "";
+    for(var i = 0, len = nameArr.length-1; i < len; i++) {
+       val += nameArr[i].substring(0,1) + ". ";
+    }
+    return val + nameArr[i];
+  },
   parseDate = function(dateString) {
     var m = /^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2})(?::([0-9]*)(\.[0-9]*)?)?(?:([+-])([0-9]{2}):([0-9]{2}))?/.exec(dateString);
     return { day: m[3], month: m[2], year: m[1], hh: m[4], mm: m[5], tzhh: m[9], tzmm: m[10] };
@@ -213,7 +223,7 @@ function scheduleUtils() {
               endDateTime: endDateTime };
   };
   this.getDateFormatted = function(dateStart, dateEnd) {
-    return  dateStart.day + "." + dateStart.month + "." + dateStart.year.substring(2,4);
+    return dateStart.day + "." + dateStart.month + "." + dateStart.year.substring(2,4);
   },
   this.getDayFormatted = function(dateStart, dateEnd, i18n) {
     var utcEnd = dateToISO(new Date(dateEnd.year, dateEnd.month - 1, dateEnd.day, dateEnd.hh, dateEnd.mm, 0, 0));
@@ -261,11 +271,11 @@ function scheduleUtils() {
       for(i = 0, len = externalStaff.length; i < len; i++) {
         if(allStaffLen > 1) val += "<li>";
         if(externalStaff[i].name && externalStaff[i].url) {
-          val += "<a href='" + externalStaff[i].url + "'>" + externalStaff[i].name + "</a>";
+          val += "<a href='" + externalStaff[i].url + "'>" + formatName(externalStaff[i].name) + "</a>";
         } else if(resources[i].url) {
           val += "<a href='" + externalStaff[i].url + "'>" + externalStaff[i].url + "</a>";
         } else if(externalStaff[i].name) {
-          val += externalStaff[i].name;
+          val += formatName(externalStaff[i].name);
         }
         if(allStaffLen > 1) val += "</li>";
       }
@@ -356,6 +366,7 @@ function generateHTMLForType(d) {
       sessionsHtml = "";
       passedCount = 0;
       sessionsCount = 0;
+      sessions = [];
       if(skipTier) {
         caption = dtLong;
       } else {
@@ -367,69 +378,70 @@ function generateHTMLForType(d) {
     }
     
     // Add together sessions from sequences
-    sessions = [];
     for(j = 0, len = dt.sequences.length; j < len; j++) {
       sessions = sessions.concat(dt.sequences[j].sessions);
     }
-    
-    // Generate sessions HTML
-    for(j = 0, len = sessions.length; j < len; j++) {
-      session = sessions[j];
-      
-      dateTime = utils.getDateTime(session.dtStart, session.dtEnd);
-      
-      sessionId = (skipTier ? type : dtShort + "-" + id) + "-" + session.id.replace(/\//g, "-") + "-" + 2;
-      isCancelled = (session.status && session.status === "cancelled") ||
-                    (session.vrtxStatus && session.vrtxStatus === "cancelled");
 
-      classes = (j & 1) ? "even" : "odd";     
-      if(isCancelled) {
-        if(classes !== "") classes += " ";
-        classes += "cancelled";
-      }
-      /*
-      if(dateTime.endDateTime < utils.now) {
-        if(classes !== "") classes += " ";
-        classes += "passed";
-        passedCount++;
-      }
-      */
-      sessionsCount++;
+    if(!isFor || (isFor && (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== forCode))) {
+      // Sort sessions
+      sessions.sort(function(a,b) {
+        return parseInt(a.dtStart.split("T")[0].split("-").join(""), 10) - parseInt(b.dtStart.split("T")[0].split("-").join(""), 10);
+      });
       
-      date = utils.getDateFormatted(dateTime.startDateTime, dateTime.endDateTime);
-      day = utils.getDayFormatted(dateTime.startDateTime, dateTime.endDateTime, scheduleI18n);
-      time = utils.getTimeFormatted(dateTime.startDateTime, dateTime.endDateTime);
+      // Generate sessions HTML
+      for(j = 0, len = sessions.length; j < len; j++) {
+        session = sessions[j];
+        
+        dateTime = utils.getDateTime(session.dtStart, session.dtEnd);
+        
+        sessionId = (skipTier ? type : dtShort + "-" + id) + "-" + session.id.replace(/\//g, "-") + "-" + utils.getPostFixId(dateTime.startDateTime, dateTime.endDateTime);
+        isCancelled = (session.status && session.status === "cancelled") ||
+                      (session.vrtxStatus && session.vrtxStatus === "cancelled");
+
+        classes = (j & 1) ? "even" : "odd";     
+        if(isCancelled) {
+          if(classes !== "") classes += " ";
+          classes += "cancelled";
+        }
+        /*
+        if(dateTime.endDateTime < utils.now) {
+          if(classes !== "") classes += " ";
+          classes += "passed";
+          passedCount++;
+        }
+        */
+        sessionsCount++;
+        
+        date = utils.getDateFormatted(dateTime.startDateTime, dateTime.endDateTime);
+        day = utils.getDayFormatted(dateTime.startDateTime, dateTime.endDateTime, scheduleI18n);
+        time = utils.getTimeFormatted(dateTime.startDateTime, dateTime.endDateTime);
+        
+        sessionsHtml += classes !== "" ? "<tr id='" + sessionId + "' class='" + classes + "'>" : "<tr>";
+          sessionsHtml += "<td class='course-schedule-table-date'>" + date + "</td>";
+          sessionsHtml += "<td class='course-schedule-table-day'>" + day + "</td>";
+          sessionsHtml += "<td class='course-schedule-table-time'>" + time + "</td>";
+          sessionsHtml += "<td class='course-schedule-table-title'>" + utils.getTitle(session, isCancelled, scheduleI18n) + "</td>";
+          sessionsHtml += "<td class='course-schedule-table-resources'>" + utils.getResources(session) + "</td>";
+          sessionsHtml += "<td class='course-schedule-table-place'>" + utils.getPlace(session) + "</td>";
+          sessionsHtml += "<td class='course-schedule-table-staff'>";
+            sessionsHtml += "<span class='course-schedule-table-row-staff'>" + utils.getStaff(session)  + "</span>";
+            sessionsHtml += (canEdit ? "<span class='course-schedule-table-row-edit' style='display: none'><a href='javascript:void'>" + scheduleI18n["table-edit"] + "</a></span>" : "");
+          sessionsHtml += "</td>";
+        sessionsHtml += "</tr>";
       
-      sessionsHtml += classes !== "" ? "<tr id='" + sessionId + "' class='" + classes + "'>" : "<tr>";
-        sessionsHtml += "<td class='course-schedule-table-date'>" + date + "</td>";
-        sessionsHtml += "<td class='course-schedule-table-day'>" + day + "</td>";
-        sessionsHtml += "<td class='course-schedule-table-time'>" + time + "</td>";
-        sessionsHtml += "<td class='course-schedule-table-title'>" + utils.getTitle(session, isCancelled, scheduleI18n) + "</td>";
-        sessionsHtml += "<td class='course-schedule-table-resources'>" + utils.getResources(session) + "</td>";
-        sessionsHtml += "<td class='course-schedule-table-place'>" + utils.getPlace(session) + "</td>";
-        sessionsHtml += "<td class='course-schedule-table-staff'>";
-          sessionsHtml += "<span class='course-schedule-table-row-staff'>" + utils.getStaff(session)  + "</span>";
-          sessionsHtml += (canEdit ? "<span class='course-schedule-table-row-edit' style='display: none'><a href='javascript:void'>" + scheduleI18n["table-edit"] + "</a></span>" : "");
-        sessionsHtml += "</td>";
-      sessionsHtml += "</tr>";
-    
-      if(tocTimeCount < tocTimeMax) {
-        newTocTime = day.toLowerCase().substring(0,3) + " " + time;
-        if(tocTime.indexOf(newTocTime) === -1) {
-          if(tocTimeCount > 0) tocTime += ", ";
-          tocTime += newTocTime;
-          tocTimeCount++;
+        if(tocTimeCount < tocTimeMax) {
+          newTocTime = day.toLowerCase().substring(0,3) + " " + time;
+          if(tocTime.indexOf(newTocTime) === -1) {
+            if(tocTimeCount > 0) tocTime += ", ";
+            tocTime += newTocTime;
+            tocTimeCount++;
+          }
         }
       }
-    }
-    if(!isFor) {
+      sessions = [];
       tablesHtml += utils.getTableStartHtml(activityId, caption, (passedCount === sessionsCount), scheduleI18n) + sessionsHtml + utils.getTableEndHtml();
-    }
-    
-    // Generate ToC HTML
-    
-    // TODO: need to distrubute vertically across
-    if(!isFor || (isFor && (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== forCode))) {
+      
+      // Generate ToC
       tocTime = tocTime.replace(/,([^,]+)$/, " " + scheduleI18n["and"] + "$1");
       if(skipTier) {
         tocHtml += "<li><a href='#" + activityId + "'>" + dtLong + "</a> - " + tocTime + "</li>";
@@ -453,9 +465,6 @@ function generateHTMLForType(d) {
     }
     
     lastDtShort = dtShort;
-  }
-  if(isFor) {
-    tablesHtml += utils.getTableStartHtml(activityId, caption, (passedCount === sessionsCount), scheduleI18n) + sessionsHtml + utils.getTableEndHtml();
   }
   
   if(skipTier) tocHtml += "</ul>";

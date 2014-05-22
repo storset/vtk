@@ -13,7 +13,7 @@ $(document).ready(function() {
   scheduleDocReadyEndTime = +new Date() - scheduleStartTime;
 });
 
-(function() {
+function initSchedule() {
   var retrievedScheduleData = null;
 
   var url = window.location.href;
@@ -138,15 +138,14 @@ $(document).ready(function() {
       scheduleDeferred.resolve();
     });
   });
-  
-})();
+}
 
 function startThreadGenerateHTMLForType(data, htmlRef, threadRef) {
   if(window.URL && window.URL.createObjectURL && typeof Blob === "function" && typeof Worker === "function") { // Use own thread
     var workerCode = function(e) {
       postMessage(generateHTMLForType(e.data));
     };
-    var blob = new Blob(["onmessage = " + workerCode.toString() + "; " + generateHTMLForType.toString()], {type : 'application/javascript;charset=utf-8'});
+    var blob = new Blob(["onmessage = " + workerCode.toString() + "; " + scheduleUtils.toString() + " " + generateHTMLForType.toString()], {type : 'application/javascript;charset=utf-8'});
     var blobURL = window.URL.createObjectURL(blob);
 
     try {
@@ -181,6 +180,144 @@ function finishedThreadGenerateHTMLForType(data, htmlRef, threadRef) {
   threadRef.resolve();
 }
 
+function scheduleUtils() {
+  /** Private */
+  var getDateTimeNowUTC = function() {
+    var now = new Date();
+    var localTime = now.getTime();
+    var localOffset = now.getTimezoneOffset() * 60000;
+    var utcTime = localTime + localOffset;
+    return new Date(utcTime); 
+  };
+
+  /** Public */
+  this.nowUTC = getDateTimeNowUTC(),
+  this.addPadding = function(val) {
+    if(val < 10) return "0" + val;
+    return val;
+  },
+  this.getDateTime = function(s, e) {
+    var sdt = s.split("T");
+    var sd = sdt[0].split("-");
+    var st = sdt[1].split(".")[0].split(":");
+    var stz = parseInt(s.split("+")[1], 10);
+    var edt = e.split("T");
+    var ed = edt[0].split("-");
+    var et = edt[1].split(".")[0].split(":");
+    var etz = parseInt(e.split("+")[1], 10);
+
+    var startDateTimeUTC = new Date(Date.UTC(sd[0], sd[1]-1, sd[2], st[0], st[1], 0, 0));
+    var endDateTimeUTC = new Date(Date.UTC(ed[0], ed[1]-1, ed[2], et[0], et[1], 0, 0));
+    var startDateTime = new Date(Date.UTC(sd[0], sd[1]-1, sd[2], st[0], st[1], 0, 0));
+    var endDateTime = new Date(Date.UTC(ed[0], ed[1]-1, ed[2], et[0], et[1], 0, 0));
+    startDateTime.setHours(startDateTime.getHours() + stz);
+    endDateTime.setHours(endDateTime.getHours() + etz);
+
+    return { startDateTimeUTC: startDateTimeUTC,
+             endDateTimeUTC: endDateTimeUTC,
+             startDateTime: startDateTime,
+             endDateTime: endDateTime };
+  };
+  this.getDateFormatted = function(dateStart, dateEnd) {
+    return this.addPadding(dateStart.getDate()) + "." + this.addPadding(dateStart.getMonth()) + "." + dateStart.getFullYear();
+  },
+  this.getDayFormatted = function(dateStart, dateEnd, i18n) {
+    return i18n["d" + dateEnd.getDay()];
+  };
+  this.getTimeFormatted = function(dateStart, dateEnd) {
+    return this.addPadding(dateStart.getHours()) + ":" + this.addPadding(dateStart.getMinutes()) + "&ndash;" +
+    this.addPadding(dateEnd.getHours()) + ":" + this.addPadding(dateEnd.getMinutes());
+  };
+  this.getPostFixId = function(dateStart, dateEnd) {
+    return dateStart.getDate() + "-" + dateStart.getMonth() + "-" + dateStart.getFullYear() + "-" + dateStart.getHours() + "-" + dateStart.getMinutes() +
+           "-" + dateEnd.getHours() + "-" + dateEnd.getMinutes();
+  };
+  this.getTitle = function(session, isCancelled, i18n) {
+    return (isCancelled ? "<span class='course-schedule-table-status'>" + i18n["table-cancelled"] + "</span>" : "") + (session.vrtxTitle || session.title || session.id);
+  };
+  this.getPlace = function(session) {
+    var val = "";
+    var rooms = session.rooms;
+    if(rooms && rooms.length) {
+      for(var i = 0, len = rooms.length; i < len; i++) {
+        if(i > 0) val += "<br/>";
+        val += rooms[i].buildingId + " " + rooms[i].roomId;
+      }
+    }
+    return val;
+  };
+  this.getStaff = function(session) {
+    var val = "";
+    var staff = session.vrtxStaff || session.staff;
+    var externalStaff = session.vrtxStaffExternal;
+    var allStaffLen = 0;
+    if(staff) allStaffLen += staff.length;
+    if(externalStaff) allStaffLen += externalStaff.length;
+    if(allStaffLen > 1) val = "<ul>";
+    if(staff && staff.length) {
+      for(var i = 0, len = staff.length; i < len; i++) {
+        if(allStaffLen > 1) val += "<li>";
+        val += staff[i].id;
+        if(allStaffLen > 1) val += "</li>";
+      }
+    }
+    if(externalStaff && externalStaff.length) {
+      for(i = 0, len = externalStaff.length; i < len; i++) {
+        if(allStaffLen > 1) val += "<li>";
+        if(externalStaff[i].name && externalStaff[i].url) {
+          val += "<a href='" + externalStaff[i].url + "'>" + externalStaff[i].name + "</a>";
+        } else if(resources[i].url) {
+          val += "<a href='" + externalStaff[i].url + "'>" + externalStaff[i].url + "</a>";
+        } else if(externalStaff[i].name) {
+          val += externalStaff[i].name;
+        }
+        if(allStaffLen > 1) val += "</li>";
+      }
+    }
+    if(allStaffLen > 1) val += "</ul>";
+    return val;
+  };
+  this.getResources = function(session) {
+    var val = "";
+    var resources = session.vrtxResources;
+    if(resources && resources.length) {
+      var resourcesLen = resources.length;
+      if(resourcesLen > 1) val = "<ul>";
+      for(var i = 0; i < resourcesLen; i++) {
+        if(resourcesLen > 1) val += "<li>";
+        if(resources[i].title && resources[i].url) {
+          val += "<a href='" + resources[i].url + "'>" + resources[i].title + "</a>";
+        } else if(resources[i].url) {
+          val += "<a href='" + resources[i].url + "'>" + resources[i].url + "</a>";
+        } else if(resources[i].title) {
+          val += resources[i].title;
+        }
+        if(resourcesLen > 1) val += "</li>";
+      }
+      if(resourcesLen > 1) val += "</ul>";
+    }
+    var resourcesText = session.vrtxResourcesText;
+    if(resourcesText && resourcesText.length) {
+      val += resourcesText;
+    }
+    return val;
+  };
+  this.getTableStartHtml = function(activityId, caption, isAllPassed, i18n) {
+    var html = "<div class='course-schedule-table-wrapper'>";
+    html += "<a class='course-schedule-table-toggle-passed' href='javascript:void(0);'>" + i18n["table-show-passed"] + "</a>";
+    html += "<table id='" + activityId + "' class='course-schedule-table uio-zebra hiding-passed" + (isAllPassed ? " all-passed" : "") + "'><caption>" + caption + "</caption><thead><tr>";
+      html += "<th class='course-schedule-table-date'>" + i18n["table-date"] + "</th><th class='course-schedule-table-day'>" + i18n["table-day"] + "</th>";
+      html += "<th class='course-schedule-table-time'>" + i18n["table-time"] + "</th><th class='course-schedule-table-title'>" + i18n["table-title"] + "</th>";
+      html += "<th class='course-schedule-table-resources'>" + i18n["table-resources"] + "</th><th class='course-schedule-table-place'>" + i18n["table-place"] + "</th>";
+      html += "<th class='course-schedule-table-staff'>" + i18n["table-staff"] + "</th>";
+    html += "</tr></thead><tbody>";
+    return html;
+  };
+  this.getTableEndHtml = function() {
+    return "</tbody></table></div>";
+  };
+}
+
 function generateHTMLForType(d) {
   var dta = JSON.parse(d),
   
@@ -189,140 +326,9 @@ function generateHTMLForType(d) {
       scheduleI18n = dta.i18n,
       canEdit = dta.canEdit,
       skipTier = type === "plenary",
-      
       startGenHtmlForTypeTime = new Date(),
-      getDateTimeNowUTC = function() {
-        var now = new Date();
-        var localTime = now.getTime();
-        var localOffset = now.getTimezoneOffset() * 60000;
-        var utcTime = localTime + localOffset;
-        return new Date(utcTime); 
-      },
-      nowUTC = getDateTimeNowUTC(), // Cache now Date UTC
-      getDateTime = function(s, e) {
-        var sdt = s.split("T");
-        var sd = sdt[0].split("-");
-        var st = sdt[1].split(".")[0].split(":");
-        var stz = parseInt(s.split("+")[1], 10);
-        var edt = e.split("T");
-        var ed = edt[0].split("-");
-        var et = edt[1].split(".")[0].split(":");
-        var etz = parseInt(e.split("+")[1], 10);
-
-        var startDateTimeUTC = new Date(Date.UTC(sd[0], sd[1]-1, sd[2], st[0], st[1], 0, 0));
-        var endDateTimeUTC = new Date(Date.UTC(ed[0], ed[1]-1, ed[2], et[0], et[1], 0, 0));
-        var startDateTime = new Date(Date.UTC(sd[0], sd[1]-1, sd[2], st[0], st[1], 0, 0));
-        var endDateTime = new Date(Date.UTC(ed[0], ed[1]-1, ed[2], et[0], et[1], 0, 0));
-        startDateTime.setHours(startDateTime.getHours() + stz);
-        endDateTime.setHours(endDateTime.getHours() + etz);
-
-        return { startDateTimeUTC: startDateTimeUTC,
-                 endDateTimeUTC: endDateTimeUTC,
-                 startDateTime: startDateTime,
-                 endDateTime: endDateTime };
-      },
-      addPadding = function(val) {
-        if(val < 10) return "0" + val;
-        return val;
-      },
-      getDateFormatted = function(dateStart, dateEnd) {
-        return addPadding(dateStart.getDate()) + "." + addPadding(dateStart.getMonth()) + "." + dateStart.getFullYear();
-      },
-      getDayFormatted = function(dateStart, dateEnd, i18n) {
-        return i18n["d" + dateEnd.getDay()];
-      },
-      getTimeFormatted = function(dateStart, dateEnd) {
-        return addPadding(dateStart.getHours()) + ":" + addPadding(dateStart.getMinutes()) + "&ndash;" +
-               addPadding(dateEnd.getHours()) + ":" + addPadding(dateEnd.getMinutes());
-      },
-      getPostFixId = function(dateStart, dateEnd) {
-        return dateStart.getDate() + "-" + dateStart.getMonth() + "-" + dateStart.getFullYear() + "-" + dateStart.getHours() + "-" + dateStart.getMinutes() +
-               "-" + dateEnd.getHours() + "-" + dateEnd.getMinutes();
-      },
-      getTitle = function(session, isCancelled, i18n) {
-        return (isCancelled ? "<span class='course-schedule-table-status'>" + i18n["table-cancelled"] + "</span>" : "") + (session.vrtxTitle || session.title || session.id);
-      },
-      getPlace = function(session) {
-        var val = "";
-        var rooms = session.rooms;
-        if(rooms && rooms.length) {
-          for(var i = 0, len = rooms.length; i < len; i++) {
-            if(i > 0) val += "<br/>";
-            val += rooms[i].buildingId + " " + rooms[i].roomId;
-          }
-        }
-        return val;
-      },
-      getStaff = function(session) {
-        var val = "";
-        var staff = session.vrtxStaff || session.staff;
-        var externalStaff = session.vrtxStaffExternal;
-        var allStaffLen = 0;
-        if(staff) allStaffLen += staff.length;
-        if(externalStaff) allStaffLen += externalStaff.length;
-        if(allStaffLen > 1) val = "<ul>";
-        if(staff && staff.length) {
-          for(var i = 0, len = staff.length; i < len; i++) {
-            if(allStaffLen > 1) val += "<li>";
-            val += staff[i].id;
-            if(allStaffLen > 1) val += "</li>";
-          }
-        }
-        if(externalStaff && externalStaff.length) {
-          for(i = 0, len = externalStaff.length; i < len; i++) {
-            if(allStaffLen > 1) val += "<li>";
-            if(externalStaff[i].name && externalStaff[i].url) {
-              val += "<a href='" + externalStaff[i].url + "'>" + externalStaff[i].name + "</a>";
-            } else if(resources[i].url) {
-              val += "<a href='" + externalStaff[i].url + "'>" + externalStaff[i].url + "</a>";
-            } else if(externalStaff[i].name) {
-              val += externalStaff[i].name;
-            }
-            if(allStaffLen > 1) val += "</li>";
-          }
-        }
-        if(allStaffLen > 1) val += "</ul>";
-        return val;
-      },
-      getResources = function(session) {
-        var val = "";
-        var resources = session.vrtxResources;
-        if(resources && resources.length) {
-          var resourcesLen = resources.length;
-          if(resourcesLen > 1) val = "<ul>";
-          for(var i = 0; i < resourcesLen; i++) {
-            if(resourcesLen > 1) val += "<li>";
-            if(resources[i].title && resources[i].url) {
-              val += "<a href='" + resources[i].url + "'>" + resources[i].title + "</a>";
-            } else if(resources[i].url) {
-              val += "<a href='" + resources[i].url + "'>" + resources[i].url + "</a>";
-            } else if(resources[i].title) {
-              val += resources[i].title;
-            }
-            if(resourcesLen > 1) val += "</li>";
-          }
-          if(resourcesLen > 1) val += "</ul>";
-        }
-        var resourcesText = session.vrtxResourcesText;
-        if(resourcesText && resourcesText.length) {
-          val += resourcesText;
-        }
-        return val;
-      },
-      getTableStartHtml = function(activityId, caption, isAllPassed, i18n) {
-        var html = "<div class='course-schedule-table-wrapper'>";
-        html += "<a class='course-schedule-table-toggle-passed' href='javascript:void(0);'>" + i18n["table-show-passed"] + "</a>";
-        html += "<table id='" + activityId + "' class='course-schedule-table uio-zebra hiding-passed" + (isAllPassed ? " all-passed" : "") + "'><caption>" + caption + "</caption><thead><tr>";
-          html += "<th class='course-schedule-table-date'>" + i18n["table-date"] + "</th><th class='course-schedule-table-day'>" + i18n["table-day"] + "</th>";
-          html += "<th class='course-schedule-table-time'>" + i18n["table-time"] + "</th><th class='course-schedule-table-title'>" + i18n["table-title"] + "</th>";
-          html += "<th class='course-schedule-table-resources'>" + i18n["table-resources"] + "</th><th class='course-schedule-table-place'>" + i18n["table-place"] + "</th>";
-          html += "<th class='course-schedule-table-staff'>" + i18n["table-staff"] + "</th>";
-        html += "</tr></thead><tbody>";
-        return html;
-      },
-      getTableEndHtml = function() {
-        return "</tbody></table></div>";
-      },
+      utils = new scheduleUtils(),
+      
       tocHtml = "",
       tablesHtml = "";
   
@@ -348,7 +354,7 @@ function generateHTMLForType(d) {
     
     if(!isFor || i == 0) {
       if(lastDtShort === forCode) {
-        tablesHtml += getTableStartHtml(activityId, caption, (passedCount === sessionsCount), scheduleI18n) + sessionsHtml + getTableEndHtml();
+        tablesHtml += utils.getTableStartHtml(activityId, caption, (passedCount === sessionsCount), scheduleI18n) + sessionsHtml + utils.getTableEndHtml();
       }
       activityId = isFor ? dtShort : dtShort + "-" + dt.id;
       sessionsHtml = "";
@@ -374,7 +380,7 @@ function generateHTMLForType(d) {
     for(j = 0, len = sessions.length; j < len; j++) {
       session = sessions[j];
       
-      dateTime = getDateTime(session.dtStart, session.dtEnd);
+      dateTime = utils.getDateTime(session.dtStart, session.dtEnd);
       
       sessionId = (skipTier ? type : dtShort + "-" + id) + "-" + session.id.replace(/\//g, "-") + "-" + 2;
       isCancelled = (session.status && session.status === "cancelled") ||
@@ -385,26 +391,26 @@ function generateHTMLForType(d) {
         if(classes !== "") classes += " ";
         classes += "cancelled";
       }
-      if(dateTime.endDateTimeUTC < nowUTC) {
+      if(dateTime.endDateTimeUTC < utils.nowUTC) {
         if(classes !== "") classes += " ";
         classes += "passed";
         passedCount++;
       }
       sessionsCount++;
       
-      date = getDateFormatted(dateTime.startDateTime, dateTime.endDateTime);
-      day = getDayFormatted(dateTime.startDateTime, dateTime.endDateTime, scheduleI18n);
-      time = getTimeFormatted(dateTime.startDateTime, dateTime.endDateTime);
+      date = utils.getDateFormatted(dateTime.startDateTime, dateTime.endDateTime);
+      day = utils.getDayFormatted(dateTime.startDateTime, dateTime.endDateTime, scheduleI18n);
+      time = utils.getTimeFormatted(dateTime.startDateTime, dateTime.endDateTime);
       
       sessionsHtml += classes !== "" ? "<tr id='" + sessionId + "' class='" + classes + "'>" : "<tr>";
         sessionsHtml += "<td class='course-schedule-table-date'>" + date + "</td>";
         sessionsHtml += "<td class='course-schedule-table-day'>" + day + "</td>";
         sessionsHtml += "<td class='course-schedule-table-time'>" + time + "</td>";
-        sessionsHtml += "<td class='course-schedule-table-title'>" + getTitle(session, isCancelled, scheduleI18n) + "</td>";
-        sessionsHtml += "<td class='course-schedule-table-resources'>" + getResources(session) + "</td>";
-        sessionsHtml += "<td class='course-schedule-table-place'>" + getPlace(session) + "</td>";
+        sessionsHtml += "<td class='course-schedule-table-title'>" + utils.getTitle(session, isCancelled, scheduleI18n) + "</td>";
+        sessionsHtml += "<td class='course-schedule-table-resources'>" + utils.getResources(session) + "</td>";
+        sessionsHtml += "<td class='course-schedule-table-place'>" + utils.getPlace(session) + "</td>";
         sessionsHtml += "<td class='course-schedule-table-staff'>";
-          sessionsHtml += "<span class='course-schedule-table-row-staff'>" + getStaff(session)  + "</span>";
+          sessionsHtml += "<span class='course-schedule-table-row-staff'>" + utils.getStaff(session)  + "</span>";
           sessionsHtml += (canEdit ? "<span class='course-schedule-table-row-edit' style='display: none'><a href='javascript:void'>" + scheduleI18n["table-edit"] + "</a></span>" : "");
         sessionsHtml += "</td>";
       sessionsHtml += "</tr>";
@@ -419,7 +425,7 @@ function generateHTMLForType(d) {
       }
     }
     if(!isFor) {
-      tablesHtml += getTableStartHtml(activityId, caption, (passedCount === sessionsCount), scheduleI18n) + sessionsHtml + getTableEndHtml();
+      tablesHtml += utils.getTableStartHtml(activityId, caption, (passedCount === sessionsCount), scheduleI18n) + sessionsHtml + utils.getTableEndHtml();
     }
     
     // Generate ToC HTML
@@ -451,7 +457,7 @@ function generateHTMLForType(d) {
     lastDtShort = dtShort;
   }
   if(isFor) {
-    tablesHtml += getTableStartHtml(activityId, caption, (passedCount === sessionsCount), scheduleI18n) + sessionsHtml + getTableEndHtml();
+    tablesHtml += utils.getTableStartHtml(activityId, caption, (passedCount === sessionsCount), scheduleI18n) + sessionsHtml + utils.getTableEndHtml();
   }
   
   if(skipTier) tocHtml += "</ul>";

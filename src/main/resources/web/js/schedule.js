@@ -180,64 +180,53 @@ function finishedThreadGenerateHTMLForType(data, htmlRef, threadRef) {
   threadRef.resolve();
 }
 
-function scheduleUtils() {
+function scheduleUtils() { 
   /** Private */
-  var getDateTimeNowUTC = function() {
-    var now = new Date();
-    var localTime = now.getTime();
-    var localOffset = now.getTimezoneOffset() * 60000;
-    var utcTime = localTime + localOffset;
-    return { date: new Date(utcTime), localOffset: localOffset }; 
-  },
-  nowOffsetUTC = getDateTimeNowUTC();
-  parseISO8601Date = function(s) { // http://n8v.enteuxis.org/2010/12/parsing-iso-8601-dates-in-javascript/
-    var d = s.match(/(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)(\.\d+)?(Z|([+-])(\d\d):(\d\d))/);
-    d[7] = parseFloat(d[7]);
-    var ms = Date.UTC(d[1], d[2] - 1, d[3], d[4], d[5], d[6]);
-    if (d[7] > 0) {  
-      ms += Math.round(d[7] * 1000);
-    }
-    var msUTC = ms;
-    if (d[8] != "Z" && d[10]) {
-      var serverOffset = d[10] * 60 * 60 * 1000;
-      if (d[11]) {
-        serverOffset += d[11] * 60 * 1000;
+  var now = new Date(),
+  dateToISO = function(date) {
+    var pad = function(number) {
+      if ( number < 10 ) {
+        return '0' + number;
       }
-      serverOffset = (d[9] == "+") ? -serverOffset : serverOffset;
+      return number;
     }
-    ms += serverOffset - nowOffsetUTC.localOffset;
-    msUTC += nowOffsetUTC.localOffset;
-    return { date: new Date(ms), dateUTC: new Date(msUTC) };
+    return date.getUTCFullYear() +
+          '-' + pad(date.getUTCMonth() + 1 ) +
+          '-' + pad(date.getUTCDate() ) +
+          'T' + pad(date.getUTCHours() ) +
+          ':' + pad(date.getUTCMinutes() ) +
+          ':' + pad(date.getUTCSeconds() ) +
+          '.' + (date.getUTCMilliseconds() / 1000).toFixed(3).slice(2, 5) +
+          'Z';
+  },
+  parseDate = function(dateString) {
+    var m = /^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2})(?::([0-9]*)(\.[0-9]*)?)?(?:([+-])([0-9]{2}):([0-9]{2}))?/.exec(dateString);
+    return { day: m[3], month: m[2], year: m[1], hh: m[4], mm: m[5], tzhh: m[9], tzmm: m[10] };
   };
-  
 
   /** Public */
-  this.nowUTC = nowOffsetUTC.date,
-  this.addPadding = function(val) {
-    if(val < 10) return "0" + val;
-    return val;
-  },
+  this.now = now,
   this.getDateTime = function(s, e) {
-    var startDateTime = parseISO8601Date(s);
-    var endDateTime = parseISO8601Date(e);
-    return { startDateTimeUTC: startDateTime.dateUTC,
-              endDateTimeUTC: endDateTime.dateUTC,
-              startDateTime: startDateTime.date,
-              endDateTime: endDateTime.date };
+    var startDateTime = parseDate(s);
+    var endDateTime = parseDate(e);
+    return { startDateTime: startDateTime,
+              endDateTime: endDateTime };
   };
   this.getDateFormatted = function(dateStart, dateEnd) {
-    return this.addPadding(dateStart.getDate()) + "." + this.addPadding(dateStart.getMonth() + 1) + "." + (dateStart.getFullYear() + "").substring(2,4);
+    return  dateStart.day + "." + dateStart.month + "." + dateStart.year.substring(2,4);
   },
   this.getDayFormatted = function(dateStart, dateEnd, i18n) {
-    return i18n["d" + dateEnd.getDay()];
+    var utcEnd = dateToISO(new Date(dateEnd.year, dateEnd.month - 1, dateEnd.day, dateEnd.hh, dateEnd.mm, 0, 0));
+    var utcEndDateTime = parseDate(utcEnd);
+    var utcDateEnd = new Date(utcEndDateTime.year, utcEndDateTime.month - 1, utcEndDateTime.day, utcEndDateTime.hh, utcEndDateTime.mm, 0, 0);
+    utcDateEnd = new Date(+utcDateEnd + dateEnd.tzhh * 60000);
+    return i18n["d" + utcDateEnd.getDay()];
   };
   this.getTimeFormatted = function(dateStart, dateEnd) {
-    return this.addPadding(dateStart.getHours()) + ":" + this.addPadding(dateStart.getMinutes()) + "&ndash;" +
-    this.addPadding(dateEnd.getHours()) + ":" + this.addPadding(dateEnd.getMinutes());
+    return dateStart.hh + ":" + dateStart.mm + "&ndash;" + dateEnd.hh + ":" + dateEnd.mm;
   };
   this.getPostFixId = function(dateStart, dateEnd) {
-    return dateStart.getDate() + "-" + dateStart.getMonth() + "-" + dateStart.getFullYear() + "-" + dateStart.getHours() + "-" + dateStart.getMinutes() +
-           "-" + dateEnd.getHours() + "-" + dateEnd.getMinutes();
+    return dateStart.day + "-" + dateStart.month + "-" + dateStart.year + "-" + dateStart.hh + "-" + dateStart.mm + "-" + dateEnd.hh + "-" + dateEnd.mm;
   };
   this.getTitle = function(session, isCancelled, i18n) {
     return (isCancelled ? "<span class='course-schedule-table-status'>" + i18n["table-cancelled"] + "</span>" : "") + (session.vrtxTitle || session.title || session.id);
@@ -398,11 +387,13 @@ function generateHTMLForType(d) {
         if(classes !== "") classes += " ";
         classes += "cancelled";
       }
-      if(dateTime.endDateTimeUTC < utils.nowUTC) {
+      /*
+      if(dateTime.endDateTime < utils.now) {
         if(classes !== "") classes += " ";
         classes += "passed";
         passedCount++;
       }
+      */
       sessionsCount++;
       
       date = utils.getDateFormatted(dateTime.startDateTime, dateTime.endDateTime);

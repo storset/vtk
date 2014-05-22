@@ -92,7 +92,8 @@ $.fn.ajaxSubmit = function(options) {
 		traditional = $.ajaxSettings.traditional;
 	}
 	
-	var qx,n,v,a = this.formToArray(options.semantic);
+	// USIT added: possible to skip form serializing and use extraData onlyy
+	var qx,n,v,a = (!options.skipForm ? this.formToArray(options.semantic) : []);
 	if (options.data) {
 		options.extraData = options.data;
 		qx = $.param(options.data, traditional);
@@ -122,7 +123,7 @@ $.fn.ajaxSubmit = function(options) {
 	else {
 		options.data = q; // data is the query string for 'post'
 	}
-
+	
 	var callbacks = [];
 	if (options.resetForm) {
 		callbacks.push(function() { $form.resetForm(); });
@@ -160,7 +161,7 @@ $.fn.ajaxSubmit = function(options) {
 	log("fileAPI :" + fileAPI);
 	var shouldUseFrame = (hasFileInputs || multipart) && !fileAPI;
 
-    // USIT added name of clicked button
+    // USIT added: name of clicked button
     if(typeof vrtxAdmin !== "undefined" && vrtxAdmin.editorSaveButtonName != "") {
       options.data += "&" + vrtxAdmin.editorSaveButtonName;
     }
@@ -229,7 +230,7 @@ $.fn.ajaxSubmit = function(options) {
 			type: 'POST'
 		});
 		
-	  // USIT added from newest jquery.form.js: fix for upload progress
+	  // USIT added (from newest jquery.form.js): fix for upload progress
 	  if (options.uploadProgress) {
             // workaround because jqXHR does not expose upload property
             s.xhr = function() {

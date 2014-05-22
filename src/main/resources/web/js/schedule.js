@@ -183,41 +183,67 @@ function finishedThreadGenerateHTMLForType(data, htmlRef, threadRef) {
 }
 
 function generateHTMLForType(d) {
-  var now = new Date(),
-      startGenHtmlForTypeTime = +now,
-      dta = JSON.parse(d),
+  var dta = JSON.parse(d),
+  
       data = dta.data["activities"],
       type = dta.type,
       scheduleI18n = dta.i18n,
       canEdit = dta.canEdit,
       skipTier = type === "plenary",
-      getDateTimeFunc = function(s, e, i18n) { // Supports session over multiple days
+      
+      startGenHtmlForTypeTime = new Date(),
+      getDateTimeNowUTC = function() {
+        var now = new Date();
+        var localTime = now.getTime();
+        var localOffset = now.getTimezoneOffset() * 60000;
+        var utc = localTime + localOffset;
+        return new Date(utc); 
+      },
+      nowUTC = getDateTimeNowUTC(), // Cache now Date UTC as it does not change more than a second
+      getDateTime = function(s, e) {
         var sdt = s.split("T");
         var sd = sdt[0].split("-");
         var st = sdt[1].split(".")[0].split(":");
+        var stz = parseInt(s.split("+")[1], 10);
         var edt = e.split("T");
         var ed = edt[0].split("-");
         var et = edt[1].split(".")[0].split(":");
-        
-        // TODO: +0100 => client timezone
-        var endDateTime = new Date(ed[0], ed[1]-1, ed[2], et[0], et[1], 0, 0);
-        if(sd[0] != ed[0] || sd[1] != ed[1] || sd[2] != ed[2]) {
-          var date = sd[2] + "." + sd[1] + "." + sd[0] + "&ndash;" + ed[2] + "." + ed[1] + "." + ed[0];
-          var startDateTime = new Date(sd[0], sd[1]-1, sd[2], st[0], st[1], 0, 0);
-          var day = i18n["d" + startDateTime.getDay()] + "&ndash;" + i18n["d" + endDateTime.getDay()];
-        } else {
-          var date = sd[2] + "." + sd[1] + "." + sd[0];
-          var day = i18n["d" + endDateTime.getDay()];
-        }
-        var time = st[0] + ":" + st[1] + "&ndash;" + et[0] + ":" + et[1];
-        var postFixId = sd[2] + "-" + sd[1] + "-" + sd[0] + "-" + st[0] + "-" + st[1] + "-" + et[0] + "-" + et[1];
-        
-        return { date: date, endDateTime: endDateTime, day: day, time: time, postFixId: postFixId };
+        var etz = parseInt(e.split("+")[1], 10);
+
+        var startDateTimeUTC = new Date(Date.UTC(sd[0], sd[1]-1, sd[2], st[0], st[1], 0, 0));
+        var endDateTimeUTC = new Date(Date.UTC(ed[0], ed[1]-1, ed[2], et[0], et[1], 0, 0));
+        var startDateTime = new Date(Date.UTC(sd[0], sd[1]-1, sd[2], st[0], st[1], 0, 0));
+        var endDateTime = new Date(Date.UTC(ed[0], ed[1]-1, ed[2], et[0], et[1], 0, 0));
+        startDateTime.setHours(startDateTime.getHours() + stz);
+        endDateTime.setHours(endDateTime.getHours() + etz);
+
+        return { startDateTimeUTC: startDateTimeUTC,
+                 endDateTimeUTC: endDateTimeUTC,
+                 startDateTime: startDateTime,
+                 endDateTime: endDateTime };
       },
-      getTitleFunc = function(session, isCancelled, i18n) {
+      addPadding = function(val) {
+        if(val < 10) return "0" + val;
+        return val;
+      },
+      getDateFormatted = function(dateStart, dateEnd) {
+        return addPadding(dateStart.getDate()) + "." + addPadding(dateStart.getMonth()) + "." + dateStart.getFullYear();
+      },
+      getDayFormatted = function(dateStart, dateEnd, i18n) {
+        return i18n["d" + dateEnd.getDay()];
+      },
+      getTimeFormatted = function(dateStart, dateEnd) {
+        return addPadding(dateStart.getHours()) + ":" + addPadding(dateStart.getMinutes()) + "&ndash;" +
+               addPadding(dateEnd.getHours()) + ":" + addPadding(dateEnd.getMinutes());
+      },
+      getPostFixId = function(dateStart, dateEnd) {
+        return dateStart.getDate() + "-" + dateStart.getMonth() + "-" + dateStart.getFullYear() + "-" + dateStart.getHours() + "-" + dateStart.getMinutes() +
+               "-" + dateEnd.getHours() + "-" + dateEnd.getMinutes();
+      },
+      getTitle = function(session, isCancelled, i18n) {
         return (isCancelled ? "<span class='course-schedule-table-status'>" + i18n["table-cancelled"] + "</span>" : "") + (session.vrtxTitle || session.title || session.id);
       },
-      getPlaceFunc = function(session) {
+      getPlace = function(session) {
         var val = "";
         var rooms = session.rooms;
         if(rooms && rooms.length) {
@@ -228,7 +254,7 @@ function generateHTMLForType(d) {
         }
         return val;
       },
-      getStaffFunc = function(session) {
+      getStaff = function(session) {
         var val = "";
         var staff = session.vrtxStaff || session.staff;
         var externalStaff = session.vrtxStaffExternal;
@@ -259,7 +285,7 @@ function generateHTMLForType(d) {
         if(allStaffLen > 1) val += "</ul>";
         return val;
       },
-      getResourcesFunc = function(session) {
+      getResources = function(session) {
         var val = "";
         var resources = session.vrtxResources;
         if(resources && resources.length) {
@@ -309,16 +335,21 @@ function generateHTMLForType(d) {
   if(skipTier) tocHtml += "<ul>";
   
   // Scope all variables to function (and outside loops)
-  var i, j, len, k, len3, split1, split1, dt, id, dtShort, lastDtShort = "", dtLong, isFor, activityId, caption, sessions, sessionsHtml, passedCount, sessionsCount,
-      session, dateTime, sessionId, classes, tocTime, tocTimeCount, tocTimeMax = 3, newTocTime, isCancelled, tocHtmlArr = [];
+  var i, j, len, k, tocLen, split1, split1, dt, id, dtShort, lastDtShort = "", dtLong, forCode = "for", isFor,
+      activityId, caption, sessions, sessionsHtml, passedCount, sessionsCount, session, dateTime, date, day, time,
+      sessionId, classes, tocTime, tocTimeCount, tocTimeMax = 3, newTocTime, isCancelled, tocHtmlArr = [];
+
   for(i = 0; i < dataLen; i++) {
     dt = data[i];
+    
     id = dt.id;
     dtShort = dt.teachingMethod.toLowerCase();
-    isFor = dtShort === "for";
     dtLong = dt.teachingMethodName;
+    
+    isFor = dtShort === forCode;
+    
     if(!isFor || i == 0) {
-      if(lastDtShort === "for") {
+      if(lastDtShort === forCode) {
         tablesHtml += getTableStartHtml(activityId, caption, (passedCount === sessionsCount), scheduleI18n) + sessionsHtml + getTableEndHtml();
       }
       activityId = isFor ? dtShort : dtShort + "-" + dt.id;
@@ -334,50 +365,54 @@ function generateHTMLForType(d) {
       tocTime = "";
       tocTimeCount = 0;
     }
+    
     // Add together sessions from sequences
     sessions = [];
     for(j = 0, len = dt.sequences.length; j < len; j++) {
       sessions = sessions.concat(dt.sequences[j].sessions);
     }
+    
     // Generate sessions HTML
     for(j = 0, len = sessions.length; j < len; j++) {
       session = sessions[j];
-      dateTime = getDateTimeFunc(session.dtStart, session.dtEnd, scheduleI18n);
-      sessionId = (skipTier ? type : dtShort + "-" + id) + "-" + session.id.replace(/\//g, "-") + "-" + dateTime.postFixId;
+      
+      dateTime = getDateTime(session.dtStart, session.dtEnd);
+      
+      sessionId = (skipTier ? type : dtShort + "-" + id) + "-" + session.id.replace(/\//g, "-") + "-" + 2;
       isCancelled = (session.status && session.status === "cancelled") ||
                     (session.vrtxStatus && session.vrtxStatus === "cancelled");
 
-      if(j & 1) {
-        classes = "even";
-      } else {
-        classes = "odd";
-      }
+      classes = (j & 1) ? "even" : "odd";      
       if(isCancelled) {
         if(classes !== "") classes += " ";
         classes += "cancelled";
       }
-      if(dateTime.endDateTime < now) {
+      if(dateTime.endDateTimeUTC < nowUTC) {
         if(classes !== "") classes += " ";
         classes += "passed";
         passedCount++;
       }
       sessionsCount++;
       
+      date = getDateFormatted(dateTime.startDateTime, dateTime.endDateTime);
+      day = getDayFormatted(dateTime.startDateTime, dateTime.endDateTime, scheduleI18n);
+      time = getTimeFormatted(dateTime.startDateTime, dateTime.endDateTime);
+      
       sessionsHtml += classes !== "" ? "<tr id='" + sessionId + "' class='" + classes + "'>" : "<tr>";
-        sessionsHtml += "<td class='course-schedule-table-date'>" + dateTime.date + "</td>";
-        sessionsHtml += "<td class='course-schedule-table-day'>" + dateTime.day + "</td>";
-        sessionsHtml += "<td class='course-schedule-table-time'>" + dateTime.time + "</td>";
-        sessionsHtml += "<td class='course-schedule-table-title'>" + getTitleFunc(session, isCancelled, scheduleI18n) + "</td>";
-        sessionsHtml += "<td class='course-schedule-table-resources'>" + getResourcesFunc(session) + "</td>";
-        sessionsHtml += "<td class='course-schedule-table-place'>" + getPlaceFunc(session) + "</td>";
+        sessionsHtml += "<td class='course-schedule-table-date'>" + date + "</td>";
+        sessionsHtml += "<td class='course-schedule-table-day'>" + day + "</td>";
+        sessionsHtml += "<td class='course-schedule-table-time'>" + time + "</td>";
+        sessionsHtml += "<td class='course-schedule-table-title'>" + getTitle(session, isCancelled, scheduleI18n) + "</td>";
+        sessionsHtml += "<td class='course-schedule-table-resources'>" + getResources(session) + "</td>";
+        sessionsHtml += "<td class='course-schedule-table-place'>" + getPlace(session) + "</td>";
         sessionsHtml += "<td class='course-schedule-table-staff'>";
-          sessionsHtml += "<span class='course-schedule-table-row-staff'>" + getStaffFunc(session)  + "</span>";
+          sessionsHtml += "<span class='course-schedule-table-row-staff'>" + getStaff(session)  + "</span>";
           sessionsHtml += (canEdit ? "<span class='course-schedule-table-row-edit' style='display: none'><a href='javascript:void'>" + scheduleI18n["table-edit"] + "</a></span>" : "");
         sessionsHtml += "</td>";
       sessionsHtml += "</tr>";
     
       if(tocTimeCount < tocTimeMax) {
-        newTocTime = dateTime.day.toLowerCase().substring(0,3) + " " + dateTime.time;
+        newTocTime = day.toLowerCase().substring(0,3) + " " + time;
         if(tocTime.indexOf(newTocTime) === -1) {
           if(tocTimeCount > 0) tocTime += ", ";
           tocTime += newTocTime;
@@ -390,20 +425,21 @@ function generateHTMLForType(d) {
     }
     
     // Generate ToC HTML
-    if(!isFor || (isFor && (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== "for"))) {
+    
+    // TODO: need to distrubute vertically across
+    if(!isFor || (isFor && (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== forCode))) {
       tocTime = tocTime.replace(/,([^,]+)$/, " " + scheduleI18n["and"] + "$1");
       if(skipTier) {
         tocHtml += "<li><a href='#" + activityId + "'>" + dtLong + "</a> - " + tocTime + "</li>";
       } else {
         tocHtmlArr.push("<li><a href='#" + activityId + "'>" + scheduleI18n["group-title"] + " " + groupCount + "</a> - " + tocTime + "</li>");
         if((dtShort !== lastDtShort && i > 0) || (i === (dataLen - 1))) {
-          len3 = tocHtmlArr.length;
-          split1 = Math.ceil(len3 / 3);
-          split2 = split1 + Math.ceil((len3 - split1) / 2);
+          tocLen = tocHtmlArr.length;
+          split1 = Math.ceil(tocLen / 3);
+          split2 = split1 + Math.ceil((tocLen - split1) / 2);
           tocHtml += "<p>" + dtLong + "</p>";
-          // TODO: Fix .thirds-<pos> outside frontpage
           tocHtml += "<div class='course-schedule-thirds'><ul class='thirds-left'>";
-          for(k = 0; k < len3; k++) {
+          for(k = 0; k < tocLen; k++) {
             if(k === split1) tocHtml += "</ul><ul class='thirds-middle'>";
             if(k === split2) tocHtml += "</ul><ul class='thirds-right'>";
             tocHtml += tocHtmlArr[k];
@@ -416,7 +452,7 @@ function generateHTMLForType(d) {
     
     lastDtShort = dtShort;
   }
-  if(dtShort === "for") {
+  if(isFor) {
     tablesHtml += getTableStartHtml(activityId, caption, (passedCount === sessionsCount), scheduleI18n) + sessionsHtml + getTableEndHtml();
   }
   

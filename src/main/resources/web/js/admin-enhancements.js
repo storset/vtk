@@ -2645,9 +2645,13 @@ function ajaxSave() {
   if(!isServerLastModifiedOlderThanClientLastModified(d)) return false;
   
   var extraData = {};
+  var skipForm = false;
   if(typeof vrtxEditor != "undefined" && vrtxEditor.editorForm.hasClass("vrtx-course-schedule")) {
     saveCourseSchedule();
-    extraData = { "activities": JSON.stringify(retrievedScheduleData) };
+    extraData = { "csrf-prevention-token": vrtxEditor.editorForm.find("input[name='csrf-prevention-token']").val(),
+                  "activities": JSON.stringify(retrievedScheduleData)
+                };
+    skipForm = true;
   }
   
   var futureFormAjax = $.Deferred();
@@ -2665,6 +2669,7 @@ function ajaxSave() {
   $.when(futureFormAjax).done(function() {
     _$("#editor").ajaxSubmit({
       data: extraData,
+      skipForm: skipForm,
       success: function(results, status, xhr) { 
         vrtxAdmin.clientLastModified = $($.parseHTML(results)).find("#resource-last-modified").text().split(",");
         var endTime = new Date() - startTime;

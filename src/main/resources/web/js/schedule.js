@@ -123,7 +123,6 @@ $(document).ready(function() {
               document.addEventListener("visibilitychange", detectVisibilityChange, false);
             }
           }, delayCheckVisibility);
-          
           var waitForClose = setTimeout(function() {
             if(document.hasFocus() || isVisible) {
               window.location.reload(1);
@@ -196,8 +195,8 @@ function generateHTMLForType(d) {
         var now = new Date();
         var localTime = now.getTime();
         var localOffset = now.getTimezoneOffset() * 60000;
-        var utc = localTime + localOffset;
-        return new Date(utc); 
+        var utcTime = localTime + localOffset;
+        return new Date(utcTime); 
       },
       nowUTC = getDateTimeNowUTC(), // Cache now Date UTC
       getDateTime = function(s, e) {

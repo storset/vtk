@@ -72,9 +72,9 @@ $(document).ready(function() {
       var html = htmlPlenary.tocHtml + htmlGroup.tocHtml + htmlPlenary.tablesHtml + htmlGroup.tablesHtml;
       if(html === "") html = scheduleI18n["no-data"];
 
-      $("#activities").html("<p>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
+      $("#activities").html(/* "<p>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
                             "ms) || (AJAX-complete: " + endAjaxTime + "ms + Threads invoking/serializing: " + (endMakingThreadsTime + htmlPlenary.parseRetrievedJSONTime + htmlGroup.parseRetrievedJSONTime) +
-                            "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))</p>" + html);
+                            "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))</p>" + */ html);
       
       // Toggle passed sessions
       $(document).on("click", ".course-schedule-table-toggle-passed", function(e) {
@@ -309,7 +309,6 @@ function generateHTMLForType(d) {
         }
         return val;
       },
-      // TODO: make function
       getTableStartHtml = function(activityId, caption, isAllPassed, i18n) {
         var html = "<div class='course-schedule-table-wrapper'>";
         html += "<a class='course-schedule-table-toggle-passed' href='javascript:void(0);'>" + i18n["table-show-passed"] + "</a>";
@@ -345,7 +344,6 @@ function generateHTMLForType(d) {
     id = dt.id;
     dtShort = dt.teachingMethod.toLowerCase();
     dtLong = dt.teachingMethodName;
-    
     isFor = dtShort === forCode;
     
     if(!isFor || i == 0) {

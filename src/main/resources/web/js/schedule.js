@@ -112,7 +112,7 @@ $(document).ready(function() {
           var isVisible = false;
           var delayCheckVisibility = 450;
           
-          var waitVisibility = setTimeout(function() {
+          var waitForVisibility = setTimeout(function() {
             if(document.addEventListener) {
               var detectVisibilityChange = function() {
                 isVisible = !document.hidden;
@@ -199,7 +199,7 @@ function generateHTMLForType(d) {
         var utc = localTime + localOffset;
         return new Date(utc); 
       },
-      nowUTC = getDateTimeNowUTC(), // Cache now Date UTC as it does not change more than a second
+      nowUTC = getDateTimeNowUTC(), // Cache now Date UTC
       getDateTime = function(s, e) {
         var sdt = s.split("T");
         var sd = sdt[0].split("-");
@@ -310,6 +310,7 @@ function generateHTMLForType(d) {
         }
         return val;
       },
+      // TODO: make function
       getTableStartHtml = function(activityId, caption, isAllPassed, i18n) {
         var html = "<div class='course-schedule-table-wrapper'>";
         html += "<a class='course-schedule-table-toggle-passed' href='javascript:void(0);'>" + i18n["table-show-passed"] + "</a>";
@@ -382,7 +383,7 @@ function generateHTMLForType(d) {
       isCancelled = (session.status && session.status === "cancelled") ||
                     (session.vrtxStatus && session.vrtxStatus === "cancelled");
 
-      classes = (j & 1) ? "even" : "odd";      
+      classes = (j & 1) ? "even" : "odd";     
       if(isCancelled) {
         if(classes !== "") classes += " ";
         classes += "cancelled";

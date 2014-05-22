@@ -187,39 +187,46 @@ function scheduleUtils() {
     var localTime = now.getTime();
     var localOffset = now.getTimezoneOffset() * 60000;
     var utcTime = localTime + localOffset;
-    return new Date(utcTime); 
+    return { date: new Date(utcTime), localOffset: localOffset }; 
+  },
+  nowOffsetUTC = getDateTimeNowUTC();
+  parseISO8601Date = function(s) { // http://n8v.enteuxis.org/2010/12/parsing-iso-8601-dates-in-javascript/
+    var d = s.match(/(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)(\.\d+)?(Z|([+-])(\d\d):(\d\d))/);
+    d[7] = parseFloat(d[7]);
+    var ms = Date.UTC(d[1], d[2] - 1, d[3], d[4], d[5], d[6]);
+    if (d[7] > 0) {  
+      ms += Math.round(d[7] * 1000);
+    }
+    var msUTC = ms;
+    if (d[8] != "Z" && d[10]) {
+      var serverOffset = d[10] * 60 * 60 * 1000;
+      if (d[11]) {
+        serverOffset += d[11] * 60 * 1000;
+      }
+      serverOffset = (d[9] == "+") ? -serverOffset : serverOffset;
+    }
+    ms += serverOffset - nowOffsetUTC.localOffset;
+    msUTC += nowOffsetUTC.localOffset;
+    return { date: new Date(ms), dateUTC: new Date(msUTC) };
   };
+  
 
   /** Public */
-  this.nowUTC = getDateTimeNowUTC(),
+  this.nowUTC = nowOffsetUTC.date,
   this.addPadding = function(val) {
     if(val < 10) return "0" + val;
     return val;
   },
   this.getDateTime = function(s, e) {
-    var sdt = s.split("T");
-    var sd = sdt[0].split("-");
-    var st = sdt[1].split(".")[0].split(":");
-    var stz = parseInt(s.split("+")[1], 10);
-    var edt = e.split("T");
-    var ed = edt[0].split("-");
-    var et = edt[1].split(".")[0].split(":");
-    var etz = parseInt(e.split("+")[1], 10);
-
-    var startDateTimeUTC = new Date(Date.UTC(sd[0], sd[1]-1, sd[2], st[0], st[1], 0, 0));
-    var endDateTimeUTC = new Date(Date.UTC(ed[0], ed[1]-1, ed[2], et[0], et[1], 0, 0));
-    var startDateTime = new Date(Date.UTC(sd[0], sd[1]-1, sd[2], st[0], st[1], 0, 0));
-    var endDateTime = new Date(Date.UTC(ed[0], ed[1]-1, ed[2], et[0], et[1], 0, 0));
-    startDateTime.setHours(startDateTime.getHours() + stz);
-    endDateTime.setHours(endDateTime.getHours() + etz);
-
-    return { startDateTimeUTC: startDateTimeUTC,
-             endDateTimeUTC: endDateTimeUTC,
-             startDateTime: startDateTime,
-             endDateTime: endDateTime };
+    var startDateTime = parseISO8601Date(s);
+    var endDateTime = parseISO8601Date(e);
+    return { startDateTimeUTC: startDateTime.dateUTC,
+              endDateTimeUTC: endDateTime.dateUTC,
+              startDateTime: startDateTime.date,
+              endDateTime: endDateTime.date };
   };
   this.getDateFormatted = function(dateStart, dateEnd) {
-    return this.addPadding(dateStart.getDate()) + "." + this.addPadding(dateStart.getMonth()) + "." + dateStart.getFullYear();
+    return this.addPadding(dateStart.getDate()) + "." + this.addPadding(dateStart.getMonth() + 1) + "." + (dateStart.getFullYear() + "").substring(2,4);
   },
   this.getDayFormatted = function(dateStart, dateEnd, i18n) {
     return i18n["d" + dateEnd.getDay()];

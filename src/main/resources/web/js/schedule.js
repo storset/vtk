@@ -22,7 +22,7 @@ function initSchedule() {
   }
   url += "?action=course-schedule";
   // Debug: Local development
-  //url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   var endAjaxTime = 0;
   
@@ -191,7 +191,7 @@ function scheduleUtils() {
         return '0' + number;
       }
       return number;
-    }
+    };
     return date.getUTCFullYear() +
           '-' + pad(date.getUTCMonth() + 1 ) +
           '-' + pad(date.getUTCDate() ) +
@@ -266,16 +266,20 @@ function scheduleUtils() {
   this.getDateTime = function(s, e) {
     var startDateTime = parseDate(s);
     var endDateTime = parseDate(e);
-    return { startDateTime: startDateTime,
-              endDateTime: endDateTime };
+    return { start: startDateTime,
+               end: endDateTime };
   };
   this.getDateFormatted = function(dateStart, dateEnd) {
     return dateStart.day + "." + dateStart.month + "." + dateStart.year.substring(2,4);
   },
   this.getDayFormatted = function(dateStart, dateEnd, i18n) {
+    // Server Date-string to UTC/GMT/Zulu Date-string
     var utcEnd = dateToISO(new Date(dateEnd.year, dateEnd.month - 1, dateEnd.day, dateEnd.hh, dateEnd.mm, 0, 0));
+    // Parse Date-string
     var utcEndDateTime = parseDate(utcEnd);
+    // new Date
     var utcDateEnd = new Date(utcEndDateTime.year, utcEndDateTime.month - 1, utcEndDateTime.day, utcEndDateTime.hh, utcEndDateTime.mm, 0, 0);
+    // ms + server timezone
     utcDateEnd = new Date(+utcDateEnd + dateEnd.tzhh * 60000);
     return i18n["d" + utcDateEnd.getDay()];
   };
@@ -410,7 +414,7 @@ function generateHTMLForType(d) {
       for(j = 0, len = sessions.length; j < len; j++) {
         session = sessions[j];
         dateTime = utils.getDateTime(session.dtStart, session.dtEnd);
-        sessionId = (skipTier ? type : dtShort + "-" + id) + "-" + session.id.replace(/\//g, "-") + "-" + utils.getPostFixId(dateTime.startDateTime, dateTime.endDateTime);
+        sessionId = (skipTier ? type : dtShort + "-" + id) + "-" + session.id.replace(/\//g, "-") + "-" + utils.getPostFixId(dateTime.start, dateTime.end);
         isCancelled = (session.status && session.status === "cancelled") ||
                       (session.vrtxStatus && session.vrtxStatus === "cancelled");
 
@@ -428,9 +432,9 @@ function generateHTMLForType(d) {
         */
         sessionsCount++;
         
-        date = utils.getDateFormatted(dateTime.startDateTime, dateTime.endDateTime);
-        day = utils.getDayFormatted(dateTime.startDateTime, dateTime.endDateTime, scheduleI18n);
-        time = utils.getTimeFormatted(dateTime.startDateTime, dateTime.endDateTime);
+        date = utils.getDateFormatted(dateTime.start, dateTime.end);
+        day = utils.getDayFormatted(dateTime.start, dateTime.end, scheduleI18n);
+        time = utils.getTimeFormatted(dateTime.start, dateTime.end);
         staff = utils.getStaff(session);
         
         sessionsHtml += classes !== "" ? "<tr id='" + sessionId + "' class='" + classes + "'>" : "<tr>";

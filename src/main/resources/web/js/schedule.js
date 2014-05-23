@@ -266,16 +266,15 @@ function scheduleUtils() {
   this.getDateTime = function(s, e) {
     var startDateTime = parseDate(s);
     var endDateTime = parseDate(e);
-    return { start: startDateTime,
-               end: endDateTime };
+    return { start: startDateTime, end: endDateTime };
   };
   this.getDateFormatted = function(dateStart, dateEnd) {
     return dateStart.day + "." + dateStart.month + "." + dateStart.year.substring(2,4);
   },
   this.getDayFormatted = function(dateStart, dateEnd, i18n) {
-    // Server Date-string to UTC/GMT/Zulu Date-string
+    // Server Date-string to Date with local timezone to UTC/GMT/Zulu Date-string
     var utcEnd = dateToISO(new Date(dateEnd.year, dateEnd.month - 1, dateEnd.day, dateEnd.hh, dateEnd.mm, 0, 0));
-    // Parse Date-string
+    // Parse Date-string to array
     var utcEndDateTime = parseDate(utcEnd);
     // new Date
     var utcDateEnd = new Date(utcEndDateTime.year, utcEndDateTime.month - 1, utcEndDateTime.day, utcEndDateTime.hh, utcEndDateTime.mm, 0, 0);
@@ -313,7 +312,7 @@ function scheduleUtils() {
     if(externalStaff && externalStaff.length) {
       staff = staff.concat(externalStaff);
     }
-    return { len: staff.length, html: jsonArrayToHtmlList(staff) };
+    return jsonArrayToHtmlList(staff);
   };
   this.getResources = function(session) {
     var val = jsonArrayToHtmlList(session.vrtxResources || []);
@@ -336,16 +335,6 @@ function scheduleUtils() {
   };
   this.getTableEndHtml = function() {
     return "</tbody></table></div>";
-  };
-  this.addStaffEmptyPlaceholder = function(num) {
-    var html = "";
-    if(num < 2) return html;
-    html = "<ul style='visibility:hidden'>"
-    while(num--) {
-      html += "<li>a</li>"; 
-    }
-    html += "</ul>"
-    return html;
   };
 }
 
@@ -435,7 +424,6 @@ function generateHTMLForType(d) {
         date = utils.getDateFormatted(dateTime.start, dateTime.end);
         day = utils.getDayFormatted(dateTime.start, dateTime.end, scheduleI18n);
         time = utils.getTimeFormatted(dateTime.start, dateTime.end);
-        staff = utils.getStaff(session);
         
         sessionsHtml += classes !== "" ? "<tr id='" + sessionId + "' class='" + classes + "'>" : "<tr>";
           sessionsHtml += "<td class='course-schedule-table-date'>" + date + "</td>";
@@ -445,8 +433,8 @@ function generateHTMLForType(d) {
           sessionsHtml += "<td class='course-schedule-table-resources'>" + utils.getResources(session) + "</td>";
           sessionsHtml += "<td class='course-schedule-table-place'>" + utils.getPlace(session) + "</td>";
           sessionsHtml += "<td class='course-schedule-table-staff'>";
-            sessionsHtml += "<span class='course-schedule-table-row-staff'>" + staff.html  + "</span>";
-            sessionsHtml += (canEdit ? "<span class='course-schedule-table-row-edit' style='display: none'><a href='javascript:void'>" + scheduleI18n["table-edit"] + "</a>" + utils.addStaffEmptyPlaceholder(staff.len) + "</span>" : "");
+            sessionsHtml += "<span class='course-schedule-table-row-staff'>" + utils.getStaff(session)  + "</span>";
+            sessionsHtml += (canEdit ? "<span class='course-schedule-table-row-edit' style='display: none'><a href='javascript:void'>" + scheduleI18n["table-edit"] + "</a></span>" : "");
           sessionsHtml += "</td>";
         sessionsHtml += "</tr>";
       

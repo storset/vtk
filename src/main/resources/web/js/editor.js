@@ -1038,7 +1038,7 @@ function courseSchedule() {
   }
   url += "?action=course-schedule&mode=edit";
   // Debug: Local development
-  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   var contents = $("#contents");
 
@@ -1098,14 +1098,14 @@ function courseSchedule() {
           "vrtxResourcesText": (isEn ? "Text resources:" : "Fritekst ressurser:"),
           "vrtxResourcesFixed": (isEn ? "Fixed resources:" : "Faste ressurser:"),
           "vrtxStatus": (isEn ? "Cancel" : "Avlys"),
-          "vrtxStaffExternalName": (isEn ? "Name" : "Navn"),
-          "vrtxStaffExternalUrl": (isEn ? "Link" : "Lenke"),
-          "vrtxResourcesTitle": (isEn ? "Title" : "Tittel"),
-          "vrtxResourcesUrl": (isEn ? "Link" : "Lenke")
+          "vrtxStaffExternal-name": (isEn ? "Name" : "Navn"),
+          "vrtxStaffExternal-url": (isEn ? "Link" : "Lenke"),
+          "vrtxResources-title": (isEn ? "Title" : "Tittel"),
+          "vrtxResources-url": (isEn ? "Link" : "Lenke")
         };
     
     if(retrievedScheduleData == null) {
-      editorProperties.prepend("<p>" + i18n["noData"] + "</p>");
+      editorProperties.prepend("<p>" + i18n.noData + "</p>");
       return;
     }
     
@@ -1115,10 +1115,10 @@ function courseSchedule() {
     if(onlySessionId.length) {
       var sessionOnly = generateCourseScheduleSessionOnly(retrievedScheduleData, onlySessionId, i18n);
       var html = sessionOnly.html;
-      if(!html) html = "<p>" + i18n["noSessionData"] + "</p>";
+      if(!html) html = "<p>" + i18n.noSessionData + "</p>";
 
       contents.find("#vrtx-editor-title-submit-buttons-inner-wrapper > h2")
-              .text(i18n["editOnlySessionTitle"]);
+              .text(i18n.editOnlySessionTitle);
       editorProperties.prepend("<h4 class='property-label'>" + sessionOnly.title + "</h4>" + html);
       generateCourseScheduleEnhanceSession(sessionOnly.id, onlySessionId, editorProperties);
       
@@ -1187,14 +1187,14 @@ function courseSchedule() {
           var titleElm = sessionElm.find("> .header > .header-title");
           var newTitle = content.find("> div:first-child input[type='text']");
           
-          var cancelledElm = content.find("input[name^='vrtxStatus']");
+          var cancelledElm = content.find("input[name='vrtxStatus']");
           if(cancelledElm.length) {
             session.isCancelled = cancelledElm[0].checked;
           }
           if(newTitle.length && newTitle.val() != "") {
-            titleElm.html((session.isCancelled ? " <span class='header-status'>" + i18n["cancelled"] + "</span> - " : "") + newTitle.val());
+            titleElm.html((session.isCancelled ? " <span class='header-status'>" + i18n.cancelled + "</span> - " : "") + newTitle.val());
           } else {
-            titleElm.html((session.isCancelled ? " <span class='header-status'>" + i18n["cancelled"] + "</span> - " : "") + session.rawOrig.title);
+            titleElm.html((session.isCancelled ? " <span class='header-status'>" + i18n.cancelled + "</span> - " : "") + session.rawOrig.title);
           }
         }
       };  
@@ -1430,7 +1430,7 @@ function generateCourseScheduleSession(id, session, descs, i18n, skipTier, gener
       sessionId = id + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId,
       sessionCancelled = (session.vrtxStatus && session.vrtxStatus === "cancelled") || (session.status && session.status === "cancelled"),
       sessionTitle = sessionDatePostFixId.date + " " +
-                     "<span class='header-title'>" + (sessionCancelled ? "<span class='header-status'>" + i18n["cancelled"] + "</span> - " : "") + (session.vrtxTitle || session.title || session.id) + "</span>" +
+                     "<span class='header-title'>" + (sessionCancelled ? "<span class='header-status'>" + i18n.cancelled + "</span> - " : "") + (session.vrtxTitle || session.title || session.id) + "</span>" +
                      (session.rooms ? " - " + (session.rooms[0].buildingId + " " + i18n.rooms + " " + session.rooms[0].roomId) : ""),
       sessionContent = generateCourseScheduleContentFromSessionDataFunc(sessionId, session, descs, i18n);
 
@@ -1448,43 +1448,38 @@ function generateCourseScheduleSession(id, session, descs, i18n, skipTier, gener
    return { sessionId: sessionId, html: sessionContent.html, title: sessionTitle };
 }
 
+function parseDate(dateString) {
+  var m = /^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2})(?::([0-9]*)(\.[0-9]*)?)?(?:([+-])([0-9]{2}):([0-9]{2}))?/.exec(dateString);
+  return { day: m[3], month: m[2], year: m[1], hh: m[4], mm: m[5], tzhh: m[9], tzmm: m[10] };
+}
+
 function generateCourseScheduleDateAndPostFixId(s, e, i18n) { /* IE8: http://www.digital-portfolio.net/blog/view/ie8-and-iso-date-format */
-  var dateTime = generateCourseScheduleDateTime(s, e);
-  var sd = dateTime.sd;
-  var st = dateTime.st;
-  var ed = dateTime.ed;
-  var et = dateTime.et;
-
-  if(sd[0] != ed[0] || sd[1] != ed[1] || sd[2] != ed[2]) {
-    var strDate = sd[2] + ". " + i18n[sd[1]] + " " + sd[0] + " kl " + st[0] + ":" + st[1] + "&ndash;" +
-                  ed[2] + ". " + i18n[ed[1]] + " " + ed[0] + " kl " + et[0] + ":" + et[1];
-  } else {
-    var strDate = sd[2] + ". " + i18n[sd[1]] + " " + sd[0] + " - kl " +
-                  st[0] + ":" + st[1] + "&ndash;" + et[0] + ":" + et[1];
-  }
-  
-  var postFixId = generateCourseSchedulePostFixId(sd, st, ed, et);
-  
-  return { date: strDate, postFixId: generateCourseSchedulePostFixId(sd, st, ed, et) };
-}
-
-function generateCourseScheduleDateTime(s, e) {
-  var sd = s.split("T")[0].split("-");
-  var st = s.split("T")[1].split(".")[0].split(":");
-  var ed = e.split("T")[0].split("-");
-  var et = e.split("T")[1].split(".")[0].split(":");
-  
-  return { sd: sd, st: st, ed: ed, et: et };
-}
-
-function generateCourseSchedulePostFixId(sd, st, ed, et) {
-  return sd[2] + "-" + sd[1] + "-" + sd[0] + "-" + st[0] + "-" + st[1] + "-" + et[0] + "-" + et[1];
+  var start = parseDate(s);
+  var end = parseDate(e);
+  var strDate = start.day + ". " + i18n[start.month] + " " + start.year + " - kl " +
+                start.hh + ":" + start.mm + "&ndash;" + end.hh + ":" + end.mm;
+  var postFixId = start.day + "-" + start.month + "-" + start.year + "-" + start.hh + "-" + start.mm + "-" + end.hh + "-" + end.mm;
+  return { date: strDate, postFixId: postFixId };
 }
 
 function saveCourseSchedule() {
   if(lastElm) {
     saveCourseScheduleSession(lastElm, lastId, lastSessionId);
   }
+}
+
+function unsavedChangesInCourseSchedule() {
+  if(lastElm) {
+    saveCourseScheduleSession(lastElm, lastId, lastSessionId);
+  }
+  for(var type in sessionsLookup) {
+    for(var session in sessionsLookup[type]) {
+      if(sessionsLookup[type][session].hasChanges) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 function courseScheduleSaved() {
@@ -1506,20 +1501,6 @@ function courseScheduleClose() {
   }
 }
 
-function unsavedChangesInCourseSchedule() {
-  if(lastElm) {
-    saveCourseScheduleSession(lastElm, lastId, lastSessionId);
-  }
-  for(var type in sessionsLookup) {
-    for(var session in sessionsLookup[type]) {
-      if(sessionsLookup[type][session].hasChanges) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
 function saveCourseScheduleSession(domSessionElms, id, sessionId) {
   saveMultipleInputFields(domSessionElms, "$$$");
 
@@ -1530,10 +1511,11 @@ function saveCourseScheduleSession(domSessionElms, id, sessionId) {
   var saveCourseScheduleExtractSessionFieldFromDOMFunc = saveCourseScheduleExtractSessionFieldFromDOM;
 
   for(var name in descsPtr) {
+    // XXX: support multiple CK-fields starting with same name
     if(descsPtr[name].type === "html") {
       var domSessionPropElm = domSessionElms.find("textarea[name^='" + name + "']");
     } else {
-      var domSessionPropElm = domSessionElms.find("input[name^='" + name + "']");
+      var domSessionPropElm = domSessionElms.find("input[name='" + name + "']");
     }
     if(!domSessionPropElm.length) continue; // This should not happen
 
@@ -1893,7 +1875,7 @@ function enhanceMultipleInputFields(name, isMovable, isBrowsable, limit, json) {
   }
   html = $.parseHTML(html, document, true);
   $(html).insertBefore("#vrtx-" + name + "-add");
-  inputFieldParent.find(".vrtx-multipleinputfield").addClass("first");
+  inputFieldParent.find(".vrtx-multipleinputfield:first").addClass("first");
   
   // Hide add button if limit is reached or gone over
   if(len >= vrtxEditor.multipleFieldsBoxes[name].limit) {

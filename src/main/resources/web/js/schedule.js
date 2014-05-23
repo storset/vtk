@@ -22,7 +22,7 @@ function initSchedule() {
   }
   url += "?action=course-schedule";
   // Debug: Local development
-  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   var endAjaxTime = 0;
   
@@ -70,18 +70,18 @@ function initSchedule() {
     
     $.when(thread1Finished, thread2Finished, scheduleDocumentReady).done(function() {
       var html = htmlPlenary.tocHtml + htmlGroup.tocHtml + htmlPlenary.tablesHtml + htmlGroup.tablesHtml;
-      if(html === "") html = scheduleI18n["no-data"];
+      if(html === "") html = scheduleI18n.noData;
 
-      $("#activities").html(/* "<p>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
+      $("#activities").html("<p>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
                             "ms) || (AJAX-complete: " + endAjaxTime + "ms + Threads invoking/serializing: " + (endMakingThreadsTime + htmlPlenary.parseRetrievedJSONTime + htmlGroup.parseRetrievedJSONTime) +
-                            "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))</p>" + */ html);
+                            "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))</p>" + html);
       
       // Toggle passed sessions
       $(document).on("click", ".course-schedule-table-toggle-passed", function(e) {
         var link = $(this);
         var table = link.next();
         table.toggleClass("hiding-passed"); 
-        link.text(table.hasClass("hiding-passed") ? scheduleI18n["table-show-passed"] : scheduleI18n["table-hide-passed"]);
+        link.text(table.hasClass("hiding-passed") ? scheduleI18n.tableShowPassed : scheduleI18n.tableHidePassed);
         e.stopPropagation();
         e.preventDefault();
       });
@@ -289,7 +289,7 @@ function scheduleUtils() {
     return dateStart.day + "-" + dateStart.month + "-" + dateStart.year + "-" + dateStart.hh + "-" + dateStart.mm + "-" + dateEnd.hh + "-" + dateEnd.mm;
   };
   this.getTitle = function(session, isCancelled, i18n) {
-    return (isCancelled ? "<span class='course-schedule-table-status'>" + i18n["table-cancelled"] + "</span>" : "") + (session.vrtxTitle || session.title || session.id);
+    return (isCancelled ? "<span class='course-schedule-table-status'>" + i18n.tableCancelled + "</span>" : "") + (session.vrtxTitle || session.title || session.id);
   };
   this.getPlace = function(session) {
     var val = "";
@@ -324,13 +324,15 @@ function scheduleUtils() {
   };
   this.getTableStartHtml = function(activityId, caption, isAllPassed, hasResources, hasStaff, i18n) {
     var html = "<div class='course-schedule-table-wrapper'>";
-    html += "<a class='course-schedule-table-toggle-passed' href='javascript:void(0);'>" + i18n["table-show-passed"] + "</a>";
+    html += "<a class='course-schedule-table-toggle-passed' href='javascript:void(0);'>" + i18n.tableShowPassed + "</a>";
     html += "<table id='" + activityId + "' class='course-schedule-table uio-zebra hiding-passed" + (isAllPassed ? " all-passed" : "") + (hasResources ? " has-resources" : "")  + (hasStaff ? " has-staff" : "") + "'><caption>" + caption + "</caption><thead><tr>";
-      html += "<th class='course-schedule-table-date'>" + i18n["table-date"] + "</th><th class='course-schedule-table-day'>" + i18n["table-day"] + "</th>";
-      html += "<th class='course-schedule-table-time'>" + i18n["table-time"] + "</th><th class='course-schedule-table-title'>" + i18n["table-title"] + "</th>";
-      if(hasResources) html += "<th class='course-schedule-table-resources'>" + i18n["table-resources"] + "</th>";
-      html += "<th class='course-schedule-table-place'>" + i18n["table-place"] + "</th>";
-      if(hasStaff)     html += "<th class='course-schedule-table-staff'>" + i18n["table-staff"] + "</th>";
+      html += "<th class='course-schedule-table-date'>" + i18n.tableDate + "</th>";
+      html += "<th class='course-schedule-table-day'>" + i18n.tableDay + "</th>";
+      html += "<th class='course-schedule-table-time'>" + i18n.tableTime + "</th>";
+      html += "<th class='course-schedule-table-title'>" + i18n.tableTitle + "</th>";
+      if(hasResources) html += "<th class='course-schedule-table-resources'>" + i18n.tableResources + "</th>";
+      html += "<th class='course-schedule-table-place'>" + i18n.tablePlace + "</th>";
+      if(hasStaff)     html += "<th class='course-schedule-table-staff'>" + i18n.tableStaff + "</th>";
     html += "</tr></thead><tbody>";
     return html;
   };
@@ -387,7 +389,7 @@ function generateHTMLForType(d) {
         caption = dtLong;
       } else {
         groupCount = id.split("-")[1];
-        caption = dtLong + " - " + scheduleI18n["group-title"].toLowerCase() + " " + groupCount;
+        caption = dtLong + " - " + scheduleI18n.groupTitle.toLowerCase() + " " + groupCount;
       }
       tocTime = "";
       tocTimeCount = 0;
@@ -451,7 +453,7 @@ function generateHTMLForType(d) {
           if(staffCount)     sessionsHtml += "<td class='course-schedule-table-staff'>" + sessionsPreprocessed[j].staff + "</td>";
           /* Add edit
           sessionsHtml += "<span class='course-schedule-table-row-staff'>"  "</span>";
-          sessionsHtml += (canEdit ? "<span class='course-schedule-table-row-edit' style='display: none'><a href='javascript:void'>" + scheduleI18n["table-edit"] + "</a></span>" : "");
+          sessionsHtml += (canEdit ? "<span class='course-schedule-table-row-edit' style='display: none'><a href='javascript:void'>" + scheduleI18n.tableEdit + "</a></span>" : "");
           */
         sessionsHtml += "</tr>";
       
@@ -467,11 +469,11 @@ function generateHTMLForType(d) {
       tablesHtml += utils.getTableStartHtml(activityId, caption, (passedCount === sessionsCount), resourcesCount, staffCount, scheduleI18n) + sessionsHtml + utils.getTableEndHtml();
       
       // Generate ToC
-      tocTime = tocTime.replace(/,([^,]+)$/, " " + scheduleI18n["and"] + "$1");
+      tocTime = tocTime.replace(/,([^,]+)$/, " " + scheduleI18n.and + "$1");
       if(skipTier) {
         tocHtml += "<li><a href='#" + activityId + "'>" + dtLong + "</a> - " + tocTime + "</li>";
       } else {
-        tocHtmlArr.push("<li><a href='#" + activityId + "'>" + scheduleI18n["group-title"] + " " + groupCount + "</a> - " + tocTime + "</li>");
+        tocHtmlArr.push("<li><a href='#" + activityId + "'>" + scheduleI18n.groupTitle + " " + groupCount + "</a> - " + tocTime + "</li>");
         if((dtShort !== lastDtShort && i > 0) || (i === (dataLen - 1))) {
           tocLen = tocHtmlArr.length;
           split1 = Math.ceil(tocLen / 3);

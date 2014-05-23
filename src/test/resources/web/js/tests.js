@@ -76,8 +76,8 @@ test("Generating HTML from JSON for Place", function () {
   equal(utils.getPlace(session), "<abbr title='Georg Morgenstiernes hus'>GM</abbr> <a title='Seminarrom 205' href='http://www.med.uio.no/om/finn-fram/kart/vis/#bl1602,300,253'>205</a>", "List or single element of: Link, Link with title, abbr with title or just text");
 });
 test("Generating HTML from JSON for Staff", function () {
-  equal(utils.getStaff(session), "<ul><li>rezam</li><li>oyvihatl</li><li><a href='http://www.nrk.no/'>G. Flaksnes</a></li><li><a href='http://www.aftenposten.no/'>R. Rabbit</a></li></ul>", "List or single element of: Link, Link with title, abbr with title or just text");
+  equal(utils.getStaff(session), "<ul><li>rezam</li><li>oyvihatl</li><li><a href='http://www.nrk.no/'>G. Flaksnes</a></li><li><a href='http://www.aftenposten.no/'>R. Rabbit</a></li></ul>", "List or single element of: Link or just text");
 });
 test("Generating HTML from JSON for Resources", function () {
-  equal(utils.getResources(session), "<a href='http://www.vg.no/'>Pensumlitteratur (PDF)</a><ul><li>listepunkt #1</li><li>listepunkt #2</li></ul>", "List or single element of: Link, Link with title, abbr with title or just text");
+  equal(utils.getResources(session), "<a href='http://www.vg.no/'>Pensumlitteratur (PDF)</a><ul><li>listepunkt #1</li><li>listepunkt #2</li></ul>", "List or single element of: Link or just text + freetext");
 });

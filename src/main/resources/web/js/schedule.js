@@ -21,7 +21,7 @@ function initSchedule() {
   }
   url += "?action=course-schedule";
   // Debug: Local development
-  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   var retrievedScheduleData = null;
   var endAjaxTime = 0;
@@ -339,6 +339,20 @@ function scheduleUtils() {
   this.getTableEndHtml = function() {
     return "</tbody></table></div>";
   };
+  this.splitThirds = function(arr, title) {
+    var html = "<p>" + title + "</p>",
+        len = arr.length,
+        split1 = Math.ceil(len / 3),
+        split2 = split1 + Math.ceil((len - split1) / 2);
+    html += "<div class='course-schedule-thirds'><ul class='thirds-left'>";
+    for(var i = 0; i < len; i++) {
+      if(i === split1) html += "</ul><ul class='thirds-middle'>";
+      if(i === split2) html += "</ul><ul class='thirds-right'>";
+      html += arr[i];
+    }
+    html += "</ul></div>";
+    return html;
+  };
 }
 
 function generateHTMLForType(d) {
@@ -363,7 +377,7 @@ function generateHTMLForType(d) {
   if(skipTier) tocHtml += "<ul>";
   
   // Scope all variables to function (and outside loops)
-  var i, j, len, k, tocLen, split1, split1, dt, id, dtShort, lastDtShort = "", dtLong, forCode = "for", isFor,
+  var i, j, len, dt, id, dtShort, lastDtShort = "", dtLong, forCode = "for", isFor,
       activityId, caption, sessions, sessionsPreprocessed, sessionsHtml, resourcesCount, staffCount, passedCount, sessionsCount,
       session, dateTime, staff, date, day, time, sessionId, classes, tocTime, tocTimeCount, tocTimeMax = 3,
       newTocTime, isCancelled, tocHtmlArr = [];
@@ -475,17 +489,7 @@ function generateHTMLForType(d) {
       } else {
         tocHtmlArr.push("<li><a href='#" + activityId + "'>" + scheduleI18n.groupTitle + " " + groupCount + "</a> - " + tocTime + "</li>");
         if((dtShort !== lastDtShort && i > 0) || (i === (dataLen - 1))) {
-          tocLen = tocHtmlArr.length;
-          split1 = Math.ceil(tocLen / 3);
-          split2 = split1 + Math.ceil((tocLen - split1) / 2);
-          tocHtml += "<p>" + dtLong + "</p>";
-          tocHtml += "<div class='course-schedule-thirds'><ul class='thirds-left'>";
-          for(k = 0; k < tocLen; k++) {
-            if(k === split1) tocHtml += "</ul><ul class='thirds-middle'>";
-            if(k === split2) tocHtml += "</ul><ul class='thirds-right'>";
-            tocHtml += tocHtmlArr[k];
-          }
-          tocHtml += "</ul></div>";
+          tocHtml += utils.splitThirds(tocHtmlArr, dtLong);
           tocHtmlArr = [];
         }
       }

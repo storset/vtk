@@ -10,6 +10,7 @@
  *  5.  Validation and change detection
  *  6.  Image preview
  *  7.  Enhancements
+ *  7.5 Course schedule editor
  *  8.  Multiple fields and boxes
  *  9.  Accordions
  *  10. Send to approval
@@ -1022,7 +1023,119 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
   }
 };
 
-/* Course schedule */
+/*
+ * Boolean switch show/hide
+ *
+ */
+function setShowHideBooleanNewEditor(name, properties, hideTrues) {
+  vrtxEditor.initEventHandler('[name=' + name + ']', {
+    wrapper: "#editor",
+    callback: function (props, hideTrues, name, init) {
+      if ($('#' + name + (hideTrues ? '-false' : '-true'))[0].checked) {
+        toggleShowHideBoolean(props, true, init);
+      } else if ($('#' + name + (hideTrues ? '-true' : '-false'))[0].checked) {
+        toggleShowHideBoolean(props, false, init);
+      }
+    },
+    callbackParams: [properties, hideTrues, name]
+  });
+}
+
+function setShowHideBooleanOldEditor(radioIds, properties, conditionHide, conditionHideEqual) {
+  vrtxEditor.initEventHandler(radioIds, {
+    wrapper: "#editor",
+    callback: function (props, conditionHide, conditionHideEqual, init) {
+      toggleShowHideBoolean(props, $(conditionHide).val() != conditionHideEqual, init);
+    },
+    callbackParams: [properties, conditionHide, conditionHideEqual]
+  });
+}
+
+function toggleShowHideBoolean(props, show, init) {
+  var theProps = $(props);
+  if (init || vrtxAdmin.isIE9) {
+    if (!vrtxAdmin.isIE9) {
+      theProps.addClass("animate-optimized");
+    }
+    if (show && !init) {
+      theProps.show();
+    } else {
+      theProps.hide();
+    }
+  } else {
+    var animation = new VrtxAnimation({
+      animationSpeed: vrtxAdmin.transitionPropSpeed,
+      elem: theProps
+    });
+    if (show) {
+      animation.topDown();
+    } else {
+      animation.bottomUp();
+    }
+  }
+}
+
+/**
+ * Set select field show/hide
+ *
+ * @this {VrtxEditor}
+ */
+VrtxEditor.prototype.setShowHideSelectNewEditor = function setShowHideSelectNewEditor() {
+  var vrtxEdit = this;
+
+  for (var select in vrtxEdit.selectMappings) {
+    vrtxEdit.initEventHandler("#" + select, {
+      event: "change",
+      callback: vrtxEdit.showHideSelect
+    });
+  }
+};
+
+/**
+ * Select field show/hide
+ *
+ * @this {VrtxEditor}
+ * @param {object} select The select field
+ */
+VrtxEditor.prototype.showHideSelect = function showHideSelect(select, init) {
+  var vrtxEdit = this;
+
+  var id = select.attr("id");
+  var mappings = vrtxEdit.selectMappings[id];
+  if (mappings) {
+    var selectClassName = "select-" + id;
+    if (!vrtxEdit.editorForm.hasClass(selectClassName)) {
+      vrtxEdit.editorForm.addClass(selectClassName);
+    }
+    var selected = select.val();
+    for (var i = 0, len = mappings.length; i < len; i++) {
+      var mappedClass = selectClassName + "-" + mappings[i];
+      var editorHasMappedClass = vrtxEdit.editorForm.hasClass(mappedClass);
+      if (selected === mappings[i]) {
+        if (!editorHasMappedClass) {
+          vrtxEdit.editorForm.addClass(mappedClass);
+        }
+      } else {
+        if (editorHasMappedClass) {
+          vrtxEdit.editorForm.removeClass(mappedClass);
+        }
+      }
+    }
+  }
+  if (!init && accordionGrouped) accordionGrouped.closeActiveHidden();
+};
+
+
+/*-------------------------------------------------------------------*\
+
+    7.5 Course schedule editor (some is general and uses 8. for multiple enhancing)
+    
+    THIS IS A GENERAL MESSAGE TO THE WORLD:
+    You're in limbo. Proceed with caution.
+    
+    XXX: refactor / combine and optimize
+
+\*-------------------------------------------------------------------*/
 
 var sessionsLookup = {};
 var lastId = "";
@@ -1678,111 +1791,7 @@ function saveCourseScheduleExtractSessionFieldFromDOM(desc, elm) {
   }
   return val;
 }
-
-/* ^ Course schedule */
-
-/*
- * Boolean switch show/hide
- *
- */
-function setShowHideBooleanNewEditor(name, properties, hideTrues) {
-  vrtxEditor.initEventHandler('[name=' + name + ']', {
-    wrapper: "#editor",
-    callback: function (props, hideTrues, name, init) {
-      if ($('#' + name + (hideTrues ? '-false' : '-true'))[0].checked) {
-        toggleShowHideBoolean(props, true, init);
-      } else if ($('#' + name + (hideTrues ? '-true' : '-false'))[0].checked) {
-        toggleShowHideBoolean(props, false, init);
-      }
-    },
-    callbackParams: [properties, hideTrues, name]
-  });
-}
-
-function setShowHideBooleanOldEditor(radioIds, properties, conditionHide, conditionHideEqual) {
-  vrtxEditor.initEventHandler(radioIds, {
-    wrapper: "#editor",
-    callback: function (props, conditionHide, conditionHideEqual, init) {
-      toggleShowHideBoolean(props, $(conditionHide).val() != conditionHideEqual, init);
-    },
-    callbackParams: [properties, conditionHide, conditionHideEqual]
-  });
-}
-
-function toggleShowHideBoolean(props, show, init) {
-  var theProps = $(props);
-  if (init || vrtxAdmin.isIE9) {
-    if (!vrtxAdmin.isIE9) {
-      theProps.addClass("animate-optimized");
-    }
-    if (show && !init) {
-      theProps.show();
-    } else {
-      theProps.hide();
-    }
-  } else {
-    var animation = new VrtxAnimation({
-      animationSpeed: vrtxAdmin.transitionPropSpeed,
-      elem: theProps
-    });
-    if (show) {
-      animation.topDown();
-    } else {
-      animation.bottomUp();
-    }
-  }
-}
-
-/**
- * Set select field show/hide
- *
- * @this {VrtxEditor}
- */
-VrtxEditor.prototype.setShowHideSelectNewEditor = function setShowHideSelectNewEditor() {
-  var vrtxEdit = this;
-
-  for (var select in vrtxEdit.selectMappings) {
-    vrtxEdit.initEventHandler("#" + select, {
-      event: "change",
-      callback: vrtxEdit.showHideSelect
-    });
-  }
-};
-
-/**
- * Select field show/hide
- *
- * @this {VrtxEditor}
- * @param {object} select The select field
- */
-VrtxEditor.prototype.showHideSelect = function showHideSelect(select, init) {
-  var vrtxEdit = this;
-
-  var id = select.attr("id");
-  var mappings = vrtxEdit.selectMappings[id];
-  if (mappings) {
-    var selectClassName = "select-" + id;
-    if (!vrtxEdit.editorForm.hasClass(selectClassName)) {
-      vrtxEdit.editorForm.addClass(selectClassName);
-    }
-    var selected = select.val();
-    for (var i = 0, len = mappings.length; i < len; i++) {
-      var mappedClass = selectClassName + "-" + mappings[i];
-      var editorHasMappedClass = vrtxEdit.editorForm.hasClass(mappedClass);
-      if (selected === mappings[i]) {
-        if (!editorHasMappedClass) {
-          vrtxEdit.editorForm.addClass(mappedClass);
-        }
-      } else {
-        if (editorHasMappedClass) {
-          vrtxEdit.editorForm.removeClass(mappedClass);
-        }
-      }
-    }
-  }
-  if (!init && accordionGrouped) accordionGrouped.closeActiveHidden();
-};
-
+   
 
 /*-------------------------------------------------------------------*\
     8. Multiple fields and boxes

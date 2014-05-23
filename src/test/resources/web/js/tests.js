@@ -4,6 +4,7 @@ module("Schedule.js", {
   setup: function() {
     utils = new scheduleUtils();
     session = {
+      /* TP */
       "id": "14H-EXPHIL03-1-1-2-12-1/34",
       "dtStart": "2014-08-21T16:30:00.000+02:00",
       "dtEnd": "2014-08-21T18:15:00.000+02:00",
@@ -18,6 +19,7 @@ module("Schedule.js", {
         "roomName": "Seminarrom 205",
         "roomUrl": "http://www.med.uio.no/om/finn-fram/kart/vis/#bl1602,300,253"
       }],
+      /* Enriched */
       "vrtxTitle": "Åpningsforelesning",
       "vrtxStaff": [
         { "id": "rezam" },

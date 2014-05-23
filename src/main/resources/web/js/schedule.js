@@ -429,11 +429,11 @@ function generateHTMLForType(d) {
           classes += "cancelled";
         }
         /*
-        if(dateTime.end < utils.now) {
-          if(classes !== "") classes += " ";
-          classes += "passed";
-          passedCount++;
-        }
+          if(dateTime.end < utils.now) {
+            if(classes !== "") classes += " ";
+            classes += "passed";
+            passedCount++;
+          }
         */
         sessionsCount++;
         
@@ -449,7 +449,7 @@ function generateHTMLForType(d) {
           if(resourcesCount) sessionsHtml += "<td class='course-schedule-table-resources'>" + sessionsPreprocessed[j].resources + "</td>";
           sessionsHtml += "<td class='course-schedule-table-place'>" + utils.getPlace(session) + "</td>";
           if(staffCount)     sessionsHtml += "<td class='course-schedule-table-staff'>" + sessionsPreprocessed[j].staff + "</td>";
-          /*
+          /* Add edit
           sessionsHtml += "<span class='course-schedule-table-row-staff'>"  "</span>";
           sessionsHtml += (canEdit ? "<span class='course-schedule-table-row-edit' style='display: none'><a href='javascript:void'>" + scheduleI18n["table-edit"] + "</a></span>" : "");
           */

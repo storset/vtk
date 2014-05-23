@@ -322,14 +322,15 @@ function scheduleUtils() {
     }
     return val;
   };
-  this.getTableStartHtml = function(activityId, caption, isAllPassed, i18n) {
+  this.getTableStartHtml = function(activityId, caption, isAllPassed, hasResources, hasStaff, i18n) {
     var html = "<div class='course-schedule-table-wrapper'>";
     html += "<a class='course-schedule-table-toggle-passed' href='javascript:void(0);'>" + i18n["table-show-passed"] + "</a>";
     html += "<table id='" + activityId + "' class='course-schedule-table uio-zebra hiding-passed" + (isAllPassed ? " all-passed" : "") + "'><caption>" + caption + "</caption><thead><tr>";
       html += "<th class='course-schedule-table-date'>" + i18n["table-date"] + "</th><th class='course-schedule-table-day'>" + i18n["table-day"] + "</th>";
       html += "<th class='course-schedule-table-time'>" + i18n["table-time"] + "</th><th class='course-schedule-table-title'>" + i18n["table-title"] + "</th>";
-      html += "<th class='course-schedule-table-resources'>" + i18n["table-resources"] + "</th><th class='course-schedule-table-place'>" + i18n["table-place"] + "</th>";
-      html += "<th class='course-schedule-table-staff'>" + i18n["table-staff"] + "</th>";
+      if(hasResources) html += "<th class='course-schedule-table-resources'>" + i18n["table-resources"] + "</th>";
+      html += "<th class='course-schedule-table-place'>" + i18n["table-place"] + "</th>";
+      if(hasStaff)     html += "<th class='course-schedule-table-staff'>" + i18n["table-staff"] + "</th>";
     html += "</tr></thead><tbody>";
     return html;
   };
@@ -361,8 +362,9 @@ function generateHTMLForType(d) {
   
   // Scope all variables to function (and outside loops)
   var i, j, len, k, tocLen, split1, split1, dt, id, dtShort, lastDtShort = "", dtLong, forCode = "for", isFor,
-      activityId, caption, sessions, sessionsHtml, passedCount, sessionsCount, session, dateTime, staff, date, day, time,
-      sessionId, classes, tocTime, tocTimeCount, tocTimeMax = 3, newTocTime, isCancelled, tocHtmlArr = [];
+      activityId, caption, sessions, sessionsHtml, resourcesCount, staffCount, passedCount, sessionsCount,
+      session, dateTime, staff, date, day, time, sessionId, classes, tocTime, tocTimeCount, tocTimeMax = 3,
+      newTocTime, isCancelled, tocHtmlArr = [];
 
   for(i = 0; i < dataLen; i++) {
     dt = data[i];
@@ -375,6 +377,8 @@ function generateHTMLForType(d) {
     if(!isFor || i == 0) {
       activityId = isFor ? dtShort : dtShort + "-" + dt.id;
       sessionsHtml = "";
+      resourcesCount = 0;
+      staffCount = 0;
       passedCount = 0;
       sessionsCount = 0;
       sessions = [];
@@ -399,6 +403,13 @@ function generateHTMLForType(d) {
         return parseInt(a.dtStart.split("T")[0].split("-").join(""), 10) - parseInt(b.dtStart.split("T")[0].split("-").join(""), 10);
       });
       
+      // Do checks
+      for(j = 0, len = sessions.length; j < len; j++) {
+        session = sessions[j];
+        if(utils.getResources(session)) resourcesCount++;
+        if(utils.getStaff(session))     staffCount++;
+      }
+      
       // Generate sessions HTML
       for(j = 0, len = sessions.length; j < len; j++) {
         session = sessions[j];
@@ -413,7 +424,7 @@ function generateHTMLForType(d) {
           classes += "cancelled";
         }
         /*
-        if(dateTime.endDateTime < utils.now) {
+        if(dateTime.end < utils.now) {
           if(classes !== "") classes += " ";
           classes += "passed";
           passedCount++;
@@ -430,12 +441,13 @@ function generateHTMLForType(d) {
           sessionsHtml += "<td class='course-schedule-table-day'>" + day + "</td>";
           sessionsHtml += "<td class='course-schedule-table-time'>" + time + "</td>";
           sessionsHtml += "<td class='course-schedule-table-title'>" + utils.getTitle(session, isCancelled, scheduleI18n) + "</td>";
-          sessionsHtml += "<td class='course-schedule-table-resources'>" + utils.getResources(session) + "</td>";
+          if(resourcesCount) sessionsHtml += "<td class='course-schedule-table-resources'>" + utils.getResources(session) + "</td>";
           sessionsHtml += "<td class='course-schedule-table-place'>" + utils.getPlace(session) + "</td>";
-          sessionsHtml += "<td class='course-schedule-table-staff'>";
-            sessionsHtml += "<span class='course-schedule-table-row-staff'>" + utils.getStaff(session)  + "</span>";
-            sessionsHtml += (canEdit ? "<span class='course-schedule-table-row-edit' style='display: none'><a href='javascript:void'>" + scheduleI18n["table-edit"] + "</a></span>" : "");
-          sessionsHtml += "</td>";
+          if(staffCount)     sessionsHtml += "<td class='course-schedule-table-staff'>" + utils.getStaff(session) + "</td>";
+          /*
+          sessionsHtml += "<span class='course-schedule-table-row-staff'>"  "</span>";
+          sessionsHtml += (canEdit ? "<span class='course-schedule-table-row-edit' style='display: none'><a href='javascript:void'>" + scheduleI18n["table-edit"] + "</a></span>" : "");
+          */
         sessionsHtml += "</tr>";
       
         if(tocTimeCount < tocTimeMax) {
@@ -447,7 +459,7 @@ function generateHTMLForType(d) {
           }
         }
       }
-      tablesHtml += utils.getTableStartHtml(activityId, caption, (passedCount === sessionsCount), scheduleI18n) + sessionsHtml + utils.getTableEndHtml();
+      tablesHtml += utils.getTableStartHtml(activityId, caption, (passedCount === sessionsCount), resourcesCount, staffCount, scheduleI18n) + sessionsHtml + utils.getTableEndHtml();
       
       // Generate ToC
       tocTime = tocTime.replace(/,([^,]+)$/, " " + scheduleI18n["and"] + "$1");

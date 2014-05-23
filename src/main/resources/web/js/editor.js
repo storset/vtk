@@ -1148,7 +1148,7 @@ function courseSchedule() {
   }
   url += "?action=course-schedule&mode=edit";
   // Debug: Local development
-  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   var isEn = vrtxAdmin.lang == "en";
   
@@ -1170,7 +1170,7 @@ function courseSchedule() {
       "10": (isEn ? "oct" : "okt"),
       "11": (isEn ? "nov" : "nov"),
       "12": (isEn ? "dec" : "des"),
-      "rooms": (isEn ? "rooms" : "rom"),
+      "room": (isEn ? "room" : "rom"),
       "titles": {
         "plenary": (isEn ? "Plenary teaching" : "Fellesundervisning"),
         "group": (isEn ? "Group teaching" : "Partiundervisning")
@@ -1220,40 +1220,49 @@ function courseSchedule() {
     if(!dataLen) return "";
     
     // Store sessions HTML and multiple descriptions in lookup object
-    var j, dtShortLast = "",
+    var j, dt, dtShort, id, dtShortLast = "",
         editorJSONToHtmlFunc = editorJSONToHtml,
         vrtxEdit = vrtxEditor,
         html = "",
         htmlMiddle = "",
+        sessions = [];
         sessionsHtml = "";
     for(var i = 0; i < dataLen; i++) {
-      var dt = data[i],
-          dtShort = dt.teachingMethod.toLowerCase(),
-          id = skipTier ? type : dtShort + "-" + dt.id,
-          sessions = [];
-
-      if(!skipTier) {
-        sessionsHtml = "";
-      }
-      if(skipTier && i == 0 || !skipTier) {
+      dt = data[i];
+      dtShort = dt.teachingMethod.toLowerCase();
+      id = skipTier ? type : dtShort + "-" + dt.id;
+      
+      if(!skipTier || (skipTier && (i === 0))) {
         this.sessionsLookup[id] = {};
       }
+      
       // Add together sessions from sequences
       for(j = 0, len = dt.sequences.length; j < len; j++) {
         sessions = sessions.concat(dt.sequences[j].sessions);
       }
-      for(j = 0, len = sessions.length; j < len; j++) {
-        var sessionHtml = this.getSessionHtml(id, sessions[j], descs, skipTier, editorJSONToHtmlFunc);
-        sessionsHtml += vrtxEdit.htmlFacade.getAccordionInteraction(!skipTier ? "5" : "4", sessionHtml.sessionId, "session", sessionHtml.title, sessionHtml.html);
-      }
-      if(!skipTier) {
-        this.sessionsLookup[id].html = sessionsHtml;
-        htmlMiddle += vrtxEdit.htmlFacade.getAccordionInteraction("4", id, type, sessions[0].title, "");
-        if(i > 0 && dtShort != dtShortLast) {
-          html += vrtxEdit.htmlFacade.getAccordionInteraction("3", dtShort, type, dt.teachingMethodName, "<div class='vrtx-grouped'>" + htmlMiddle + "</div>");
-          htmlMiddle = "";
+      
+      if(!skipTier || (skipTier && (i === (dataLen-1)))) {
+        // Sort sessions
+        sessions.sort(function(a,b) {
+          return parseInt(a.dtStart.split("T")[0].split("-").join(""), 10) - parseInt(b.dtStart.split("T")[0].split("-").join(""), 10);
+        });
+        // Generate sessions HTML
+        for(j = 0, len = sessions.length; j < len; j++) {
+          var sessionHtml = this.getSessionHtml(id, sessions[j], descs, skipTier, editorJSONToHtmlFunc);
+          sessionsHtml += vrtxEdit.htmlFacade.getAccordionInteraction(!skipTier ? "5" : "4", sessionHtml.sessionId, "session", sessionHtml.title, sessionHtml.html);
+        }
+        if(!skipTier) {
+          this.sessionsLookup[id].html = sessionsHtml;
+          htmlMiddle += vrtxEdit.htmlFacade.getAccordionInteraction("4", id, type, sessions[0].title, "");
+          if(i > 0 && dtShort != dtShortLast) {
+            html += vrtxEdit.htmlFacade.getAccordionInteraction("3", dtShort, type, dt.teachingMethodName, "<div class='vrtx-grouped'>" + htmlMiddle + "</div>");
+            htmlMiddle = "";
+          }
+          sessionsHtml = "";
+          sessions = [];
         }
       }
+
       dtShortLast = dtShort;
     }
     if(!skipTier) {
@@ -1271,9 +1280,10 @@ function courseSchedule() {
     var sessionDatePostFixId = this.getDateAndPostFixId(session.dtStart, session.dtEnd),
         sessionId = id + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId,
         sessionCancelled = (session.vrtxStatus && session.vrtxStatus === "cancelled") || (session.status && session.status === "cancelled"),
+        room = session.rooms[0],
         sessionTitle = sessionDatePostFixId.date + " " +
                        "<span class='header-title'>" + (sessionCancelled ? "<span class='header-status'>" + this.i18n.cancelled + "</span> - " : "") + (session.vrtxTitle || session.title || session.id) + "</span>" +
-                       (session.rooms ? " - " + (session.rooms[0].buildingId + " " + this.i18n.rooms + " " + session.rooms[0].roomId) : ""),
+                       (room ? (" - " + (room.buildingAcronym || room.buildingId) + " " + this.i18n.room + " " + room.roomId) : ""),
         sessionContent = editorJSONToHtml(sessionId, session, descs, this.i18n);
 
      this.sessionsLookup[id][sessionId] = {
@@ -1420,7 +1430,7 @@ function courseSchedule() {
   
   var cs = this;
   
-  // Get schedule JSON
+  // Get schedule editor JSON
   var retrievedScheduleDeferred = $.Deferred();
   vrtxAdmin.serverFacade.getJSON(url, {
     success: function(data, xhr, textStatus) {
@@ -1437,6 +1447,7 @@ function courseSchedule() {
   
   var editorProperties = vrtxEditor.editorForm.find(".properties");
   editorProperties.hide();
+  
   initMultipleInputFields();
 
   $.when(retrievedScheduleDeferred, vrtxEditor.multipleFieldsBoxesDeferred).done(function() {
@@ -1647,6 +1658,7 @@ function editorJSONToHtml(id, data, descs, i18n) {
   var html = "";
   var multiples = [];
   var rtEditors = [];
+  var vrtxEdit = vrtxEditor;
   for(var name in descs) {
     var desc = descs[name],
         descProps = jQuery.extend(true, [], desc.props),
@@ -1695,15 +1707,15 @@ function editorJSONToHtml(id, data, descs, i18n) {
             browsable: browsable
           });
         }
-        html += vrtxEditor.htmlFacade.getStringField({ title: i18n[name],
-                                                       name: (desc.autocomplete ? "vrtx-autocomplete-" + desc.autocomplete + " " : "") + name + "-" + id,
-                                                       id: name + "-" + id,
-                                                       val: val,
-                                                       size: size
-                                                     }, name);
+        html += vrtxEdit.htmlFacade.getStringField({ title: i18n[name],
+                                                     name: (desc.autocomplete ? "vrtx-autocomplete-" + desc.autocomplete + " " : "") + name + "-" + id,
+                                                     id: name + "-" + id,
+                                                     val: val,
+                                                     size: size
+                                                   }, name);
         break;
       case "html":
-        html += vrtxEditor.htmlFacade.getSimpleHtmlField({ title: i18n[name],
+        html += vrtxEdit.htmlFacade.getSimpleHtmlField({ title: i18n[name],
                                                            name: name + "-" + id,
                                                            id: name + "-" + id,
                                                            val: val
@@ -1712,7 +1724,7 @@ function editorJSONToHtml(id, data, descs, i18n) {
         break;
       case "checkbox":
         if(!origVal || origVal !== "cancelled") {
-          html += vrtxEditor.htmlFacade.getCheckboxField({ title: i18n[name],
+          html += vrtxEdit.htmlFacade.getCheckboxField({ title: i18n[name],
                                                            name: name + "-" + id,
                                                            id: name + "-" + id,
                                                            checked: (val === "active" ? null : val)

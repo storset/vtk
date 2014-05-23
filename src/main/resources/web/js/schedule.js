@@ -26,7 +26,7 @@ function initSchedule() {
   var retrievedScheduleData = null;
   var endAjaxTime = 0;
   
-  // Get schedule JSON
+  // Get schedule view JSON
   var retrievedScheduleDeferred = $.Deferred();
   $.getJSON(url, function(data, xhr, textStatus) {
     retrievedScheduleData = data;

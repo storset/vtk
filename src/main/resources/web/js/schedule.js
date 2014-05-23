@@ -141,7 +141,7 @@ function initSchedule() {
 }
 
 function startThreadGenerateHTMLForType(data, htmlRef, threadRef) {
-  if(false && window.URL && window.URL.createObjectURL && typeof Blob === "function" && typeof Worker === "function") { // Use own thread
+  if(window.URL && window.URL.createObjectURL && typeof Blob === "function" && typeof Worker === "function") { // Use own thread
     var workerCode = function(e) {
       postMessage(generateHTMLForType(e.data));
     };
@@ -200,14 +200,59 @@ function scheduleUtils() {
           'Z';
   },
   formatName = function(name) {
-    var nameArr = name.split(" ");
-    if(!nameArr.length) return name;
+    var arr = name.split(" ");
+    var arrLen = arr.length;
+    if(!arrLen) return name;
     
     var val = "";
-    for(var i = 0, len = nameArr.length-1; i < len; i++) {
-       val += nameArr[i].substring(0,1) + ". ";
+    for(var i = 0, len = arrLen-1; i < len; i++) {
+       val += arr[i].substring(0,1) + ". ";
     }
-    return val + nameArr[i];
+    return val + arr[i];
+  },
+  linkAbbr = function(url, title, text) {
+    val = "";
+    if(url && title) {
+      val += "<a title='" + title + "' href='" + url + "'>";
+    } else if(url) {
+      val += "<a href='" + url + "'>";
+    } else if(title) {
+      val += "<abbr title='" + title + "'>";
+    }
+    val += text;
+    if(url) {
+      val += "</a>";
+    } else if(title) {
+      val += "</abbr>";
+    }
+    return val;
+  },
+  jsonArrayToHtmlList = function(arr) {
+    var val = "";
+    var arrLen = arr.length;
+    if(!arrLen) return val;
+    
+    if(arrLen > 1) val = "<ul>";
+    for(var i = 0; i < arrLen; i++) {
+      if(arrLen > 1) val += "<li>";
+      var obj = arr[i];
+      if(obj.name && obj.url) {
+        val += "<a href='" + obj.url + "'>" + formatName(obj.name) + "</a>";
+      } else if(obj.title && obj.url) {
+        val += "<a href='" + obj.url + "'>" + obj.title + "</a>";
+      } else if(obj.url) {
+        val += "<a href='" + obj.url + "'>" + obj.url + "</a>";
+      } else if(obj.name) {
+        val += formatName(obj.name);
+      } else if(obj.title) {
+        val += obj.title;
+      } else if(obj.id) {
+        val += obj.id;
+      }
+      if(arrLen > 1) val += "</li>";
+    }
+    if(arrLen > 1) val += "</ul>";
+    return val;
   },
   parseDate = function(dateString) {
     var m = /^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2})(?::([0-9]*)(\.[0-9]*)?)?(?:([+-])([0-9]{2}):([0-9]{2}))?/.exec(dateString);
@@ -247,61 +292,25 @@ function scheduleUtils() {
     if(rooms && rooms.length) {
       for(var i = 0, len = rooms.length; i < len; i++) {
         if(i > 0) val += "<br/>";
-        val += rooms[i].buildingId + " " + rooms[i].roomId;
+        var room = rooms[i]; 
+        val += linkAbbr(room.buildingUrl, room.buildingName, (room.buildingAcronym || room.buildingId));
+        val += " ";
+        val += linkAbbr(room.roomUrl, room.roomName, room.roomId);
       }
     }
     return val;
   };
   this.getStaff = function(session) {
     var val = "";
-    var staff = session.vrtxStaff || session.staff;
+    var staff = session.vrtxStaff || session.staff || [];
     var externalStaff = session.vrtxStaffExternal;
-    var allStaffLen = 0;
-    if(staff) allStaffLen += staff.length;
-    if(externalStaff) allStaffLen += externalStaff.length;
-    if(allStaffLen > 1) val = "<ul>";
-    if(staff && staff.length) {
-      for(var i = 0, len = staff.length; i < len; i++) {
-        if(allStaffLen > 1) val += "<li>";
-        val += staff[i].id;
-        if(allStaffLen > 1) val += "</li>";
-      }
-    }
     if(externalStaff && externalStaff.length) {
-      for(i = 0, len = externalStaff.length; i < len; i++) {
-        if(allStaffLen > 1) val += "<li>";
-        if(externalStaff[i].name && externalStaff[i].url) {
-          val += "<a href='" + externalStaff[i].url + "'>" + formatName(externalStaff[i].name) + "</a>";
-        } else if(resources[i].url) {
-          val += "<a href='" + externalStaff[i].url + "'>" + externalStaff[i].url + "</a>";
-        } else if(externalStaff[i].name) {
-          val += formatName(externalStaff[i].name);
-        }
-        if(allStaffLen > 1) val += "</li>";
-      }
+      staff = staff.concat(externalStaff);
     }
-    if(allStaffLen > 1) val += "</ul>";
-    return val;
+    return { len: staff.length, html: jsonArrayToHtmlList(staff) };
   };
   this.getResources = function(session) {
-    var val = "";
-    var resources = session.vrtxResources;
-    if(resources && resources.length) {
-      var resourcesLen = resources.length;
-      if(resourcesLen > 1) val = "<ul>";
-      for(var i = 0; i < resourcesLen; i++) {
-        if(resourcesLen > 1) val += "<li>";
-        if(resources[i].title && resources[i].url) {
-          val += "<a href='" + resources[i].url + "'>" + resources[i].title + "</a>";
-        } else if(resources[i].url) {
-          val += "<a href='" + resources[i].url + "'>" + resources[i].url + "</a>";
-        } else if(resources[i].title) {
-          val += resources[i].title;
-        }
-        if(resourcesLen > 1) val += "</li>";
-      }
-      if(resourcesLen > 1) val += "</ul>";
-    }
+    var val = jsonArrayToHtmlList(session.vrtxResources || []);
     var resourcesText = session.vrtxResourcesText;
     if(resourcesText && resourcesText.length) {
       val += resourcesText;
@@ -321,6 +330,16 @@ function scheduleUtils() {
   };
   this.getTableEndHtml = function() {
     return "</tbody></table></div>";
+  };
+  this.addStaffEmptyPlaceholder = function(num) {
+    var html = "";
+    if(num < 2) return html;
+    html = "<ul style='visibility:hidden'>"
+    while(num--) {
+      html += "<li>a</li>"; 
+    }
+    html += "</ul>"
+    return html;
   };
 }
 
@@ -347,7 +366,7 @@ function generateHTMLForType(d) {
   
   // Scope all variables to function (and outside loops)
   var i, j, len, k, tocLen, split1, split1, dt, id, dtShort, lastDtShort = "", dtLong, forCode = "for", isFor,
-      activityId, caption, sessions, sessionsHtml, passedCount, sessionsCount, session, dateTime, date, day, time,
+      activityId, caption, sessions, sessionsHtml, passedCount, sessionsCount, session, dateTime, staff, date, day, time,
       sessionId, classes, tocTime, tocTimeCount, tocTimeMax = 3, newTocTime, isCancelled, tocHtmlArr = [];
 
   for(i = 0; i < dataLen; i++) {
@@ -359,9 +378,6 @@ function generateHTMLForType(d) {
     isFor = dtShort === forCode;
     
     if(!isFor || i == 0) {
-      if(lastDtShort === forCode) {
-        tablesHtml += utils.getTableStartHtml(activityId, caption, (passedCount === sessionsCount), scheduleI18n) + sessionsHtml + utils.getTableEndHtml();
-      }
       activityId = isFor ? dtShort : dtShort + "-" + dt.id;
       sessionsHtml = "";
       passedCount = 0;
@@ -391,9 +407,7 @@ function generateHTMLForType(d) {
       // Generate sessions HTML
       for(j = 0, len = sessions.length; j < len; j++) {
         session = sessions[j];
-        
         dateTime = utils.getDateTime(session.dtStart, session.dtEnd);
-        
         sessionId = (skipTier ? type : dtShort + "-" + id) + "-" + session.id.replace(/\//g, "-") + "-" + utils.getPostFixId(dateTime.startDateTime, dateTime.endDateTime);
         isCancelled = (session.status && session.status === "cancelled") ||
                       (session.vrtxStatus && session.vrtxStatus === "cancelled");
@@ -415,6 +429,7 @@ function generateHTMLForType(d) {
         date = utils.getDateFormatted(dateTime.startDateTime, dateTime.endDateTime);
         day = utils.getDayFormatted(dateTime.startDateTime, dateTime.endDateTime, scheduleI18n);
         time = utils.getTimeFormatted(dateTime.startDateTime, dateTime.endDateTime);
+        staff = utils.getStaff(session);
         
         sessionsHtml += classes !== "" ? "<tr id='" + sessionId + "' class='" + classes + "'>" : "<tr>";
           sessionsHtml += "<td class='course-schedule-table-date'>" + date + "</td>";
@@ -424,8 +439,8 @@ function generateHTMLForType(d) {
           sessionsHtml += "<td class='course-schedule-table-resources'>" + utils.getResources(session) + "</td>";
           sessionsHtml += "<td class='course-schedule-table-place'>" + utils.getPlace(session) + "</td>";
           sessionsHtml += "<td class='course-schedule-table-staff'>";
-            sessionsHtml += "<span class='course-schedule-table-row-staff'>" + utils.getStaff(session)  + "</span>";
-            sessionsHtml += (canEdit ? "<span class='course-schedule-table-row-edit' style='display: none'><a href='javascript:void'>" + scheduleI18n["table-edit"] + "</a></span>" : "");
+            sessionsHtml += "<span class='course-schedule-table-row-staff'>" + staff.html  + "</span>";
+            sessionsHtml += (canEdit ? "<span class='course-schedule-table-row-edit' style='display: none'><a href='javascript:void'>" + scheduleI18n["table-edit"] + "</a>" + utils.addStaffEmptyPlaceholder(staff.len) + "</span>" : "");
           sessionsHtml += "</td>";
         sessionsHtml += "</tr>";
       
@@ -438,7 +453,6 @@ function generateHTMLForType(d) {
           }
         }
       }
-      sessions = [];
       tablesHtml += utils.getTableStartHtml(activityId, caption, (passedCount === sessionsCount), scheduleI18n) + sessionsHtml + utils.getTableEndHtml();
       
       // Generate ToC

@@ -22,7 +22,7 @@ function initSchedule() {
   }
   url += "?action=course-schedule";
   // Debug: Local development
-  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   var endAjaxTime = 0;
   
@@ -325,7 +325,7 @@ function scheduleUtils() {
   this.getTableStartHtml = function(activityId, caption, isAllPassed, hasResources, hasStaff, i18n) {
     var html = "<div class='course-schedule-table-wrapper'>";
     html += "<a class='course-schedule-table-toggle-passed' href='javascript:void(0);'>" + i18n["table-show-passed"] + "</a>";
-    html += "<table id='" + activityId + "' class='course-schedule-table uio-zebra hiding-passed" + (isAllPassed ? " all-passed" : "") + "'><caption>" + caption + "</caption><thead><tr>";
+    html += "<table id='" + activityId + "' class='course-schedule-table uio-zebra hiding-passed" + (isAllPassed ? " all-passed" : "") + (hasResources ? " has-resources" : "")  + (hasStaff ? " has-staff" : "") + "'><caption>" + caption + "</caption><thead><tr>";
       html += "<th class='course-schedule-table-date'>" + i18n["table-date"] + "</th><th class='course-schedule-table-day'>" + i18n["table-day"] + "</th>";
       html += "<th class='course-schedule-table-time'>" + i18n["table-time"] + "</th><th class='course-schedule-table-title'>" + i18n["table-title"] + "</th>";
       if(hasResources) html += "<th class='course-schedule-table-resources'>" + i18n["table-resources"] + "</th>";

@@ -108,28 +108,7 @@ function initSchedule() {
           };
           var openedEditActivityWindow = popupWindowInternal(850, 680, window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + row[0].id, "editActivity");
           
-          // Refresh when gets refocused
-          var isVisible = false;
-          var delayCheckVisibility = 450;
-          
-          var waitForVisibility = setTimeout(function() {
-            if(document.addEventListener) {
-              var detectVisibilityChange = function() {
-                isVisible = !document.hidden;
-                if(isVisible && document.removeEventListener) {
-                  document.removeEventListener("visibilitychange", detectVisibilityChange);
-                }
-              }
-              document.addEventListener("visibilitychange", detectVisibilityChange, false);
-            }
-          }, delayCheckVisibility);
-          var waitForClose = setTimeout(function() {
-            if(document.hasFocus() || isVisible) {
-              window.location.reload(1);
-            } else {
-              setTimeout(arguments.callee, 50); 
-            }
-          }, delayCheckVisibility);
+          refreshRefocused();
           
           e.stopPropagation();
           e.preventDefault();
@@ -138,6 +117,29 @@ function initSchedule() {
       scheduleDeferred.resolve();
     });
   });
+}
+
+function refreshRefocused() {
+  var isVisible = false;
+  var delayCheckVisibility = 450;
+  var waitForVisibility = setTimeout(function() {
+    if(document.addEventListener) {
+      var detectVisibilityChange = function() {
+        isVisible = !document.hidden;
+        if(isVisible && document.removeEventListener) {
+          document.removeEventListener("visibilitychange", detectVisibilityChange);
+        }
+      }
+      document.addEventListener("visibilitychange", detectVisibilityChange, false);
+    }
+  }, delayCheckVisibility);
+  var waitForClose = setTimeout(function() {
+    if(document.hasFocus() || isVisible) {
+      window.location.reload(1);
+    } else {
+      setTimeout(arguments.callee, 50); 
+    }
+  }, delayCheckVisibility);
 }
 
 function startThreadGenerateHTMLForType(data, htmlRef, threadRef) {

@@ -14,16 +14,16 @@ $(document).ready(function() {
 });
 
 function initSchedule() {
-  var retrievedScheduleData = null;
-
+  
   var url = window.location.href;
   if(/\/$/.test(url)) {
     url += "index.html";
   }
   url += "?action=course-schedule";
   // Debug: Local development
-  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
+  var retrievedScheduleData = null;
   var endAjaxTime = 0;
   
   // Get schedule JSON
@@ -38,7 +38,7 @@ function initSchedule() {
   $.when(retrievedScheduleDeferred).done(function() {
     if(retrievedScheduleData == null) {
       $.when(scheduleDocumentReady).done(function() {
-        $("#activities").html("<p>" + scheduleI18n["no-data"] + "</p>");
+        $("#activities").html("<p>" + scheduleI18n.noData + "</p>");
       });
       scheduleDeferred.resolve();
       return;

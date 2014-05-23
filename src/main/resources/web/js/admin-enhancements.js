@@ -2647,7 +2647,7 @@ function ajaxSave() {
   var extraData = {};
   var skipForm = false;
   if(typeof vrtxEditor != "undefined" && vrtxEditor.editorForm.hasClass("vrtx-course-schedule")) {
-    saveCourseSchedule();
+    editorCourseSchedule.save();
     extraData = { "csrf-prevention-token": vrtxEditor.editorForm.find("input[name='csrf-prevention-token']").val(),
                   "activities": JSON.stringify(retrievedScheduleData)
                 };
@@ -2684,7 +2684,7 @@ function ajaxSave() {
           }, Math.round(waitMinMs - endTime));
         }
         if(typeof vrtxEditor != "undefined" && vrtxEditor.editorForm.hasClass("vrtx-course-schedule")) {
-          courseScheduleSaved();
+          editorCourseSchedule.saved();
         }
       },
       error: function (xhr, textStatus, errMsg) {

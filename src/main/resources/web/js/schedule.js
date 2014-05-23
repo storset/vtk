@@ -362,7 +362,7 @@ function generateHTMLForType(d) {
   
   // Scope all variables to function (and outside loops)
   var i, j, len, k, tocLen, split1, split1, dt, id, dtShort, lastDtShort = "", dtLong, forCode = "for", isFor,
-      activityId, caption, sessions, sessionsHtml, resourcesCount, staffCount, passedCount, sessionsCount,
+      activityId, caption, sessions, sessionsPreprocessed, sessionsHtml, resourcesCount, staffCount, passedCount, sessionsCount,
       session, dateTime, staff, date, day, time, sessionId, classes, tocTime, tocTimeCount, tocTimeMax = 3,
       newTocTime, isCancelled, tocHtmlArr = [];
 
@@ -382,6 +382,7 @@ function generateHTMLForType(d) {
       passedCount = 0;
       sessionsCount = 0;
       sessions = [];
+      sessionsPreprocessed = [];
       if(skipTier) {
         caption = dtLong;
       } else {
@@ -403,11 +404,15 @@ function generateHTMLForType(d) {
         return parseInt(a.dtStart.split("T")[0].split("-").join(""), 10) - parseInt(b.dtStart.split("T")[0].split("-").join(""), 10);
       });
       
-      // Do checks
+      // Preprocess sessions and store what has been checked
       for(j = 0, len = sessions.length; j < len; j++) {
         session = sessions[j];
-        if(utils.getResources(session)) resourcesCount++;
-        if(utils.getStaff(session))     staffCount++;
+        sessionsPreprocessed[j] = {
+          "staff": utils.getStaff(session),
+          "resources": utils.getResources(session)
+        };
+        if(sessionsPreprocessed[j].staff)         staffCount++;
+        if(sessionsPreprocessed[j].resources)     resourcesCount++;
       }
       
       // Generate sessions HTML
@@ -441,9 +446,9 @@ function generateHTMLForType(d) {
           sessionsHtml += "<td class='course-schedule-table-day'>" + day + "</td>";
           sessionsHtml += "<td class='course-schedule-table-time'>" + time + "</td>";
           sessionsHtml += "<td class='course-schedule-table-title'>" + utils.getTitle(session, isCancelled, scheduleI18n) + "</td>";
-          if(resourcesCount) sessionsHtml += "<td class='course-schedule-table-resources'>" + utils.getResources(session) + "</td>";
+          if(resourcesCount) sessionsHtml += "<td class='course-schedule-table-resources'>" + sessionsPreprocessed[j].resources + "</td>";
           sessionsHtml += "<td class='course-schedule-table-place'>" + utils.getPlace(session) + "</td>";
-          if(staffCount)     sessionsHtml += "<td class='course-schedule-table-staff'>" + utils.getStaff(session) + "</td>";
+          if(staffCount)     sessionsHtml += "<td class='course-schedule-table-staff'>" + sessionsPreprocessed[j].staff + "</td>";
           /*
           sessionsHtml += "<span class='course-schedule-table-row-staff'>"  "</span>";
           sessionsHtml += (canEdit ? "<span class='course-schedule-table-row-edit' style='display: none'><a href='javascript:void'>" + scheduleI18n["table-edit"] + "</a></span>" : "");

@@ -21,7 +21,7 @@ function initSchedule() {
   }
   url += "?action=course-schedule";
   // Debug: Local development
-  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   var retrievedScheduleData = null;
   var endAjaxTime = 0;
@@ -360,60 +360,57 @@ function scheduleUtils() {
 
 function generateHTMLForType(d) {
   var dta = JSON.parse(d),
-  
       data = dta.data["activities"],
-      type = dta.type,
+      tocHtml = "",
+      tablesHtml = "";
+  
+  if(!data) return { tocHtml: tocHtml, tablesHtml: tablesHtml };
+  var dataLen = data.length;
+  if(!dataLen) return { tocHtml: tocHtml, tablesHtml: tablesHtml };
+  
+  var type = dta.type,
       scheduleI18n = dta.i18n,
       canEdit = dta.canEdit,
       skipTier = type === "plenary",
       startGenHtmlForTypeTime = new Date(),
       utils = new scheduleUtils(),
-      
-      tocHtml = "",
-      tablesHtml = "";
-  
-  if(!data) return { tocHtml: "", tablesHtml: "" };
-  var dataLen = data.length;
-  if(!dataLen) return { tocHtml: "", tablesHtml: "" };
+      lastDtShort = "",
+      forCode = "for",
+      tocTimeMax = 3,
+      tocHtmlArr = [];
   
   tocHtml += "<h2 class='accordion'>" + scheduleI18n["header-" + type] + "</h2>";
   if(skipTier) tocHtml += "<ul>";
   
-  // Scope all variables to function (and outside loops)
-  var i, j, len, dt, id, dtShort, lastDtShort = "", dtLong, forCode = "for", isFor,
-      activityId, caption, sessions, sessionsPreprocessed, sessionsHtml, resourcesCount, staffCount, passedCount, sessionsCount,
-      session, dateTime, staff, date, day, time, sessionId, classes, tocTime, tocTimeCount, tocTimeMax = 3,
-      newTocTime, isCancelled, tocHtmlArr = [];
-
-  for(i = 0; i < dataLen; i++) {
-    dt = data[i];
+  for(var i = 0; i < dataLen; i++) {
+    var dt = data[i];
     
-    id = dt.id;
-    dtShort = dt.teachingMethod.toLowerCase();
-    dtLong = dt.teachingMethodName;
-    isFor = dtShort === forCode;
+    var id = dt.id;
+    var dtShort = dt.teachingMethod.toLowerCase();
+    var dtLong = dt.teachingMethodName;
+    var isFor = dtShort === forCode;
     
     if(!isFor || i == 0) {
-      activityId = isFor ? dtShort : dtShort + "-" + dt.id;
-      sessionsHtml = "";
-      resourcesCount = 0;
-      staffCount = 0;
-      passedCount = 0;
-      sessionsCount = 0;
-      sessions = [];
-      sessionsPreprocessed = [];
+      var activityId = isFor ? dtShort : dtShort + "-" + dt.id;
+      var sessionsHtml = "";
+      var resourcesCount = 0;
+      var staffCount = 0;
+      var passedCount = 0;
+      var sessionsCount = 0;
+      var sessions = [];
+      var sessionsPreprocessed = [];
       if(skipTier) {
-        caption = dtLong;
+        var caption = dtLong;
       } else {
         groupCount = id.split("-")[1];
-        caption = dtLong + " - " + scheduleI18n.groupTitle.toLowerCase() + " " + groupCount;
+        var caption = dtLong + " - " + scheduleI18n.groupTitle.toLowerCase() + " " + groupCount;
       }
-      tocTime = "";
-      tocTimeCount = 0;
+      var tocTime = "";
+      var tocTimeCount = 0;
     }
     
     // Add together sessions from sequences
-    for(j = 0, len = dt.sequences.length; j < len; j++) {
+    for(var j = 0, len = dt.sequences.length; j < len; j++) {
       sessions = sessions.concat(dt.sequences[j].sessions);
     }
 
@@ -425,7 +422,7 @@ function generateHTMLForType(d) {
       
       // Preprocess sessions and store what has been checked
       for(j = 0, len = sessions.length; j < len; j++) {
-        session = sessions[j];
+        var session = sessions[j];
         sessionsPreprocessed[j] = {
           "staff": utils.getStaff(session),
           "resources": utils.getResources(session)
@@ -437,12 +434,12 @@ function generateHTMLForType(d) {
       // Generate sessions HTML
       for(j = 0, len = sessions.length; j < len; j++) {
         session = sessions[j];
-        dateTime = utils.getDateTime(session.dtStart, session.dtEnd);
-        sessionId = (skipTier ? type : dtShort + "-" + id) + "-" + session.id.replace(/\//g, "-") + "-" + utils.getPostFixId(dateTime.start, dateTime.end);
-        isCancelled = (session.status && session.status === "cancelled") ||
-                      (session.vrtxStatus && session.vrtxStatus === "cancelled");
+        var dateTime = utils.getDateTime(session.dtStart, session.dtEnd);
+        var sessionId = (skipTier ? type : dtShort + "-" + id) + "-" + session.id.replace(/\//g, "-") + "-" + utils.getPostFixId(dateTime.start, dateTime.end);
+        var isCancelled = (session.status && session.status === "cancelled") ||
+                          (session.vrtxStatus && session.vrtxStatus === "cancelled");
 
-        classes = (j & 1) ? "even" : "odd";     
+        var classes = (j & 1) ? "even" : "odd";     
         if(isCancelled) {
           if(classes !== "") classes += " ";
           classes += "cancelled";
@@ -456,9 +453,9 @@ function generateHTMLForType(d) {
         */
         sessionsCount++;
         
-        date = utils.getDateFormatted(dateTime.start, dateTime.end);
-        day = utils.getDayFormatted(dateTime.start, dateTime.end, scheduleI18n);
-        time = utils.getTimeFormatted(dateTime.start, dateTime.end);
+        var date = utils.getDateFormatted(dateTime.start, dateTime.end);
+        var day = utils.getDayFormatted(dateTime.start, dateTime.end, scheduleI18n);
+        var time = utils.getTimeFormatted(dateTime.start, dateTime.end);
         
         sessionsHtml += classes !== "" ? "<tr id='" + sessionId + "' class='" + classes + "'>" : "<tr>";
           sessionsHtml += "<td class='course-schedule-table-date'>" + date + "</td>";
@@ -471,7 +468,7 @@ function generateHTMLForType(d) {
         sessionsHtml += "</tr>";
       
         if(tocTimeCount < tocTimeMax) {
-          newTocTime = day.toLowerCase().substring(0,3) + " " + time;
+          var newTocTime = day.toLowerCase().substring(0,3) + " " + time;
           if(tocTime.indexOf(newTocTime) === -1) {
             if(tocTimeCount > 0) tocTime += ", ";
             tocTime += newTocTime;

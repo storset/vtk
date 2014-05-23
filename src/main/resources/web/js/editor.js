@@ -1148,7 +1148,7 @@ function courseSchedule() {
   }
   url += "?action=course-schedule&mode=edit";
   // Debug: Local development
-  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   var isEn = vrtxAdmin.lang == "en";
   
@@ -1220,24 +1220,24 @@ function courseSchedule() {
     if(!dataLen) return "";
     
     // Store sessions HTML and multiple descriptions in lookup object
-    var j, dt, dtShort, id, dtShortLast = "",
+    var dtShortLast = "",
         editorJSONToHtmlFunc = editorJSONToHtml,
         vrtxEdit = vrtxEditor,
         html = "",
         htmlMiddle = "",
-        sessions = [];
+        sessions = [],
         sessionsHtml = "";
     for(var i = 0; i < dataLen; i++) {
-      dt = data[i];
-      dtShort = dt.teachingMethod.toLowerCase();
-      id = skipTier ? type : dtShort + "-" + dt.id;
+      var dt = data[i],
+          dtShort = dt.teachingMethod.toLowerCase(),
+          id = skipTier ? type : dtShort + "-" + dt.id;
       
       if(!skipTier || (skipTier && (i === 0))) {
         this.sessionsLookup[id] = {};
       }
       
       // Add together sessions from sequences
-      for(j = 0, len = dt.sequences.length; j < len; j++) {
+      for(var j = 0, len = dt.sequences.length; j < len; j++) {
         sessions = sessions.concat(dt.sequences[j].sessions);
       }
       
@@ -1324,10 +1324,10 @@ function courseSchedule() {
         var dtShort = dt.teachingMethod.toLowerCase();
         var id = skipTier ? type : dtShort + "-" + dt.id;
         var sessions = [];
-        for(var j = 0, seqsLen = dt.sequences.length; j < seqsLen; j++) {
+        for(var j = 0, len = dt.sequences.length; j < len; j++) {
           sessions = sessions.concat(dt.sequences[j].sessions);
         }
-        for(j = 0, sessionsLen = sessions.length; j < sessionsLen; j++) {
+        for(j = 0, len = sessions.length; j < len; j++) {
           var session = sessions[j];
           var sessionDatePostFixId = this.getDateAndPostFixId(session.dtStart, session.dtEnd);
           var sessionId = id + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId;

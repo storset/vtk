@@ -9,6 +9,7 @@ var scheduleDocumentReady = $.Deferred();
 var scheduleStartTime = +new Date();
 var scheduleDocReadyEndTime = 0;
 $(document).ready(function() {
+  loadingUpdate(scheduleI18n.loadingRetrievingData);
   scheduleDocumentReady.resolve();
   scheduleDocReadyEndTime = +new Date() - scheduleStartTime;
 });
@@ -43,7 +44,8 @@ function initSchedule() {
       scheduleDeferred.resolve();
       return;
     }
-
+    
+    loadingUpdate(scheduleI18n.loadingGenerating);
     var startMakingThreadsTime = +new Date();
     
     var thread1Finished = $.Deferred(),
@@ -72,9 +74,9 @@ function initSchedule() {
       var html = htmlPlenary.tocHtml + htmlGroup.tocHtml + htmlPlenary.tablesHtml + htmlGroup.tablesHtml;
       if(html === "") html = scheduleI18n.noData;
 
-      $("#activities").html("<p>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
+      $("#activities").html(/* "<p>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
                             "ms) || (AJAX-complete: " + endAjaxTime + "ms + Threads invoking/serializing: " + (endMakingThreadsTime + htmlPlenary.parseRetrievedJSONTime + htmlGroup.parseRetrievedJSONTime) +
-                            "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))</p>" + html);
+                            "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))</p>" + */ html);
       
       // Toggle passed sessions
       $(document).on("click", ".course-schedule-table-toggle-passed", function(e) {
@@ -113,6 +115,15 @@ function initSchedule() {
       scheduleDeferred.resolve();
     });
   });
+}
+
+function loadingUpdate(msg) {
+  var loader = $("#loading-message");
+  if(!loader.length) {
+    $("#activities").append("<img src='/vrtx/__vrtx/static-resources/themes/default/images/spinner.gif' alt='Spinner' /> <span id='loading-message'>" + msg + "...</span>");
+  } else {
+    loader.text(msg + "...");
+  }
 }
 
 function refreshRefocused() {

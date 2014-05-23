@@ -1148,7 +1148,7 @@ function courseSchedule() {
   }
   url += "?action=course-schedule&mode=edit";
   // Debug: Local development
-  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   var isEn = vrtxAdmin.lang == "en";
   

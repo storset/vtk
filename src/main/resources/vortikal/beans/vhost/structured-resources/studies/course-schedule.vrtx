@@ -22,6 +22,10 @@ resourcetype course-schedule {
         <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/include-jquery.js"></script>
         <script type="text/javascript"><!--
           var scheduleI18n = {
+            "loadingRetrievingData": "[localized 'loading-retrieving-data']",
+            "loadingGenerating": "[localized 'loading-generating']",
+            "noData": "[localized 'no-data']",
+            
             "tableFor": "[localized 'table-for']",
             "tableDate": "[localized 'table-date']",
             "tableDay": "[localized 'table-day']",
@@ -37,11 +41,12 @@ resourcetype course-schedule {
             "tableEditActivity": "[localized 'table-edit-activity']",
             "tableShowPassed": "[localized 'table-show-passed']",
             "tableHidePassed": "[localized 'table-hide-passed']",
-            "noData": "[localized 'no-data']",
+            
             "header-plenary": "[localized 'header-plenary']",
             "header-group": "[localized 'header-group']",
-            "and": "[localized 'and']",
             "groupTitle": "[localized 'group-title']",
+            "and": "[localized 'and']",
+
             "d0": "[localized 'dSun']",
             "d1": "[localized 'dMon']",
             "d2": "[localized 'dTue']",
@@ -75,6 +80,11 @@ resourcetype course-schedule {
     schedule : (en : "Schedule", no : "Timeplan", nn : "Timeplan"),
     title : (en : "Title", no : "Tittel", nn : "Tittel"),
     header : (en : "Edit course schedule", no : "Rediger emnetimeplan", nn : "Rediger emnetimeplan"),
+    
+    loading-retrieving-data : (en : "Retrieving schedule data", no : "Henter timeplan data", nn : "Henter timeplan data"),
+    loading-generating : (en : "Generating schedule", no : "Lager timeplan", nn : "Lager timeplan"),
+    no-data: (en : "No data", no : "Ingen data", nn : "Ingen data"),
+    
     table-for : (en : "Lectures", no : "Forelesninger", nn : "Forelesninger"),
     table-date : (en : "Date", no : "Dato", nn : "Dato"),
     table-day : (en : "Day", no : "Dag", nn : "Dag"),
@@ -90,11 +100,12 @@ resourcetype course-schedule {
     table-edit-activity : (en : "activity", no : "aktivitet", nn : "aktivitet"),
     table-show-passed : (en : "Show earlier activities", no : "Vis tidligere aktiviteter", nn : "Vis tidligere aktiviteter"),
     table-hide-passed : (en : "Hide earlier activities", no : "Skjul tidligere aktiviteter", nn : "Skjul tidligere aktiviteter"),
-    no-data: (en : "No data", no : "Ingen data", nn : "Ingen data"),
+    
     header-plenary : (en : "Plenary sessions", no : "Fellesundervisning", nn : "Fellesundervisning"), 
     header-group : (en : "Group sessions", no : "Gruppeundervisning", nn : "Gruppeundervisning"),
-    and : (en : "and", no : "og", nn : "og"),
     group-title: (en : "Group", no : "Gruppe", nn : "Gruppe"),
+    and : (en : "and", no : "og", nn : "og"),
+    
     dSun : (en : "Sunday",    no : "Søndag",  nn : "Søndag"),
     dMon : (en : "Monday",    no : "Mandag",  nn : "Mandag"),
     dTue : (en : "Tuesday",   no : "Tirsdag", nn : "Tirsdag"),

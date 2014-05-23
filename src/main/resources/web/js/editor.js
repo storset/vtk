@@ -1198,10 +1198,10 @@ function courseSchedule() {
     var id = sessionData.id;
     var session = sessionData.session;
     var type = sessionData.type;
-    var descs = json[type].vrtxEditableDescription;
+    var descs = this.retrievedScheduleData[type].vrtxEditableDescription;
     var skipTier = sessionData.skipTier;
     
-    if(!sessionsLookup[id]) {
+    if(!this.sessionsLookup[id]) {
       this.sessionsLookup[id] = {};
     }
     var sessionHtml = this.getSessionHtml(id, session, descs, skipTier);    

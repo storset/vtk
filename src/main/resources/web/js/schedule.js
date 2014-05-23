@@ -89,11 +89,7 @@ function initSchedule() {
       // Edit session
       if(schedulePermissions.hasReadWriteNotLocked) {
         $(document).on("mouseover mouseout", "tbody tr", function(e) {
-          var row = $(this);
-          var rowStaff = row.find(".course-schedule-table-row-staff");
-          var rowEdit = rowStaff.next();
-          rowStaff.toggle();
-          rowEdit.toggle();
+          $(this).find(".course-schedule-table-row-edit").toggle();
         });
         $(document).on("click", ".course-schedule-table-row-edit a", function(e) {
           var row = $(this).closest("tr");
@@ -353,6 +349,13 @@ function scheduleUtils() {
     html += "</ul></div>";
     return html;
   };
+  this.editLink = function(clazz, html, displayEditLink, canEdit, i18n) {
+    var startHtml = "<td class='" + clazz + "'>" + html;
+    var endHtml = "</td>"
+    if(!displayEditLink || !canEdit) return startHtml + endHtml;
+
+    return startHtml + "<span class='course-schedule-table-row-edit' style='display: none'><a href='javascript:void'>" + i18n.tableEdit + "</a></span>" + endHtml;
+  };
 }
 
 function generateHTMLForType(d) {
@@ -463,12 +466,8 @@ function generateHTMLForType(d) {
           sessionsHtml += "<td class='course-schedule-table-time'>" + time + "</td>";
           sessionsHtml += "<td class='course-schedule-table-title'>" + utils.getTitle(session, isCancelled, scheduleI18n) + "</td>";
           if(resourcesCount) sessionsHtml += "<td class='course-schedule-table-resources'>" + sessionsPreprocessed[j].resources + "</td>";
-          sessionsHtml += "<td class='course-schedule-table-place'>" + utils.getPlace(session) + "</td>";
-          if(staffCount)     sessionsHtml += "<td class='course-schedule-table-staff'>" + sessionsPreprocessed[j].staff + "</td>";
-          /* Add edit
-          sessionsHtml += "<span class='course-schedule-table-row-staff'>"  "</span>";
-          sessionsHtml += (canEdit ? "<span class='course-schedule-table-row-edit' style='display: none'><a href='javascript:void'>" + scheduleI18n.tableEdit + "</a></span>" : "");
-          */
+          sessionsHtml += utils.editLink("course-schedule-table-place", utils.getPlace(session), !staffCount, canEdit, scheduleI18n);
+          if(staffCount)     sessionsHtml += utils.editLink("course-schedule-table-staff", sessionsPreprocessed[j].staff, staffCount, canEdit, scheduleI18n);
         sessionsHtml += "</tr>";
       
         if(tocTimeCount < tocTimeMax) {

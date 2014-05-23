@@ -38,7 +38,8 @@ module("Schedule.js", {
       ],
       "vrtxStaffExternal": [
         { "name": "Gunnar Flaksnes", "url": "http://www.nrk.no/" },
-        { "name": "Roger Rabbit", "url": "http://www.aftenposten.no/" }
+        { "name": "Roger Rabbit", "url": "http://www.aftenposten.no/" },
+        { "name": "Bob Kåre Funken-Hagen", "url": "http://www.dagbladet.no/" }
       ],
       "vrtxResources": [
         { "title": "Pensumlitteratur (PDF)", "url": "http://www.vg.no/" }
@@ -69,7 +70,7 @@ test("Generating Table HTML", function () {
                                  "Title - from Vortex");
   equal(utils.getPlace(session), "<abbr title='Georg Morgenstiernes hus'>GM</abbr> <a title='Seminarrom 205' href='http://www.med.uio.no/om/finn-fram/kart/vis/#bl1602,300,253'>205</a>",
                                  "Place - Abbr with title + Link with title");
-  equal(utils.getStaff(session), "<ul><li>rezam</li><li>oyvihatl</li><li><a href='http://www.nrk.no/'>G. Flaksnes</a></li><li><a href='http://www.aftenposten.no/'>R. Rabbit</a></li></ul>",
+  equal(utils.getStaff(session), "<ul><li>rezam</li><li>oyvihatl</li><li><a href='http://www.nrk.no/'>G. Flaksnes</a></li><li><a href='http://www.aftenposten.no/'>R. Rabbit</a></li><li><a href='http://www.dagbladet.no/'>B. K. Funken-Hagen</a></li></ul>",
                                  "Staff - List of: Just text or link");
   equal(utils.getResources(session), "<a href='http://www.vg.no/'>Pensumlitteratur (PDF)</a><ul><li>listepunkt #1</li><li>listepunkt #2</li></ul>",
                                  "Resources - List of: Link + freetext");

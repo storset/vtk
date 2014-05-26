@@ -102,8 +102,8 @@ function initSchedule() {
       // Edit session
       if(schedulePermissions.hasReadWriteNotLocked) {
         $(document).on("mouseover mouseout focusin focusout", "tbody tr", function(e) {
-          var fn = (e.type === "mouseover" || e.type === "focusin") ? "show" : "hide";
-          $(this).find(".course-schedule-table-row-edit")[fn]();
+          var fn = (e.type === "mouseover" || e.type === "focusin") ? "addClass" : "removeClass";
+          $(this).find(".course-schedule-table-row-edit")[fn]("visible");
         });
         $(document).on("click", ".course-schedule-table-row-edit a", function(e) {
           var row = $(this).closest("tr");

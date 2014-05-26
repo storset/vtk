@@ -208,7 +208,9 @@ function finishedThreadGenerateHTMLForType(data, htmlRef, threadRef) {
   threadRef.resolve();
 }
 
-function scheduleUtils() { 
+function scheduleUtils() {
+  var self = this;
+
   /** Private */
 
   /* toISOString() shim: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString
@@ -237,9 +239,15 @@ function scheduleUtils() {
     var m = /^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2})(?::([0-9]*)(\.[0-9]*)?)?(?:([+-])([0-9]{2}):([0-9]{2}))?/.exec(dateString);
     return { year: m[1], month: m[2], date: m[3], hh: m[4], mm: m[5], tzhh: m[9], tzmm: m[10] };
   },
-  nowUTC = function() {
+  getDateUTC = function(year, month, date, hh, mm) {
+    var utcDateString = dateToISO(new Date(year, month, date, hh, mm, 0, 0));
+    var utcDateParsed = parseDate(utcDateString);
+    return new Date(utcDateParsed.year, utcDateParsed.month - 1, utcDateParsed.date, utcDateParsed.hh, utcDateParsed.mm, 0, 0);
+  },
+  getNowUTC = function() {
     var localNow = new Date();
-    return this.getDateEndUTC(localNow.getFullyear(), localNow.getMonth(), localNow.getDate(), localNow.getHours(), localNow.getMinutes());
+    var utcNow = getDateUTC(localNow.getFullYear(), localNow.getMonth(), localNow.getDate(), localNow.getHours(), localNow.getMinutes());
+    return utcNow;
   },
   formatName = function(name) {
     var arr = name.split(" ");
@@ -298,7 +306,7 @@ function scheduleUtils() {
   };
 
   /** Public */
-  this.getNowUTC = nowUTC,
+  this.getNowUTC = getNowUTC(); // Cache
   this.getDateTime = function(s, e) {
     var startDateTime = parseDate(s);
     var endDateTime = parseDate(e);
@@ -307,13 +315,8 @@ function scheduleUtils() {
   this.getDateFormatted = function(dateStart, dateEnd) {
     return dateStart.date + "." + dateStart.month + "." + dateStart.year.substring(2,4);
   },
-  this.getDateUTC = function(year, month, date, hh, mm) {
-    var utcDateString = dateToISO(new Date(year, month, date, hh, mm, 0, 0));
-    var utcDateParsed = parseDate(utcDateString);
-    return new Date(utcDateParsed.year, utcDateParsed.month - 1, utcDateParsed.date, utcDateParsed.hh, utcDateParsed.mm, 0, 0);
-  },
   this.getEndUTCDayFormatted = function(dateStart, dateEnd, i18n) {
-    var utcDateEnd = this.getDateUTC(dateEnd.year, dateEnd.month - 1, dateEnd.date, dateEnd.hh, dateEnd.mm);
+    var utcDateEnd = getDateUTC(dateEnd.year, dateEnd.month - 1, dateEnd.date, dateEnd.hh, dateEnd.mm);
     var dateEnd = new Date(+utcDateEnd + dateEnd.tzhh * 60000); // ms + server timezone
     return { endUTC: utcDateEnd, day: i18n["d" + dateEnd.getDay()] };
   };
@@ -500,7 +503,7 @@ function generateHTMLForType(d) {
           if(classes !== "") classes += " ";
           classes += "cancelled";
         }
-        if(endUTC < utils.nowUTC) {
+        if(endUTC < utils.getNowUTC) {
           if(classes !== "") classes += " ";
           classes += "passed";
           passedCount++;

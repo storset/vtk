@@ -22,7 +22,7 @@ function initSchedule() {
   }
   url += "?action=course-schedule";
   // Debug: Local development
-  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   var retrievedScheduleData = null;
   var endAjaxTime = 0;
@@ -39,7 +39,7 @@ function initSchedule() {
   $.when(retrievedScheduleDeferred).done(function() {
     if(retrievedScheduleData == null) {
       $.when(scheduleDocumentReady).done(function() {
-        $("#activities").html("<p>" + scheduleI18n.noData + "</p>");
+        $("#activities").attr("aria-busy", "error").html("<p>" + scheduleI18n.noData + "</p>");
       });
       scheduleDeferred.resolve();
       return;
@@ -72,11 +72,15 @@ function initSchedule() {
     
     $.when(thread1Finished, thread2Finished, scheduleDocumentReady).done(function() {
       var html = htmlPlenary.tocHtml + htmlGroup.tocHtml + htmlPlenary.tablesHtml + htmlGroup.tablesHtml;
-      if(html === "") html = scheduleI18n.noData;
-
-      $("#activities").html(/* "<p>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
+      if(html === "") {
+        $("#activities").attr("aria-busy", "error").html(scheduleI18n.noData);
+      } else {
+        $("#activities").attr("aria-busy", "false").html(/* "<p>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
                             "ms) || (AJAX-complete: " + endAjaxTime + "ms + Threads invoking/serializing: " + (endMakingThreadsTime + htmlPlenary.parseRetrievedJSONTime + htmlGroup.parseRetrievedJSONTime) +
                             "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))</p>" + */ html);
+      }
+
+      
       
       // Toggle passed sessions
       $(document).on("click", ".course-schedule-table-toggle-passed", function(e) {
@@ -120,7 +124,7 @@ function initSchedule() {
 function loadingUpdate(msg) {
   var loader = $("#loading-message");
   if(!loader.length) {
-    $("#activities").append("<img src='/vrtx/__vrtx/static-resources/themes/default/images/spinner.gif' alt='Spinner' /> <span id='loading-message'>" + msg + "...</span>");
+    $("#activities").attr("aria-busy", "true").append("<img src='/vrtx/__vrtx/static-resources/themes/default/images/spinner.gif' alt='Spinner' /> <span id='loading-message'>" + msg + "...</span>");
   } else {
     loader.text(msg + "...");
   }
@@ -330,7 +334,7 @@ function scheduleUtils() {
     return val;
   };
   this.getTableStartHtml = function(activityId, caption, isAllPassed, hasResources, hasStaff, i18n) {
-    var html = "<div class='course-schedule-table-wrapper'>";
+    var html = "<div tabindex='0' class='course-schedule-table-wrapper'>";
     html += "<table id='" + activityId + "' class='course-schedule-table uio-zebra hiding-passed" + (isAllPassed ? " all-passed" : "") + (hasResources ? " has-resources" : "")  + (hasStaff ? " has-staff" : "") + "'><caption>" + caption + "</caption><thead><tr>";
       html += "<th class='course-schedule-table-date'>" + i18n.tableDate + "</th>";
       html += "<th class='course-schedule-table-day'>" + i18n.tableDay + "</th>";

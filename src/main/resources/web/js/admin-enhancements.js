@@ -2647,9 +2647,9 @@ function ajaxSave() {
   var extraData = {};
   var skipForm = false;
   if(typeof vrtxEditor != "undefined" && vrtxEditor.editorForm.hasClass("vrtx-course-schedule")) {
-    editorCourseSchedule.save();
+    editorCourseSchedule.saveLastSession();
     extraData = { "csrf-prevention-token": vrtxEditor.editorForm.find("input[name='csrf-prevention-token']").val(),
-                  "activities": JSON.stringify(retrievedScheduleData)
+                  "activities": JSON.stringify(editorCourseSchedule.retrievedScheduleData)
                 };
     skipForm = true;
   }

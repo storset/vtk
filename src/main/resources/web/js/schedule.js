@@ -395,7 +395,7 @@ function scheduleUtils() {
     var endHtml = "</td>"
     if(!displayEditLink || !canEdit) return startHtml + html + endHtml;
 
-    return startHtml + "<div class='course-schedule-table-edit-wrapper'><a class='course-schedule-table-edit-link' href='javascript:void'>" + i18n.tableEdit + "</a>" + html + "</div>" + endHtml;
+    return startHtml + "<div class='course-schedule-table-edit-wrapper'>" + html + "<a class='course-schedule-table-edit-link' href='javascript:void'>" + i18n.tableEdit + "</a></div>" + endHtml;
   };
 }
 

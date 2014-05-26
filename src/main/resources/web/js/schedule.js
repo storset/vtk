@@ -385,11 +385,11 @@ function scheduleUtils() {
     return html;
   };
   this.editLink = function(clazz, html, displayEditLink, canEdit, i18n) {
-    var startHtml = "<td class='" + clazz + "'>";
+    var startHtml = "<td class='" + clazz + ((displayEditLink && canEdit) ? " course-schedule-table-edit-cell" : "") + "'>";
     var endHtml = "</td>"
     if(!displayEditLink || !canEdit) return startHtml + html + endHtml;
 
-    return startHtml + "<div class='course-schedule-table-row-edit'><a class='course-schedule-table-row-edit-link' href='javascript:void'>" + i18n.tableEdit + "</a>" + html + "</div>" + endHtml;
+    return startHtml + "<div class='course-schedule-table-edit-wrapper'><a class='course-schedule-table-edit-link' href='javascript:void'>" + i18n.tableEdit + "</a>" + html + "</div>" + endHtml;
   };
 }
 

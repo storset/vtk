@@ -45,19 +45,29 @@ import net.sf.json.JSONSerializer;
 import org.vortikal.util.io.StreamUtil;
 
 public final class JSON {
-    
+
     private static final int MAX_LENGTH = 500000;
 
     public static Object parse(String input) {
-        Object o = JSONSerializer.toJSON(input);
-        return unwrap(o);
+        return parse(input, true);
     }
-    
+
     public static Object parse(InputStream input) throws IOException {
+        return parse(input, true);
+    }
+
+    public static Object parse(InputStream input, boolean unwrap) throws IOException {
         byte[] buf = StreamUtil.readInputStream(input, MAX_LENGTH);
         String str = new String(buf, "utf-8");
-        Object o = JSONSerializer.toJSON(str);
-        return unwrap(o);
+        return parse(str, unwrap);
+    }
+
+    public static Object parse(String input, boolean unwrap) {
+        Object o = JSONSerializer.toJSON(input);
+        if (unwrap) {
+            return unwrap(o);
+        }
+        return o;
     }
 
     public static Object select(JSONObject object, String expression) {
@@ -65,7 +75,7 @@ public final class JSON {
 
         JSONObject current = object;
         Object found = null;
-        
+
         for (int i = 0; i < pattern.length; i++) {
             String elem = pattern[i];
             Object o = current.get(elem);
@@ -85,17 +95,16 @@ public final class JSON {
         }
         return found;
     }
-    
-    
+
     private static Object unwrap(Object object) {
-        if (! (object instanceof net.sf.json.JSON)) {
+        if (!(object instanceof net.sf.json.JSON)) {
             return object;
         }
         net.sf.json.JSON json = (net.sf.json.JSON) object;
         if (json instanceof JSONObject) {
             JSONObject jsonObject = (JSONObject) json;
             Map<Object, Object> m = new HashMap<Object, Object>();
-            for (Object o: jsonObject.keySet()) {
+            for (Object o : jsonObject.keySet()) {
                 Object value = jsonObject.get(o);
                 o = unwrap(o);
                 value = unwrap(value);
@@ -105,7 +114,7 @@ public final class JSON {
         } else if (json instanceof JSONArray) {
             JSONArray jsonArray = (JSONArray) json;
             List<Object> list = new ArrayList<Object>();
-            for (Object o: jsonArray) {
+            for (Object o : jsonArray) {
                 list.add(unwrap(o));
             }
             return list;
@@ -114,6 +123,5 @@ public final class JSON {
         }
         return object;
     }
-
 
 }

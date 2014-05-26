@@ -94,7 +94,7 @@ function initSchedule() {
       
       // Edit session
       if(schedulePermissions.hasReadWriteNotLocked) {
-        $(document).on("mouseover mouseout", "tbody tr", function(e) {
+        $(document).on("mouseover mouseout focusin focusout", "tbody tr", function(e) {
           $(this).find(".course-schedule-table-row-edit").toggle();
         });
         $(document).on("click", ".course-schedule-table-row-edit a", function(e) {
@@ -471,7 +471,7 @@ function generateHTMLForType(d) {
         var day = utils.getDayFormatted(dateTime.start, dateTime.end, scheduleI18n);
         var time = utils.getTimeFormatted(dateTime.start, dateTime.end);
         
-        sessionsHtml += classes !== "" ? "<tr id='" + sessionId + "' class='" + classes + "'>" : "<tr>";
+        sessionsHtml += classes !== "" ? "<tr tabindex='0' id='" + sessionId + "' class='" + classes + "'>" : "<tr>";
           sessionsHtml += "<td class='course-schedule-table-date'>" + date + "</td>";
           sessionsHtml += "<td class='course-schedule-table-day'>" + day + "</td>";
           sessionsHtml += "<td class='course-schedule-table-time'>" + time + "</td>";

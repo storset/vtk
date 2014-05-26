@@ -9,6 +9,7 @@ var scheduleDocumentReady = $.Deferred();
 var scheduleStartTime = +new Date();
 var scheduleDocReadyEndTime = 0;
 $(document).ready(function() {
+  $("#disabled-js").hide();
   loadingUpdate(scheduleI18n.loadingRetrievingData);
   scheduleDocumentReady.resolve();
   scheduleDocReadyEndTime = +new Date() - scheduleStartTime;
@@ -100,11 +101,12 @@ function initSchedule() {
           var row = $(this).closest("tr");
           var editUri = window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + row[0].id;
           var openedEditWindow = popupEditWindow(850, 680, editUri, "editActivity");
-          refreshRefocused();
+          refreshWhenRefocused();
           e.stopPropagation();
           e.preventDefault();
         });
       }
+      
       scheduleDeferred.resolve();
     });
   });
@@ -113,7 +115,7 @@ function initSchedule() {
 function loadingUpdate(msg) {
   var loader = $("#loading-message");
   if(!loader.length) {
-    var loaderHtml = "<img src='/vrtx/__vrtx/static-resources/themes/default/images/spinner.gif' alt='Spinner' /> <span id='loading-message'>" + msg + "...</span>";
+    var loaderHtml = "<p id='loading-message'>" + msg + "...</p>";
     $("#activities").attr("aria-busy", "true").append(loaderHtml);
   } else {
     loader.text(msg + "...");
@@ -130,7 +132,7 @@ function popupEditWindow(w, h, url, name) {
   return openedWindow;
 }
 
-function refreshRefocused() {
+function refreshWhenRefocused() {
   var isVisible = false;
   var delayCheckVisibility = 450;
   var waitForVisibility = setTimeout(function() {
@@ -195,23 +197,30 @@ function finishedThreadGenerateHTMLForType(data, htmlRef, threadRef) {
 
 function scheduleUtils() { 
   /** Private */
-  var now = new Date(),
-  dateToISO = function(date) {
-    var pad = function(number) {
-      if ( number < 10 ) {
-        return '0' + number;
-      }
-      return number;
-    };
-    return date.getUTCFullYear() +
-          '-' + pad(date.getUTCMonth() + 1 ) +
-          '-' + pad(date.getUTCDate() ) +
-          'T' + pad(date.getUTCHours() ) +
-          ':' + pad(date.getUTCMinutes() ) +
-          ':' + pad(date.getUTCSeconds() ) +
-          '.' + (date.getUTCMilliseconds() / 1000).toFixed(3).slice(2, 5) +
-          'Z';
+
+  /* toISOString() shim: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString
+     - Without doing things to Date-object */
+  var dateToISO = function(date) {
+    if(!Date.prototype.toISOString) {
+      var pad = function(number) {
+        if (number < 10) {
+          return '0' + number;
+        }
+        return number;
+      };
+      return date.getUTCFullYear() +
+            '-' + pad(date.getUTCMonth() + 1 ) +
+            '-' + pad(date.getUTCDate() ) +
+            'T' + pad(date.getUTCHours() ) +
+            ':' + pad(date.getUTCMinutes() ) +
+            ':' + pad(date.getUTCSeconds() ) +
+            '.' + (date.getUTCMilliseconds() / 1000).toFixed(3).slice(2, 5) +
+            'Z';
+    } else {
+      return date.toISOString();
+    }
   },
+  now = dateToISO(new Date()),
   formatName = function(name) {
     var arr = name.split(" ");
     var arrLen = arr.length;

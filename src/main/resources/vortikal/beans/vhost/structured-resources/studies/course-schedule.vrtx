@@ -25,7 +25,7 @@ resourcetype course-schedule {
             "loadingRetrievingData": "[localized 'loading-retrieving-data']",
             "loadingGenerating": "[localized 'loading-generating']",
             "noData": "[localized 'no-data']",
-            
+
             "tableFor": "[localized 'table-for']",
             "tableDate": "[localized 'table-date']",
             "tableDay": "[localized 'table-day']",
@@ -68,8 +68,9 @@ resourcetype course-schedule {
       </head>
       <body id="vrtx-course-schedule">
         <h1>[call "resource:property" {"id":"title"}]</h1>
+        <p id="disabled-js">[localized 'disabled-js']</p>
         <div id="activities">
-        
+          
         </div>
       </body>
     </html>
@@ -84,6 +85,10 @@ resourcetype course-schedule {
     loading-retrieving-data : (en : "Retrieving schedule data", no : "Henter timeplan data", nn : "Henter timeplan data"),
     loading-generating : (en : "Generating schedule", no : "Lager timeplan", nn : "Lager timeplan"),
     no-data: (en : "No data", no : "Ingen data", nn : "Ingen data"),
+    
+    disabled-js: (en : "You need to enable JavaScript to get the schedule",
+                  no : "Du må skru på JavaScript for få timeplanen",
+                  nn : "Du må skru på JavaScript for få timeplanen"),
     
     table-for : (en : "Lectures", no : "Forelesninger", nn : "Forelesninger"),
     table-date : (en : "Date", no : "Dato", nn : "Dato"),

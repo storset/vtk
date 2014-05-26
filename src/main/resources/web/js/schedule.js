@@ -107,8 +107,11 @@ function initSchedule() {
         });
         $(document).on("click", ".course-schedule-table-row-edit a", function(e) {
           var row = $(this).closest("tr");
-          var editUri = window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + row[0].id;
-          var openedEditWindow = popupEditWindow(850, 680, editUri, "editActivity");
+          var editUrl = window.location.pathname;
+          if(/\/$/.test(editUrl)) {
+            editUrl += "index.html";
+          }
+          var openedEditWindow = popupEditWindow(850, 680, editUrl + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + row[0].id, "editActivity");
           refreshWhenRefocused();
           e.stopPropagation();
           e.preventDefault();

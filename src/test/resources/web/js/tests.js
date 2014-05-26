@@ -57,13 +57,20 @@ test("DateTime parsing", function () {
   var datetime = utils.getDateTime("2014-08-18T12:15:00.000+02:00", "2014-08-18T14:00:00.000+02:00");
   equal(utils.getDateFormatted(datetime.start, datetime.end), "18.08.14", "Date");
   equal(utils.getTimeFormatted(datetime.start, datetime.end), "12:15&ndash;14:00",  "Time");
-  equal(utils.getDayFormatted(datetime.start, datetime.end, i18n), "Mandag",  "Day +0200 - 12:15=>14:00");
+  
+  var endUTCDay = utils.getEndUTCDayFormatted(datetime.start, datetime.end, i18n);
+  equal(endUTCDay.day, "Mandag",  "Day +0200 - 12:15=>14:00");
+  equal(endUTCDay.endUTC, "Mon Aug 18 2014 12:00:00 GMT+0200 (CEST)", "UTC End date - 12:00");
   
   var datetime2 = utils.getDateTime("2014-11-03T23:15:00.000+01:00", "2014-11-03T23:59:00.000+01:00");
-  equal(utils.getDayFormatted(datetime2.start, datetime2.end, i18n), "Mandag",  "Day +0100 - 23:15=>23:59");
+  var endUTCDay2 = utils.getEndUTCDayFormatted(datetime2.start, datetime2.end, i18n);
+  equal(endUTCDay2.day, "Mandag",  "Day +0100 - 23:15=>23:59");
+  equal(endUTCDay2.endUTC, "Mon Nov 03 2014 22:59:00 GMT+0100 (CET)", "UTC End date - 22:59");
   
   var datetime3 = utils.getDateTime("2014-11-03T00:15:00.000+01:00", "2014-11-03T01:59:00.000+01:00");
-  equal(utils.getDayFormatted(datetime3.start, datetime3.end, i18n), "Mandag",  "Day +0100 - 00:15=>01:59");
+  var endUTCDay3 = utils.getEndUTCDayFormatted(datetime3.start, datetime3.end, i18n);
+  equal(endUTCDay3.day, "Mandag",  "Day +0100 - 00:15=>01:59");
+  equal(endUTCDay3.endUTC, "Mon Nov 03 2014 00:59:00 GMT+0100 (CET)", "UTC End date - 00:59");
 });
 test("Generating Table HTML", function () {
   equal(utils.getTitle(session), "Åpningsforelesning",
@@ -81,6 +88,6 @@ test("Generating ToC HTML", function () {
                            '<li><a href="#sem-2-13">Group 13</a> - thu 16:30–18:15</li>',
                            '<li><a href="#sem-2-14">Group 14</a> - thu 16:30–18:15</li>',
                            '<li><a href="#sem-2-15">Group 15</a> - thu 12:15–14:00</li>'], "Seminar"),
-                           "<p>Seminar</p><div class='course-schedule-thirds'><ul class='thirds-left'><li><a href=\"#sem-2-11\">Group 11</a> - thu 16:30–18:15</li><li><a href=\"#sem-2-12\">Group 12</a> - thu 16:30–18:15</li></ul><ul class='thirds-middle'><li><a href=\"#sem-2-13\">Group 13</a> - thu 16:30–18:15</li><li><a href=\"#sem-2-14\">Group 14</a> - thu 16:30–18:15</li></ul><ul class='thirds-right'><li><a href=\"#sem-2-15\">Group 15</a> - thu 12:15–14:00</li></ul></div>",
+                           "<p>Seminar</p><div class='course-schedule-toc-thirds'><ul class='thirds-left'><li><a href=\"#sem-2-11\">Group 11</a> - thu 16:30–18:15</li><li><a href=\"#sem-2-12\">Group 12</a> - thu 16:30–18:15</li></ul><ul class='thirds-middle'><li><a href=\"#sem-2-13\">Group 13</a> - thu 16:30–18:15</li><li><a href=\"#sem-2-14\">Group 14</a> - thu 16:30–18:15</li></ul><ul class='thirds-right'><li><a href=\"#sem-2-15\">Group 15</a> - thu 12:15–14:00</li></ul></div>",
                            "Split in thirds - Seminar groups");
 });

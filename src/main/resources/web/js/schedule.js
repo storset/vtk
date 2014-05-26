@@ -9,8 +9,10 @@ var scheduleDocumentReady = $.Deferred();
 var scheduleStartTime = +new Date();
 var scheduleDocReadyEndTime = 0;
 $(document).ready(function() {
-  $("#disabled-js").hide();
-  loadingUpdate(scheduleI18n.loadingRetrievingData);
+  if(typeof scheduleI18n === "object") {
+    $("#disabled-js").hide();
+    loadingUpdate(scheduleI18n.loadingRetrievingData);
+  }
   scheduleDocumentReady.resolve();
   scheduleDocReadyEndTime = +new Date() - scheduleStartTime;
 });

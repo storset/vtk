@@ -1179,6 +1179,8 @@ function courseSchedule() {
       "noData": (isEn ? "No data" : "Ingen data"),
       "noSessionData": (isEn ? "No activity data" : "Ingen aktivitetsdata"),
       "cancelled": (isEn ? "CANCELLED" : "AVLYST"),
+      
+      /* Editable properties */
       "vrtxTitle": (isEn ? "Title:" : "Tittel:"),
       "vrtxStaff": (isEn ? "Staff:" : "Forelesere:"),
       "vrtxStaffExternal": (isEn ? "External staff:" : "Eksterne forelesere:"),
@@ -1186,6 +1188,8 @@ function courseSchedule() {
       "vrtxResourcesText": (isEn ? "Text resources:" : "Fritekst ressurser:"),
       "vrtxResourcesFixed": (isEn ? "Fixed resources:" : "Faste ressurser:"),
       "vrtxStatus": (isEn ? "Cancel" : "Avlys"),
+      
+      /* JSON */
       "vrtxStaffExternal-name": (isEn ? "Name" : "Navn"),
       "vrtxStaffExternal-url": (isEn ? "Link" : "Lenke"),
       "vrtxResources-title": (isEn ? "Title" : "Tittel"),
@@ -1492,7 +1496,7 @@ function courseSchedule() {
         var dataString = form.serialize();
         vrtxAdmin.serverFacade.postHtml(url, dataString, {
           success: function (results, status, resp) {
-          csRef.sessionOnlyWindowClose();
+            csRef.sessionOnlyWindowClose();
           }
         });
         e.stopPropagation();

@@ -23,7 +23,7 @@ function initSchedule() {
   }
   url += "?action=course-schedule";
   // Debug: Local development
-  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   var retrievedScheduleData = null;
   var endAjaxTime = 0;
@@ -220,7 +220,14 @@ function scheduleUtils() {
       return date.toISOString();
     }
   },
-  now = dateToISO(new Date()),
+  parseDate = function(dateString) {
+    var m = /^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2})(?::([0-9]*)(\.[0-9]*)?)?(?:([+-])([0-9]{2}):([0-9]{2}))?/.exec(dateString);
+    return { year: m[1], month: m[2], date: m[3], hh: m[4], mm: m[5], tzhh: m[9], tzmm: m[10] };
+  },
+  nowUTC = function() {
+    var localNow = new Date();
+    return this.getDateEndUTC(localNow.getFullyear(), localNow.getMonth(), localNow.getDate(), localNow.getHours(), localNow.getMinutes());
+  },
   formatName = function(name) {
     var arr = name.split(" ");
     var arrLen = arr.length;
@@ -275,38 +282,32 @@ function scheduleUtils() {
     }
     if(arrLen > 1) val += "</ul>";
     return val;
-  },
-  parseDate = function(dateString) {
-    var m = /^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2})(?::([0-9]*)(\.[0-9]*)?)?(?:([+-])([0-9]{2}):([0-9]{2}))?/.exec(dateString);
-    return { day: m[3], month: m[2], year: m[1], hh: m[4], mm: m[5], tzhh: m[9], tzmm: m[10] };
   };
 
   /** Public */
-  this.now = now,
+  this.getNowUTC = nowUTC,
   this.getDateTime = function(s, e) {
     var startDateTime = parseDate(s);
     var endDateTime = parseDate(e);
     return { start: startDateTime, end: endDateTime };
   };
   this.getDateFormatted = function(dateStart, dateEnd) {
-    return dateStart.day + "." + dateStart.month + "." + dateStart.year.substring(2,4);
+    return dateStart.date + "." + dateStart.month + "." + dateStart.year.substring(2,4);
   },
-  this.getDayFormatted = function(dateStart, dateEnd, i18n) {
-    // Server Date-string to Date with local timezone to UTC/GMT/Zulu Date-string
-    var utcEnd = dateToISO(new Date(dateEnd.year, dateEnd.month - 1, dateEnd.day, dateEnd.hh, dateEnd.mm, 0, 0));
-    // Parse Date-string to array
-    var utcEndDateTime = parseDate(utcEnd);
-    // new Date
-    var utcDateEnd = new Date(utcEndDateTime.year, utcEndDateTime.month - 1, utcEndDateTime.day, utcEndDateTime.hh, utcEndDateTime.mm, 0, 0);
-    // ms + server timezone
-    utcDateEnd = new Date(+utcDateEnd + dateEnd.tzhh * 60000);
-    return i18n["d" + utcDateEnd.getDay()];
+  this.getDateEndUTC = function(year, month, date, hh, mm) {
+    var utcEndDateString = dateToISO(new Date(year, month, date, hh, mm, 0, 0));
+    var utcEndDateParsed = parseDate(utcEndDateString);
+    return new Date(utcEndDateParsed.year, utcEndDateParsed.month - 1, utcEndDateParsed.date, utcEndDateParsed.hh, utcEndDateParsed.mm, 0, 0);
+  },
+  this.getEndUTCDayFormatted = function(dateStart, dateEnd, i18n) {
+    var dateEnd = new Date(+this.getDateEndUTC(dateEnd.year, dateEnd.month - 1, dateEnd.date, dateEnd.hh, dateEnd.mm) + dateEnd.tzhh * 60000); // ms + server timezone
+    return { endUTC: dateEnd, day: i18n["d" + dateEnd.getDay()] };
   };
   this.getTimeFormatted = function(dateStart, dateEnd) {
     return dateStart.hh + ":" + dateStart.mm + "&ndash;" + dateEnd.hh + ":" + dateEnd.mm;
   };
   this.getPostFixId = function(dateStart, dateEnd) {
-    return dateStart.day + "-" + dateStart.month + "-" + dateStart.year + "-" + dateStart.hh + "-" + dateStart.mm + "-" + dateEnd.hh + "-" + dateEnd.mm;
+    return dateStart.date + "-" + dateStart.month + "-" + dateStart.year + "-" + dateStart.hh + "-" + dateStart.mm + "-" + dateEnd.hh + "-" + dateEnd.mm;
   };
   this.getTitle = function(session, isCancelled, i18n) {
     return (isCancelled ? "<span class='course-schedule-table-status'>" + i18n.tableCancelled + "</span>" : "") + (session.vrtxTitle || session.title || session.id);
@@ -457,7 +458,14 @@ function generateHTMLForType(d) {
       // Generate sessions HTML
       for(j = 0, len = sessions.length; j < len; j++) {
         session = sessions[j];
+        
         var dateTime = utils.getDateTime(session.dtStart, session.dtEnd);
+        var date = utils.getDateFormatted(dateTime.start, dateTime.end);
+        var endUTCDay = utils.getEndUTCDayFormatted(dateTime.start, dateTime.end, scheduleI18n);
+        var day = endUTCDay.day;
+        var endUTC = endUTCDay.endUTC;
+        var time = utils.getTimeFormatted(dateTime.start, dateTime.end);
+        
         var sessionId = (skipTier ? type : dtShort + "-" + id) + "-" + session.id.replace(/\//g, "-") + "-" + utils.getPostFixId(dateTime.start, dateTime.end);
         var isCancelled = (session.status && session.status === "cancelled") ||
                           (session.vrtxStatus && session.vrtxStatus === "cancelled");
@@ -467,18 +475,12 @@ function generateHTMLForType(d) {
           if(classes !== "") classes += " ";
           classes += "cancelled";
         }
-        /*
-          if(dateTime.end < utils.now) {
-            if(classes !== "") classes += " ";
-            classes += "passed";
-            passedCount++;
-          }
-        */
+        if(endUTC < utils.nowUTC) {
+          if(classes !== "") classes += " ";
+          classes += "passed";
+          passedCount++;
+        }
         sessionsCount++;
-        
-        var date = utils.getDateFormatted(dateTime.start, dateTime.end);
-        var day = utils.getDayFormatted(dateTime.start, dateTime.end, scheduleI18n);
-        var time = utils.getTimeFormatted(dateTime.start, dateTime.end);
         
         sessionsHtml += classes !== "" ? "<tr tabindex='0' id='" + sessionId + "' class='" + classes + "'>" : "<tr>";
           sessionsHtml += "<td class='course-schedule-table-date'>" + date + "</td>";

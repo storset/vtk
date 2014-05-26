@@ -1252,12 +1252,12 @@ function courseSchedule() {
           var dateTimeA = self.getDateTime(a.dtStart, a.dtEnd);
           var startA = dateTimeA.start;
           var endA = dateTimeA.end;
-          var a = startA.year + "" + startA.month + "" + startA.date + "" + startA.hh + "" + startA.mm;
+          var a = startA.year + "" + startA.month + "" + startA.date + "" + startA.hh + "" + startA.mm + "" + endA.hh + "" + endA.mm;;
         
           var dateTimeB = self.getDateTime(b.dtStart, b.dtEnd);
           var startB = dateTimeB.start;
           var endB = dateTimeB.end;
-          var b = startB.year + "" + startB.month + "" + startB.date + "" + startB.hh + "" + startB.mm;
+          var b = startB.year + "" + startB.month + "" + startB.date + "" + startB.hh + "" + startB.mm + "" + endB.hh + "" + endB.mm;;
         
           return parseInt(a, 10) - parseInt(b, 10);
         });
@@ -1460,7 +1460,7 @@ function courseSchedule() {
     },
     error: function(xhr, textStatus) {
       if(textStatus === "parsererror") { // Running Vortikal or invalid JSON
-        cs.retrievedScheduleDeferred.resolve();
+        retrievedScheduleDeferred.resolve();
         vrtxAdmin.displayErrorMsg(textStatus);
       }
     }

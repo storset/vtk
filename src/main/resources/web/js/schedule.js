@@ -51,8 +51,8 @@ function initSchedule() {
     
     var thread1Finished = $.Deferred(),
         thread2Finished = $.Deferred(),
-        htmlPlenary = { tocHtml: "", tocHtml: "", time: 0 },
-        htmlGroup = { tocHtml: "", tocHtml: "", time: 0 },
+        htmlPlenary = { tocHtml: "", tablesHtml: "", time: 0 },
+        htmlGroup = { tocHtml: "", tablesHtml: "", time: 0 },
         plenaryData = retrievedScheduleData["plenary"],
         groupData = retrievedScheduleData["group"];
         
@@ -92,7 +92,7 @@ function initSchedule() {
       // Toggle passed sessions
       $(document).on("click", ".course-schedule-table-toggle-passed", function(e) {
         var link = $(this);
-        var table = link.next();
+        var table = link.prev();
         table.toggleClass("hiding-passed"); 
         link.text(table.hasClass("hiding-passed") ? scheduleI18n.tableShowPassed : scheduleI18n.tableHidePassed);
         e.stopPropagation();

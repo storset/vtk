@@ -103,9 +103,9 @@ function initSchedule() {
       if(schedulePermissions.hasReadWriteNotLocked) {
         $(document).on("mouseover mouseout focusin focusout", "tbody tr", function(e) {
           var fn = (e.type === "mouseover" || e.type === "focusin") ? "addClass" : "removeClass";
-          $(this).find(".course-schedule-table-row-edit")[fn]("visible");
+          $(this).find(".course-schedule-table-edit-wrapper")[fn]("visible");
         });
-        $(document).on("click", ".course-schedule-table-row-edit a", function(e) {
+        $(document).on("click", "a.course-schedule-table-edit-link", function(e) {
           var row = $(this).closest("tr");
           var editUrl = window.location.pathname;
           if(/\/$/.test(editUrl)) {

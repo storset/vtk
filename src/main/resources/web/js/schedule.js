@@ -331,7 +331,6 @@ function scheduleUtils() {
   };
   this.getTableStartHtml = function(activityId, caption, isAllPassed, hasResources, hasStaff, i18n) {
     var html = "<div class='course-schedule-table-wrapper'>";
-    html += "<a class='course-schedule-table-toggle-passed' href='javascript:void(0);'>" + i18n.tableShowPassed + "</a>";
     html += "<table id='" + activityId + "' class='course-schedule-table uio-zebra hiding-passed" + (isAllPassed ? " all-passed" : "") + (hasResources ? " has-resources" : "")  + (hasStaff ? " has-staff" : "") + "'><caption>" + caption + "</caption><thead><tr>";
       html += "<th class='course-schedule-table-date'>" + i18n.tableDate + "</th>";
       html += "<th class='course-schedule-table-day'>" + i18n.tableDay + "</th>";
@@ -343,8 +342,8 @@ function scheduleUtils() {
     html += "</tr></thead><tbody>";
     return html;
   };
-  this.getTableEndHtml = function() {
-    return "</tbody></table></div>";
+  this.getTableEndHtml = function(i18n) {
+    return "</tbody></table><a class='course-schedule-table-toggle-passed' href='javascript:void(0);'>" + i18n.tableShowPassed + "</a></div>";
   };
   this.splitThirds = function(arr, title) {
     var html = "<p>" + title + "</p>",
@@ -487,7 +486,7 @@ function generateHTMLForType(d) {
           }
         }
       }
-      tablesHtml += utils.getTableStartHtml(activityId, caption, (passedCount === sessionsCount), resourcesCount, staffCount, scheduleI18n) + sessionsHtml + utils.getTableEndHtml();
+      tablesHtml += utils.getTableStartHtml(activityId, caption, (passedCount === sessionsCount), resourcesCount, staffCount, scheduleI18n) + sessionsHtml + utils.getTableEndHtml(scheduleI18n);
       
       // Generate ToC
       tocTime = tocTime.replace(/,([^,]+)$/, " " + scheduleI18n.and + "$1");

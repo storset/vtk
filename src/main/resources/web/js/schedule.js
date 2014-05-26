@@ -79,8 +79,6 @@ function initSchedule() {
                             "ms) || (AJAX-complete: " + endAjaxTime + "ms + Threads invoking/serializing: " + (endMakingThreadsTime + htmlPlenary.parseRetrievedJSONTime + htmlGroup.parseRetrievedJSONTime) +
                             "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))</p>" + */ html);
       }
-
-      
       
       // Toggle passed sessions
       $(document).on("click", ".course-schedule-table-toggle-passed", function(e) {
@@ -95,23 +93,14 @@ function initSchedule() {
       // Edit session
       if(schedulePermissions.hasReadWriteNotLocked) {
         $(document).on("mouseover mouseout focusin focusout", "tbody tr", function(e) {
-          $(this).find(".course-schedule-table-row-edit").toggle();
+          var fn = (e.type === "mouseover" || e.type === "focusin") ? "show" : "hide";
+          $(this).find(".course-schedule-table-row-edit")[fn]();
         });
         $(document).on("click", ".course-schedule-table-row-edit a", function(e) {
           var row = $(this).closest("tr");
-          var popupWindowInternal = function (w, h, url, name) {
-            var screenWidth = window.screen.width;
-            var screenHeight = window.screen.height;
-            var left = (screenWidth - w) / 2;
-            var top = (screenHeight - h) / 2;
-            var openedWindow = window.open(url, name, "height=" + h + ", width=" + w + ", left=" + left + ", top=" + top + ", status=no, resizable=no, toolbar=no, menubar=no, scrollbars=yes, location=no, directories=no");
-            openedWindow.focus();
-            return openedWindow;
-          };
-          var openedEditActivityWindow = popupWindowInternal(850, 680, window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + row[0].id, "editActivity");
-          
+          var editUri = window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + row[0].id;
+          var openedEditWindow = popupEditWindow(850, 680, editUri, "editActivity");
           refreshRefocused();
-          
           e.stopPropagation();
           e.preventDefault();
         });
@@ -124,10 +113,21 @@ function initSchedule() {
 function loadingUpdate(msg) {
   var loader = $("#loading-message");
   if(!loader.length) {
-    $("#activities").attr("aria-busy", "true").append("<img src='/vrtx/__vrtx/static-resources/themes/default/images/spinner.gif' alt='Spinner' /> <span id='loading-message'>" + msg + "...</span>");
+    var loaderHtml = "<img src='/vrtx/__vrtx/static-resources/themes/default/images/spinner.gif' alt='Spinner' /> <span id='loading-message'>" + msg + "...</span>";
+    $("#activities").attr("aria-busy", "true").append(loaderHtml);
   } else {
     loader.text(msg + "...");
   }
+}
+
+function popupEditWindow(w, h, url, name) {
+  var screenWidth = window.screen.width;
+  var screenHeight = window.screen.height;
+  var left = (screenWidth - w) / 2;
+  var top = (screenHeight - h) / 2;
+  var openedWindow = window.open(url, name, "height=" + h + ", width=" + w + ", left=" + left + ", top=" + top + ", status=no, resizable=no, toolbar=no, menubar=no, scrollbars=yes, location=no, directories=no");
+  openedWindow.focus();
+  return openedWindow;
 }
 
 function refreshRefocused() {

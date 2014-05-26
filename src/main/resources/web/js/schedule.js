@@ -305,14 +305,15 @@ function scheduleUtils() {
   this.getDateFormatted = function(dateStart, dateEnd) {
     return dateStart.date + "." + dateStart.month + "." + dateStart.year.substring(2,4);
   },
-  this.getDateEndUTC = function(year, month, date, hh, mm) {
-    var utcEndDateString = dateToISO(new Date(year, month, date, hh, mm, 0, 0));
-    var utcEndDateParsed = parseDate(utcEndDateString);
-    return new Date(utcEndDateParsed.year, utcEndDateParsed.month - 1, utcEndDateParsed.date, utcEndDateParsed.hh, utcEndDateParsed.mm, 0, 0);
+  this.getDateUTC = function(year, month, date, hh, mm) {
+    var utcDateString = dateToISO(new Date(year, month, date, hh, mm, 0, 0));
+    var utcDateParsed = parseDate(utcDateString);
+    return new Date(utcDateParsed.year, utcDateParsed.month - 1, utcDateParsed.date, utcDateParsed.hh, utcDateParsed.mm, 0, 0);
   },
   this.getEndUTCDayFormatted = function(dateStart, dateEnd, i18n) {
-    var dateEnd = new Date(+this.getDateEndUTC(dateEnd.year, dateEnd.month - 1, dateEnd.date, dateEnd.hh, dateEnd.mm) + dateEnd.tzhh * 60000); // ms + server timezone
-    return { endUTC: dateEnd, day: i18n["d" + dateEnd.getDay()] };
+    var utcDateEnd = this.getDateUTC(dateEnd.year, dateEnd.month - 1, dateEnd.date, dateEnd.hh, dateEnd.mm);
+    var dateEnd = new Date(+utcDateEnd + dateEnd.tzhh * 60000); // ms + server timezone
+    return { endUTC: utcDateEnd, day: i18n["d" + dateEnd.getDay()] };
   };
   this.getTimeFormatted = function(dateStart, dateEnd) {
     return dateStart.hh + ":" + dateStart.mm + "&ndash;" + dateEnd.hh + ":" + dateEnd.mm;

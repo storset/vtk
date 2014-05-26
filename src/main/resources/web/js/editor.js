@@ -1230,7 +1230,8 @@ function courseSchedule() {
         html = "",
         htmlMiddle = "",
         sessions = [],
-        sessionsHtml = "";
+        sessionsHtml = "",
+        self = this;
     for(var i = 0; i < dataLen; i++) {
       var dt = data[i],
           dtShort = dt.teachingMethod.toLowerCase(),
@@ -1247,9 +1248,20 @@ function courseSchedule() {
       
       if(!skipTier || (skipTier && (i === (dataLen-1)))) {
         // Sort sessions
-        sessions.sort(function(a,b) {
-          return parseInt(a.dtStart.split("T")[0].split("-").join(""), 10) - parseInt(b.dtStart.split("T")[0].split("-").join(""), 10);
+        sessions.sort(function(a, b) { // XXX: avoid parsing datetime for sessions twice
+          var dateTimeA = self.getDateTime(a.dtStart, a.dtEnd);
+          var startA = dateTimeA.start;
+          var endA = dateTimeA.end;
+          var a = startA.year + "" + startA.month + "" + startA.date + "" + startA.hh + "" + startA.mm;
+        
+          var dateTimeB = self.getDateTime(b.dtStart, b.dtEnd);
+          var startB = dateTimeB.start;
+          var endB = dateTimeB.end;
+          var b = startB.year + "" + startB.month + "" + startB.date + "" + startB.hh + "" + startB.mm;
+        
+          return parseInt(a, 10) - parseInt(b, 10);
         });
+        
         // Generate sessions HTML
         for(j = 0, len = sessions.length; j < len; j++) {
           var sessionHtml = this.getSessionHtml(id, sessions[j], descs, skipTier, editorJSONToHtmlFunc);
@@ -1306,14 +1318,19 @@ function courseSchedule() {
   this.getDateAndPostFixId = function(s, e) {
     var start = this.parseDate(s);
     var end = this.parseDate(e);
-    var strDate = start.day + ". " + this.i18n[start.month] + " " + start.year + " - kl " +
+    var strDate = start.date + ". " + this.i18n[start.month] + " " + start.year + " - kl " +
                   start.hh + ":" + start.mm + "&ndash;" + end.hh + ":" + end.mm;
-    var postFixId = start.day + "-" + start.month + "-" + start.year + "-" + start.hh + "-" + start.mm + "-" + end.hh + "-" + end.mm;
+    var postFixId = start.date + "-" + start.month + "-" + start.year + "-" + start.hh + "-" + start.mm + "-" + end.hh + "-" + end.mm;
     return { date: strDate, postFixId: postFixId };
+  };
+  this.getDateTime = function(s, e) {
+    var startDateTime = this.parseDate(s);
+    var endDateTime = this.parseDate(e);
+    return { start: startDateTime, end: endDateTime };
   };
   this.parseDate = function(dateString) {
     var m = /^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2})(?::([0-9]*)(\.[0-9]*)?)?(?:([+-])([0-9]{2}):([0-9]{2}))?/.exec(dateString);
-    return { day: m[3], month: m[2], year: m[1], hh: m[4], mm: m[5], tzhh: m[9], tzmm: m[10] };
+    return { year: m[1], month: m[2], date: m[3], hh: m[4], mm: m[5], tzhh: m[9], tzmm: m[10] };
   }
   this.getSessionJSONFromId = function(findSessionId) {
     for(var type in this.retrievedScheduleData) {

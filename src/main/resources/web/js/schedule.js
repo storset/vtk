@@ -51,24 +51,32 @@ function initSchedule() {
     
     var thread1Finished = $.Deferred(),
         thread2Finished = $.Deferred(),
-        htmlPlenary = {},
-        htmlGroup = {},
-        plenaryStringified = JSON.stringify({
-          data: retrievedScheduleData["plenary"],
-          type: "plenary",
-          i18n: scheduleI18n,
-          canEdit: schedulePermissions.hasReadWriteNotLocked
-        }),
-        groupStringified = JSON.stringify({
-          data: retrievedScheduleData["group"],
-          type: "group",
-          i18n: scheduleI18n,
-          canEdit: schedulePermissions.hasReadWriteNotLocked
-        });
+        htmlPlenary = { tocHtml: "", tocHtml: "", time: 0 },
+        htmlGroup = { tocHtml: "", tocHtml: "", time: 0 },
+        plenaryData = retrievedScheduleData["plenary"],
+        groupData = retrievedScheduleData["group"];
+        
+    if(plenaryData) {
+      startThreadGenerateHTMLForType(JSON.stringify({
+        data: plenaryData,
+        type: "plenary",
+        i18n: scheduleI18n,
+        canEdit: schedulePermissions.hasReadWriteNotLocked
+      }), htmlPlenary, thread1Finished);
+    } else {
+      thread1Finished.resolve();
+    }
+    if(plenaryData) {
+      startThreadGenerateHTMLForType(JSON.stringify({
+        data: groupData,
+        type: "group",
+        i18n: scheduleI18n,
+        canEdit: schedulePermissions.hasReadWriteNotLocked
+      }), htmlGroup, thread2Finished);
+    } else {
+      thread2Finished.resolve();
+    }
 
-    startThreadGenerateHTMLForType(plenaryStringified, htmlPlenary, thread1Finished);
-    startThreadGenerateHTMLForType(groupStringified, htmlGroup, thread2Finished);
-    
     var endMakingThreadsTime = +new Date() - startMakingThreadsTime;
     
     $.when(thread1Finished, thread2Finished, scheduleDocumentReady).done(function() {
@@ -440,8 +448,18 @@ function generateHTMLForType(d) {
 
     if(!isFor || (isFor && (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== forCode))) {
       // Sort sessions
-      sessions.sort(function(a,b) {
-        return parseInt(a.dtStart.split("T")[0].split("-").join(""), 10) - parseInt(b.dtStart.split("T")[0].split("-").join(""), 10);
+      sessions.sort(function(a,b) { // XXX: avoid parsing datetime for sessions twice
+        var dateTimeA = utils.getDateTime(a.dtStart, a.dtEnd);
+        var startA = dateTimeA.start;
+        var endA = dateTimeA.end;
+        var a = startA.year + "" + startA.month + "" + startA.date + "" + startA.hh + "" + startA.mm + "" + endA.hh + "" + endA.mm;
+        
+        var dateTimeB = utils.getDateTime(b.dtStart, b.dtEnd);
+        var startB = dateTimeB.start;
+        var endB = dateTimeB.end;
+        var b = startB.year + "" + startB.month + "" + startB.date + "" + startB.hh + "" + startB.mm + "" + endB.hh + "" + endB.mm;
+        
+        return parseInt(a, 10) - parseInt(b, 10);
       });
       
       // Preprocess sessions and store what has been checked

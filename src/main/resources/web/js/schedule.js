@@ -17,7 +17,7 @@ $(document).ready(function() {
 
 function initSchedule() {
   
-  var url = window.location.href;
+  var url = location.protocol + "//" + location.host + location.pathname;
   if(/\/$/.test(url)) {
     url += "index.html";
   }

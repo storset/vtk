@@ -1142,7 +1142,7 @@ VrtxEditor.prototype.showHideSelect = function showHideSelect(select, init) {
 var onlySessionId = gup("sessionid", window.location.href);
 function courseSchedule() {
 
-  var url = window.location.pathname;
+  var url = location.protocol + "//" + location.host + location.pathname;
   if(/\/$/.test(url)) {
     url += "index.html";
   }

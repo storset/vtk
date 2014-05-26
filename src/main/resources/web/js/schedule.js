@@ -23,7 +23,7 @@ function initSchedule() {
   }
   url += "?action=course-schedule";
   // Debug: Local development
-  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   var retrievedScheduleData = null;
   var endAjaxTime = 0;
@@ -372,7 +372,7 @@ function scheduleUtils() {
         len = arr.length,
         split1 = Math.ceil(len / 3),
         split2 = split1 + Math.ceil((len - split1) / 2);
-    html += "<div class='course-schedule-thirds'><ul class='thirds-left'>";
+    html += "<div class='course-schedule-toc-thirds'><ul class='thirds-left'>";
     for(var i = 0; i < len; i++) {
       if(i === split1) html += "</ul><ul class='thirds-middle'>";
       if(i === split2) html += "</ul><ul class='thirds-right'>";
@@ -411,7 +411,8 @@ function generateHTMLForType(d) {
       tocTimeMax = 3,
       tocHtmlArr = [];
   
-  tocHtml += "<h2 class='accordion'>" + scheduleI18n["header-" + type] + "</h2>";
+  tocHtml += "<h2 class='course-schedule-toc-title accordion'>" + scheduleI18n["header-" + type] + "</h2>";
+  tocHtml += "<div class='course-schedule-toc-content'>";
   if(skipTier) tocHtml += "<ul>";
   
   for(var i = 0; i < dataLen; i++) {
@@ -538,6 +539,7 @@ function generateHTMLForType(d) {
   }
   
   if(skipTier) tocHtml += "</ul>";
+  tocHtml += "</div>";
   
   return { tocHtml: tocHtml, tablesHtml: tablesHtml, time: (+new Date() - startGenHtmlForTypeTime) };
 }

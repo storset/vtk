@@ -1370,10 +1370,10 @@ function courseSchedule() {
     var sessionDatePostFixId = this.getDateAndPostFixId(session.dtStart, session.dtEnd),
         sessionId = id + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId,
         sessionCancelled = (session.vrtxStatus && session.vrtxStatus === "cancelled") || (session.status && session.status === "cancelled"),
-        room = session.rooms[0],
+        rooms = session.rooms,
         sessionTitle = sessionDatePostFixId.date + " " +
                        "<span class='header-title'>" + (sessionCancelled ? "<span class='header-status'>" + this.i18n.cancelled + "</span> - " : "") + (session.vrtxTitle || session.title || session.id) + "</span>" +
-                       (room ? (" - " + (room.buildingAcronym || room.buildingId) + " " + this.i18n.room + " " + room.roomId) : ""),
+                       (rooms ? (" - " + (rooms[0].buildingAcronym || rooms[0].buildingId) + " " + this.i18n.room + " " + rooms[0].roomId) : ""),
         sessionContent = editorJSONToHtmlFunc(sessionId, session, descs, this.i18n);
 
      this.sessionsLookup[id][sessionId] = {

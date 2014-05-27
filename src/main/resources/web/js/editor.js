@@ -1131,11 +1131,6 @@ VrtxEditor.prototype.showHideSelect = function showHideSelect(select, init) {
 /*-------------------------------------------------------------------*\
 
     7.5 Course schedule editor (some is general and uses 8. for multiple enhancing)
-    
-    THIS IS A GENERAL MESSAGE TO THE WORLD:
-    You're in limbo. Proceed with caution.
-    
-    XXX: refactor / combine and optimize
 
 \*-------------------------------------------------------------------*/
 
@@ -1878,11 +1873,6 @@ function editorDOMFieldToVal(desc, elm) {
 
 /*-------------------------------------------------------------------*\
     8. Multiple fields and boxes
-    
-    THIS IS A GENERAL MESSAGE TO THE WORLD:
-    Abandon hope all ye who enter here..
-    
-    XXX: refactor / combine and optimize
 \*-------------------------------------------------------------------*/
 
 /*

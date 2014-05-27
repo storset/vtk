@@ -131,7 +131,7 @@ public class CollectionTemplateManager implements TemplateManager, InitializingB
 
 
     private void loadRecursively(Resource r, Set<Resource> result) throws Exception {
-        TypeInfo type = this.repository.getTypeInfo(null, r.getURI());
+        TypeInfo type = this.repository.getTypeInfo(r);
         if (type.isOfType(this.templateResourceType)) {
             result.add(r);
         }

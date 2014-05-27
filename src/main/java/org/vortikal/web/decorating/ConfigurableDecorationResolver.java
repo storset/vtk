@@ -30,7 +30,6 @@
  */
 package org.vortikal.web.decorating;
 
-import org.vortikal.util.text.PathMappingConfig;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,9 +59,10 @@ import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.web.RequestContext;
+import org.vortikal.util.text.PathMappingConfig;
 import org.vortikal.util.text.PathMappingConfig.ConfigEntry;
 import org.vortikal.util.text.PathMappingConfig.Qualifier;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 import org.vortikal.web.servlet.StatusAwareHttpServletResponse;
@@ -329,9 +329,8 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
 
     private boolean matchPredicate(Qualifier predicate, Resource resource) throws Exception {
         if ("type".equals(predicate.getName())) {
-            String token = SecurityContext.getSecurityContext().getToken();
             
-            TypeInfo typeInfo = this.repository.getTypeInfo(token, resource.getURI());
+            TypeInfo typeInfo = this.repository.getTypeInfo(resource);
             PrimaryResourceTypeDefinition type = typeInfo.getResourceType();
             while (type != null) {
                 if (type.getName().equals(predicate.getValue())) {

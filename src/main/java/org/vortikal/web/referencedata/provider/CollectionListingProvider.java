@@ -41,7 +41,6 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Privilege;
@@ -52,7 +51,6 @@ import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
-import org.vortikal.text.html.HtmlUtil;
 import org.vortikal.util.repository.ResourceSorter;
 import org.vortikal.util.repository.ResourceSorter.Order;
 import org.vortikal.web.ACLTooltipHelper;
@@ -294,7 +292,7 @@ public class CollectionListingProvider implements ReferenceDataProvider {
 
         List<Resource> filteredChildren = new ArrayList<Resource>();
         for (Resource resource : children) {
-            TypeInfo type = repository.getTypeInfo(token, resource.getURI());
+            TypeInfo type = repository.getTypeInfo(resource);
             for (ResourceTypeDefinition resourceDef : this.matchingResourceTypes) {
                 if (type.isOfType(resourceDef))
                     filteredChildren.add(resource);

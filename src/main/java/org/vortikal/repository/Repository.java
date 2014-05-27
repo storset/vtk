@@ -139,11 +139,19 @@ public interface Repository {
     public Resource retrieve(String token, Path uri, boolean forProcessing, Revision revision) throws ResourceNotFoundException,
             AuthorizationException, AuthenticationException, Exception;
 
+    /**
+     * Gets type information for a given resource
+     */
     public TypeInfo getTypeInfo(Resource resource);
 
-    public TypeInfo getTypeInfo(String token, Path uri) throws ResourceNotFoundException, AuthorizationException,
-            AuthenticationException, Exception;
+    /**
+     * Gets type information for a given resource type
+     * @param name the name of the resource type
+     */
+    public TypeInfo getTypeInfo(String name);
 
+
+    
     /**
      * Returns a listing of the immediate children of a resource.
      * 

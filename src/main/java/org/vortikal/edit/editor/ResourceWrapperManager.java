@@ -111,7 +111,7 @@ public class ResourceWrapperManager {
 
         if (wrapper instanceof ResourceEditWrapper) {
             ResourceEditWrapper editWrapper = (ResourceEditWrapper) wrapper;
-            TypeInfo type = requestContext.getRepository().getTypeInfo(token, wrapper.getURI());
+            TypeInfo type = requestContext.getRepository().getTypeInfo(resource);
             if (type.isOfType(this.contentResourceType)) {
                 InputStream is = requestContext.getRepository().getInputStream(token, resource.getURI(), forProcessing);
                 HtmlPage content = null;

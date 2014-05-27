@@ -645,13 +645,13 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
     }
 
     @Override
-    public TypeInfo getTypeInfo(String token, Path uri) throws Exception {
-        return this.wrappedRepository.getTypeInfo(token, uri);
+    public TypeInfo getTypeInfo(Resource resource) {
+        return this.wrappedRepository.getTypeInfo(resource);
     }
 
     @Override
-    public TypeInfo getTypeInfo(Resource resource) {
-        return this.wrappedRepository.getTypeInfo(resource);
+    public TypeInfo getTypeInfo(String name) {
+        return this.wrappedRepository.getTypeInfo(name);
     }
 
     private void flushFromCache(Path uri, boolean includeDescendants, String serviceMethodName) {

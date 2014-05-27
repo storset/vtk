@@ -97,7 +97,7 @@ public class ProppatchController extends AbstractWebdavController  {
 
         try {
             Resource resource = repository.retrieve(token, uri, false);
-            TypeInfo typeInfo = repository.getTypeInfo(token, uri);
+            TypeInfo typeInfo = repository.getTypeInfo(resource);
             /* Parse the request body XML: */
             Document requestBody = parseRequestBody(request);
 

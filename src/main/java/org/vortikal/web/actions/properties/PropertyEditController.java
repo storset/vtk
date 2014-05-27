@@ -298,7 +298,7 @@ public class PropertyEditController extends SimpleFormController implements Refe
         }
         Path uri = requestContext.getResourceURI();
         Resource resource = repository.retrieve(token, uri, false);
-        TypeInfo typeInfo = repository.getTypeInfo(token, uri);
+        TypeInfo typeInfo = repository.getTypeInfo(resource);
         for (PropertyTypeDefinition def : this.propertyTypeDefinitions) {
 
             if (isFocusedProperty(def, propertyCommand.getNamespace(), propertyCommand.getName())) {
@@ -400,7 +400,7 @@ public class PropertyEditController extends SimpleFormController implements Refe
         Path uri = requestContext.getResourceURI();
 
         Resource resource = repository.retrieve(token, uri, false);
-        TypeInfo typeInfo = repository.getTypeInfo(token, uri);
+        TypeInfo typeInfo = repository.getTypeInfo(resource);
         List<PropertyItem> propsList = new ArrayList<PropertyItem>();
         Map<String, PropertyItem> propsMap = new HashMap<String, PropertyItem>();
 

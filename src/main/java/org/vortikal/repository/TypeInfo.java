@@ -97,6 +97,8 @@ public final class TypeInfo {
      * @return the created property
      */
     public Property createProperty(Namespace namespace, String name) {
+        if (namespace == null) throw new IllegalArgumentException("Namespace is NULL");
+        if (name == null) throw new IllegalArgumentException("Name is NULL");
         PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyTypeDefinition(namespace, name);
         return propDef.createProperty();
     }
@@ -114,8 +116,15 @@ public final class TypeInfo {
      *             property definition
      */
     public Property createProperty(Namespace namespace, String name, Object value) throws ValueFormatException {
+        if (namespace == null) throw new IllegalArgumentException("Namespace is NULL");
+        if (name == null) throw new IllegalArgumentException("Name is NULL");
+        if (value == null) throw new IllegalArgumentException("Value is NULL");
         PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyTypeDefinition(namespace, name);
-        return propDef.createProperty(value);
+        Property prop = null;
+        if (value instanceof String)
+            prop = propDef.createProperty((String)value);
+        else prop = propDef.createProperty(value);
+        return prop;
     }
 
     /**

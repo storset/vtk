@@ -281,21 +281,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     }
 
     @Override
-    public TypeInfo getTypeInfo(String token, Path uri) throws Exception {
-        Principal principal = this.tokenManager.getPrincipal(token);
-
-        ResourceImpl resource = this.dao.load(uri);
-        if (resource == null) {
-            throw new ResourceNotFoundException(uri);
-        }
-
-        this.authorizationManager.authorizeReadProcessed(uri, principal);
-        return new TypeInfo(this.resourceTypeTree, resource.getResourceType());
-    }
-
-    @Override
     public TypeInfo getTypeInfo(Resource resource) {
         return new TypeInfo(this.resourceTypeTree, resource.getResourceType());
+    }
+    
+    @Override
+    public TypeInfo getTypeInfo(String name) {
+        return new TypeInfo(this.resourceTypeTree, name);
     }
 
     @Transactional

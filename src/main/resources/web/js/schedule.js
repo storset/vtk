@@ -159,7 +159,7 @@ function popupEditWindow(w, h, url, name) {
   return openedWindow;
 }
 
-function refreshWhenRefocused() {
+function refreshWhenRefocused(hasEditedKey) {
   var isVisible = false;
   var delayCheckVisibility = 450;
   var waitForVisibility = setTimeout(function() {

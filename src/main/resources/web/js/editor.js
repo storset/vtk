@@ -1290,6 +1290,7 @@ function courseSchedule() {
     return { id: id, html: sessionHtml.html, title: sessionHtml.title };
   };
   this.getActivitiesForTypeHtml = function(type, skipTier) {
+    if(!this.retrievedScheduleData[type]) return "";
     var descs = this.retrievedScheduleData[type].vrtxEditableDescription,
         data = this.retrievedScheduleData[type].activities;
     if(!descs || !data) return "";
@@ -1408,6 +1409,7 @@ function courseSchedule() {
   }
   this.getSessionJSONFromId = function(findSessionId) {
     for(var type in this.retrievedScheduleData) {
+      if(!this.retrievedScheduleData[type]) continue;
       var data = this.retrievedScheduleData[type].activities;
       if(!data) continue;
       var dataLen = data.length;

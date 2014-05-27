@@ -866,8 +866,9 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
           var link = _$(this);
           vrtxAdm.editorSaveButtonName = link.attr("name");
           vrtxAdm.editorSaveButton = link;
+          // ! Edit single course schedule session
           vrtxAdm.editorSaveIsRedirectView = (this.id === "saveAndViewButton" || this.id === "saveViewAction")
-                                             && (typeof vrtxEditor === "undefined" || !vrtxEditor.editorForm.hasClass("vrtx-course-schedule"));
+                                             && (typeof vrtxEditor === "undefined" || !(vrtxEditor.editorForm.hasClass("vrtx-course-schedule") && onlySessionId.length);
           ajaxSave();
           _$.when(vrtxAdm.asyncEditorSavedDeferred).done(function () {
             vrtxAdm.removeMsg("error");

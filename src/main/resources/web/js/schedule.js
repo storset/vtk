@@ -18,6 +18,7 @@ $(document).ready(function() {
 });
 
 function initSchedule() {
+  var hasEditedKey = "hasEditedSession";
   
   var url = location.protocol + "//" + location.host + location.pathname;
   if(/\/$/.test(url)) {
@@ -32,10 +33,10 @@ function initSchedule() {
   
   // Get schedule view JSON
   var retrievedScheduleDeferred = $.Deferred();
-  // Don't cache if has returned from editing activity
+  // Don't cache if has returned from editing an activity
   var useCache = true;
-  if(window.localStorage && window.localStorage.getItem("hasEditedAcitivity")) {
-    window.localStorage.removeItem("hasEditedAcitivity");
+  if(window.localStorage && window.localStorage.getItem(hasEditedKey)) {
+    window.localStorage.removeItem(hasEditedKey);
     useCache = false;
   }
   $.ajax({
@@ -175,7 +176,7 @@ function refreshWhenRefocused() {
     if(document.hasFocus() || isVisible) {
       window.location.reload(1);
       if(window.localStorage) {
-        window.localStorage.setItem("hasEditedAcitivity", "true");
+        window.localStorage.setItem(hasEditedKey, "true");
       }
     } else {
       setTimeout(arguments.callee, 50); 

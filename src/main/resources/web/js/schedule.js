@@ -39,6 +39,7 @@ function initSchedule() {
     window.localStorage.removeItem(hasEditedKey);
     useCache = false;
   }
+  // GET JSON
   $.ajax({
     type: "GET",
     url: url + (!useCache ? "&t=" + (+new Date()) : ""),

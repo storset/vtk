@@ -1451,7 +1451,7 @@ function courseSchedule() {
   
   var cs = this;
   
-  // Get schedule editor JSON
+  // GET JSON
   var retrievedScheduleDeferred = $.Deferred();
   vrtxAdmin.serverFacade.getJSON(url, {
     success: function(data, xhr, textStatus) {

@@ -74,52 +74,15 @@ public class RequestLocalRepository implements Repository {
         this.repository = repository;
     }
 
-    @Override
-    public TypeInfo getTypeInfo(String token, Path uri) throws Exception {
-        RepositoryContext ctx = RepositoryContext.getRepositoryContext();
-        if (ctx == null) {
-            return this.repository.getTypeInfo(token, uri);
-        }
-
-        TypeInfo typeInfo = null;
-        Throwable t = null;
-
-        t = ctx.getTypeInfoMiss(token, uri);
-        if (t != null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Get type info " + uri + " caused throwable: " + t);
-            }
-            throwAppropriateException(t);
-        }
-
-        typeInfo = ctx.getTypeInfoHit(token, uri);
-        if (typeInfo != null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Get type info " + uri + ": found in cache");
-            }
-            return typeInfo;
-        }
-
-        try {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Get type info " + uri + ": retrieving from repository ");
-            }
-            typeInfo = this.repository.getTypeInfo(token, uri);
-            ctx.addTypeInfoHit(token, uri, typeInfo);
-            return typeInfo;
-        } catch (Throwable retrieveException) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Get type info " + uri + ": caching throwable: " + retrieveException);
-            }
-            ctx.addTypeInfoMiss(token, uri, retrieveException);
-            throwAppropriateException(retrieveException);
-            return null;
-        }
-    }
 
     @Override
     public TypeInfo getTypeInfo(Resource resource) {
         return this.repository.getTypeInfo(resource);
+    }
+
+    @Override
+    public TypeInfo getTypeInfo(String name) {
+        return this.repository.getTypeInfo(name);
     }
 
     @Override

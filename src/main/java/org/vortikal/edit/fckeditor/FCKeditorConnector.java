@@ -245,7 +245,7 @@ public class FCKeditorConnector implements Controller {
             repository.createDocument(token, uri, inStream);
 
             Resource newResource = repository.retrieve(token, uri, true);
-            TypeInfo typeInfo = repository.getTypeInfo(token, uri);
+            TypeInfo typeInfo = repository.getTypeInfo(newResource);
 
             String contentType = uploadItem.getContentType();
             if (contentType == null || MimeHelper.DEFAULT_MIME_TYPE.equals(contentType)) {

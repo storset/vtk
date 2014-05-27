@@ -46,6 +46,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
 import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.web.RequestContext;
@@ -182,7 +183,8 @@ public class BeanContextComponentResolver
             RequestContext requestContext = RequestContext.getRequestContext();
             Repository repository = requestContext.getRepository();
             String token = requestContext.getSecurityToken();
-            return repository.getTypeInfo(token, requestContext.getResourceURI()); 
+            Resource r = repository.retrieve(token, requestContext.getResourceURI(), true);
+            return repository.getTypeInfo(r); 
         } catch (Throwable t) {
             return null;
         }

@@ -87,7 +87,7 @@ public class ResourcePropsNodeFactory implements DirectiveNodeFactory {
                 if (resource == null) {
                     throw new RuntimeException("Unable to resolve resource");
                 }
-                TypeInfo typeInfo = repository.getTypeInfo(token, resource.getURI());
+                TypeInfo typeInfo = repository.getTypeInfo(resource);
                 PrimaryResourceTypeDefinition resourceType = typeInfo.getResourceType();
                 while (resourceType != null) {
                     PropertyTypeDefinition[] propDefs = resourceType.getPropertyTypeDefinitions();

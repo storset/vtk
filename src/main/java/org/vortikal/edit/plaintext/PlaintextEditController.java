@@ -194,7 +194,7 @@ public class PlaintextEditController extends SimpleFormController {
         PlaintextEditCommand plaintextEditCommand = (PlaintextEditCommand) command;
 
         Resource resource = repository.retrieve(token, uri, false);
-        TypeInfo typeInfo = repository.getTypeInfo(token, uri);
+        TypeInfo typeInfo = repository.getTypeInfo(resource);
         String storedEncoding = resource.getCharacterEncoding();
         String postedEncoding = getPostedEncoding(resource, plaintextEditCommand);
 

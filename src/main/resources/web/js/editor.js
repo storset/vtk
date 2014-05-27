@@ -1149,52 +1149,118 @@ function courseSchedule() {
   url += "?action=course-schedule&mode=edit&t=" + (+new Date());
   // Debug: Local development
   // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
-  
-  var isEn = vrtxAdmin.lang == "en";
+
+  var allI18n = {
+    "no": {
+      "01": "jan",
+      "02": "feb",
+      "03": "mar",
+      "04": "apr",
+      "05": "mai",
+      "06": "jun",
+      "07": "jul",
+      "08": "aug",
+      "09": "sept",
+      "10": "okt",
+      "11": "nov",
+      "12": "des",
+      "room": "rom",
+      "titles": {
+        "plenary": "Fellesundervisning",
+        "group": "Partiundervisning"
+      },
+      "editOnlySessionTitle": "Rediger aktivitet",
+      "noData": "Ingen data",
+      "noSessionData": "Ingen aktivitetsdata",
+      "cancelled": "AVLYST",
+      "vrtxTitle": "Tittel:",
+      "vrtxStaff": "Forelesere:",
+      "vrtxStaffExternal": "Eksterne forelesere:",
+      "vrtxResources": "Ressurser:",
+      "vrtxResourcesText": "Fritekst ressurser:",
+      "vrtxResourcesFixed": "Faste ressurser:",
+      "vrtxStatus": "Avlys",
+      "vrtxStaffExternal-name": "Navn",
+      "vrtxStaffExternal-url": "Lenke",
+      "vrtxResources-title": "Tittel",
+      "vrtxResources-url": "Lenke"
+    },
+    "nn": {
+      "01": "jan",
+      "02": "feb",
+      "03": "mar",
+      "04": "apr",
+      "05": "mai",
+      "06": "jun",
+      "07": "jul",
+      "08": "aug",
+      "09": "sept",
+      "10": "okt",
+      "11": "nov",
+      "12": "des",
+      "room": "rom",
+      "titles": {
+        "plenary": "Fellesundervisning",
+        "group": "Partiundervisning"
+      },
+      "editOnlySessionTitle": "Rediger aktivitet",
+      "noData": "Ingen data",
+      "noSessionData": "Ingen aktivitetsdata",
+      "cancelled": "AVLYST",
+      "vrtxTitle": "Tittel:",
+      "vrtxStaff": "Forelesere:",
+      "vrtxStaffExternal": "Eksterne forelesere:",
+      "vrtxResources": "Ressurser:",
+      "vrtxResourcesText": "Fritekst ressurser:",
+      "vrtxResourcesFixed": "Faste ressurser:",
+      "vrtxStatus": "Avlys",
+      "vrtxStaffExternal-name": "Navn",
+      "vrtxStaffExternal-url": "Lenke",
+      "vrtxResources-title": "Tittel",
+      "vrtxResources-url": "Lenke"
+    },
+    "en": {
+      "01": "jan",
+      "02": "feb",
+      "03": "mar",
+      "04": "apr",
+      "05": "may",
+      "06": "jun",
+      "07": "jul",
+      "08": "aug",
+      "09": "sept",
+      "10": "oct",
+      "11": "nov",
+      "12": "dec",
+      "room": "room",
+      "titles": {
+        "plenary": "Plenary teaching",
+        "group": "Group teaching"
+      },
+      "editOnlySessionTitle": "Edit activity",
+      "noData": "No data",
+      "noSessionData": "No activity data",
+      "cancelled": "CANCELLED",
+      "vrtxTitle": "Title:",
+      "vrtxStaff": "Staff:",
+      "vrtxStaffExternal": "External staff:",
+      "vrtxResources": "Resources:",
+      "vrtxResourcesText": "Text resources:",
+      "vrtxResourcesFixed": "Fixed resources:",
+      "vrtxStatus": "Cancel",
+      "vrtxStaffExternal-name": "Name",
+      "vrtxStaffExternal-url": "Link",
+      "vrtxResources-title": "Title",
+      "vrtxResources-url": "Link"
+    }
+  };
   
   this.sessionsLookup = {};
   this.lastId = "";
   this.lastSessionId = "";
   this.lastElm = null;
   this.retrievedScheduleData = null;
-  this.i18n = {
-      "01": "jan",
-      "02": "feb",
-      "03": "mar",
-      "04": "apr",
-      "05": (isEn ? "may" : "mai"),
-      "06": "jun",
-      "07": "jul",
-      "08": "aug",
-      "09": "sept",
-      "10": (isEn ? "oct" : "okt"),
-      "11": (isEn ? "nov" : "nov"),
-      "12": (isEn ? "dec" : "des"),
-      "room": (isEn ? "room" : "rom"),
-      "titles": {
-        "plenary": (isEn ? "Plenary teaching" : "Fellesundervisning"),
-        "group": (isEn ? "Group teaching" : "Partiundervisning")
-      },
-      "editOnlySessionTitle": (isEn ? "Edit activity" : "Rediger aktivitet"),
-      "noData": (isEn ? "No data" : "Ingen data"),
-      "noSessionData": (isEn ? "No activity data" : "Ingen aktivitetsdata"),
-      "cancelled": (isEn ? "CANCELLED" : "AVLYST"),
-      
-      /* Editable properties */
-      "vrtxTitle": (isEn ? "Title:" : "Tittel:"),
-      "vrtxStaff": (isEn ? "Staff:" : "Forelesere:"),
-      "vrtxStaffExternal": (isEn ? "External staff:" : "Eksterne forelesere:"),
-      "vrtxResources": (isEn ? "Resources:" : "Ressurser:"),
-      "vrtxResourcesText": (isEn ? "Text resources:" : "Fritekst ressurser:"),
-      "vrtxResourcesFixed": (isEn ? "Fixed resources:" : "Faste ressurser:"),
-      "vrtxStatus": (isEn ? "Cancel" : "Avlys"),
-      
-      /* JSON */
-      "vrtxStaffExternal-name": (isEn ? "Name" : "Navn"),
-      "vrtxStaffExternal-url": (isEn ? "Link" : "Lenke"),
-      "vrtxResources-title": (isEn ? "Title" : "Tittel"),
-      "vrtxResources-url": (isEn ? "Link" : "Lenke")
-  };
+  this.i18n = allI18n[vrtxAdmin.lang];
   this.getSessionOnlyHtml = function(sessionId) {
     var sessionData = this.getSessionJSONFromId(sessionId);
     if(!sessionData) return null;

@@ -3760,7 +3760,6 @@ VrtxAdmin.prototype.serverFacade = {
    * @param {string} type The data type
    */
   get: function (url, callbacks, type, useCache) {
-    console.log(url + ": " + useCache);
     vrtxAdmin._$.ajax({
       type: "GET",
       url: url,

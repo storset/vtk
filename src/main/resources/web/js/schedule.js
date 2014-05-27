@@ -266,7 +266,7 @@ function scheduleUtils() {
     return utcNow;
   },
   formatName = function(name) {
-    var arr = name.replace(/ +(?= )/g,'').split(" ");
+    var arr = name.replace(/ +(?= )/g, "").split(" ");
     var arrLen = arr.length;
     if(!arrLen) return name;
     

@@ -1167,6 +1167,7 @@ function courseSchedule() {
       "10": "okt",
       "11": "nov",
       "12": "des",
+      
       "room": "rom",
       "titles": {
         "plenary": "Fellesundervisning",
@@ -1176,6 +1177,7 @@ function courseSchedule() {
       "noData": "Ingen data",
       "noSessionData": "Ingen aktivitetsdata",
       "cancelled": "AVLYST",
+      
       "vrtxTitle": "Tittel:",
       "vrtxStaff": "Forelesere:",
       "vrtxStaffExternal": "Eksterne forelesere:",
@@ -1201,6 +1203,7 @@ function courseSchedule() {
       "10": "okt",
       "11": "nov",
       "12": "des",
+      
       "room": "rom",
       "titles": {
         "plenary": "Fellesundervisning",
@@ -1210,6 +1213,7 @@ function courseSchedule() {
       "noData": "Ingen data",
       "noSessionData": "Ingen aktivitetsdata",
       "cancelled": "AVLYST",
+      
       "vrtxTitle": "Tittel:",
       "vrtxStaff": "Forelesere:",
       "vrtxStaffExternal": "Eksterne forelesere:",
@@ -1235,6 +1239,7 @@ function courseSchedule() {
       "10": "oct",
       "11": "nov",
       "12": "dec",
+      
       "room": "room",
       "titles": {
         "plenary": "Plenary teaching",
@@ -1244,6 +1249,7 @@ function courseSchedule() {
       "noData": "No data",
       "noSessionData": "No activity data",
       "cancelled": "CANCELLED",
+      
       "vrtxTitle": "Title:",
       "vrtxStaff": "Staff:",
       "vrtxStaffExternal": "External staff:",

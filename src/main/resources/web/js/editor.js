@@ -1149,6 +1149,9 @@ function courseSchedule() {
   url += "?action=course-schedule&mode=edit&t=" + (+new Date());
   // Debug: Local development
   // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  
+  // Hide shortcut for saving working copy
+  $("#vrtx-save-as-working-copy-shortcut, #saveWorkingCopyAction, #buttons-or-text").hide();
 
   var allI18n = {
     "no": {
@@ -1164,6 +1167,7 @@ function courseSchedule() {
       "10": "okt",
       "11": "nov",
       "12": "des",
+      
       "room": "rom",
       "titles": {
         "plenary": "Fellesundervisning",
@@ -1173,17 +1177,18 @@ function courseSchedule() {
       "noData": "Ingen data",
       "noSessionData": "Ingen aktivitetsdata",
       "cancelled": "AVLYST",
+      
       "vrtxTitle": "Tittel:",
       "vrtxStaff": "Forelesere:",
       "vrtxStaffExternal": "Eksterne forelesere:",
-      "vrtxResources": "Ressurser:",
-      "vrtxResourcesText": "Fritekst ressurser:",
-      "vrtxResourcesFixed": "Faste ressurser:",
-      "vrtxStatus": "Avlys",
       "vrtxStaffExternal-name": "Navn",
       "vrtxStaffExternal-url": "Lenke",
+      "vrtxResources": "Ressurser:",
       "vrtxResources-title": "Tittel",
-      "vrtxResources-url": "Lenke"
+      "vrtxResources-url": "Lenke",
+      "vrtxResourcesText": "Fritekst ressurser:",
+      "vrtxResourcesFixed": "Faste ressurser:",
+      "vrtxStatus": "Avlys"
     },
     "nn": {
       "01": "jan",
@@ -1198,6 +1203,7 @@ function courseSchedule() {
       "10": "okt",
       "11": "nov",
       "12": "des",
+      
       "room": "rom",
       "titles": {
         "plenary": "Fellesundervisning",
@@ -1207,17 +1213,18 @@ function courseSchedule() {
       "noData": "Ingen data",
       "noSessionData": "Ingen aktivitetsdata",
       "cancelled": "AVLYST",
+      
       "vrtxTitle": "Tittel:",
       "vrtxStaff": "Forelesere:",
       "vrtxStaffExternal": "Eksterne forelesere:",
-      "vrtxResources": "Ressurser:",
-      "vrtxResourcesText": "Fritekst ressurser:",
-      "vrtxResourcesFixed": "Faste ressurser:",
-      "vrtxStatus": "Avlys",
-      "vrtxStaffExternal-name": "Navn",
-      "vrtxStaffExternal-url": "Lenke",
+      "vrtxStaffExternal-name": "Namn",
+      "vrtxStaffExternal-url": "Lenkje",
+      "vrtxResources": "Ressursar:",
       "vrtxResources-title": "Tittel",
-      "vrtxResources-url": "Lenke"
+      "vrtxResources-url": "Lenkje",
+      "vrtxResourcesText": "Fritekst ressursar:",
+      "vrtxResourcesFixed": "Faste ressursar:",
+      "vrtxStatus": "Avlys"
     },
     "en": {
       "01": "jan",
@@ -1232,6 +1239,7 @@ function courseSchedule() {
       "10": "oct",
       "11": "nov",
       "12": "dec",
+      
       "room": "room",
       "titles": {
         "plenary": "Plenary teaching",
@@ -1241,40 +1249,45 @@ function courseSchedule() {
       "noData": "No data",
       "noSessionData": "No activity data",
       "cancelled": "CANCELLED",
+      
       "vrtxTitle": "Title:",
       "vrtxStaff": "Staff:",
       "vrtxStaffExternal": "External staff:",
-      "vrtxResources": "Resources:",
-      "vrtxResourcesText": "Text resources:",
-      "vrtxResourcesFixed": "Fixed resources:",
-      "vrtxStatus": "Cancel",
       "vrtxStaffExternal-name": "Name",
       "vrtxStaffExternal-url": "Link",
+      "vrtxResources": "Resources:",
       "vrtxResources-title": "Title",
-      "vrtxResources-url": "Link"
+      "vrtxResources-url": "Link",
+      "vrtxResourcesText": "Text resources:",
+      "vrtxResourcesFixed": "Fixed resources:",
+      "vrtxStatus": "Cancel"
     }
   };
   
   this.sessionsLookup = {};
+  
   this.lastId = "";
   this.lastSessionId = "";
   this.lastElm = null;
+  
   this.retrievedScheduleData = null;
   this.i18n = allI18n[vrtxAdmin.lang];
   this.getSessionOnlyHtml = function(sessionId) {
     var sessionData = this.getSessionJSONFromId(sessionId);
     if(!sessionData) return null;
     
+    var descs = this.retrievedScheduleData[type].vrtxEditableDescription;
+    
     var id = sessionData.id;
     var session = sessionData.session;
     var type = sessionData.type;
-    var descs = this.retrievedScheduleData[type].vrtxEditableDescription;
     var skipTier = sessionData.skipTier;
     
     if(!this.sessionsLookup[id]) {
       this.sessionsLookup[id] = {};
     }
     var sessionHtml = this.getSessionHtml(id, session, descs, skipTier);    
+    
     this.lastElm = $(".properties"); 
     this.lastId = id;
     this.lastSessionId = sessionId;
@@ -1366,7 +1379,7 @@ function courseSchedule() {
         sessionTitle = sessionDatePostFixId.date + " " +
                        "<span class='header-title'>" + (sessionCancelled ? "<span class='header-status'>" + this.i18n.cancelled + "</span> - " : "") + (session.vrtxTitle || session.title || session.id) + "</span>" +
                        (room ? (" - " + (room.buildingAcronym || room.buildingId) + " " + this.i18n.room + " " + room.roomId) : ""),
-        sessionContent = editorJSONToHtml(sessionId, session, descs, this.i18n);
+        sessionContent = editorJSONToHtmlFunc(sessionId, session, descs, this.i18n);
 
      this.sessionsLookup[id][sessionId] = {
        isEnhanced: false,

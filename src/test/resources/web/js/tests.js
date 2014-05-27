@@ -38,7 +38,7 @@ module("Schedule.js", {
       ],
       "vrtxStaffExternal": [
         { "name": "Gunnar Flaksnes", "url": "http://www.nrk.no/" },
-        { "name": "Roger Rabbit", "url": "http://www.aftenposten.no/" },
+        { "name": "Roger  Rabbit", "url": "http://www.aftenposten.no/" },
         { "name": "Bob Kåre Funken-Hagen", "url": "http://www.dagbladet.no/" }
       ],
       "vrtxResources": [

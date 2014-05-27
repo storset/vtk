@@ -266,7 +266,7 @@ function scheduleUtils() {
     return utcNow;
   },
   formatName = function(name) {
-    var arr = name.split(" ");
+    var arr = name.replace(/ +(?= )/g, "").split(" ");
     var arrLen = arr.length;
     if(!arrLen) return name;
     
@@ -277,7 +277,7 @@ function scheduleUtils() {
     return val + arr[i];
   },
   linkAbbr = function(url, title, text) {
-    val = "";
+    var val = "";
     if(url && title) {
       val += "<a title='" + title + "' href='" + url + "'>";
     } else if(url) {

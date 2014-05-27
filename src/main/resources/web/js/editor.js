@@ -1271,13 +1271,13 @@ function courseSchedule() {
     var sessionData = this.getSessionJSONFromId(sessionId);
     if(!sessionData) return null;
     
-    var descs = this.retrievedScheduleData[type].vrtxEditableDescription;
-    
     var id = sessionData.id;
     var session = sessionData.session;
     var type = sessionData.type;
     var skipTier = sessionData.skipTier;
     
+    var descs = this.retrievedScheduleData[type].vrtxEditableDescription;
+
     if(!this.sessionsLookup[id]) {
       this.sessionsLookup[id] = {};
     }

@@ -25,15 +25,27 @@ function initSchedule() {
   }
   url += "?action=course-schedule";
   // Debug: Local development
-  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   var retrievedScheduleData = null;
   var endAjaxTime = 0;
   
   // Get schedule view JSON
   var retrievedScheduleDeferred = $.Deferred();
-  $.getJSON(url, function(data, xhr, textStatus) {
-    retrievedScheduleData = data;
+  // Don't cache if has returned from editing activity
+  var useCache = true;
+  if(window.localStorage && window.localStorage.getItem("hasEditedAcitivity")) {
+    window.localStorage.removeItem("hasEditedAcitivity");
+    useCache = false;
+  }
+  $.ajax({
+    type: "GET",
+    url: url,
+    dataType: "json",
+    cache: useCache,
+    success: function(data, xhr, textStatus) {
+      retrievedScheduleData = data;
+    }
   }).always(function() {
     retrievedScheduleDeferred.resolve();
     endAjaxTime = +new Date() - scheduleStartTime;
@@ -162,6 +174,9 @@ function refreshWhenRefocused() {
   var waitForClose = setTimeout(function() {
     if(document.hasFocus() || isVisible) {
       window.location.reload(1);
+      if(window.localStorage) {
+        window.localStorage.setItem("hasEditedAcitivity", "true");
+      }
     } else {
       setTimeout(arguments.callee, 50); 
     }

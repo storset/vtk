@@ -3713,8 +3713,8 @@ VrtxAdmin.prototype.serverFacade = {
    * @param {string} url The URL
    * @param {object} callbacks The callback functions
    */
-  getJSON: function (url, callbacks) {
-    this.get(url, callbacks, "json");
+  getJSON: function (url, callbacks, useCache) {
+    this.get(url, callbacks, "json", (typeof useCache !== "boolean" || useCache));
   },
   /**
    * POST HTML
@@ -3758,11 +3758,13 @@ VrtxAdmin.prototype.serverFacade = {
    * @param {object} callbacks The callback functions
    * @param {string} type The data type
    */
-  get: function (url, callbacks, type) {
+  get: function (url, callbacks, type, useCache) {
+    console.log(url + ": " + useCache);
     vrtxAdmin._$.ajax({
       type: "GET",
       url: url,
       dataType: type,
+      useCache: useCache,
       success: callbacks.success,
       error: function (xhr, textStatus) {
         var msg = vrtxAdmin.serverFacade.error(xhr, textStatus, true);

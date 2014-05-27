@@ -30,7 +30,7 @@
   <bean id="displayResourceHandler" 
     class="org.vortikal.web.display.file.DisplayResourceController">
     <property name="displayProcessed" value="true" />
-    <property name="ignoreLastModified" value="false" />
+    <property name="ignoreLastModified" value="true" />
   </bean>
 
   <bean id="displayHTMLResourceHandler" 

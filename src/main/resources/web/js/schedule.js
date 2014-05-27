@@ -128,7 +128,7 @@ function initSchedule() {
             editUrl += "index.html";
           }
           var openedEditWindow = popupEditWindow(850, 680, editUrl + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + row[0].id, "editActivity");
-          refreshWhenRefocused();
+          refreshWhenRefocused(hasEditedKey);
           e.stopPropagation();
           e.preventDefault();
         });

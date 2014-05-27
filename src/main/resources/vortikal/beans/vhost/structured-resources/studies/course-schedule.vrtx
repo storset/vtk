@@ -82,7 +82,7 @@ resourcetype course-schedule {
     title : (en : "Title", no : "Tittel", nn : "Tittel"),
     header : (en : "Edit course schedule", no : "Rediger emnetimeplan", nn : "Rediger emnetimeplan"),
     
-    loading-retrieving-data : (en : "Retrieving schedule data", no : "Henter timeplan data", nn : "Henter timeplan data"),
+    loading-retrieving-data : (en : "Retrieving schedule data", no : "Henter timeplandata", nn : "Henter timeplandata"),
     loading-generating : (en : "Generating schedule", no : "Lager timeplan", nn : "Lager timeplan"),
     no-data: (en : "No data", no : "Ingen data", nn : "Ingen data"),
     

@@ -9,10 +9,6 @@ var scheduleDocumentReady = $.Deferred();
 var scheduleStartTime = +new Date();
 var scheduleDocReadyEndTime = 0;
 $(document).ready(function() {
-  if(typeof scheduleI18n === "object") {
-    $("#disabled-js").hide();
-    loadingUpdate(scheduleI18n.loadingRetrievingData);
-  }
   scheduleDocumentReady.resolve();
   scheduleDocReadyEndTime = +new Date() - scheduleStartTime;
 });
@@ -26,7 +22,7 @@ function initSchedule() {
   }
   url += "?action=course-schedule";
   // Debug: Local development
-  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   var retrievedScheduleData = null;
   var endAjaxTime = 0;
@@ -51,6 +47,11 @@ function initSchedule() {
   }).always(function() {
     retrievedScheduleDeferred.resolve();
     endAjaxTime = +new Date() - scheduleStartTime;
+  });
+  
+  $.when(scheduleDocumentReady).done(function() {
+    $("#disabled-js").hide();
+    loadingUpdate(scheduleI18n.loadingRetrievingData);
   });
   
   $.when(retrievedScheduleDeferred).done(function() {
@@ -100,7 +101,7 @@ function initSchedule() {
       if(html === "") {
         $("#activities").attr("aria-busy", "error").html(scheduleI18n.noData);
       } else {
-        $("#activities").attr("aria-busy", "false").html(/* "<p>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
+        $("#activities").attr("aria-busy", "false").html(/*"<p>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
                             "ms) || (AJAX-complete: " + endAjaxTime + "ms + Threads invoking/serializing: " + (endMakingThreadsTime + htmlPlenary.parseRetrievedJSONTime + htmlGroup.parseRetrievedJSONTime) +
                             "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))</p>" + */ html);
       }

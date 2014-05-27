@@ -1281,7 +1281,7 @@ function courseSchedule() {
     if(!this.sessionsLookup[id]) {
       this.sessionsLookup[id] = {};
     }
-    var sessionHtml = this.getSessionHtml(id, session, descs, skipTier);    
+    var sessionHtml = this.getSessionHtml(id, session, descs, skipTier, editorJSONToHtml);    
     
     this.lastElm = $(".properties"); 
     this.lastId = id;

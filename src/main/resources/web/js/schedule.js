@@ -25,7 +25,7 @@ function initSchedule() {
   }
   url += "?action=course-schedule";
   // Debug: Local development
-  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   var retrievedScheduleData = null;
   var endAjaxTime = 0;
@@ -40,7 +40,7 @@ function initSchedule() {
   }
   $.ajax({
     type: "GET",
-    url: url,
+    url: url + (!useCache ? "&t=" + (+new Date()) : ""),
     dataType: "json",
     cache: useCache,
     success: function(data, xhr, textStatus) {

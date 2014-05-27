@@ -1146,9 +1146,9 @@ function courseSchedule() {
   if(/\/$/.test(url)) {
     url += "index.html";
   }
-  url += "?action=course-schedule&mode=edit";
+  url += "?action=course-schedule&mode=edit&t=" + (+new Date());
   // Debug: Local development
-  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   var isEn = vrtxAdmin.lang == "en";
   

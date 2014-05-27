@@ -122,7 +122,9 @@ public final class TypeInfo {
         PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyTypeDefinition(namespace, name);
         Property prop = null;
         if (value instanceof String)
-            prop = propDef.createProperty((String)value);
+            prop = propDef.createProperty((String) value);
+        else if (value instanceof String[]) 
+            prop = propDef.createProperty((String[]) value);
         else prop = propDef.createProperty(value);
         return prop;
     }

@@ -31,7 +31,7 @@ function initSchedule() {
   }
   url += "?action=course-schedule";
   // Debug: Local development
-  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   // GET JSON
   $.ajax({
@@ -190,7 +190,7 @@ function refreshWhenRefocused(hasEditedKey) {
 }
 
 function startThreadGenerateHTMLForType(data, htmlRef, threadRef) {
-  if(window.URL && window.URL.createObjectURL && typeof Blob === "function" && typeof Worker === "function") { // Use own thread
+  if(false && window.URL && window.URL.createObjectURL && typeof Blob === "function" && typeof Worker === "function") { // Use own thread
     var workerCode = function(e) {
       postMessage(generateHTMLForType(e.data));
     };
@@ -233,42 +233,32 @@ function scheduleUtils() {
   var self = this;
 
   /** Private */
-
-  /* toISOString() shim: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString
-     - Without doing things to Date-object */
-  var dateToISO = function(date) {
-    if(!Date.prototype.toISOString) {
-      var pad = function(number) {
-        if (number < 10) {
-          return '0' + number;
-        }
-        return number;
-      };
-      return date.getUTCFullYear() +
-            '-' + pad(date.getUTCMonth() + 1 ) +
-            '-' + pad(date.getUTCDate() ) +
-            'T' + pad(date.getUTCHours() ) +
-            ':' + pad(date.getUTCMinutes() ) +
-            ':' + pad(date.getUTCSeconds() ) +
-            '.' + (date.getUTCMilliseconds() / 1000).toFixed(3).slice(2, 5) +
-            'Z';
-    } else {
-      return date.toISOString();
-    }
-  },
   parseDate = function(dateString) {
     var m = /^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2})(?::([0-9]*)(\.[0-9]*)?)?(?:([+-])([0-9]{2}):([0-9]{2}))?/.exec(dateString);
-    return { year: m[1], month: m[2], date: m[3], hh: m[4], mm: m[5], tzhh: m[9], tzmm: m[10] };
+    return { year: m[1], month: m[2], date: m[3], hh: m[4], mm: m[5], tzpm: m[8], tzhh: m[9], tzmm: m[10] };
   },
-  getDateUTC = function(year, month, date, hh, mm) {
-    var utcDateString = dateToISO(new Date(year, month, date, hh, mm, 0, 0));
-    var utcDateParsed = parseDate(utcDateString);
-    return new Date(utcDateParsed.year, utcDateParsed.month - 1, utcDateParsed.date, utcDateParsed.hh, utcDateParsed.mm, 0, 0);
-  },
-  getNowUTC = function() {
-    var localNow = new Date();
-    var utcNow = getDateUTC(localNow.getFullYear(), localNow.getMonth(), localNow.getDate(), localNow.getHours(), localNow.getMinutes());
-    return utcNow;
+  getNowDate = new Date(),
+  getDate = function(year, month, date, hh, mm, tzpm, tzhh, tzmm) {
+    var date = new Date(year, month, date, hh, mm, 0, 0);
+    
+    var clientTimeZoneOffset = date.getTimezoneOffset();
+    var serverTimeZoneOffset = (tzhh * 60) + tzmm;
+    if(tzpm === "+") serverTimeZoneOffset = -serverTimeZoneOffset;
+    
+    if(clientTimeZoneOffset === serverTimeZoneOffset) return date; // Same offset in same date
+    
+    /* DST
+    var isServerDateDst = tzhh === 1;
+    var jan = new Date(date.getFullYear(), 0, 1);
+    var jul = new Date(date.getFullYear(), 6, 1);
+    var isClientDateDst = Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset()) > date.getTimezoneOffset(); */
+    
+    if(clientTimeZoneOffset > serverTimeZoneOffset) {
+      var nd = new Date(date.getTime() + (clientTimeZoneOffset - serverTimeZoneOffset)); 
+    } else {
+      var nd = new Date(date.getTime() + (serverTimeZoneOffset - clientTimeZoneOffset));
+    }
+    return nd;
   },
   formatName = function(name) {
     var arr = name.replace(/ +(?= )/g, "").split(" ");
@@ -327,7 +317,7 @@ function scheduleUtils() {
   };
 
   /** Public */
-  this.getNowUTC = getNowUTC(); // Cache
+  this.nowDate = getNowDate; // Cache
   this.getDateTime = function(s, e) {
     var startDateTime = parseDate(s);
     var endDateTime = parseDate(e);
@@ -336,10 +326,9 @@ function scheduleUtils() {
   this.getDateFormatted = function(dateStart, dateEnd, i18n) {
     return parseInt(dateStart.date, 10) + ". " + i18n["m" + parseInt(dateStart.month, 10)].toLowerCase() + ".";
   },
-  this.getEndUTCDayFormatted = function(dateStart, dateEnd, i18n) {
-    var utcDateEnd = getDateUTC(dateEnd.year, dateEnd.month - 1, dateEnd.date, dateEnd.hh, dateEnd.mm);
-    var dateEnd = new Date(+utcDateEnd + dateEnd.tzhh * 60000); // ms + server timezone
-    return { endUTC: utcDateEnd, day: i18n["d" + dateEnd.getDay()] };
+  this.getEndDateDayFormatted = function(dateStart, dateEnd, i18n) {
+    var endDate = getDate(dateEnd.year, parseInt(dateEnd.month, 10) - 1, parseInt(dateEnd.date, 10), parseInt(dateEnd.hh, 10), parseInt(dateEnd.mm, 10), dateEnd.tzpm, parseInt(dateEnd.tzhh, 10), parseInt(dateEnd.tzmm, 10));
+    return { endDate: endDate, day: i18n["d" + endDate.getDay()] };
   };
   this.getTimeFormatted = function(dateStart, dateEnd) {
     return dateStart.hh + ":" + dateStart.mm + "&ndash;" + dateEnd.hh + ":" + dateEnd.mm;
@@ -529,9 +518,9 @@ function generateHTMLForType(d) {
         
         var dateTime = utils.getDateTime(session.dtStart, session.dtEnd);
         var date = utils.getDateFormatted(dateTime.start, dateTime.end, scheduleI18n);
-        var endUTCDay = utils.getEndUTCDayFormatted(dateTime.start, dateTime.end, scheduleI18n);
-        var day = endUTCDay.day;
-        var endUTC = endUTCDay.endUTC;
+        var endDateDay = utils.getEndDateDayFormatted(dateTime.start, dateTime.end, scheduleI18n);
+        var endDate = endDateDay.date;
+        var day = endDateDay.day;
         var time = utils.getTimeFormatted(dateTime.start, dateTime.end);
         
         var sessionId = (skipTier ? type : dtShort + "-" + id) + "-" + session.id.replace(/\//g, "-") + "-" + utils.getPostFixId(dateTime.start, dateTime.end);
@@ -543,7 +532,7 @@ function generateHTMLForType(d) {
           if(classes !== "") classes += " ";
           classes += "cancelled";
         }
-        if(endUTC < utils.getNowUTC) {
+        if(endDate <= utils.nowDate) {
           if(classes !== "") classes += " ";
           classes += "passed";
           passedCount++;

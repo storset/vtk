@@ -31,7 +31,7 @@ function initSchedule() {
   }
   url += "?action=course-schedule";
   // Debug: Local development
-  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   // GET JSON
   $.ajax({
@@ -374,7 +374,12 @@ function scheduleUtils() {
     return jsonArrayToHtmlList(staff);
   };
   this.getResources = function(session) {
-    var val = jsonArrayToHtmlList(session.vrtxResources || []);
+    var resources = session.vrtxResources || []
+    var fixedResources = session.vrtxResourcesFixed;
+    if(fixedResources && fixedResources.length) {
+      resources = resources.concat(fixedResources);
+    }
+    var val = jsonArrayToHtmlList(resources);
     var resourcesText = session.vrtxResourcesText;
     if(resourcesText && resourcesText.length) {
       val += resourcesText;

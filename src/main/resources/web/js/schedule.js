@@ -31,7 +31,7 @@ function initSchedule() {
   }
   url += "?action=course-schedule";
   // Debug: Local development
-  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   // GET JSON
   $.ajax({
@@ -373,9 +373,8 @@ function scheduleUtils() {
     }
     return jsonArrayToHtmlList(staff);
   };
-  this.getResources = function(session) {
+  this.getResources = function(session, fixedResources) {
     var resources = session.vrtxResources || []
-    var fixedResources = session.vrtxResourcesFixed;
     if(fixedResources && fixedResources.length) {
       resources = resources.concat(fixedResources);
     }
@@ -443,6 +442,7 @@ function generateHTMLForType(d) {
       utils = new scheduleUtils(),
       lastDtShort = "",
       forCode = "for",
+      sequences = {}, // For fixed resources
       tocTimeMax = 3,
       tocHtmlArr = [];
   
@@ -479,7 +479,13 @@ function generateHTMLForType(d) {
     
     // Add together sessions from sequences
     for(var j = 0, len = dt.sequences.length; j < len; j++) {
-      sessions = sessions.concat(dt.sequences[j].sessions);
+      var sequence = dt.sequences[j];
+      var fixedResources = sequence.vrtxResourcesFixed;
+      if(fixedResources && fixedResources.length) {
+        sequences[sequence.id] = fixedResources;
+        resourcesCount++;
+      }
+      sessions = sessions.concat(sequence.sessions);
     }
 
     if(!isFor || (isFor && (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== forCode))) {
@@ -501,9 +507,10 @@ function generateHTMLForType(d) {
       // Preprocess sessions and store what has been checked
       for(j = 0, len = sessions.length; j < len; j++) {
         var session = sessions[j];
+        var sequenceId = session.id.replace(/\/[^\/]*$/, "");
         sessionsPreprocessed[j] = {
           "staff": utils.getStaff(session),
-          "resources": utils.getResources(session)
+          "resources": utils.getResources(session, (sequences[sequenceId] || null))
         };
         if(sessionsPreprocessed[j].staff)         staffCount++;
         if(sessionsPreprocessed[j].resources)     resourcesCount++;

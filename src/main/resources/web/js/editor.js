@@ -1143,7 +1143,7 @@ function courseSchedule() {
   }
   url += "?action=course-schedule&mode=edit&t=" + (+new Date());
   // Debug: Local development
-  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   // Hide shortcut for saving working copy
   $("#vrtx-save-as-working-copy-shortcut, #saveWorkingCopyAction, #buttons-or-text").hide();
@@ -1273,6 +1273,7 @@ function courseSchedule() {
     
     var id = sessionData.id;
     var session = sessionData.session;
+    var sequences = sessionData.sequences;
     var type = sessionData.type;
     var skipTier = sessionData.skipTier;
     
@@ -1281,7 +1282,7 @@ function courseSchedule() {
     if(!this.sessionsLookup[id]) {
       this.sessionsLookup[id] = {};
     }
-    var sessionHtml = this.getSessionHtml(id, session, descs, skipTier, editorJSONToHtml);    
+    var sessionHtml = this.getSessionHtml(id, session, sequences, descs, skipTier, editorJSONToHtml);    
     
     this.lastElm = $(".properties"); 
     this.lastId = id;
@@ -1305,6 +1306,7 @@ function courseSchedule() {
         html = "",
         htmlMiddle = "",
         sessions = [],
+        sequences = {}, // For fixed resources
         sessionsHtml = "",
         self = this;
     for(var i = 0; i < dataLen; i++) {
@@ -1318,7 +1320,12 @@ function courseSchedule() {
       
       // Add together sessions from sequences
       for(var j = 0, len = dt.sequences.length; j < len; j++) {
-        sessions = sessions.concat(dt.sequences[j].sessions);
+        var sequence = dt.sequences[j];
+        var fixedResources = sequence.vrtxResourcesFixed;
+        if(fixedResources && fixedResources.length) {
+          sequences[sequence.id] = fixedResources;
+        }
+        sessions = sessions.concat(sequence.sessions);
       }
       
       if(!skipTier || (skipTier && (i === (dataLen-1)))) {
@@ -1339,7 +1346,7 @@ function courseSchedule() {
         
         // Generate sessions HTML
         for(j = 0, len = sessions.length; j < len; j++) {
-          var sessionHtml = this.getSessionHtml(id, sessions[j], descs, skipTier, editorJSONToHtmlFunc);
+          var sessionHtml = this.getSessionHtml(id, sessions[j], sequences, descs, skipTier, editorJSONToHtmlFunc);
           sessionsHtml += vrtxEdit.htmlFacade.getAccordionInteraction(!skipTier ? "5" : "4", sessionHtml.sessionId, "session", sessionHtml.title, sessionHtml.html);
         }
         if(!skipTier) {
@@ -1367,15 +1374,16 @@ function courseSchedule() {
      
     return html;
   };
-  this.getSessionHtml = function(id, session, descs, skipTier, editorJSONToHtmlFunc) {
+  this.getSessionHtml = function(id, session, sequences, descs, skipTier, editorJSONToHtmlFunc) {
     var sessionDatePostFixId = this.getDateAndPostFixId(session.dtStart, session.dtEnd),
         sessionId = id + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId,
+        sequenceId = session.id.replace(/\/[^\/]*$/, ""),
         sessionCancelled = (session.vrtxStatus && session.vrtxStatus === "cancelled") || (session.status && session.status === "cancelled"),
         rooms = session.rooms,
         sessionTitle = sessionDatePostFixId.date + " " +
                        "<span class='header-title'>" + (sessionCancelled ? "<span class='header-status'>" + this.i18n.cancelled + "</span> - " : "") + (session.vrtxTitle || session.title || session.id) + "</span>" +
                        (rooms ? (" - " + (rooms[0].buildingAcronym || rooms[0].buildingId) + " " + this.i18n.room + " " + rooms[0].roomId) : ""),
-        sessionContent = editorJSONToHtmlFunc(id, sessionId, session, descs, this.i18n);
+        sessionContent = editorJSONToHtmlFunc(id, sessionId, session, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
 
      this.sessionsLookup[id][sessionId] = {
        isEnhanced: false,
@@ -1421,15 +1429,22 @@ function courseSchedule() {
         var dtShort = dt.teachingMethod.toLowerCase();
         var id = skipTier ? type : dtShort + "-" + dt.id;
         var sessions = [];
+        var sequences = {};
         for(var j = 0, len = dt.sequences.length; j < len; j++) {
-          sessions = sessions.concat(dt.sequences[j].sessions);
+          var sequence = dt.sequences[j];
+          var fixedResources = sequence.vrtxResourcesFixed;
+          if(fixedResources && fixedResources.length) {
+            sequences[sequence.id] = fixedResources;
+          }
+          sessions = sessions.concat(sequence.sessions);
         }
         for(j = 0, len = sessions.length; j < len; j++) {
           var session = sessions[j];
           var sessionDatePostFixId = this.getDateAndPostFixId(session.dtStart, session.dtEnd);
           var sessionId = id + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId;
+          
           if(findSessionId === sessionId) {
-            return { id: id, session: session, type: type, skipTier: skipTier };
+            return { id: id, session: session, sequences: sequences, type: type, skipTier: skipTier };
           }
         }
       }
@@ -1532,15 +1547,7 @@ function courseSchedule() {
     e.stopPropagation();
   });
   $("#contents").on("click", ".admin-fixed-resources-folder", function(e) {
- var elmId = this.id;
-    var id = elmId.split("-")[0];
-    var sessionId = elmId.replace("-admin-fixed-resources", "");
-    var session = cs.sessionsLookup[id][sessionId];    
-    
-    var url = session.rawPtr.vrtxResourcesFixed[0].url.replace(/[^\\/]*$/, "") + "?vrtx=admin&refreshparent=true";
-
-    var fixedResourcesWindow = openPopup(url, 1000, 600, "adminFixedResources");
-    
+    var fixedResourcesWindow = openPopup(this.href, 1000, 600, "adminFixedResources");
     e.preventDefault();
     e.stopPropagation();
   });
@@ -1725,7 +1732,7 @@ function courseSchedule() {
   });
 }
 
-function editorJSONToHtml(id, sessionId, session, descs, i18n) {
+function editorJSONToHtml(id, sessionId, session, fixedResources, descs, i18n) {
   var html = "";
   var multiples = [];
   var rtEditors = [];
@@ -1733,7 +1740,7 @@ function editorJSONToHtml(id, sessionId, session, descs, i18n) {
   for(var name in descs) {
     var desc = descs[name],
         descProps = jQuery.extend(true, [], desc.props),
-        val = session[name],
+        val = session[name] || fixedResources[name],
         origVal = "",
         propsVal = "",
         browsable = false,
@@ -1788,7 +1795,7 @@ function editorJSONToHtml(id, sessionId, session, descs, i18n) {
       case "json-fixed":
         if(val) {
           var buttons = /* "<a class='vrtx-button create-fixed-resources-folder' id='" + sessionId + "-create-fixed-resources' href='javascript:void(0);'>Lag ressursmappe</a> "  */
-                        "<a class='vrtx-button admin-fixed-resources-folder' id='" + sessionId + "-admin-fixed-resources' href='javascript:void(0);'>Last opp flere / administrer</a>";
+                        "<a class='vrtx-button admin-fixed-resources-folder' href='" + val[0].url.replace(/[^\\/]*$/, "") + "?vrtx=admin&refreshparent=true" + "'>Last opp flere / administrer</a>";
           for(var j = 0, propsLen = val.length; j < propsLen; j++) {
             propsVal += "<a href='" + val[j].url + "'>" + val[j].title + "</a>";
           }

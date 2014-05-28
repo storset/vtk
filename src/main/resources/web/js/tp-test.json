@@ -78,6 +78,9 @@
       "sequences": [{
         "id": "14H-EXPHIL03-1-1-1-2-1",
         "seqNo": 1,
+        "vrtxResourcesFixed": [
+          { "title": "Fast ressurs", "url": "/foo/test.txt" }
+        ],
         "sessions": [{
           "id": "14H-EXPHIL03-1-1-1-2-1/34",
           "dtStart": "2014-08-18T12:15:00.000+02:00",
@@ -104,10 +107,7 @@
           "vrtxResources": [
             { "title": "Pensumlitteratur (PDF)", "url": "http://www.vg.no/" }
           ],
-          "vrtxResourcesText": "<ul><li>listepunkt #1</li><li>listepunkt #2</li></ul>",
-          "vrtxResourcesFixed": [
-            { "title": "Fast ressurs", "url": "/foo/test.txt" }
-          ]
+          "vrtxResourcesText": "<ul><li>listepunkt #1</li><li>listepunkt #2</li></ul>"
        }, {
           "id": "14H-EXPHIL03-1-1-1-2-1/35",
           "dtStart": "2014-08-25T12:15:00.000+02:00",

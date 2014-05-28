@@ -110,7 +110,11 @@ function initSchedule() {
         var link = $(this);
         var table = link.prev();
         table.toggleClass("hiding-passed"); 
-        link.text(table.hasClass("hiding-passed") ? scheduleI18n.tableShowPassed : scheduleI18n.tableHidePassed);
+        var isHidingPassed = table.hasClass("hiding-passed");
+        link.text(isHidingPassed ? scheduleI18n.tableShowPassed : scheduleI18n.tableHidePassed);
+        if(!isHidingPassed) {
+          $("html, body").finish().animate({ scrollTop: (table.offset().top - 20) }, 100);
+        }
         e.stopPropagation();
         e.preventDefault();
       });
@@ -329,8 +333,8 @@ function scheduleUtils() {
     var endDateTime = parseDate(e);
     return { start: startDateTime, end: endDateTime };
   };
-  this.getDateFormatted = function(dateStart, dateEnd) {
-    return dateStart.date + "." + dateStart.month + "." + dateStart.year.substring(2,4);
+  this.getDateFormatted = function(dateStart, dateEnd, i18n) {
+    return parseInt(dateStart.date, 10) + ". " + i18n["m" + parseInt(dateStart.month, 10)].toLowerCase() + ".";
   },
   this.getEndUTCDayFormatted = function(dateStart, dateEnd, i18n) {
     var utcDateEnd = getDateUTC(dateEnd.year, dateEnd.month - 1, dateEnd.date, dateEnd.hh, dateEnd.mm);
@@ -398,11 +402,14 @@ function scheduleUtils() {
     html += "</tr></thead><tbody>";
     return html;
   };
-  this.getTableEndHtml = function(i18n) {
-    return "</tbody></table><a class='course-schedule-table-toggle-passed' href='javascript:void(0);'>" + i18n.tableShowPassed + "</a></div>";
+  this.getTableEndHtml = function(isNoPassed, i18n) {
+    var html = "</tbody></table>";
+    if(!isNoPassed) html += "<a class='course-schedule-table-toggle-passed' href='javascript:void(0);'>" + i18n.tableShowPassed + "</a>";
+    html += "</div>";
+    return html;
   };
   this.splitThirds = function(arr, title) {
-    var html = "<p>" + title + "</p>",
+    var html = "<span class='display-as-h3'>" + title + "</p>",
         len = arr.length,
         split1 = Math.ceil(len / 3),
         split2 = split1 + Math.ceil((len - split1) / 2);
@@ -521,7 +528,7 @@ function generateHTMLForType(d) {
         session = sessions[j];
         
         var dateTime = utils.getDateTime(session.dtStart, session.dtEnd);
-        var date = utils.getDateFormatted(dateTime.start, dateTime.end);
+        var date = utils.getDateFormatted(dateTime.start, dateTime.end, scheduleI18n);
         var endUTCDay = utils.getEndUTCDayFormatted(dateTime.start, dateTime.end, scheduleI18n);
         var day = endUTCDay.day;
         var endUTC = endUTCDay.endUTC;
@@ -554,7 +561,7 @@ function generateHTMLForType(d) {
         sessionsHtml += "</tr>";
       
         if(tocTimeCount < tocTimeMax) {
-          var newTocTime = day.toLowerCase().substring(0,3) + " " + time;
+          var newTocTime = "<span>" + day.toLowerCase().substring(0,3) + " " + time + "</span>";
           if(tocTime.indexOf(newTocTime) === -1) {
             if(tocTimeCount > 0) tocTime += ", ";
             tocTime += newTocTime;
@@ -562,7 +569,7 @@ function generateHTMLForType(d) {
           }
         }
       }
-      tablesHtml += utils.getTableStartHtml(activityId, caption, (passedCount === sessionsCount), resourcesCount, staffCount, scheduleI18n) + sessionsHtml + utils.getTableEndHtml(scheduleI18n);
+      tablesHtml += utils.getTableStartHtml(activityId, caption, (passedCount === sessionsCount), resourcesCount, staffCount, scheduleI18n) + sessionsHtml + utils.getTableEndHtml(passedCount === 0, scheduleI18n);
       
       // Generate ToC
       tocTime = tocTime.replace(/,([^,]+)$/, " " + scheduleI18n.and + "$1");

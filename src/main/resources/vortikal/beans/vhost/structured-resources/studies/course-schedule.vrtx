@@ -53,7 +53,20 @@ resourcetype course-schedule {
             "d3": "[localized 'dWed']",
             "d4": "[localized 'dThu']",
             "d5": "[localized 'dFri']",
-            "d6": "[localized 'dSat']"
+            "d6": "[localized 'dSat']",
+            
+            "m1": "[localized 'mJan']",
+            "m2": "[localized 'mFeb']",
+            "m3": "[localized 'mMar']",
+            "m4": "[localized 'mApr']",
+            "m5": "[localized 'mMay']",
+            "m6": "[localized 'mJun']",
+            "m7": "[localized 'mJul']",
+            "m8": "[localized 'mAug']",
+            "m9": "[localized 'mSep']",
+            "m10": "[localized 'mOct']",
+            "m11": "[localized 'mNov']",
+            "m12": "[localized 'mDec']"
           };
           var schedulePermissions = {
             "hasReadWriteNotLocked": [call 'resource:permission-flags']
@@ -117,7 +130,20 @@ resourcetype course-schedule {
     dWed : (en : "Wednesday", no : "Onsdag",  nn : "Onsdag"),
     dThu : (en : "Thursday",  no : "Torsdag", nn : "Torsdag"),
     dFri : (en : "Friday",    no : "Fredag",  nn : "Fredag"),
-    dSat : (en : "Saturday",  no : "Lørdag",  nn : "Lørdag")
+    dSat : (en : "Saturday",  no : "Lørdag",  nn : "Lørdag"),
+    
+    mJan : (en : "Jan", no : "Jan",  nn : "Jan"),
+    mFeb : (en : "Feb", no : "Feb",  nn : "Feb"),
+    mMar : (en : "Mar", no : "Mar",  nn : "Mar"),
+    mApr : (en : "Apr", no : "Apr",  nn : "Apr"),
+    mMay : (en : "May", no : "Mai",  nn : "Mai"),
+    mJun : (en : "Jun", no : "Jun",  nn : "Jun"),
+    mJul : (en : "Jul", no : "Jul",  nn : "Jul"),
+    mAug : (en : "Aug", no : "Aug",  nn : "Aug"),
+    mSep : (en : "Sep", no : "Sep",  nn : "Sep"),
+    mOct : (en : "Oct", no : "Okt",  nn : "Okt"),
+    mNov : (en : "Nov", no : "Nov",  nn : "Nov"),
+    mDec : (en : "Dec", no : "Des",  nn : "Des")
   }
   
 }

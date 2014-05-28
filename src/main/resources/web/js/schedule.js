@@ -31,7 +31,7 @@ function initSchedule() {
   }
   url += "?action=course-schedule";
   // Debug: Local development
-  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   // GET JSON
   $.ajax({
@@ -561,10 +561,14 @@ function generateHTMLForType(d) {
         sessionsHtml += "</tr>";
       
         if(tocTimeCount < tocTimeMax) {
-          var newTocTime = "<span>" + day.toLowerCase().substring(0,3) + " " + time + "</span>";
+          var newTocTime = day.toLowerCase().substring(0,3) + " " + time ;
           if(tocTime.indexOf(newTocTime) === -1) {
-            if(tocTimeCount > 0) tocTime += ", ";
+            if(tocTimeCount > 0) {
+              tocTime += ", ";
+              tocTime += "<span>";
+            }
             tocTime += newTocTime;
+            if(tocTimeCount === 0) tocTime += "</span>";
             tocTimeCount++;
           }
         }
@@ -574,9 +578,9 @@ function generateHTMLForType(d) {
       // Generate ToC
       tocTime = tocTime.replace(/,([^,]+)$/, " " + scheduleI18n.and + "$1");
       if(skipTier) {
-        tocHtml += "<li><a href='#" + activityId + "'>" + dtLong + "</a> - " + tocTime + "</li>";
+        tocHtml += "<li><span><a href='#" + activityId + "'>" + dtLong + "</a> - " + tocTime + "</li>";
       } else {
-        tocHtmlArr.push("<li><a href='#" + activityId + "'>" + scheduleI18n.groupTitle + " " + groupCount + "</a> - " + tocTime + "</li>");
+        tocHtmlArr.push("<li><span><a href='#" + activityId + "'>" + scheduleI18n.groupTitle + " " + groupCount + "</a> - " + tocTime + "</li>");
         if((dtShort !== lastDtShort && i > 0) || (i === (dataLen - 1))) {
           tocHtml += utils.splitThirds(tocHtmlArr, dtLong);
           tocHtmlArr = [];

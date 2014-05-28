@@ -519,7 +519,7 @@ function generateHTMLForType(d) {
         var dateTime = utils.getDateTime(session.dtStart, session.dtEnd);
         var date = utils.getDateFormatted(dateTime.start, dateTime.end, scheduleI18n);
         var endDateDay = utils.getEndDateDayFormatted(dateTime.start, dateTime.end, scheduleI18n);
-        var endDate = endDateDay.date;
+        var endDate = endDateDay.endDate;
         var day = endDateDay.day;
         var time = utils.getTimeFormatted(dateTime.start, dateTime.end);
         

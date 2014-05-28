@@ -54,6 +54,19 @@
          "vrtxResourcesText":{
            "type":"html"
          },
+         "vrtxResourcesFixed":{
+            "type":"json-fixed",
+            "props":[
+               {
+                  "name":"title",
+                  "type":"string"
+               },
+               {
+                  "name":"url",
+                  "type":"resource_ref"
+               }
+            ]
+         },
          "vrtxStatus":{
            "type":"checkbox"
          }
@@ -91,7 +104,10 @@
           "vrtxResources": [
             { "title": "Pensumlitteratur (PDF)", "url": "http://www.vg.no/" }
           ],
-          "vrtxResourcesText": "<ul><li>listepunkt #1</li><li>listepunkt #2</li></ul>"
+          "vrtxResourcesText": "<ul><li>listepunkt #1</li><li>listepunkt #2</li></ul>",
+          "vrtxResourcesFixed": [
+            { "title": "Pensumlitteratur (PDF)", "url": "http://www.vg.no/" }
+          ]
        }, {
           "id": "14H-EXPHIL03-1-1-1-2-1/35",
           "dtStart": "2014-08-25T12:15:00.000+02:00",
@@ -861,6 +877,19 @@
          },
          "vrtxResourcesText":{
            "type":"html"
+         },
+         "vrtxResourcesFixed":{
+            "type":"json-fixed",
+            "props":[
+               {
+                  "name":"title",
+                  "type":"string"
+               },
+               {
+                  "name":"url",
+                  "type":"resource_ref"
+               }
+            ]
          },
          "vrtxStatus":{
             "type":"checkbox"

@@ -1143,7 +1143,7 @@ function courseSchedule() {
   }
   url += "?action=course-schedule&mode=edit&t=" + (+new Date());
   // Debug: Local development
-  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   // Hide shortcut for saving working copy
   $("#vrtx-save-as-working-copy-shortcut, #saveWorkingCopyAction, #buttons-or-text").hide();
@@ -1764,6 +1764,14 @@ function editorJSONToHtml(id, session, descs, i18n) {
                                                      val: val,
                                                      size: size
                                                    }, name);
+        break;
+      case "json-fixed":
+        if(val) {
+          for(var j = 0, propsLen = val.length; j < propsLen; j++) {
+            propsVal += "<a href='" + val[j].url + "'>" + val[j].title + "</a>";
+          }
+          html += "<div class='vrtx-string'>" + i18n[name] + "<div class='vrtx-shared-text'><div class='shared-text-description'>" + propsVal + "</div></div></div>";
+        }
         break;
       case "html":
         html += vrtxEdit.htmlFacade.getSimpleHtmlField({ title: i18n[name],

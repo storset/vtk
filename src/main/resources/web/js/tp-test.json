@@ -106,7 +106,7 @@
           ],
           "vrtxResourcesText": "<ul><li>listepunkt #1</li><li>listepunkt #2</li></ul>",
           "vrtxResourcesFixed": [
-            { "title": "Pensumlitteratur (PDF)", "url": "http://www.vg.no/" }
+            { "title": "Fast ressurs", "url": "/foo/test.txt" }
           ]
        }, {
           "id": "14H-EXPHIL03-1-1-1-2-1/35",

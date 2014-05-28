@@ -1375,7 +1375,7 @@ function courseSchedule() {
         sessionTitle = sessionDatePostFixId.date + " " +
                        "<span class='header-title'>" + (sessionCancelled ? "<span class='header-status'>" + this.i18n.cancelled + "</span> - " : "") + (session.vrtxTitle || session.title || session.id) + "</span>" +
                        (rooms ? (" - " + (rooms[0].buildingAcronym || rooms[0].buildingId) + " " + this.i18n.room + " " + rooms[0].roomId) : ""),
-        sessionContent = editorJSONToHtmlFunc(sessionId, session, descs, this.i18n);
+        sessionContent = editorJSONToHtmlFunc(id, sessionId, session, descs, this.i18n);
 
      this.sessionsLookup[id][sessionId] = {
        isEnhanced: false,
@@ -1500,13 +1500,13 @@ function courseSchedule() {
     this.sessionOnlyWindowClose();
   };
   this.sessionOnlyWindowClose = function() {
-    if(onlySessionId.length) {
+    if(onlySessionId) {
       window.close();
     }
   };
 
   var contents = $("#contents");
-  if(onlySessionId.length) contents.hide();
+  if(onlySessionId) contents.hide();
   
   var cs = this;
   
@@ -1525,6 +1525,26 @@ function courseSchedule() {
     }
   }, false);
   
+  // Create/admin fixed resource folders
+  $("#contents").on("click", ".create-fixed-resources-folder", function(e) {
+    alert("TODO Create");
+    e.preventDefault();
+    e.stopPropagation();
+  });
+  $("#contents").on("click", ".admin-fixed-resources-folder", function(e) {
+ var elmId = this.id;
+    var id = elmId.split("-")[0];
+    var sessionId = elmId.replace("-admin-fixed-resources", "");
+    var session = cs.sessionsLookup[id][sessionId];    
+    
+    var url = session.rawPtr.vrtxResourcesFixed[0].url.replace(/[^\\/]*$/, "") + "?vrtx=admin&refreshparent=true";
+
+    var fixedResourcesWindow = openPopup(url, 1000, 600, "adminFixedResources");
+    
+    e.preventDefault();
+    e.stopPropagation();
+  });
+  
   var editorProperties = vrtxEditor.editorForm.find(".properties");
   editorProperties.hide();
   
@@ -1541,7 +1561,7 @@ function courseSchedule() {
     // Remove - TODO: don't generate
     $(".vrtx-json").remove();
 
-    if(onlySessionId.length) {
+    if(onlySessionId) {
       var sessionOnly = csRef.getSessionOnlyHtml(onlySessionId);
       var html = sessionOnly.html;
       if(!html) html = "<p>" + csRef.i18n.noSessionData + "</p>";
@@ -1705,7 +1725,7 @@ function courseSchedule() {
   });
 }
 
-function editorJSONToHtml(id, session, descs, i18n) {
+function editorJSONToHtml(id, sessionId, session, descs, i18n) {
   var html = "";
   var multiples = [];
   var rtEditors = [];
@@ -1759,35 +1779,35 @@ function editorJSONToHtml(id, session, descs, i18n) {
           });
         }
         html += vrtxEdit.htmlFacade.getStringField({ title: i18n[name],
-                                                     name: (desc.autocomplete ? "vrtx-autocomplete-" + desc.autocomplete + " " : "") + name + "-" + id,
-                                                     id: name + "-" + id,
+                                                     name: (desc.autocomplete ? "vrtx-autocomplete-" + desc.autocomplete + " " : "") + name + "-" + sessionId,
+                                                     id: name + "-" + sessionId,
                                                      val: val,
                                                      size: size
                                                    }, name);
         break;
       case "json-fixed":
         if(val) {
+          var buttons = /* "<a class='vrtx-button create-fixed-resources-folder' id='" + sessionId + "-create-fixed-resources' href='javascript:void(0);'>Lag ressursmappe</a> "  */
+                        "<a class='vrtx-button admin-fixed-resources-folder' id='" + sessionId + "-admin-fixed-resources' href='javascript:void(0);'>Last opp flere / administrer</a>";
           for(var j = 0, propsLen = val.length; j < propsLen; j++) {
             propsVal += "<a href='" + val[j].url + "'>" + val[j].title + "</a>";
           }
-          html += "<div class='vrtx-simple-html'>" + i18n[name] + "<div class='preview-html'>" + propsVal + "</div></div>";
-          
-          // TODO: Upload functionality
+          html += "<div class='vrtx-simple-html'><label>" + i18n[name] + "</label><div class='preview-html'>" + propsVal + "</div>" + buttons + "</div>";
         }
         break;
       case "html":
         html += vrtxEdit.htmlFacade.getSimpleHtmlField({ title: i18n[name],
-                                                           name: name + "-" + id,
-                                                           id: name + "-" + id,
+                                                           name: name + "-" + sessionId,
+                                                           id: name + "-" + sessionId,
                                                            val: val
-                                                         }, name + "-" + id);
-        rtEditors.push(name + "-" + id);
+                                                         }, name + "-" + sessionId);
+        rtEditors.push(name + "-" + sessionId);
         break;
       case "checkbox":
         if(!origVal || origVal !== "cancelled") {
           html += vrtxEdit.htmlFacade.getCheckboxField({ title: i18n[name],
-                                                           name: name + "-" + id,
-                                                           id: name + "-" + id,
+                                                           name: name + "-" + sessionId,
+                                                           id: name + "-" + sessionId,
                                                            checked: (val === "active" ? null : val)
                                                          }, name);
         }

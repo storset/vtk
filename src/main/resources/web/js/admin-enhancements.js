@@ -3929,8 +3929,7 @@ function browseServer(obj, editorBase, baseFolder, editorBrowseUrl, type) {
 }
 
 function openServerBrowser(url, width, height) {
-  var sOptions = "toolbar=no,status=no,resizable=yes"; // http://www.quirksmode.org/js/popup.html
-  return openGeneral(url, width, height, "BrowseServer", sOptions); // title must be without spaces in IE
+  return openPopup(url, width, height, "BrowseServer")
 }
 
 function openRegular(url, width, height, winTitle) {
@@ -3939,6 +3938,11 @@ function openRegular(url, width, height, winTitle) {
   sOptions += ",directories=yes";
   var now = +new Date();
   return openGeneral(url, width, height, winTitle + now, sOptions);
+}
+
+function openPopup(url, width, height, winTitle) {
+  var sOptions = "toolbar=no,status=no,resizable=yes"; // http://www.quirksmode.org/js/popup.html
+  return openGeneral(url, width, height, winTitle, sOptions); // title must be without spaces in IE
 }
 
 function openGeneral(url, width, height, winTitle, sOptions) {
@@ -3950,6 +3954,15 @@ function openGeneral(url, width, height, winTitle, sOptions) {
   sOptions += ",top=" + iTop;
   var oWindow = window.open(url, winTitle, sOptions);
   return oWindow;
+}
+
+function refreshParent() {
+  window.opener.location.reload();
+}
+
+var refreshParentOnClose = gup("refreshparent", window.location.href);
+if(refreshParentOnClose) {
+  window.onunload = refreshParent;    
 }
 
 // Callback from the image browser:

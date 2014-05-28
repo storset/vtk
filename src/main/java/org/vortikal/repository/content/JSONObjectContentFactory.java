@@ -41,7 +41,7 @@ import org.vortikal.util.io.StreamUtil;
  */
 public class JSONObjectContentFactory implements ContentFactory {
 
-    private int maxLength = 1000000;
+    private int maxLength = 10000000;
     
     @Override
     public Class<?>[] getRepresentationClasses() {

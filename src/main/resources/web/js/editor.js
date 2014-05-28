@@ -1131,11 +1131,6 @@ VrtxEditor.prototype.showHideSelect = function showHideSelect(select, init) {
 /*-------------------------------------------------------------------*\
 
     7.5 Course schedule editor (some is general and uses 8. for multiple enhancing)
-    
-    THIS IS A GENERAL MESSAGE TO THE WORLD:
-    You're in limbo. Proceed with caution.
-    
-    XXX: refactor / combine and optimize
 
 \*-------------------------------------------------------------------*/
 
@@ -1276,17 +1271,17 @@ function courseSchedule() {
     var sessionData = this.getSessionJSONFromId(sessionId);
     if(!sessionData) return null;
     
-    var descs = this.retrievedScheduleData[type].vrtxEditableDescription;
-    
     var id = sessionData.id;
     var session = sessionData.session;
     var type = sessionData.type;
     var skipTier = sessionData.skipTier;
     
+    var descs = this.retrievedScheduleData[type].vrtxEditableDescription;
+
     if(!this.sessionsLookup[id]) {
       this.sessionsLookup[id] = {};
     }
-    var sessionHtml = this.getSessionHtml(id, session, descs, skipTier);    
+    var sessionHtml = this.getSessionHtml(id, session, descs, skipTier, editorJSONToHtml);    
     
     this.lastElm = $(".properties"); 
     this.lastId = id;
@@ -1295,6 +1290,7 @@ function courseSchedule() {
     return { id: id, html: sessionHtml.html, title: sessionHtml.title };
   };
   this.getActivitiesForTypeHtml = function(type, skipTier) {
+    if(!this.retrievedScheduleData[type]) return "";
     var descs = this.retrievedScheduleData[type].vrtxEditableDescription,
         data = this.retrievedScheduleData[type].activities;
     if(!descs || !data) return "";
@@ -1375,10 +1371,10 @@ function courseSchedule() {
     var sessionDatePostFixId = this.getDateAndPostFixId(session.dtStart, session.dtEnd),
         sessionId = id + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId,
         sessionCancelled = (session.vrtxStatus && session.vrtxStatus === "cancelled") || (session.status && session.status === "cancelled"),
-        room = session.rooms[0],
+        rooms = session.rooms,
         sessionTitle = sessionDatePostFixId.date + " " +
                        "<span class='header-title'>" + (sessionCancelled ? "<span class='header-status'>" + this.i18n.cancelled + "</span> - " : "") + (session.vrtxTitle || session.title || session.id) + "</span>" +
-                       (room ? (" - " + (room.buildingAcronym || room.buildingId) + " " + this.i18n.room + " " + room.roomId) : ""),
+                       (rooms ? (" - " + (rooms[0].buildingAcronym || rooms[0].buildingId) + " " + this.i18n.room + " " + rooms[0].roomId) : ""),
         sessionContent = editorJSONToHtmlFunc(sessionId, session, descs, this.i18n);
 
      this.sessionsLookup[id][sessionId] = {
@@ -1413,6 +1409,7 @@ function courseSchedule() {
   }
   this.getSessionJSONFromId = function(findSessionId) {
     for(var type in this.retrievedScheduleData) {
+      if(!this.retrievedScheduleData[type]) continue;
       var data = this.retrievedScheduleData[type].activities;
       if(!data) continue;
       var dataLen = data.length;
@@ -1478,34 +1475,17 @@ function courseSchedule() {
       this.saveSession(this.lastElm, this.lastId, this.lastSessionId);
     }
   };
-  this.saveSession = function(domSessionElms, id, sessionId) {
-    saveMultipleInputFields(domSessionElms, "$$$");
+  this.saveSession = function(sessionElms, id, sessionId) {
+    saveMultipleInputFields(sessionElms, "$$$");
 
     var sessionLookup = this.sessionsLookup[id][sessionId];
     var rawOrig = sessionLookup.rawOrig;
     var rawPtr = sessionLookup.rawPtr;
     var descsPtr = sessionLookup.descsPtr;
     
-    var editorDOMFieldToValFunc = editorDOMFieldToVal;
-    var editorDetectChangeFunc = editorDetectChange;
-    
-    for(var name in descsPtr) {
-      // XXX: support multiple CK-fields starting with same name
-      if(descsPtr[name].type === "html") {
-        var domSessionPropElm = domSessionElms.find("textarea[name^='" + name + "']");
-      } else {
-        var domSessionPropElm = domSessionElms.find("input[name='" + name + "']");
-      }
-      if(!domSessionPropElm.length) continue; // This should not happen
+    editorHtmlToJSON(sessionElms, descsPtr, rawOrig, rawPtr);
 
-      var val = editorDOMFieldToValFunc(descsPtr[name], domSessionPropElm);
-      if(val && val.length && editorDetectChangeFunc(val, rawOrig[name.split("vrtx")[1].toLowerCase()])) {
-        rawPtr[name] = val;
-      } else {
-        delete rawPtr[name];
-      }
-    }
-    sessionLookup.hasChanges = editorDetectChangeFunc(rawPtr, rawOrig);
+    sessionLookup.hasChanges = editorDetectChange(rawPtr, rawOrig);
   };
   this.saved = function() {
     for(var type in this.sessionsLookup) {
@@ -1725,36 +1705,7 @@ function courseSchedule() {
   });
 }
 
-function editorDetectChange(o1, o2) {
-  if(typeof o1 === "object" && typeof o2 === "object") {
-    if(o1.length) { // Array
-      if(o1.length !== o2.length) return true;
-      for(var i = 0, len = o1.length; i < len; i++) {
-        if(editorDetectChange(o1[i], o2[i])) return true;
-      }
-    } else {
-      var propCount2 = 0;
-      for(prop2 in o2) {
-        propCount2++;
-      }
-      var propCount1 = 0;
-      for(prop1 in o1) {
-        if(editorDetectChange(o1[prop1], o2[prop1])) return true;
-        propCount1++;
-      }
-      if(propCount1 !== propCount2) return true;
-    }
-  } else if(typeof o1 === "string" && typeof o2 === "string") {
-    if(o1 !== o2) return true;
-  } else if(typeof o1 === "number" && typeof o2 === "number") {
-    if(o1 !== o2) return true;
-  } else if(typeof o1 !== typeof o2) {
-    return true;
-  }
-  return false;
-}
-
-function editorJSONToHtml(id, data, descs, i18n) {
+function editorJSONToHtml(id, session, descs, i18n) {
   var html = "";
   var multiples = [];
   var rtEditors = [];
@@ -1762,7 +1713,7 @@ function editorJSONToHtml(id, data, descs, i18n) {
   for(var name in descs) {
     var desc = descs[name],
         descProps = jQuery.extend(true, [], desc.props),
-        val = data[name],
+        val = session[name],
         origVal = "",
         propsVal = "",
         browsable = false,
@@ -1771,7 +1722,7 @@ function editorJSONToHtml(id, data, descs, i18n) {
     
     var origName = name.split("vrtx")[1];
     if(origName) {
-      var origVal = data[origName.toLowerCase()];
+      var origVal = session[origName.toLowerCase()];
       if(origVal && origVal != "") {
         if(!val || !val.length) {
           val = origVal;
@@ -1814,6 +1765,16 @@ function editorJSONToHtml(id, data, descs, i18n) {
                                                      size: size
                                                    }, name);
         break;
+      case "json-fixed":
+        if(val) {
+          for(var j = 0, propsLen = val.length; j < propsLen; j++) {
+            propsVal += "<a href='" + val[j].url + "'>" + val[j].title + "</a>";
+          }
+          html += "<div class='vrtx-simple-html'>" + i18n[name] + "<div class='preview-html'>" + propsVal + "</div></div>";
+          
+          // TODO: Upload functionality
+        }
+        break;
       case "html":
         html += vrtxEdit.htmlFacade.getSimpleHtmlField({ title: i18n[name],
                                                            name: name + "-" + id,
@@ -1839,50 +1800,91 @@ function editorJSONToHtml(id, data, descs, i18n) {
   return { html: html, multiples: multiples, rtEditors: rtEditors };
 }
 
-function editorDOMFieldToVal(desc, elm) {
-  var val = "";
-  if(desc.type === "checkbox") {
-    if(elm[0].checked) {
-      val = "cancelled"; // TODO: Not very general
+function editorHtmlToJSON(sessionElms, descs, rawOrig, rawPtr) {
+  var vrtxEdit = vrtxEditor;
+  var editorDetectChangeFunc = editorDetectChange;
+  for(var name in descs) {
+    var desc = descs[name],
+        val = "";
+    // XXX: support multiple CK-fields starting with same name
+    if(descs[name].type === "html") {
+      var elm = sessionElms.find("textarea[name^='" + name + "']");
+    } else {
+      var elm = sessionElms.find("input[name='" + name + "']");
     }
-  } else if(desc.type === "html") {
-    val = vrtxEditor.richtextEditorFacade.getInstanceValue(elm.attr("name"));
-  } else {
-    val = elm.val(); // To string (string)
-    if(desc.multiple && val.length) { // To array (multiple)
-      val = val.split("$$$");
-    }
-    if(desc.type === "json" && val.length) { // Object props into array (JSON multiple)
-      var arrProps = [];
-      for(var i = 0, arrLen = val.length; i < arrLen; i++) {
-        var newProp = null;
-        var prop = val[i].split("###");
-        for(var j = 0, descPropsLen = desc.props.length; j < descPropsLen; j++) { // Definition
-          if(prop[j] !== "") {
-            if(!newProp) {
-              newProp = {};
+    if(!elm.length) continue; // This should not happen
+
+    if(desc.type === "checkbox") {
+      if(elm[0].checked) {
+        val = "cancelled"; // TODO: Not very general
+      }
+    } else if(desc.type === "html") {
+      val = vrtxEdit.richtextEditorFacade.getInstanceValue(elm.attr("name"));
+    } else {
+      val = elm.val(); // To string (string)
+      if(desc.multiple && val.length) { // To array (multiple)
+        val = val.split("$$$");
+      }
+      if(desc.type === "json" && val.length) { // Object props into array (JSON multiple)
+        var arrProps = [];
+        for(var i = 0, arrLen = val.length; i < arrLen; i++) {
+          var newProp = null;
+          var prop = val[i].split("###");
+          for(var j = 0, descPropsLen = desc.props.length; j < descPropsLen; j++) { // Definition
+            if(prop[j] !== "") {
+              if(!newProp) {
+                newProp = {};
+              }
+              newProp[desc.props[j].name] = prop[j];
             }
-            newProp[desc.props[j].name] = prop[j];
+          }
+          if(newProp) {
+            arrProps.push(newProp);
           }
         }
-        if(newProp) {
-          arrProps.push(newProp);
-        }
+        val = arrProps;
       }
-      val = arrProps;
+    }
+    if(val && val.length && editorDetectChangeFunc(val, rawOrig[name.split("vrtx")[1].toLowerCase()])) {
+      rawPtr[name] = val;
+    } else {
+      delete rawPtr[name];
     }
   }
-  return val;
+}
+
+function editorDetectChange(o1, o2) {
+  if(typeof o1 === "object" && typeof o2 === "object") {
+    if(o1.length) { // Array
+      if(o1.length !== o2.length) return true;
+      for(var i = 0, len = o1.length; i < len; i++) {
+        if(editorDetectChange(o1[i], o2[i])) return true;
+      }
+    } else {
+      var propCount2 = 0;
+      for(prop2 in o2) {
+        propCount2++;
+      }
+      var propCount1 = 0;
+      for(prop1 in o1) {
+        if(editorDetectChange(o1[prop1], o2[prop1])) return true;
+        propCount1++;
+      }
+      if(propCount1 !== propCount2) return true;
+    }
+  } else if(typeof o1 === "string" && typeof o2 === "string") {
+    if(o1 !== o2) return true;
+  } else if(typeof o1 === "number" && typeof o2 === "number") {
+    if(o1 !== o2) return true;
+  } else if(typeof o1 !== typeof o2) {
+    return true;
+  }
+  return false;
 }
    
 
 /*-------------------------------------------------------------------*\
     8. Multiple fields and boxes
-    
-    THIS IS A GENERAL MESSAGE TO THE WORLD:
-    Abandon hope all ye who enter here..
-    
-    XXX: refactor / combine and optimize
 \*-------------------------------------------------------------------*/
 
 /*

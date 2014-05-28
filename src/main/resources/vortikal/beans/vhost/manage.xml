@@ -587,6 +587,43 @@
     </property>
   </bean>
 
+
+  <!-- Create collection with properties (mainly used from Ajax): -->
+  
+  <bean id="manage.createCollectionWithPropertiesService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-9999" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="service" />
+          <property name="parameterValue" value="create-collection-with-properties" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="manage.createCollectionWithPropertiesHandler" />
+  </bean>  
+
+  <bean id="manage.createCollectionWithPropertiesHandler"
+        class="org.vortikal.web.actions.create.CreateCollectionWithProperties">
+    <property name="formView" value="manage.createcollectionwithpropertiesForm" />
+    <property name="successView" value="redirectToManage" />
+  </bean>
+
+  <bean id="manage.createcollectionwithproperties.viewResolver" parent="adminViewResolver">
+    <property name="views">
+      <map>
+        <entry key="manage.createcollectionwithpropertiesForm" value-ref="manage.createcollectionwithpropertiesFormView" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="manage.createcollectionwithpropertiesFormView" parent="freemarkerView">
+    <property name="url" value="pages/create-collection-with-properties.ftl" />
+  </bean>
+
+
+
   <!-- Locale controllers -->
   <bean id="setNorwegianNBLocaleController" class="org.vortikal.web.actions.locale.SetLocaleController">
     <property name="locale">

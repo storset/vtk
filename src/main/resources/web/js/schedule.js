@@ -1,7 +1,6 @@
 /*
  * Course schedule
  *
- * - Two threaded parsing/generating of JSON to HTML if supported (one pr. type in addition to main thread)
  */
 
 var scheduleDeferred = $.Deferred();
@@ -17,9 +16,10 @@ function initSchedule() {
   var retrievedScheduleDeferred = $.Deferred();
   var retrievedScheduleData = null;
   var endAjaxTime = 0;
-  // Don't cache if has returned from editing an activity
-  var hasEditedKey = "hasEditedSession";
+  
+  // Don't cache if has returned from editing a session
   var useCache = true;
+  var hasEditedKey = "hasEditedSession";
   if(window.localStorage && window.localStorage.getItem(hasEditedKey)) {
     window.localStorage.removeItem(hasEditedKey);
     useCache = false;
@@ -62,6 +62,7 @@ function initSchedule() {
     }
     
     loadingUpdate(scheduleI18n.loadingGenerating);
+    
     var startMakingThreadsTime = +new Date();
     
     var thread1Finished = $.Deferred(),
@@ -81,7 +82,7 @@ function initSchedule() {
     } else {
       thread1Finished.resolve();
     }
-    if(plenaryData) {
+    if(groupData) {
       startThreadGenerateHTMLForType(JSON.stringify({
         data: groupData,
         type: "group",
@@ -127,7 +128,7 @@ function initSchedule() {
             editUrl += "index.html";
           }
           var openedEditWindow = popupEditWindow(850, 680, editUrl + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + row[0].id, "editActivity");
-          refreshWhenRefocused();
+          refreshWhenRefocused(hasEditedKey);
           e.stopPropagation();
           e.preventDefault();
         });
@@ -158,7 +159,7 @@ function popupEditWindow(w, h, url, name) {
   return openedWindow;
 }
 
-function refreshWhenRefocused() {
+function refreshWhenRefocused(hasEditedKey) {
   var isVisible = false;
   var delayCheckVisibility = 450;
   var waitForVisibility = setTimeout(function() {
@@ -349,13 +350,17 @@ function scheduleUtils() {
     var val = "";
     var rooms = session.rooms;
     if(rooms && rooms.length) {
-      for(var i = 0, len = rooms.length; i < len; i++) {
-        if(i > 0) val += "<br/>";
+      var len = rooms.length;
+      if(len > 1) val = "<ul>";
+      for(var i = 0; i < len; i++) {
+        if(len > 1) val += "<li>";
         var room = rooms[i]; 
         val += linkAbbr(room.buildingUrl, room.buildingName, (room.buildingAcronym || room.buildingId));
         val += " ";
         val += linkAbbr(room.roomUrl, room.roomName, room.roomId);
+        if(len > 1) val += "</li>";
       }
+      if(len > 1) val += "</ul>";
     }
     return val;
   };
@@ -369,7 +374,12 @@ function scheduleUtils() {
     return jsonArrayToHtmlList(staff);
   };
   this.getResources = function(session) {
-    var val = jsonArrayToHtmlList(session.vrtxResources || []);
+    var resources = session.vrtxResources || []
+    var fixedResources = session.vrtxResourcesFixed;
+    if(fixedResources && fixedResources.length) {
+      resources = resources.concat(fixedResources);
+    }
+    var val = jsonArrayToHtmlList(resources);
     var resourcesText = session.vrtxResourcesText;
     if(resourcesText && resourcesText.length) {
       val += resourcesText;

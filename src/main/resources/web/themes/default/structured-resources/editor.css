@@ -331,6 +331,7 @@
 
 /* Study enhancements */
 
+.preview-html,
 .vrtx-shared-text .shared-text-description {
   background-color: #fafafa;
   border: 1px dashed #d5d5d5;
@@ -338,6 +339,7 @@
   padding: 6px 15px;
 }
 
+.preview-html a,
 .vrtx-shared-text .shared-text-description a {
   color: #005aab;
   text-decoration: underline;

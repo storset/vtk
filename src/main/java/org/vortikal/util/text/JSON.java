@@ -46,7 +46,7 @@ import org.vortikal.util.io.StreamUtil;
 
 public final class JSON {
 
-    private static final int MAX_LENGTH = 500000;
+    private static final int MAX_LENGTH = 10000000;
 
     public static Object parse(String input) {
         return parse(input, true);

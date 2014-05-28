@@ -34,7 +34,7 @@
   <logger name="org.vortikal.repository.ChangeHistoryLog"><level value="debug" /></logger>
   <logger name="org.vortikal.repository.store.db.SqlMapIndexDao"><level value="info" /></logger>
   <logger name="org.vortikal.repository.search.SearcherImpl"><level value="info" /></logger>
-  <logger name="org.vortikal.repository.RepositoryResourceHelperImpl"><level value="info" /></logger>
+  <logger name="org.vortikal.repository.RepositoryResourceHelper"><level value="info" /></logger>
   <logger name="org.vortikal.web.filter.ExpiresCacheResponseFilter"><level value="info" /></logger>
   <logger name="org.vortikal.util.cache"><level value="info" /></logger>
   <logger name="org.vortikal.security"><level value="info" /></logger>

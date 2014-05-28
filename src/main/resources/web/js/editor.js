@@ -1475,15 +1475,15 @@ function courseSchedule() {
       this.saveSession(this.lastElm, this.lastId, this.lastSessionId);
     }
   };
-  this.saveSession = function(domSessionElms, id, sessionId) {
-    saveMultipleInputFields(domSessionElms, "$$$");
+  this.saveSession = function(sessionElms, id, sessionId) {
+    saveMultipleInputFields(sessionElms, "$$$");
 
     var sessionLookup = this.sessionsLookup[id][sessionId];
     var rawOrig = sessionLookup.rawOrig;
     var rawPtr = sessionLookup.rawPtr;
     var descsPtr = sessionLookup.descsPtr;
     
-    editorHtmlToJSON(domSessionElms, descsPtr, rawOrig, rawPtr);
+    editorHtmlToJSON(sessionElms, descsPtr, rawOrig, rawPtr);
 
     sessionLookup.hasChanges = editorDetectChange(rawPtr, rawOrig);
   };
@@ -1705,7 +1705,7 @@ function courseSchedule() {
   });
 }
 
-function editorJSONToHtml(id, data, descs, i18n) {
+function editorJSONToHtml(id, session, descs, i18n) {
   var html = "";
   var multiples = [];
   var rtEditors = [];
@@ -1713,7 +1713,7 @@ function editorJSONToHtml(id, data, descs, i18n) {
   for(var name in descs) {
     var desc = descs[name],
         descProps = jQuery.extend(true, [], desc.props),
-        val = data[name],
+        val = session[name],
         origVal = "",
         propsVal = "",
         browsable = false,
@@ -1722,7 +1722,7 @@ function editorJSONToHtml(id, data, descs, i18n) {
     
     var origName = name.split("vrtx")[1];
     if(origName) {
-      var origVal = data[origName.toLowerCase()];
+      var origVal = session[origName.toLowerCase()];
       if(origVal && origVal != "") {
         if(!val || !val.length) {
           val = origVal;
@@ -1790,7 +1790,7 @@ function editorJSONToHtml(id, data, descs, i18n) {
   return { html: html, multiples: multiples, rtEditors: rtEditors };
 }
 
-function editorHtmlToJSON(domSessionElms, descs, rawOrig, rawPtr) {
+function editorHtmlToJSON(sessionElms, descs, rawOrig, rawPtr) {
   var vrtxEdit = vrtxEditor;
   var editorDetectChangeFunc = editorDetectChange;
   for(var name in descs) {
@@ -1798,9 +1798,9 @@ function editorHtmlToJSON(domSessionElms, descs, rawOrig, rawPtr) {
         val = "";
     // XXX: support multiple CK-fields starting with same name
     if(descs[name].type === "html") {
-      var elm = domSessionElms.find("textarea[name^='" + name + "']");
+      var elm = sessionElms.find("textarea[name^='" + name + "']");
     } else {
-      var elm = domSessionElms.find("input[name='" + name + "']");
+      var elm = sessionElms.find("input[name='" + name + "']");
     }
     if(!elm.length) continue; // This should not happen
 

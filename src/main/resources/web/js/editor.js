@@ -1770,7 +1770,7 @@ function editorJSONToHtml(id, session, descs, i18n) {
           for(var j = 0, propsLen = val.length; j < propsLen; j++) {
             propsVal += "<a href='" + val[j].url + "'>" + val[j].title + "</a>";
           }
-          html += "<div class='vrtx-string'>" + i18n[name] + "<div class='vrtx-shared-text'><div class='shared-text-description'>" + propsVal + "</div></div></div>";
+          html += "<div class='vrtx-simple-html'>" + i18n[name] + "<div class='preview-html'>" + propsVal + "</div></div>";
         }
         break;
       case "html":

@@ -1143,7 +1143,7 @@ function courseSchedule() {
   }
   url += "?action=course-schedule&mode=edit&t=" + (+new Date());
   // Debug: Local development
-  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   // Hide shortcut for saving working copy
   $("#vrtx-save-as-working-copy-shortcut, #saveWorkingCopyAction, #buttons-or-text").hide();
@@ -1483,26 +1483,9 @@ function courseSchedule() {
     var rawPtr = sessionLookup.rawPtr;
     var descsPtr = sessionLookup.descsPtr;
     
-    var editorDOMFieldToValFunc = editorDOMFieldToVal;
-    var editorDetectChangeFunc = editorDetectChange;
-    
-    for(var name in descsPtr) {
-      // XXX: support multiple CK-fields starting with same name
-      if(descsPtr[name].type === "html") {
-        var domSessionPropElm = domSessionElms.find("textarea[name^='" + name + "']");
-      } else {
-        var domSessionPropElm = domSessionElms.find("input[name='" + name + "']");
-      }
-      if(!domSessionPropElm.length) continue; // This should not happen
+    editorHtmlToJSON(domSessionElms, descsPtr, rawOrig, rawPtr);
 
-      var val = editorDOMFieldToValFunc(descsPtr[name], domSessionPropElm);
-      if(val && val.length && editorDetectChangeFunc(val, rawOrig[name.split("vrtx")[1].toLowerCase()])) {
-        rawPtr[name] = val;
-      } else {
-        delete rawPtr[name];
-      }
-    }
-    sessionLookup.hasChanges = editorDetectChangeFunc(rawPtr, rawOrig);
+    sessionLookup.hasChanges = editorDetectChange(rawPtr, rawOrig);
   };
   this.saved = function() {
     for(var type in this.sessionsLookup) {
@@ -1722,35 +1705,6 @@ function courseSchedule() {
   });
 }
 
-function editorDetectChange(o1, o2) {
-  if(typeof o1 === "object" && typeof o2 === "object") {
-    if(o1.length) { // Array
-      if(o1.length !== o2.length) return true;
-      for(var i = 0, len = o1.length; i < len; i++) {
-        if(editorDetectChange(o1[i], o2[i])) return true;
-      }
-    } else {
-      var propCount2 = 0;
-      for(prop2 in o2) {
-        propCount2++;
-      }
-      var propCount1 = 0;
-      for(prop1 in o1) {
-        if(editorDetectChange(o1[prop1], o2[prop1])) return true;
-        propCount1++;
-      }
-      if(propCount1 !== propCount2) return true;
-    }
-  } else if(typeof o1 === "string" && typeof o2 === "string") {
-    if(o1 !== o2) return true;
-  } else if(typeof o1 === "number" && typeof o2 === "number") {
-    if(o1 !== o2) return true;
-  } else if(typeof o1 !== typeof o2) {
-    return true;
-  }
-  return false;
-}
-
 function editorJSONToHtml(id, data, descs, i18n) {
   var html = "";
   var multiples = [];
@@ -1836,40 +1790,86 @@ function editorJSONToHtml(id, data, descs, i18n) {
   return { html: html, multiples: multiples, rtEditors: rtEditors };
 }
 
-function editorDOMFieldToVal(desc, elm) {
-  var val = "";
-  if(desc.type === "checkbox") {
-    if(elm[0].checked) {
-      val = "cancelled"; // TODO: Not very general
+function editorHtmlToJSON(domSessionElms, descs, rawOrig, rawPtr) {
+  var vrtxEdit = vrtxEditor;
+  var editorDetectChangeFunc = editorDetectChange;
+  for(var name in descs) {
+    var desc = descs[name],
+        val = "";
+    // XXX: support multiple CK-fields starting with same name
+    if(descs[name].type === "html") {
+      var elm = domSessionElms.find("textarea[name^='" + name + "']");
+    } else {
+      var elm = domSessionElms.find("input[name='" + name + "']");
     }
-  } else if(desc.type === "html") {
-    val = vrtxEditor.richtextEditorFacade.getInstanceValue(elm.attr("name"));
-  } else {
-    val = elm.val(); // To string (string)
-    if(desc.multiple && val.length) { // To array (multiple)
-      val = val.split("$$$");
-    }
-    if(desc.type === "json" && val.length) { // Object props into array (JSON multiple)
-      var arrProps = [];
-      for(var i = 0, arrLen = val.length; i < arrLen; i++) {
-        var newProp = null;
-        var prop = val[i].split("###");
-        for(var j = 0, descPropsLen = desc.props.length; j < descPropsLen; j++) { // Definition
-          if(prop[j] !== "") {
-            if(!newProp) {
-              newProp = {};
+    if(!elm.length) continue; // This should not happen
+
+    if(desc.type === "checkbox") {
+      if(elm[0].checked) {
+        val = "cancelled"; // TODO: Not very general
+      }
+    } else if(desc.type === "html") {
+      val = vrtxEdit.richtextEditorFacade.getInstanceValue(elm.attr("name"));
+    } else {
+      val = elm.val(); // To string (string)
+      if(desc.multiple && val.length) { // To array (multiple)
+        val = val.split("$$$");
+      }
+      if(desc.type === "json" && val.length) { // Object props into array (JSON multiple)
+        var arrProps = [];
+        for(var i = 0, arrLen = val.length; i < arrLen; i++) {
+          var newProp = null;
+          var prop = val[i].split("###");
+          for(var j = 0, descPropsLen = desc.props.length; j < descPropsLen; j++) { // Definition
+            if(prop[j] !== "") {
+              if(!newProp) {
+                newProp = {};
+              }
+              newProp[desc.props[j].name] = prop[j];
             }
-            newProp[desc.props[j].name] = prop[j];
+          }
+          if(newProp) {
+            arrProps.push(newProp);
           }
         }
-        if(newProp) {
-          arrProps.push(newProp);
-        }
+        val = arrProps;
       }
-      val = arrProps;
+    }
+    if(val && val.length && editorDetectChangeFunc(val, rawOrig[name.split("vrtx")[1].toLowerCase()])) {
+      rawPtr[name] = val;
+    } else {
+      delete rawPtr[name];
     }
   }
-  return val;
+}
+
+function editorDetectChange(o1, o2) {
+  if(typeof o1 === "object" && typeof o2 === "object") {
+    if(o1.length) { // Array
+      if(o1.length !== o2.length) return true;
+      for(var i = 0, len = o1.length; i < len; i++) {
+        if(editorDetectChange(o1[i], o2[i])) return true;
+      }
+    } else {
+      var propCount2 = 0;
+      for(prop2 in o2) {
+        propCount2++;
+      }
+      var propCount1 = 0;
+      for(prop1 in o1) {
+        if(editorDetectChange(o1[prop1], o2[prop1])) return true;
+        propCount1++;
+      }
+      if(propCount1 !== propCount2) return true;
+    }
+  } else if(typeof o1 === "string" && typeof o2 === "string") {
+    if(o1 !== o2) return true;
+  } else if(typeof o1 === "number" && typeof o2 === "number") {
+    if(o1 !== o2) return true;
+  } else if(typeof o1 !== typeof o2) {
+    return true;
+  }
+  return false;
 }
    
 

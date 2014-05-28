@@ -409,7 +409,7 @@ function scheduleUtils() {
     return html;
   };
   this.splitThirds = function(arr, title) {
-    var html = "<span class='display-as-h3'>" + title + "</p>",
+    var html = "<span class='display-as-h3'>" + title + "</span>",
         len = arr.length,
         split1 = Math.ceil(len / 3),
         split2 = split1 + Math.ceil((len - split1) / 2);

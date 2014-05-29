@@ -1,12 +1,6 @@
 /*
  * Course schedule
  *
- *
- * Performance credits:
- * http://stackoverflow.com/questions/5080028/what-is-the-most-efficient-way-to-concatenate-n-arrays-in-javascript
- * http://blog.rodneyrehm.de/archives/14-Sorting-Were-Doing-It-Wrong.html
- * (http://en.wikipedia.org/wiki/Schwartzian_transform)
- * http://jsperf.com/math-ceil-vs-bitwise/10
  */
 
 var scheduleDeferred = $.Deferred();

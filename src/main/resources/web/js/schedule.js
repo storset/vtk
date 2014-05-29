@@ -438,9 +438,19 @@ function generateHTMLForType(d) {
       scheduleI18n = dta.i18n,
       canEdit = dta.canEdit,
       skipTier = type === "plenary",
-      startGenHtmlForTypeTime = new Date(),
-      utils = new scheduleUtils(),
-      lastDtShort = "",
+      startGenHtmlForTypeTime = new Date();
+      
+  var utils = new scheduleUtils(),
+      getStaff = utils.getStaff,
+      getResources = utils.getResources,
+      getStaff = utils.getStaff,
+      getDateTime = utils.getDateTime,
+      getDateFormatted = utils.getDateFormatted,
+      getEndDateDayFormatted = utils.getEndDateDayFormatted,
+      getTimeFormatted = utils.getTimeFormatted,
+      getPostFixId = utils.getPostFixId;
+      
+  var lastDtShort = "",
       forCode = "for",
       sequences = {}, // For fixed resources
       tocTimeMax = 3,
@@ -489,18 +499,19 @@ function generateHTMLForType(d) {
     }
 
     if(!isFor || (isFor && (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== forCode))) {
-      
+
       var map = [], results = [];
-      // Evaluate
-      for(var j = 0, len = sessions.length; j < len; j++) {
+      // Evaluate and store dateTime
+      for(j = 0, len = sessions.length; j < len; j++) {
         var session = sessions[j];
-        var dateTimeA = utils.getDateTime(session.dtStart, session.dtEnd);
+        var dateTimeA = getDateTime(session.dtStart, session.dtEnd);
         var startA = dateTimeA.start;
         var endA = dateTimeA.end;
         var a = startA.year + "" + startA.month + "" + startA.date + "" + startA.hh + "" + startA.mm + "" + endA.hh + "" + endA.mm;
         map.push({
-          index: j, // Remember the index within the original array
-          value: a // Evaluate the element
+          "index": j, // Save index
+          "value": a,
+          "dateTime": dateTimeA
         });
       }
       // Sort
@@ -508,12 +519,14 @@ function generateHTMLForType(d) {
         return a.value > b.value ? 1 : -1;
       });
       // Preprocess and apply sorting
-      for(var j = 0, len = map.length; j < len; j++) {
+      // Because need to check if any staff or resources in a table (otherwise could use this loop for the HTML-generating)
+      for(j = 0, len = map.length; j < len; j++) {
         var session = sessions[map[j].index];
         var sequenceId = session.id.replace(/\/[^\/]*$/, "");
         sessionsPreprocessed[j] = {
-          "staff": utils.getStaff(session),
-          "resources": utils.getResources(session, (sequences[sequenceId] || null))
+          "staff": getStaff(session),
+          "resources": getResources(session, (sequences[sequenceId] || null)),
+          "dateTime": map[j].dateTime
         };
         if(sessionsPreprocessed[j].staff)         staffCount++;
         if(sessionsPreprocessed[j].resources)     resourcesCount++;
@@ -524,14 +537,14 @@ function generateHTMLForType(d) {
       for(j = 0, len = results.length; j < len; j++) {
         session = results[j];
         
-        var dateTime = utils.getDateTime(session.dtStart, session.dtEnd);
-        var date = utils.getDateFormatted(dateTime.start, dateTime.end, scheduleI18n);
-        var endDateDay = utils.getEndDateDayFormatted(dateTime.start, dateTime.end, scheduleI18n);
+        var dateTime = sessionsPreprocessed[j].dateTime;
+        var date = getDateFormatted(dateTime.start, dateTime.end, scheduleI18n);
+        var endDateDay = getEndDateDayFormatted(dateTime.start, dateTime.end, scheduleI18n);
         var endDate = endDateDay.endDate;
         var day = endDateDay.day;
-        var time = utils.getTimeFormatted(dateTime.start, dateTime.end);
+        var time = getTimeFormatted(dateTime.start, dateTime.end);
         
-        var sessionId = (skipTier ? type : dtShort + "-" + id) + "-" + session.id.replace(/\//g, "-") + "-" + utils.getPostFixId(dateTime.start, dateTime.end);
+        var sessionId = (skipTier ? type : dtShort + "-" + id) + "-" + session.id.replace(/\//g, "-") + "-" + getPostFixId(dateTime.start, dateTime.end);
         var isCancelled = (session.status && session.status === "cancelled") ||
                           (session.vrtxStatus && session.vrtxStatus === "cancelled");
 
@@ -558,7 +571,7 @@ function generateHTMLForType(d) {
         sessionsHtml += "</tr>";
       
         if(tocTimeCount < tocTimeMax) {
-          var newTocTime = day.toLowerCase().substring(0,3) + " " + time ;
+          var newTocTime = day.toLowerCase().substring(0,3) + " " + time;
           if(tocTime.indexOf(newTocTime) === -1) {
             if(tocTimeCount > 0) {
               tocTime += ", ";

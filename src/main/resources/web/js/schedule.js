@@ -1,6 +1,11 @@
 /*
  * Course schedule
  *
+ *
+ * Performance credits:
+ * http://stackoverflow.com/questions/5080028/what-is-the-most-efficient-way-to-concatenate-n-arrays-in-javascript
+ * http://blog.rodneyrehm.de/archives/14-Sorting-Were-Doing-It-Wrong.html
+ * (http://en.wikipedia.org/wiki/Schwartzian_transform)
  */
 
 var scheduleDeferred = $.Deferred();
@@ -31,7 +36,7 @@ function initSchedule() {
   }
   url += "?action=course-schedule";
   // Debug: Local development
-  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   // GET JSON
   $.ajax({
@@ -230,9 +235,8 @@ function finishedThreadGenerateHTMLForType(data, htmlRef, threadRef) {
 }
 
 function scheduleUtils() {
-  var self = this;
-
   /** Private */
+  var self = this,
   parseDate = function(dateString) {
     var m = /^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2})(?::([0-9]*)(\.[0-9]*)?)?(?:([+-])([0-9]{2}):([0-9]{2}))?/.exec(dateString);
     return { year: m[1], month: m[2], date: m[3], hh: m[4], mm: m[5], tzpm: m[8], tzhh: m[9], tzmm: m[10] };
@@ -362,14 +366,14 @@ function scheduleUtils() {
     var staff = session.vrtxStaff || session.staff || [];
     var externalStaff = session.vrtxStaffExternal;
     if(externalStaff && externalStaff.length) {
-      staff = staff.concat(externalStaff);
+      staff.push.apply(staff, externalStaff);
     }
     return jsonArrayToHtmlList(staff);
   };
   this.getResources = function(session, fixedResources) {
-    var resources = session.vrtxResources || []
+    var resources = session.vrtxResources || [];
     if(fixedResources && fixedResources.length) {
-      resources = resources.concat(fixedResources);
+      resources.push.apply(resources, fixedResources);
     }
     var val = jsonArrayToHtmlList(resources);
     var resourcesText = session.vrtxResourcesText;
@@ -466,7 +470,7 @@ function generateHTMLForType(d) {
       if(skipTier) {
         var caption = dtLong;
       } else {
-        groupCount = id.split("-")[1];
+        var groupCount = id.split("-")[1];
         var caption = dtLong + " - " + scheduleI18n.groupTitle.toLowerCase() + " " + groupCount;
       }
       var tocTime = "";
@@ -481,28 +485,31 @@ function generateHTMLForType(d) {
         sequences[sequence.id] = fixedResources;
         resourcesCount++;
       }
-      sessions = sessions.concat(sequence.sessions);
+      sessions.push.apply(sessions, sequence.sessions);
     }
 
     if(!isFor || (isFor && (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== forCode))) {
-      // Sort sessions
-      sessions.sort(function(a,b) { // XXX: avoid parsing datetime for sessions twice
-        var dateTimeA = utils.getDateTime(a.dtStart, a.dtEnd);
+      
+      var map = [], results = [];
+      // Evaluate
+      for(var j = 0, len = sessions.length; j < len; j++) {
+        var session = sessions[j];
+        var dateTimeA = utils.getDateTime(session.dtStart, session.dtEnd);
         var startA = dateTimeA.start;
         var endA = dateTimeA.end;
         var a = startA.year + "" + startA.month + "" + startA.date + "" + startA.hh + "" + startA.mm + "" + endA.hh + "" + endA.mm;
-        
-        var dateTimeB = utils.getDateTime(b.dtStart, b.dtEnd);
-        var startB = dateTimeB.start;
-        var endB = dateTimeB.end;
-        var b = startB.year + "" + startB.month + "" + startB.date + "" + startB.hh + "" + startB.mm + "" + endB.hh + "" + endB.mm;
-        
-        return parseInt(a, 10) - parseInt(b, 10);
+        map.push({
+          index: j, // Remember the index within the original array
+          value: a // Evaluate the element
+        });
+      }
+      // Sort
+      map.sort(function(a, b) {
+        return a.value > b.value ? 1 : -1;
       });
-      
-      // Preprocess sessions and store what has been checked
-      for(j = 0, len = sessions.length; j < len; j++) {
-        var session = sessions[j];
+      // Preprocess and apply sorting
+      for(var j = 0, len = map.length; j < len; j++) {
+        var session = sessions[map[j].index];
         var sequenceId = session.id.replace(/\/[^\/]*$/, "");
         sessionsPreprocessed[j] = {
           "staff": utils.getStaff(session),
@@ -510,11 +517,12 @@ function generateHTMLForType(d) {
         };
         if(sessionsPreprocessed[j].staff)         staffCount++;
         if(sessionsPreprocessed[j].resources)     resourcesCount++;
+        results.push(session);
       }
-      
+
       // Generate sessions HTML
-      for(j = 0, len = sessions.length; j < len; j++) {
-        session = sessions[j];
+      for(j = 0, len = results.length; j < len; j++) {
+        session = results[j];
         
         var dateTime = utils.getDateTime(session.dtStart, session.dtEnd);
         var date = utils.getDateFormatted(dateTime.start, dateTime.end, scheduleI18n);

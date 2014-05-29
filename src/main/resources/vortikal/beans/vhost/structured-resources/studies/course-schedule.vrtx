@@ -73,6 +73,7 @@ resourcetype course-schedule {
           };
         // -->
         </script>
+        <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/schedule-worker.js"></script>
         <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/schedule.js"></script>
         <script type="text/javascript"><!--
           initSchedule();

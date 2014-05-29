@@ -440,16 +440,22 @@ function generateHTMLForType(d) {
       skipTier = type === "plenary",
       startGenHtmlForTypeTime = new Date();
       
-  var utils = new scheduleUtils(),
-      getStaff = utils.getStaff,
-      getResources = utils.getResources,
-      getStaff = utils.getStaff,
+  var utils = new scheduleUtils(), // Cache
+      nowDate = utils.nowDate,
       getDateTime = utils.getDateTime,
       getDateFormatted = utils.getDateFormatted,
       getEndDateDayFormatted = utils.getEndDateDayFormatted,
       getTimeFormatted = utils.getTimeFormatted,
-      getPostFixId = utils.getPostFixId;
-      
+      getPostFixId = utils.getPostFixId,
+      getTitle = utils.getTitle,
+      getPlace = utils.getPlace,
+      getStaff = utils.getStaff,
+      getResources = utils.getResources,
+      getTableStartHtml = utils.getTableStartHtml,
+      getTableEndHtml = utils.getTableEndHtml,
+      splitThirds = utils.splitThirds,
+      editLink = utils.editLink;
+
   var lastDtShort = "",
       forCode = "for",
       sequences = {}, // For fixed resources
@@ -553,7 +559,7 @@ function generateHTMLForType(d) {
           if(classes !== "") classes += " ";
           classes += "cancelled";
         }
-        if(endDate <= utils.nowDate) {
+        if(endDate <= nowDate) {
           if(classes !== "") classes += " ";
           classes += "passed";
           passedCount++;
@@ -564,10 +570,10 @@ function generateHTMLForType(d) {
           sessionsHtml += "<td class='course-schedule-table-date'>" + date + "</td>";
           sessionsHtml += "<td class='course-schedule-table-day'>" + day + "</td>";
           sessionsHtml += "<td class='course-schedule-table-time'>" + time + "</td>";
-          sessionsHtml += "<td class='course-schedule-table-title'>" + utils.getTitle(session, isCancelled, scheduleI18n) + "</td>";
+          sessionsHtml += "<td class='course-schedule-table-title'>" + getTitle(session, isCancelled, scheduleI18n) + "</td>";
           if(resourcesCount) sessionsHtml += "<td class='course-schedule-table-resources'>" + sessionsPreprocessed[j].resources + "</td>";
-          sessionsHtml += utils.editLink("course-schedule-table-place", utils.getPlace(session), !staffCount, canEdit, scheduleI18n);
-          if(staffCount)     sessionsHtml += utils.editLink("course-schedule-table-staff", sessionsPreprocessed[j].staff, staffCount, canEdit, scheduleI18n);
+          sessionsHtml += editLink("course-schedule-table-place", getPlace(session), !staffCount, canEdit, scheduleI18n);
+          if(staffCount)     sessionsHtml += editLink("course-schedule-table-staff", sessionsPreprocessed[j].staff, staffCount, canEdit, scheduleI18n);
         sessionsHtml += "</tr>";
       
         if(tocTimeCount < tocTimeMax) {
@@ -583,7 +589,7 @@ function generateHTMLForType(d) {
           }
         }
       }
-      tablesHtml += utils.getTableStartHtml(activityId, caption, (passedCount === sessionsCount), resourcesCount, staffCount, scheduleI18n) + sessionsHtml + utils.getTableEndHtml(passedCount === 0, scheduleI18n);
+      tablesHtml += getTableStartHtml(activityId, caption, (passedCount === sessionsCount), resourcesCount, staffCount, scheduleI18n) + sessionsHtml + getTableEndHtml(passedCount === 0, scheduleI18n);
       
       // Generate ToC
       tocTime = tocTime.replace(/,([^,]+)$/, " " + scheduleI18n.and + "$1");
@@ -592,7 +598,7 @@ function generateHTMLForType(d) {
       } else {
         tocHtmlArr.push("<li><span><a href='#" + activityId + "'>" + scheduleI18n.groupTitle + " " + groupCount + "</a> - " + tocTime + "</li>");
         if((dtShort !== lastDtShort && i > 0) || (i === (dataLen - 1))) {
-          tocHtml += utils.splitThirds(tocHtmlArr, dtLong);
+          tocHtml += splitThirds(tocHtmlArr, dtLong);
           tocHtmlArr = [];
         }
       }

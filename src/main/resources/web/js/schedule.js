@@ -6,6 +6,7 @@
  * http://stackoverflow.com/questions/5080028/what-is-the-most-efficient-way-to-concatenate-n-arrays-in-javascript
  * http://blog.rodneyrehm.de/archives/14-Sorting-Were-Doing-It-Wrong.html
  * (http://en.wikipedia.org/wiki/Schwartzian_transform)
+ * http://jsperf.com/math-ceil-vs-bitwise/10
  */
 
 var scheduleDeferred = $.Deferred();
@@ -105,9 +106,9 @@ function initSchedule() {
       if(html === "") {
         $("#activities").attr("aria-busy", "error").html(scheduleI18n.noData);
       } else {
-        $("#activities").attr("aria-busy", "false").html(/*"<p>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
+        $("#activities").attr("aria-busy", "false").html("<p>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
                             "ms) || (AJAX-complete: " + endAjaxTime + "ms + Threads invoking/serializing: " + (endMakingThreadsTime + htmlPlenary.parseRetrievedJSONTime + htmlGroup.parseRetrievedJSONTime) +
-                            "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))</p>" + */ html);
+                            "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))</p>" + html);
       }
       
       // Toggle passed sessions
@@ -318,6 +319,11 @@ function scheduleUtils() {
     }
     if(arrLen > 1) val += "</ul>";
     return val;
+  },
+  ceil = function(n) {
+    var f = (n << 0),
+    f = f == n ? f : f + 1;
+    return f;
   };
 
   /** Public */
@@ -404,8 +410,8 @@ function scheduleUtils() {
   this.splitThirds = function(arr, title) {
     var html = "<span class='display-as-h3'>" + title + "</span>",
         len = arr.length,
-        split1 = Math.ceil(len / 3),
-        split2 = split1 + Math.ceil((len - split1) / 2);
+        split1 = ceil(len / 3),
+        split2 = split1 + ceil((len - split1) / 2);
     html += "<div class='course-schedule-toc-thirds'><ul class='thirds-left'>";
     for(var i = 0; i < len; i++) {
       if(i === split1) html += "</ul><ul class='thirds-middle'>";

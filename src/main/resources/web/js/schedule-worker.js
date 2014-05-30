@@ -330,8 +330,9 @@ function generateHTMLForType(d) {
       });
       // Generate sessions HTML (get correctly sorted from map)
       for(j = 0, len = map.length; j < len; j++) {
-        var sessionPreprocessed = map[j];
-        var session = sessions[sessionPreprocessed.index];
+        var idx = map[j].index;
+        var session = sessions[idx];
+        var sessionPreprocessed = map[idx];
         
         var dateTime = sessionPreprocessed.dateTime;
         var date = getDateFormatted(dateTime.start, dateTime.end, scheduleI18n);

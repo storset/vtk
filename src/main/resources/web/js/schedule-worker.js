@@ -312,10 +312,10 @@ function generateHTMLForType(d) {
         var endA = dateTimeA.end;
         var a = startA.year + "" + startA.month + "" + startA.date + "" + startA.hh + "" + startA.mm + "" + endA.hh + "" + endA.mm;
         var staff = getStaff(session);
-        if(staff) staffCount++;
+        if(staff.length) staffCount++;
         var sequenceId = session.id.replace(/\/[^\/]*$/, "");
         var resources = getResources(session, (sequences[sequenceId] || null));
-        if(resourcesCount) resourcesCount++;
+        if(resources.length) resourcesCount++;
         map.push({
           "index": j, // Save index
           "value": a,

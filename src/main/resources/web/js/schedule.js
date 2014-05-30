@@ -166,16 +166,17 @@ function popupEditWindow(w, h, url, name) {
 
 function refreshWhenRefocused(hasEditedKey) {
   var isVisible = false;
+  var visibilityEvent = "visibilitychange";
   var delayCheckVisibility = 450;
   var waitForVisibility = setTimeout(function() {
     if(document.addEventListener) {
       var detectVisibilityChange = function() {
         isVisible = !document.hidden;
         if(isVisible && document.removeEventListener) {
-          document.removeEventListener("visibilitychange", detectVisibilityChange);
+          document.removeEventListener(visibilityEvent, detectVisibilityChange);
         }
       }
-      document.addEventListener("visibilitychange", detectVisibilityChange, false);
+      document.addEventListener(visibilityEvent, detectVisibilityChange, false);
     }
   }, delayCheckVisibility);
   var waitForClose = setTimeout(function() {

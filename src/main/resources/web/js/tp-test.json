@@ -135,7 +135,13 @@
             "buildingAcronym": "GS",
             "roomId": "1501",
             "roomName": "Auditorium 1"
-          }]
+          }],
+          "vrtxStaffExternal": [
+            { "name": "Ivar Ivarsen", "url": "http://www.vg.no/" }
+          ],
+          "vrtxResources": [
+            { "title": "Test3", "url": "http://www.vg.no/" }
+          ]
         }, {
           "id": "14H-EXPHIL03-1-1-1-2-1/37",
           "dtStart": "2014-09-08T12:15:00.000+02:00",

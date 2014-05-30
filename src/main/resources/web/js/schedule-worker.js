@@ -8,9 +8,11 @@
  * http://jsperf.com/math-ceil-vs-bitwise/10
  */
 
-this.onmessage = function(e) {
-  postMessage(generateHTMLForType(e.data));
-};
+if(typeof alert === "undefined") { // Listen for messages only in Worker
+  this.onmessage = function(e) {
+    postMessage(generateHTMLForType(e.data));
+  };
+}
 
 function scheduleUtils() {
   /** Private */
@@ -325,6 +327,8 @@ function generateHTMLForType(d) {
         var endDate = endDateDay.endDate;
         var day = endDateDay.day;
         var time = getTimeFormatted(dateTime.start, dateTime.end);
+        var title = getTitle(session, isCancelled, scheduleI18n);
+        var place = getPlace(session);
         
         var sessionId = (skipTier ? type : dtShort + "-" + id) + "-" + session.id.replace(/\//g, "-") + "-" + getPostFixId(dateTime.start, dateTime.end);
         var isCancelled = (session.status && session.status === "cancelled") ||
@@ -346,9 +350,9 @@ function generateHTMLForType(d) {
           sessionsHtml += "<td class='course-schedule-table-date'>" + date + "</td>";
           sessionsHtml += "<td class='course-schedule-table-day'>" + day + "</td>";
           sessionsHtml += "<td class='course-schedule-table-time'>" + time + "</td>";
-          sessionsHtml += "<td class='course-schedule-table-title'>" + getTitle(session, isCancelled, scheduleI18n) + "</td>";
+          sessionsHtml += "<td class='course-schedule-table-title'>" + title + "</td>";
           if(resourcesCount) sessionsHtml += "<td class='course-schedule-table-resources'>" + sessionPreprocessed.resources + "</td>";
-          sessionsHtml += editLink("course-schedule-table-place", getPlace(session), !staffCount, canEdit, scheduleI18n);
+          sessionsHtml += editLink("course-schedule-table-place", place, !staffCount, canEdit, scheduleI18n);
           if(staffCount)     sessionsHtml += editLink("course-schedule-table-staff", sessionPreprocessed.staff, staffCount, canEdit, scheduleI18n);
         sessionsHtml += "</tr>";
       

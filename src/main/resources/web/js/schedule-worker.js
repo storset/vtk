@@ -289,44 +289,37 @@ function generateHTMLForType(d) {
 
     if(!isFor || (isFor && (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== forCode))) {
 
-      var map = [], results = [];
-      // Evaluate and store dateTime
+      // Evaluate and cache dateTime, staff and resources
+      var map = [];
       for(j = 0, len = sessions.length; j < len; j++) {
         var session = sessions[j];
         var dateTimeA = getDateTime(session.dtStart, session.dtEnd);
         var startA = dateTimeA.start;
         var endA = dateTimeA.end;
         var a = startA.year + "" + startA.month + "" + startA.date + "" + startA.hh + "" + startA.mm + "" + endA.hh + "" + endA.mm;
+        var sequenceId = session.id.replace(/\/[^\/]*$/, "");
+        var staff = getStaff(session);
+        if(staff.length) staffCount++;
+        var resources = getResources(session, (sequences[sequenceId] || null));
+        if(resourcesCount.length) resourcesCount++;
         map.push({
           "index": j, // Save index
           "value": a,
-          "dateTime": dateTimeA
+          "dateTime": dateTimeA,
+          "staff": staff,
+          "resources": resources
         });
       }
       // Sort
       map.sort(function(a, b) {
         return a.value > b.value ? 1 : -1;
       });
-      // Preprocess and apply sorting
-      // Because need to check if any staff or resources in a table (otherwise could use this loop for the HTML-generating)
+      // Generate sessions HTML (get correctly sorted from map)
       for(j = 0, len = map.length; j < len; j++) {
-        var session = sessions[map[j].index];
-        var sequenceId = session.id.replace(/\/[^\/]*$/, "");
-        sessionsPreprocessed[j] = {
-          "staff": getStaff(session),
-          "resources": getResources(session, (sequences[sequenceId] || null)),
-          "dateTime": map[j].dateTime
-        };
-        if(sessionsPreprocessed[j].staff)         staffCount++;
-        if(sessionsPreprocessed[j].resources)     resourcesCount++;
-        results.push(session);
-      }
-
-      // Generate sessions HTML
-      for(j = 0, len = results.length; j < len; j++) {
-        session = results[j];
+        var sessionPreprocessed = map[j];
+        var session = sessions[sessionPreprocessed.index];
         
-        var dateTime = sessionsPreprocessed[j].dateTime;
+        var dateTime = sessionPreprocessed.dateTime;
         var date = getDateFormatted(dateTime.start, dateTime.end, scheduleI18n);
         var endDateDay = getEndDateDayFormatted(dateTime.start, dateTime.end, scheduleI18n);
         var endDate = endDateDay.endDate;
@@ -354,9 +347,9 @@ function generateHTMLForType(d) {
           sessionsHtml += "<td class='course-schedule-table-day'>" + day + "</td>";
           sessionsHtml += "<td class='course-schedule-table-time'>" + time + "</td>";
           sessionsHtml += "<td class='course-schedule-table-title'>" + getTitle(session, isCancelled, scheduleI18n) + "</td>";
-          if(resourcesCount) sessionsHtml += "<td class='course-schedule-table-resources'>" + sessionsPreprocessed[j].resources + "</td>";
+          if(resourcesCount) sessionsHtml += "<td class='course-schedule-table-resources'>" + sessionPreprocessed.resources + "</td>";
           sessionsHtml += editLink("course-schedule-table-place", getPlace(session), !staffCount, canEdit, scheduleI18n);
-          if(staffCount)     sessionsHtml += editLink("course-schedule-table-staff", sessionsPreprocessed[j].staff, staffCount, canEdit, scheduleI18n);
+          if(staffCount)     sessionsHtml += editLink("course-schedule-table-staff", sessionPreprocessed.staff, staffCount, canEdit, scheduleI18n);
         sessionsHtml += "</tr>";
       
         if(tocTimeCount < tocTimeMax) {

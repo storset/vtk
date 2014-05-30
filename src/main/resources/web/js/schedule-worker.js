@@ -357,15 +357,15 @@ function generateHTMLForType(d) {
           passedCount++;
         }
         sessionsCount++;
-        
+
         sessionsHtml += classes !== "" ? "<tr tabindex='0' id='" + sessionId + "' class='" + classes + "'>" : "<tr>";
-          sessionsHtml += "<td class='course-schedule-table-date'>" + date + "</td>";
-          sessionsHtml += "<td class='course-schedule-table-day'>" + day + "</td>";
-          sessionsHtml += "<td class='course-schedule-table-time'>" + time + "</td>";
-          sessionsHtml += "<td class='course-schedule-table-title'>" + title + "</td>";
-          if(resourcesCount) sessionsHtml += "<td class='course-schedule-table-resources'>" + sessionPreprocessed.resources + "</td>";
-          sessionsHtml += editLink("course-schedule-table-place", place, !staffCount, canEdit, scheduleI18n);
-          if(staffCount)     sessionsHtml += editLink("course-schedule-table-staff", sessionPreprocessed.staff, staffCount, canEdit, scheduleI18n);
+          sessionsHtml += "<td class='course-schedule-table-date'><span class='responsive-header'>" + scheduleI18n.tableDate + "</span>" + date + "</td>";
+          sessionsHtml += "<td class='course-schedule-table-day'><span class='responsive-header'>" + scheduleI18n.tableDay + "</span>" + day + "</td>";
+          sessionsHtml += "<td class='course-schedule-table-time'><span class='responsive-header'>" + scheduleI18n.tableTime + "</span>" + time + "</td>";
+          sessionsHtml += "<td class='course-schedule-table-title'><span class='responsive-header'>" + scheduleI18n.tableTitle + "</span>" + title + "</td>";
+          if(resourcesCount) sessionsHtml += "<td class='course-schedule-table-resources'><span class='responsive-header'>" + scheduleI18n.tableResources + "</span>" + sessionPreprocessed.resources + "</td>";
+          sessionsHtml += editLink("course-schedule-table-place", "<span class='responsive-header'>" + scheduleI18n.tablePlace + "</span>" + place, !staffCount, canEdit, scheduleI18n);
+          if(staffCount)     sessionsHtml += editLink("course-schedule-table-staff", "<span class='responsive-header'>" + scheduleI18n.tableStaff + "</span>" + sessionPreprocessed.staff, staffCount, canEdit, scheduleI18n);
         sessionsHtml += "</tr>";
       
         if(tocTimeCount < tocTimeMax) {

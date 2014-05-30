@@ -58,17 +58,29 @@ function scheduleUtils() {
   linkAbbr = function(url, title, text) {
     var val = "";
     if(url && title) {
-      val += "<a title='" + title + "' href='" + url + "'>";
+      val += "<a class='place-short' title='" + title + "' href='" + url + "'>";
     } else if(url) {
-      val += "<a href='" + url + "'>";
+      val += "<a class='place-short' href='" + url + "'>";
     } else if(title) {
-      val += "<abbr title='" + title + "'>";
+      val += "<abbr class='place-short' title='" + title + "'>";
     }
     val += text;
     if(url) {
       val += "</a>";
     } else if(title) {
       val += "</abbr>";
+    }
+    // Responsive view
+    if(url) {
+      val += "<a class='place-long' href='" + url + "'>";
+    } else {
+      val += "<span class='place-long'>";
+    }
+    val += (title || text);
+    if(url) {
+      val += "</a>";
+    } else {
+      val += "</span>";
     }
     return val;
   },

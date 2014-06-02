@@ -58,6 +58,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.Principal.Type;
 import org.vortikal.security.PrincipalFactory;
+import org.vortikal.security.PrincipalImpl;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.roles.RoleManager;
 import org.vortikal.util.repository.DocumentPrincipalMetadataRetriever;
@@ -160,24 +161,19 @@ public class ACLEditController extends SimpleFormController implements Initializ
                 .listPrivilegedGroups(this.privilege)));
 
         Principal[] privilegedPrincipals = acl.listPrivilegedUsers(this.privilege);
-        Set<Principal> principalDocuments = null;
-        if (this.documentPrincipalMetadataRetriever.isDocumentSearchConfigured()) {
-            principalDocuments = this.documentPrincipalMetadataRetriever.getPrincipalDocuments(
-                    Arrays.asList(privilegedPrincipals), preferredLocale);
-        }
 
-        List<Principal> authorizedUsers = new ArrayList<Principal>();
-        if (principalDocuments != null && principalDocuments.size() > 0) {
-            authorizedUsers.addAll(principalDocuments);
+        if (documentPrincipalMetadataRetriever.isDocumentSearchConfigured()) {
+            Set<Principal> principalDocuments = documentPrincipalMetadataRetriever.getPrincipalDocuments(
+                    Arrays.asList(privilegedPrincipals), preferredLocale);
             for (Principal p : privilegedPrincipals) {
-                if (!authorizedUsers.contains(p)) {
-                    authorizedUsers.add(p);
+                Principal pd = getPrincipalDoc(p, principalDocuments);
+                if (pd != null) {
+                    ((PrincipalImpl) p).setURL(pd.getURL());
                 }
             }
-        } else {
-            authorizedUsers.addAll(Arrays.asList(privilegedPrincipals));
         }
 
+        List<Principal> authorizedUsers = new ArrayList<Principal>(Arrays.asList(privilegedPrincipals));
         Collections.sort(authorizedUsers, Principal.PRINCIPAL_NAME_COMPARATOR);
         authorizedUsers.addAll(Arrays.asList(acl.listPrivilegedPseudoPrincipals(this.privilege)));
 
@@ -459,22 +455,35 @@ public class ACLEditController extends SimpleFormController implements Initializ
         }
 
         for (String value : values) {
-            Principal principal = null;
-            if (type == Type.USER && principalDocuments != null) {
+
+            Principal principal = principalFactory.getPrincipal(value,
+                    ACLEditValidationHelper.typePseudoUser(type, value));
+
+            if (principal != null && type == Type.USER && principalDocuments != null) {
                 for (Principal pd : principalDocuments) {
-                    if (value.equals(pd.getName())) {
-                        principal = pd;
+                    if (principal.equals(pd)) {
+                        ((PrincipalImpl) principal).setURL(pd.getURL());
                     }
                 }
             }
-            if (principal == null) {
-                principal = principalFactory.getPrincipal(value, ACLEditValidationHelper.typePseudoUser(type, value));
-            }
+
             if (!acl.hasPrivilege(this.privilege, principal)) {
                 acl = acl.addEntry(this.privilege, principal);
             }
         }
         return acl;
+    }
+
+
+    private Principal getPrincipalDoc(Principal p, Set<Principal> principalDocuments) {
+        if (principalDocuments != null) {
+            for (Principal pd : principalDocuments) {
+                if (pd.equals(p)) {
+                    return pd;
+                }
+            }
+        }
+        return null;
     }
 
     @Required
@@ -519,8 +528,8 @@ public class ACLEditController extends SimpleFormController implements Initializ
     }
 
     @Required
-	public void setRepository(Repository repository) {
-		this.repository = repository;
-	}
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
 
 }

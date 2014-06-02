@@ -50,6 +50,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalImpl;
 import org.vortikal.util.repository.DocumentPrincipalMetadataRetriever;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
@@ -130,7 +131,8 @@ public class ACLProvider implements ReferenceDataProvider {
                 String url = this.aclInheritanceService.constructLink(resource, requestContext.getPrincipal());
                 editURLs.put("inheritance", url);
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
 
         Map<String, Privilege> privileges = new HashMap<String, Privilege>();
         Map<String, Principal[]> privilegedUsers = new HashMap<String, Principal[]>();
@@ -192,27 +194,23 @@ public class ACLProvider implements ReferenceDataProvider {
 
             privilegedGroups.put(actionName, groupPrincipals);
 
-            // Search for potential person documents relating to any of the user
-            // principals
-            Locale preferredLocale = this.localeResolver.resolveLocale(request);
-            Set<Principal> principalDocuments = null;
+            // Add document urls to principals where available
             if (this.documentPrincipalMetadataRetriever.isDocumentSearchConfigured()) {
-                principalDocuments = this.documentPrincipalMetadataRetriever.getPrincipalDocuments(
+                Locale preferredLocale = this.localeResolver.resolveLocale(request);
+                Set<Principal> principalDocuments = this.documentPrincipalMetadataRetriever.getPrincipalDocuments(
                         Arrays.asList(userPrincipals), preferredLocale);
-            }
-
-            List<Principal> principals = new ArrayList<Principal>();
-            if (principalDocuments != null && principalDocuments.size() > 0) {
-                principals.addAll(principalDocuments);
-                for (Principal p : userPrincipals) {
-                    if (!principals.contains(p)) {
-                        principals.add(p);
+                if (principalDocuments != null) {
+                    for (Principal p : userPrincipals) {
+                        for (Principal pd : principalDocuments) {
+                            if (pd.equals(p)) {
+                                ((PrincipalImpl) p).setURL(pd.getURL());
+                            }
+                        }
                     }
                 }
-            } else {
-                principals.addAll(Arrays.asList(userPrincipals));
             }
 
+            List<Principal> principals = Arrays.asList(userPrincipals);
             Collections.sort(principals, Principal.PRINCIPAL_NAME_COMPARATOR);
 
             Principal[] userPrincipalsWithDocs = new Principal[principals.size()];

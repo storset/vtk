@@ -140,7 +140,7 @@ function initSchedule() {
           if(/\/$/.test(editUrl)) {
             editUrl += "index.html";
           }
-          var openedEditWindow = popupEditWindow(850, 680, editUrl + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + row[0].id, "editActivity");
+          var openedEditWindow = popupEditWindow(820, 680, editUrl + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + row[0].id, "editActivity");
           refreshWhenRefocused(hasEditedKey);
           e.stopPropagation();
           e.preventDefault();

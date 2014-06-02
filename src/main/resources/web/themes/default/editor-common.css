@@ -141,14 +141,14 @@ h2 {
   padding-right: 10px;
 }
 
-.vrtx-multipleinputfield .vrtx-button.add,
+.vrtx-multipleinputfields .vrtx-button.add,
 .vrtx-json .vrtx-add-button {
   padding-left: 10px;
   padding-right: 10px;
 }
 
-.vrtx-multipleinputfield .vrtx-button.add:hover,
-.vrtx-multipleinputfield .vrtx-button.add:focus,
+.vrtx-multipleinputfields .vrtx-button.add:hover,
+.vrtx-multipleinputfields .vrtx-button.add:focus,
 .vrtx-json .vrtx-add-button:hover,
 .vrtx-json .vrtx-add-button:focus {
   padding-left: 11px;

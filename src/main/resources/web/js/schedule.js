@@ -16,6 +16,7 @@ $(document).ready(function() {
 function initSchedule() {
   var retrievedScheduleDeferred = $.Deferred();
   var retrievedScheduleData = null;
+  var activitiesElm = null;
   var endAjaxTime = 0;
   
   // Don't cache if has returned from editing a session
@@ -49,6 +50,7 @@ function initSchedule() {
   });
   
   $.when(scheduleDocumentReady).done(function() {
+    activitiesElm = $("#activities");
     $("#disabled-js").hide();
     loadingUpdate(scheduleI18n.loadingRetrievingData);
   });
@@ -56,7 +58,7 @@ function initSchedule() {
   $.when(retrievedScheduleDeferred).done(function() {
     if(retrievedScheduleData == null) {
       $.when(scheduleDocumentReady).done(function() {
-        $("#activities").attr("aria-busy", "error").html("<p>" + scheduleI18n.noData + "</p>");
+        activitiesElm.attr("aria-busy", "error").html("<p>" + scheduleI18n.noData + "</p>");
       });
       scheduleDeferred.resolve();
       return;
@@ -98,12 +100,18 @@ function initSchedule() {
     
     $.when(thread1Finished, thread2Finished, scheduleDocumentReady).done(function() {
       var html = htmlPlenary.tocHtml + htmlGroup.tocHtml + htmlPlenary.tablesHtml + htmlGroup.tablesHtml;
+      
       if(html === "") {
-        $("#activities").attr("aria-busy", "error").html(scheduleI18n.noData);
+        activitiesElm.attr("aria-busy", "error").html(scheduleI18n.noData);
+        loadingUpdate("");
       } else {
-        $("#activities").attr("aria-busy", "false").html(/* "<p>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
+        activitiesElm.attr("aria-busy", "false");
+        asyncInnerHTML(/* "<p>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
                             "ms) || (AJAX-complete: " + endAjaxTime + "ms + Threads invoking/serializing: " + (endMakingThreadsTime + htmlPlenary.parseRetrievedJSONTime + htmlGroup.parseRetrievedJSONTime) +
-                            "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))" + (scheduleSupportsThreads ? " [Uses Threads/Web Worker's]</p>" : "</p>") + */ html);
+                            "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))" + (scheduleSupportsThreads ? " [Uses Threads/Web Worker's]</p>" : "</p>") + */ html, function(fragment) {
+          activitiesElm[0].appendChild(fragment);
+          loadingUpdate("");
+        });
       }
       
       // If GC is not sweeping garbage.. help
@@ -152,13 +160,31 @@ function initSchedule() {
   });
 }
 
+function asyncInnerHTML(HTML, callback) { // http://james.padolsey.com/javascript/asynchronous-innerhtml/
+  var temp = document.createElement('div'),
+      frag = document.createDocumentFragment();
+ temp.innerHTML = HTML;
+ (function(){
+   if(temp.firstChild){
+     frag.appendChild(temp.firstChild);
+     setTimeout(arguments.callee, 0);
+   } else {
+     callback(frag);
+   }
+ })();
+}
+
 function loadingUpdate(msg) {
   var loader = $("#loading-message");
   if(!loader.length) {
     var loaderHtml = "<p id='loading-message'>" + msg + "...</p>";
     $("#activities").attr("aria-busy", "true").append(loaderHtml);
   } else {
-    loader.text(msg + "...");
+    if(msg.length) {
+      loader.text(msg + "...");
+    } else {
+      loader.remove();
+    }
   }
 }
 

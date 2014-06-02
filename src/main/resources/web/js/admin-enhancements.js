@@ -60,7 +60,7 @@ function VrtxAdmin() {
   this.hasConsoleError = this.hasConsole && console.error;
 
   /** Language extracted from cookie */
-  this.lang = readCookie("vrtx.manage.language", "no");
+  this.lang = "en";
 
   /** Permissions autocomplete parameters
    * @type object */
@@ -185,6 +185,8 @@ var VrtxAnimation = function(opts) {
 var isEmbedded = window.location.href.indexOf("&embed") !== -1;
 vrtxAdmin._$(document).ready(function () {
   var startReadyTime = +new Date(), vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
+  
+  vrtxAdm.lang = datePickerLang;
   
   if(isEmbedded) {
     $("html").addClass("embedded"); // Temporary solution
@@ -4167,16 +4169,6 @@ VrtxAdmin.prototype.zebraTables = function zebraTables(selector) {
     table.find("tbody tr:first-child").addClass("first");
   }
 };
-
-/* Read a cookie
- *
- * Credits: http://www.javascripter.net/faq/readingacookie.htm
- *
- */
-function readCookie(cookieName, defaultVal) {
-  var match = (" " + document.cookie).match(new RegExp('[; ]' + cookieName + '=([^\\s;]*)'));
-  return match ? unescape(match[1]) : defaultVal;
-}
 
 /* Get URL parameter
  *

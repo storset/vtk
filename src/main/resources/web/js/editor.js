@@ -1175,7 +1175,8 @@ function courseSchedule() {
       "room": "rom",
       "titles": {
         "plenary": "Fellesundervisning",
-        "group": "Partiundervisning"
+        "group": "Partiundervisning",
+        "activities": "Aktiviteter"
       },
       "editOnlySessionTitle": "Rediger aktivitet",
       "noData": "Ingen data",
@@ -1211,7 +1212,8 @@ function courseSchedule() {
       "room": "rom",
       "titles": {
         "plenary": "Fellesundervisning",
-        "group": "Partiundervisning"
+        "group": "Partiundervisning",
+        "activities": "Aktiviteter"
       },
       "editOnlySessionTitle": "Rediger aktivitet",
       "noData": "Ingen data",
@@ -1247,7 +1249,8 @@ function courseSchedule() {
       "room": "room",
       "titles": {
         "plenary": "Plenary teaching",
-        "group": "Group teaching"
+        "group": "Group teaching",
+        "activities": "Activities"
       },
       "editOnlySessionTitle": "Edit activity",
       "noData": "No data",
@@ -1359,7 +1362,7 @@ function courseSchedule() {
           sessionsHtml += vrtxEdit.htmlFacade.getAccordionInteraction(!skipTier ? "5" : "4", sessionHtml.sessionId, "session", sessionHtml.title, sessionHtml.html);
         }
         if(!skipTier) {
-          this.sessionsLookup[id].html = sessionsHtml;
+          this.sessionsLookup[id].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
           htmlMiddle += vrtxEdit.htmlFacade.getAccordionInteraction("4", id, type, sessions[0].title, "");
           if(i > 0 && dtShort != dtShortLast) {
             html += vrtxEdit.htmlFacade.getAccordionInteraction("3", dtShort, type, dt.teachingMethodName, "<div class='vrtx-grouped'>" + htmlMiddle + "</div>");
@@ -1377,7 +1380,7 @@ function courseSchedule() {
         html += vrtxEdit.htmlFacade.getAccordionInteraction("3", dtShort, type, dt.teachingMethodName, "<div class='vrtx-grouped'>" + htmlMiddle + "</div>");
       }
     } else {
-      this.sessionsLookup[id].html = sessionsHtml;
+      this.sessionsLookup[id].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
       html += vrtxEdit.htmlFacade.getAccordionInteraction("3", id, (type + " skip-tier"), dt.teachingMethodName, "");
     }
      

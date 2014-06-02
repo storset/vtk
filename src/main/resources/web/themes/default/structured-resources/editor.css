@@ -307,7 +307,13 @@
 
 .accordion-wrapper.skip-tier > .ui-accordion-content,
 .accordion-wrapper > div .ui-accordion > div > .ui-accordion-content {
-  padding-top: 20px !important;
+  padding-top: 10px !important;
+}
+
+.accordion-wrapper .accordion-content-title {
+  font-size: 1.15em;
+  margin-bottom: 10px;
+  display: block;
 }
 
 #editor.vrtx-course-schedule .properties .vrtx-checkbox { 

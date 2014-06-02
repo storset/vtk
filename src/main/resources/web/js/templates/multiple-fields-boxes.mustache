@@ -89,18 +89,20 @@
 
 ### {{! ADD, REMOVE, MOVE UP, MOVE DOWN }}
 
-<input class="vrtx-button vrtx-{{ clazz }}-button" type="button" value="{{ buttonText }}" />
+<button class="vrtx-button vrtx-{{ clazz }}-button" title="{{ title }}">
+  {{{ buttonText }}}
+</button>
 
 ### {{! BUTTON }}
 
-<button class="vrtx-button {{ type }}{{ name }}" type="button" id="{{ idstr }}{{ type }}">
-  {{ buttonText }}
+<button class="vrtx-button {{ type }}{{ name }}" title="{{ title }}" id="{{ idstr }}{{ type }}">
+  {{{ buttonText }}}
 </button>
 
 ### {{! ADD BUTTON }}
 
-<button id="vrtx-{{ name }}-add" class="vrtx-button" onclick="addFormField('{{ name }}', 1, null, '{{ size }}', {{ isBrowsable }}, {{ isMovable }}, {{ isDropdown }}, false, {{ json }}); return false;">
-  {{ buttonText }}
+<button id="vrtx-{{ name }}-add" title="{{ title }}" class="vrtx-button" onclick="addFormField('{{ name }}', 1, null, '{{ size }}', {{ isBrowsable }}, {{ isMovable }}, {{ isDropdown }}, false, {{ json }}); return false;">
+  {{{ buttonText }}}
 </button>
 
 ### {{! MULTIPLE INPUTFIELD AND DROPDOWN }}

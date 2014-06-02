@@ -120,6 +120,41 @@ h2 {
   display: block;
 }
 
+.vrtx-multipleinputfield .vrtx-button.moveup img,
+.vrtx-multipleinputfield .vrtx-button.movedown img {
+  height: 15px;
+}
+
+.vrtx-multipleinputfield .vrtx-button.moveup,
+.vrtx-multipleinputfield .vrtx-button.movedown {
+  padding-left: 9px;
+  padding-right: 9px;
+  position: relative;
+  bottom: -3px;
+}
+
+.vrtx-multipleinputfield .vrtx-button.moveup:hover,
+.vrtx-multipleinputfield .vrtx-button.moveup:focus,
+.vrtx-multipleinputfield .vrtx-button.movedown:hover,
+.vrtx-multipleinputfield .vrtx-button.movedown:focus {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.vrtx-multipleinputfield .vrtx-button.add,
+.vrtx-json .vrtx-add-button {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.vrtx-multipleinputfield .vrtx-button.add:hover,
+.vrtx-multipleinputfield .vrtx-button.add:focus,
+.vrtx-json .vrtx-add-button:hover,
+.vrtx-json .vrtx-add-button:focus {
+  padding-left: 11px;
+  padding-right: 11px;
+}
+
 /* Sticky title and editor save/cancel buttons */
 
 .properties > *:first-child,

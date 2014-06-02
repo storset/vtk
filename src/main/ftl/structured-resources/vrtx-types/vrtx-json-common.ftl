@@ -218,7 +218,7 @@
               <@printJsonProperyEditView jsonAttr.type jsonAttrLocalizedTitle tmpName "" elem attrName jsonAttr locale />
             </#list>
             <input type="hidden" class="id" value="${counter}" />
-            <input class="vrtx-button vrtx-remove-button" type="button" value="${vrtx.getMsg("editor.remove")}" />
+            <button class="vrtx-button vrtx-remove-button" title="">${vrtx.getMsg("editor.remove")}</button>
           </div>
         </#if>
 
@@ -240,17 +240,15 @@
              
        	     <input type="hidden" class="id" value="${counter}" />
        	     
-             <input class="vrtx-button vrtx-remove-button" type="button" value="${vrtx.getMsg("editor.remove")}" />
-
+             <button class="vrtx-button vrtx-remove-button" title="">${vrtx.getMsg("editor.remove")}</button>
        	     <#if !cssClass?contains("vrtx-multiple-immovable")>
                <#if (counter > 0) >
-                 <input class="vrtx-button vrtx-move-up-button" type="button" value="&uarr; ${vrtx.getMsg("editor.move-up")}" />
+                 <button class="vrtx-button vrtx-move-up-button" title="${vrtx.getMsg("editor.move-up")}"><img src='/vrtx/__vrtx/static-resources/themes/default/images/multiple-move-up.png' alt='' /></button>
                </#if>
                <#if map_has_next >
-                 <input class="vrtx-button vrtx-move-down-button" type="button" value="&darr; ${vrtx.getMsg("editor.move-down")}" />
+                 <button class="vrtx-button vrtx-move-down-button" title="${vrtx.getMsg("editor.move-down")}"><img src='/vrtx/__vrtx/static-resources/themes/default/images/multiple-move-down.png' alt='' /></button>
                </#if>
              </#if>
-
            </div>
            <#local counter = counter + 1 />
          </#list>

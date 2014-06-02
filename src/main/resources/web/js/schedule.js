@@ -103,7 +103,7 @@ function initSchedule() {
       
       if(html === "") {
         activitiesElm.attr("aria-busy", "error").html(scheduleI18n.noData);
-        loadingUpdate("");
+        scheduleDeferred.resolve();
       } else {
         activitiesElm.attr("aria-busy", "false");
         asyncInnerHTML(/* "<p>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
@@ -111,6 +111,7 @@ function initSchedule() {
                             "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))" + (scheduleSupportsThreads ? " [Uses Threads/Web Worker's]</p>" : "</p>") + */ html, function(fragment) {
           activitiesElm[0].appendChild(fragment);
           loadingUpdate("");
+          scheduleDeferred.resolve();
         });
       }
       
@@ -154,8 +155,6 @@ function initSchedule() {
           e.preventDefault();
         });
       }
-      
-      scheduleDeferred.resolve();
     });
   });
 }

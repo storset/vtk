@@ -68,7 +68,7 @@ function VrtxEditor() {
 var vrtxEditor = new VrtxEditor();
 var UNSAVED_CHANGES_CONFIRMATION;
 
-var editorCourseSchedule = null;
+var editorCourseSchedule = "";
 
  // Accordion JSON and grouped
 var accordionJson = null;
@@ -684,7 +684,7 @@ function unsavedChangesInEditor() {
   
   var vrtxEdit = vrtxEditor;
   
-  if(typeof editorCourseSchedule !== "undefined") {
+  if(typeof editorCourseSchedule === "object") {
     return editorCourseSchedule.checkUnsavedChanges();
   }
   

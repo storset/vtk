@@ -222,14 +222,15 @@ function scheduleUtils() {
 }
 
 function generateHTMLForType(d, supportThreads, type, scheduleI18n, canEdit) {
-  var dta = supportThreads ? JSON.parse(d) : null,
+  var startGenHtmlForTypeTime = new Date(),
+      dta = supportThreads ? JSON.parse(d) : null,
       data = supportThreads ? dta.data.activities : d[type].activities,
       tocHtml = "",
       tablesHtml = "";
   
-  if(!data) return { tocHtml: tocHtml, tablesHtml: tablesHtml };
+  if(!data) return { tocHtml: tocHtml, tablesHtml: tablesHtml, time: (+new Date() - startGenHtmlForTypeTime) };
   var dataLen = data.length;
-  if(!dataLen) return { tocHtml: tocHtml, tablesHtml: tablesHtml };
+  if(!dataLen) return { tocHtml: tocHtml, tablesHtml: tablesHtml, time: (+new Date() - startGenHtmlForTypeTime) };
   
   if(supportThreads) {
     type = dta.type,
@@ -237,8 +238,7 @@ function generateHTMLForType(d, supportThreads, type, scheduleI18n, canEdit) {
     canEdit = dta.canEdit;
   } 
      
-  var skipTier = type === "plenary",
-      startGenHtmlForTypeTime = new Date();
+  var skipTier = type === "plenary";
       
   var utils = new scheduleUtils(), // Cache
       nowDate = utils.nowDate,

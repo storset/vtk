@@ -377,7 +377,7 @@ function generateHTMLForType(d) {
               tocTime += "<span>";
             }
             tocTime += newTocTime;
-            if(tocTimeCount === 0) tocTime += "</span>";
+            tocTime += "</span>";
             tocTimeCount++;
           }
         }

@@ -810,12 +810,7 @@ VrtxEditor.prototype.initPreviewImage = function initPreviewImage() {
 
   // Box pictures
   var altTexts = $(".boxPictureAlt, .featuredPictureAlt");
-  for (var i = altTexts.length; i--;) {
-    var altText = $(altTexts[i]);
-    var imageRef = altText.prev(".vrtx-image-ref");
-    imageRef.addClass("vrtx-image-ref-alt-text");
-    imageRef.find(".vrtx-image-ref-preview").append(altText.remove());
-  }
+  initBoxPictures(altTexts);
   
   // Introduction pictures
   var introImageAndCaption = _$(".introImageAndCaption, #vrtx-resource\\.picture");
@@ -853,6 +848,20 @@ VrtxEditor.prototype.initPreviewImage = function initPreviewImage() {
     }
   }));
 };
+
+function initPictureAddJsonField(elm) {
+  initBoxPictures(elm.find(".boxPictureAlt, .featuredPictureAlt"));
+  hideImagePreviewCaption(elm.find("input.preview-image-inputfield"), true);
+}
+
+function initBoxPictures(altTexts) {
+  for (var i = altTexts.length; i--;) {
+    var altText = $(altTexts[i]);
+    var imageRef = altText.prev(".vrtx-image-ref");
+    imageRef.addClass("vrtx-image-ref-alt-text");
+    imageRef.find(".vrtx-image-ref-preview").append(altText.remove());
+  }
+}
 
 function hideImagePreviewCaption(input, isInit) {
   var previewImg = $("div#" + input[0].id.replace(/\./g, '\\.') + '\\.preview:visible');
@@ -2306,6 +2315,9 @@ function addJsonField(btn) {
       }
     }, 25);
   }
+  
+  // Box picture
+  initPictureAddJsonField(btn.closest(".vrtx-json").find(".vrtx-json-element:last"));
 
   vrtxEditor.multipleFieldsBoxes[j.name].counter++;
 }

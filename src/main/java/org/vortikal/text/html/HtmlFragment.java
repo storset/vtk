@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2007,2014, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -55,11 +55,20 @@ public final class HtmlFragment {
     
     public String getStringRepresentation() {
         StringBuilder result = new StringBuilder();
+        String content;
         for (HtmlContent c : this.content) {
             if (c instanceof EnclosingHtmlContent) {
-                result.append(((EnclosingHtmlContent) c).getEnclosedContent());
+                content = ((EnclosingHtmlContent) c).getEnclosedContent();
             } else {
-                result.append(c.getContent());
+                content = c.getContent();
+            }
+            // Only keep the safe characters and discard the rest.
+            int length = content.length();
+            for (int i = 0; i < length; i++) {
+                char ch = content.charAt(i);
+                if (ch >= 32 || ch == '\t' || ch == '\n' || ch == '\r') {
+                    result.append(ch);
+                }
             }
         }
         return result.toString();

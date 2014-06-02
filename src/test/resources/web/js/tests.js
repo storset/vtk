@@ -124,7 +124,7 @@ test("DateTime parsing", function () {
 test("Generating Table HTML", function () {
   equal(utils.getTitle(session), "Åpningsforelesning",
                                  "Title - from Vortex");
-  equal(utils.getPlace(session), "<abbr title='Georg Morgenstiernes hus'>GM</abbr> <a title='Seminarrom 205' href='http://www.med.uio.no/om/finn-fram/kart/vis/#bl1602,300,253'>205</a>",
+  equal(utils.getPlace(session), "<abbr class='place-short' title='Georg Morgenstiernes hus'>GM</abbr><span class='place-long'>Georg Morgenstiernes hus</span> <a class='place-short' title='Seminarrom 205' href='http://www.med.uio.no/om/finn-fram/kart/vis/#bl1602,300,253'>205</a><a class='place-long' href='http://www.med.uio.no/om/finn-fram/kart/vis/#bl1602,300,253'>Seminarrom 205</a>",
                                  "Place - Abbr with title + Link with title");
   equal(utils.getStaff(session), "<ul><li>rezam</li><li>oyvihatl</li><li><a href='http://www.nrk.no/'>G. Flaksnes</a></li><li><a href='http://www.aftenposten.no/'>R. Rabbit</a></li><li><a href='http://www.dagbladet.no/'>B. K. Funken-Hagen</a></li></ul>",
                                  "Staff - List of: Just text or link");

@@ -29,6 +29,7 @@
 <div class="vrtx-checkbox">
   <input name="{{ inputFieldName }}" id="{{ elemId }}" type="checkbox" {{#elemChecked}}checked="checked"{{/elemChecked}} />
   <label for="{{ elemId }}">{{ elemTitle }}</label>
+  {{#elemTooltip}}<abbr tabindex="0" class="tooltips" title="{{ elemTooltip }}"></abbr>{{/elemTooltip}} 
 </div>
 
 ### {{! DROPDOWN }}

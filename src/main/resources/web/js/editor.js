@@ -1184,6 +1184,8 @@ function courseSchedule() {
       "noData": "Ingen data",
       "noSessionData": "Ingen aktivitetsdata",
       "cancelled": "AVLYST",
+      "cancelledVortexTooltip": "Aktiviteten kan avlyses i Vortex",
+      "cancelledTPTooltip": "Aktiviteten er avlyst i timeplanleggingssystemet",
       
       "vrtxTitle": "Tittel:",
       "vrtxStaff": "Forelesere:",
@@ -1223,6 +1225,8 @@ function courseSchedule() {
       "noData": "Ingen data",
       "noSessionData": "Ingen aktivitetsdata",
       "cancelled": "AVLYST",
+      "cancelledVortexTooltip": "Aktiviteten kan avlyses i Vortex",
+      "cancelledTPTooltip": "Aktiviteten er avlyst i timeplanleggingssystemet",
       
       "vrtxTitle": "Tittel:",
       "vrtxStaff": "Forelesere:",
@@ -1262,6 +1266,8 @@ function courseSchedule() {
       "noData": "No data",
       "noSessionData": "No activity data",
       "cancelled": "CANCELLED",
+      "cancelledVortexTooltip": "The activity can be cancelled in Vortex",
+      "cancelledTPTooltip": "The activity is cancelled in the schedulling system",
       
       "vrtxTitle": "Title:",
       "vrtxStaff": "Staff:",
@@ -1848,10 +1854,13 @@ function editorJSONToHtml(id, sessionId, session, fixedResources, descs, i18n) {
       case "checkbox":
         if(!origVal || origVal !== "cancelled") {
           html += vrtxEdit.htmlFacade.getCheckboxField({ title: i18n[name],
-                                                           name: name + "-" + sessionId,
-                                                           id: name + "-" + sessionId,
-                                                           checked: (val === "active" ? null : val)
-                                                         }, name);
+                                                         name: name + "-" + sessionId,
+                                                         id: name + "-" + sessionId,
+                                                         checked: (val === "active" ? null : val),
+                                                         tooltip: i18n.cancelledVortexTooltip
+                                                       }, name);
+        } else {
+          html += "<abbr tabindex='0' class='tooltips cancelled-tp' title='" + i18n.cancelledTPTooltip + "'></abbr>";
         }
         break;
       default:
@@ -2576,6 +2585,7 @@ VrtxEditor.prototype.htmlFacade = {
       elemTitle: elem.title,
       elemId: elem.id || inputFieldName,
       elemChecked: elem.checked,
+      elemTooltip: elem.tooltip,
       inputFieldName: inputFieldName
     });
   },

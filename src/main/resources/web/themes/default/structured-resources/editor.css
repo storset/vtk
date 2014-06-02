@@ -316,6 +316,10 @@
   display: block;
 }
 
+#editor.vrtx-course-schedule .properties .tooltips.cancelled-tp {
+  margin-top: 15px;
+}
+ 
 #editor.vrtx-course-schedule .properties .vrtx-checkbox { 
   margin-top: 30px;
 }

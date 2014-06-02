@@ -864,6 +864,7 @@ function initBoxPictures(altTexts) {
 }
 
 function hideImagePreviewCaption(input, isInit) {
+  if (!input.length) return;
   var previewImg = $("div#" + input[0].id.replace(/\./g, '\\.') + '\\.preview:visible');
   if (!previewImg.length) return;
 

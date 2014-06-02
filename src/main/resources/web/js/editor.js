@@ -1152,7 +1152,7 @@ function courseSchedule() {
   }
   url += "?action=course-schedule&mode=edit&t=" + (+new Date());
   // Debug: Local development
-  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   // Hide shortcut for saving working copy
   $("#vrtx-save-as-working-copy-shortcut, #saveWorkingCopyAction, #buttons-or-text").hide();
@@ -1179,6 +1179,8 @@ function courseSchedule() {
         "activities": "Aktiviteter"
       },
       "editOnlySessionTitle": "Rediger aktivitet",
+      "loadingRetrievingData": "Henter timeplandata",
+      "loadingGenerating": "Lager timeplan",
       "noData": "Ingen data",
       "noSessionData": "Ingen aktivitetsdata",
       "cancelled": "AVLYST",
@@ -1216,6 +1218,8 @@ function courseSchedule() {
         "activities": "Aktiviteter"
       },
       "editOnlySessionTitle": "Rediger aktivitet",
+      "loadingRetrievingData": "Henter timeplandata",
+      "loadingGenerating": "Lager timeplan",
       "noData": "Ingen data",
       "noSessionData": "Ingen aktivitetsdata",
       "cancelled": "AVLYST",
@@ -1253,6 +1257,8 @@ function courseSchedule() {
         "activities": "Activities"
       },
       "editOnlySessionTitle": "Edit activity",
+      "loadingRetrievingData": "Retrieving schedule data",
+      "loadingGenerating": "Generating schedule",
       "noData": "No data",
       "noSessionData": "No activity data",
       "cancelled": "CANCELLED",
@@ -1410,6 +1416,19 @@ function courseSchedule() {
      
      return { sessionId: sessionId, html: sessionContent.html, title: sessionTitle };
   };
+  this.loadingUpdate = function(msg) {
+    var loader = $("#editor-loading-inner");
+    if(!loader.length) {
+      var loaderHtml = "<span id='editor-loading'><span id='editor-loading-inner'>" + msg + "...</span></span>";
+      $(loaderHtml).insertAfter(".properties");
+    } else {
+      if(msg.length) {
+        loader.text(msg + "...");
+      } else {
+        loader.parent().remove();
+      }
+    }
+  };
   this.getDateAndPostFixId = function(s, e) {
     var start = this.parseDate(s);
     var end = this.parseDate(e);
@@ -1533,8 +1552,9 @@ function courseSchedule() {
   };
 
   var contents = $("#contents");
-  if(onlySessionId) contents.hide();
-  
+  if(onlySessionId) contents.find("#vrtx-editor-title-submit-buttons").hide();
+
+  this.loadingUpdate(this.i18n.loadingRetrievingData);
   var cs = this;
   
   // GET JSON
@@ -1542,6 +1562,7 @@ function courseSchedule() {
   vrtxAdmin.serverFacade.getJSON(url, {
     success: function(data, xhr, textStatus) {
       cs.retrievedScheduleData = data;
+      cs.loadingUpdate(cs.i18n.loadingGenerating);
       retrievedScheduleDeferred.resolve();
     },
     error: function(xhr, textStatus) {
@@ -1573,6 +1594,7 @@ function courseSchedule() {
     var csRef = cs;
     
     if(csRef.retrievedScheduleData == null) {
+      csRef.loadingUpdate("");
       editorProperties.prepend("<p>" + csRef.i18n.noData + "</p>");
       return;
     }
@@ -1595,7 +1617,7 @@ function courseSchedule() {
       var newButtonsHtml = "<input class='vrtx-focus-button vrtx-embedded-button' id='vrtx-embedded-save-button' type='submit' value='Lagre' />" +
                            "<input class='vrtx-button vrtx-embedded-button' id='vrtx-embedded-cancel-button' type='submit' value='Avbryt' />";
       editorSubmitButtons.prepend(newButtonsHtml);
-      contents.show();
+      contents.find("#vrtx-editor-title-submit-buttons").show();
       
       /* Save and unlock */
       editorSubmitButtons.on("click", "#vrtx-embedded-save-button", function(e) {
@@ -1738,7 +1760,8 @@ function courseSchedule() {
     
     JSON_ELEMENTS_INITIALIZED.resolve();
     
-    var waitALittle = setTimeout(function() {
+    var waitALittle = setTimeout(function() {      
+      csRef.loadingUpdate("");
       editorProperties.show();
     }, 50);
   });

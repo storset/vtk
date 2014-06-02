@@ -50,13 +50,17 @@ public class DocumentPrincipalMetadataRetriever {
     // Used when configured
     private PrincipalMetadataDAO personDocumentPrincipalMetadataDao;
 
-    // For the supplied set of principals, resolve/swap those for which there
-    // exists a person document
+    /**
+     * Get person-documents for those principals that have one. Will only fetch
+     * person-documents for explicit UiO users.
+     */
     public Set<Principal> getPrincipalDocuments(List<Principal> principals, Locale preferredLocale) {
 
         Set<String> uids = new HashSet<String>();
         for (Principal principal : principals) {
-            uids.add(principal.getName());
+            if (Principal.PRINCIPAL_USER_DOMAIN.equals(principal.getDomain())) {
+                uids.add(principal.getName());
+            }
         }
 
         return this.getPrincipalDocumentsByUid(uids, preferredLocale);

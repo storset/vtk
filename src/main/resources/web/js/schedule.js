@@ -71,27 +71,40 @@ function initSchedule() {
     var thread1Finished = $.Deferred(),
         thread2Finished = $.Deferred(),
         htmlPlenary = { tocHtml: "", tablesHtml: "", time: 0 },
-        htmlGroup = { tocHtml: "", tablesHtml: "", time: 0 },
-        plenaryData = retrievedScheduleData["plenary"],
-        groupData = retrievedScheduleData["group"];
+        htmlGroup = { tocHtml: "", tablesHtml: "", time: 0 };
         
-    if(plenaryData) {
-      startThreadGenerateHTMLForType(JSON.stringify({
-        data: plenaryData,
-        type: "plenary",
-        i18n: scheduleI18n,
-        canEdit: schedulePermissions.hasReadWriteNotLocked
-      }), htmlPlenary, thread1Finished);
+    // TODO: simplify
+    if(retrievedScheduleData["plenary"]) {
+      if(scheduleSupportsThreads) {
+        startThreadGenerateHTMLForType(JSON.stringify({
+          data: retrievedScheduleData["plenary"],
+          type: "plenary",
+          i18n: scheduleI18n,
+          canEdit: schedulePermissions.hasReadWriteNotLocked
+        }), htmlPlenary, thread1Finished);
+      } else {
+        startThreadGenerateHTMLForType(retrievedScheduleData, htmlPlenary, thread1Finished,
+          "plenary",
+          scheduleI18n,
+          schedulePermissions.hasReadWriteNotLocked);
+      }
     } else {
       thread1Finished.resolve();
     }
-    if(groupData) {
-      startThreadGenerateHTMLForType(JSON.stringify({
-        data: groupData,
-        type: "group",
-        i18n: scheduleI18n,
-        canEdit: schedulePermissions.hasReadWriteNotLocked
-      }), htmlGroup, thread2Finished);
+    if(retrievedScheduleData["group"]) {
+      if(scheduleSupportsThreads) {
+        startThreadGenerateHTMLForType(JSON.stringify({
+          data: retrievedScheduleData["group"],
+          type: "group",
+          i18n: scheduleI18n,
+          canEdit: schedulePermissions.hasReadWriteNotLocked
+        }), htmlGroup, thread2Finished);
+      } else {
+        startThreadGenerateHTMLForType(retrievedScheduleData, htmlGroup, thread2Finished,
+          "group",
+          scheduleI18n,
+          schedulePermissions.hasReadWriteNotLocked);
+      }
     } else {
       thread2Finished.resolve();
     }
@@ -224,7 +237,7 @@ function refreshWhenRefocused(hasEditedKey) {
   }, delayCheckVisibility);
 }
 
-function startThreadGenerateHTMLForType(data, htmlRef, threadRef) {
+function startThreadGenerateHTMLForType(data, htmlRef, threadRef, type, scheduleI18n, canEdit) {
   if(scheduleSupportsThreads) { // Use own thread
     var worker = new Worker("/vrtx/__vrtx/static-resources/js/schedule-worker.js");
     worker.onmessage = function(e) {
@@ -235,7 +248,7 @@ function startThreadGenerateHTMLForType(data, htmlRef, threadRef) {
     };
     worker.postMessage(data);
   } else { // Use main thread
-    finishedThreadGenerateHTMLForType(generateHTMLForType(data), htmlRef, threadRef);
+    finishedThreadGenerateHTMLForType(generateHTMLForType(data, false, type, scheduleI18n, canEdit), htmlRef, threadRef);
   }
 }
 

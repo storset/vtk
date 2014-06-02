@@ -10,7 +10,7 @@
 
 if(typeof alert === "undefined") { // Listen for messages only in Worker
   this.onmessage = function(e) {
-    postMessage(generateHTMLForType(e.data));
+    postMessage(generateHTMLForType(e.data, true));
   };
 }
 
@@ -221,9 +221,9 @@ function scheduleUtils() {
   };
 }
 
-function generateHTMLForType(d) {
-  var dta = JSON.parse(d),
-      data = dta.data["activities"],
+function generateHTMLForType(d, supportThreads, type, scheduleI18n, canEdit) {
+  var dta = supportThreads ? JSON.parse(d) : null,
+      data = supportThreads ? dta.data.activities : d[type].activities,
       tocHtml = "",
       tablesHtml = "";
   
@@ -231,10 +231,13 @@ function generateHTMLForType(d) {
   var dataLen = data.length;
   if(!dataLen) return { tocHtml: tocHtml, tablesHtml: tablesHtml };
   
-  var type = dta.type,
-      scheduleI18n = dta.i18n,
-      canEdit = dta.canEdit,
-      skipTier = type === "plenary",
+  if(supportThreads) {
+    type = dta.type,
+    scheduleI18n = dta.i18n,
+    canEdit = dta.canEdit;
+  } 
+     
+  var skipTier = type === "plenary",
       startGenHtmlForTypeTime = new Date();
       
   var utils = new scheduleUtils(), // Cache

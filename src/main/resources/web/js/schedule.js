@@ -32,7 +32,7 @@ function initSchedule() {
   }
   url += "?action=course-schedule";
   // Debug: Local development
-  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   // GET JSON
   $.ajax({

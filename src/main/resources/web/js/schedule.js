@@ -106,6 +106,14 @@ function initSchedule() {
                             "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))" + (scheduleSupportsThreads ? " [Uses Threads/Web Worker's]</p>" : "</p>") + */ html);
       }
       
+      // If GC is not sweeping garbage.. help
+      html = "";
+      htmlPlenary = { tocHtml: "", tablesHtml: "", time: 0 };
+      htmlGroup = { tocHtml: "", tablesHtml: "", time: 0 };
+      retrievedScheduleData = null;
+      plenaryData = null;
+      groupData = null;
+      
       // Toggle passed sessions
       $(document).on("click", ".course-schedule-table-toggle-passed", function(e) {
         var link = $(this);

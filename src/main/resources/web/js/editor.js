@@ -1325,8 +1325,7 @@ function courseSchedule() {
     if(!dataLen) return "";
     
     // Store sessions HTML and multiple descriptions in lookup object
-    var dtShortLast = "",
-        editorJSONToHtmlFunc = editorJSONToHtml,
+    var editorJSONToHtmlFunc = editorJSONToHtml,
         vrtxEdit = vrtxEditor,
         html = "",
         htmlMiddle = "",
@@ -1377,7 +1376,7 @@ function courseSchedule() {
         if(!skipTier) {
           this.sessionsLookup[id].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
           htmlMiddle += vrtxEdit.htmlFacade.getAccordionInteraction("4", id, type, sessions[0].title, "");
-          if(i > 0 && dtShort != dtShortLast) {
+          if(!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== dtShort) {
             html += vrtxEdit.htmlFacade.getAccordionInteraction("3", dtShort, type, dt.teachingMethodName, "<div class='vrtx-grouped'>" + htmlMiddle + "</div>");
             htmlMiddle = "";
           }
@@ -1385,14 +1384,8 @@ function courseSchedule() {
           sessions = [];
         }
       }
-
-      dtShortLast = dtShort;
     }
-    if(!skipTier) {
-      if(dataLen > 0) {
-        html += vrtxEdit.htmlFacade.getAccordionInteraction("3", dtShort, type, dt.teachingMethodName, "<div class='vrtx-grouped'>" + htmlMiddle + "</div>");
-      }
-    } else {
+    if(skipTier) {
       this.sessionsLookup[id].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
       html += vrtxEdit.htmlFacade.getAccordionInteraction("3", id, (type + " skip-tier"), dt.teachingMethodName, "");
     }

@@ -259,8 +259,7 @@ function generateHTMLForType(d, supportThreads, type, scheduleI18n, canEdit) {
       splitThirds = utils.splitThirds,
       editLink = utils.editLink;
 
-  var lastDtShort = "",
-      forCode = "for",
+  var forCode = "for",
       sequences = {}, // For fixed resources
       tocTimeMax = 3,
       tocHtmlArr = [];
@@ -396,14 +395,12 @@ function generateHTMLForType(d, supportThreads, type, scheduleI18n, canEdit) {
         tocHtml += "<li><span><a href='#" + activityId + "'>" + dtLong + "</a> - " + tocTime + "</li>";
       } else {
         tocHtmlArr.push("<li><span><a href='#" + activityId + "'>" + scheduleI18n.groupTitle + " " + groupCount + "</a> - " + tocTime + "</li>");
-        if((dtShort !== lastDtShort && i > 0) || (i === (dataLen - 1))) {
+        if(!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== dtShort) {
           tocHtml += splitThirds(tocHtmlArr, dtLong);
           tocHtmlArr = [];
         }
       }
     }
-    
-    lastDtShort = dtShort;
   }
   
   if(skipTier) tocHtml += "</ul>";

@@ -1177,6 +1177,7 @@ function courseSchedule() {
       "titles": {
         "plenary": "Fellesundervisning",
         "group": "Partiundervisning",
+        "groupNum": "Gruppe", 
         "activities": "Aktiviteter"
       },
       "editOnlySessionTitle": "Rediger aktivitet",
@@ -1218,6 +1219,7 @@ function courseSchedule() {
       "titles": {
         "plenary": "Fellesundervisning",
         "group": "Partiundervisning",
+        "groupNum": "Gruppe",
         "activities": "Aktiviteter"
       },
       "editOnlySessionTitle": "Rediger aktivitet",
@@ -1259,6 +1261,7 @@ function courseSchedule() {
       "titles": {
         "plenary": "Plenary teaching",
         "group": "Group teaching",
+        "groupNum": "Group",
         "activities": "Activities"
       },
       "editOnlySessionTitle": "Edit activity",
@@ -1336,7 +1339,10 @@ function courseSchedule() {
     for(var i = 0; i < dataLen; i++) {
       var dt = data[i],
           dtShort = dt.teachingMethod.toLowerCase(),
-          id = skipTier ? type : dtShort + "-" + dt.id;
+          id = skipTier ? type : dtShort + "-" + dt.id,
+          idSplit = dt.id.split("-"),
+          groupCode = idSplit[0],
+          groupNumber = parseInt(idSplit[1], 10);
       
       if(!skipTier || (skipTier && (i === 0))) {
         this.sessionsLookup[id] = {};
@@ -1375,7 +1381,7 @@ function courseSchedule() {
         }
         if(!skipTier) {
           this.sessionsLookup[id].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
-          htmlMiddle += vrtxEdit.htmlFacade.getAccordionInteraction("4", id, type, sessions[0].title, "");
+          htmlMiddle += vrtxEdit.htmlFacade.getAccordionInteraction("4", id, type, this.i18n.titles.groupNum + " " + groupNumber, "");
           if(!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== dtShort) {
             html += vrtxEdit.htmlFacade.getAccordionInteraction("3", dtShort, type, dt.teachingMethodName, "<div class='vrtx-grouped'>" + htmlMiddle + "</div>");
             htmlMiddle = "";

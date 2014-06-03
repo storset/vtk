@@ -7,7 +7,7 @@ var scheduleDeferred = $.Deferred();
 var scheduleDocumentReady = $.Deferred();
 var scheduleStartTime = +new Date();
 var scheduleDocReadyEndTime = 0;
-var scheduleSupportsThreads = typeof Worker === "function";
+var scheduleSupportsThreads = false && typeof Worker === "function";
 $(document).ready(function() {
   scheduleDocumentReady.resolve();
   scheduleDocReadyEndTime = +new Date() - scheduleStartTime;

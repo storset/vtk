@@ -210,7 +210,7 @@ function scheduleUtils() {
     for(var i = 0; i < len; i++) {
       if(i === split1) html += "</ul><ul class='thirds-middle'>";
       if(i === split2) html += "</ul><ul class='thirds-right'>";
-      html += arr[i];
+      html += arr[i].tocHtml;
     }
     html += "</ul></div>";
     return html;
@@ -261,8 +261,9 @@ function generateHTMLForType(d, supportThreads, type, scheduleI18n, canEdit) {
 
   var forCode = "for",
       sequences = {}, // For fixed resources
-      tocTimeMax = 3,
-      tocHtmlArr = [];
+      tablesHtmlArr = [],
+      tocTimeMax = skipTier ? 3 : 2,
+      htmlArr = [];
   
   tocHtml += "<h2 class='course-schedule-toc-title accordion'>" + scheduleI18n["header-" + type] + "</h2>";
   tocHtml += "<div class='course-schedule-toc-content'>";
@@ -288,8 +289,11 @@ function generateHTMLForType(d, supportThreads, type, scheduleI18n, canEdit) {
       if(skipTier) {
         var caption = dtLong;
       } else {
-        var groupCount = id.split("-")[1];
-        var caption = dtLong + " - " + scheduleI18n.groupTitle.toLowerCase() + " " + groupCount;
+        var idSplit = id.split("-");
+        var groupCode = idSplit[0];
+        var groupNumber = parseInt(idSplit[1], 10);
+        var specialGroup = scheduleI18n[groupCode];
+        var caption = (specialGroup ? specialGroup : dtLong) + " - " + scheduleI18n.groupTitle.toLowerCase() + " " + groupNumber;
       }
       var tocTime = "";
       var tocTimeCount = 0;
@@ -305,8 +309,9 @@ function generateHTMLForType(d, supportThreads, type, scheduleI18n, canEdit) {
       }
       sessions.push.apply(sessions, sequence.sessions);
     }
-
-    if(!isFor || (isFor && (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== forCode))) {
+ 
+    var dtShortNextDifferent = !data[i+1] || data[i+1].teachingMethod.toLowerCase() !== dtShort;
+    if(!isFor || (isFor && dtShortNextDifferent)) {
 
       // Evaluate and cache dateTime, staff and resources
       var map = [], sessionsProcessed = [];
@@ -387,18 +392,44 @@ function generateHTMLForType(d, supportThreads, type, scheduleI18n, canEdit) {
           }
         }
       }
-      tablesHtml += getTableStartHtml(activityId, caption, (passedCount === sessionsCount), resourcesCount, staffCount, scheduleI18n) + sessionsHtml + getTableEndHtml(passedCount === 0, scheduleI18n);
       
-      // Generate ToC
+      // Generate table and ToC
       tocTime = tocTime.replace(/,([^,]+)$/, " " + scheduleI18n.and + "$1");
-      if(skipTier) {
-        tocHtml += "<li><span><a href='#" + activityId + "'>" + dtLong + "</a> - " + tocTime + "</li>";
+      var section = { "groupCode": groupCode, "groupNr": groupNumber, "tableHtml": getTableStartHtml(activityId, caption, (passedCount === sessionsCount), resourcesCount, staffCount, scheduleI18n) + sessionsHtml + getTableEndHtml(passedCount === 0, scheduleI18n) };
+      if(!skipTier) {
+        section.tocHtml = "<li><span><a href='#" + activityId + "'>" + scheduleI18n.groupTitle + " " + groupNumber + "</a> - " + tocTime + "</li>";
       } else {
-        tocHtmlArr.push("<li><span><a href='#" + activityId + "'>" + scheduleI18n.groupTitle + " " + groupCount + "</a> - " + tocTime + "</li>");
-        if(!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== dtShort) {
-          tocHtml += splitThirds(tocHtmlArr, dtLong);
-          tocHtmlArr = [];
+        tocHtml += "<li><span><a href='#" + activityId + "'>" + dtLong + "</a> - " + tocTime + "</li>";
+      }
+      htmlArr.push(section);
+
+      // Sort groups
+      if(dtShortNextDifferent) {
+        // Sort group code and group number if equal
+        htmlArr.sort(function(a, b) { // http://www.sitepoint.com/sophisticated-sorting-in-javascript/
+          var x = a.groupCode, y = b.groupCode;
+          if(x === y) {
+            return a.groupNr - b.groupNr;
+          }
+          return x < y ? -1 : x > y ? 1 : 0;
+        });
+        var startSlice = 0;
+        for(j = 0, len = htmlArr.length; j < len; j++) {
+          if(!skipTier) {
+            var specialGroupCode = scheduleI18n[htmlArr[j].groupCode];
+            if(specialGroupCode && (!htmlArr[j+1] || specialGroupCode != scheduleI18n[htmlArr[j+1].groupCode])) {
+              tocHtml += splitThirds(htmlArr.slice(startSlice, j + 1), specialGroupCode);
+              startSlice = j + 1;
+            }
+          }
+          tablesHtml += htmlArr[j].tableHtml;
         }
+        if(!skipTier) {
+          if(startSlice === 0) {
+            tocHtml += splitThirds(htmlArr, dtLong);
+          }
+        }
+        htmlArr = [];
       }
     }
   }

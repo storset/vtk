@@ -68,6 +68,17 @@
           vrtxEditor.needToConfirm = false;
         });
         
+        // Save and copy
+        _$("#editor").on("click", "#saveAndViewButton, #saveCopyButton", function(e) {
+          var ok = performSave();
+          if(!ok) return false;
+          if(typeof vrtxImageEditor !== "undefined" && vrtxImageEditor.save && !vrtxImageEditor.savedImage) {
+            vrtxImageEditor.save(_$(this).attr("id"));
+            e.preventDefault();
+            e.stopPropagation();
+          }
+        });
+        
         // XXX: possible to avoid hard-coding of these? (as in new editor)
         var hasFeaturedArticles = _$("#resource\\.featured-articles").length;
         var hasAggregation = _$("#resource\\.aggregation").length;

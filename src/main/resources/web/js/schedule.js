@@ -119,16 +119,16 @@ function initSchedule() {
         scheduleDeferred.resolve();
       } else {
         activitiesElm.attr("aria-busy", "false");
-        asyncInnerHTML("<p>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
+        asyncInnerHTML(/* "<p>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
                        "ms) || (AJAX-complete: " + endAjaxTime + "ms + Threads invoking/serializing: " + ((endMakingThreadsTime || 0) + (htmlPlenary.parseRetrievedJSONTime || 0) + (htmlGroup.parseRetrievedJSONTime || 0)) +
-                       "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))" + (scheduleSupportsThreads ? " [Uses Threads/Web Worker's]</p>" : "</p>") + html, function(fragment) {
+                       "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))" + (scheduleSupportsThreads ? " [Uses Threads/Web Worker's]</p>" : "</p>") + */ html, function(fragment) {
           activitiesElm[0].appendChild(fragment);
           loadingUpdate("");
           scheduleDeferred.resolve();
         });
       }
       
-      // If GC is not sweeping garbage.. help
+      // Just in case GC is not sweeping garbage..
       html = "";
       htmlPlenary = { tocHtml: "", tablesHtml: "", time: 0 };
       htmlGroup = { tocHtml: "", tablesHtml: "", time: 0 };

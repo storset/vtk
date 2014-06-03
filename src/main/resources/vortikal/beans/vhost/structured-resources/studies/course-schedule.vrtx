@@ -3,14 +3,13 @@ resourcetype course-schedule {
   properties {
     tittel : string,
     title : derived (tittel) eval ("schedule"?localized) overrides title,
-    activities : json
+    schedule-content : json
   }
   
   edit-rules {
     tittel (size[1]),
     tittel (class[ui-helper-hidden]),
-    title (class[ui-helper-hidden]),
-    activities (class[ui-helper-hidden])
+    schedule-content (class[ui-helper-hidden])
   }
   
   view {

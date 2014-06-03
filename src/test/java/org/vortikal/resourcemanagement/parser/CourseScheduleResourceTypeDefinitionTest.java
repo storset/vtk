@@ -55,16 +55,16 @@ public class CourseScheduleResourceTypeDefinitionTest extends StructuredResource
         List<PropertyDescription> properties = courseSchedule.getPropertyDescriptions();
         assertNotNull(properties);
 
-        PropertyDescription activitiesPropDesc = null;
+        PropertyDescription scheduleContentPropDesc = null;
         for (PropertyDescription pd : properties) {
-            if (pd.getName().equals("activities")) {
-                activitiesPropDesc = pd;
+            if (pd.getName().equals("schedule-content")) {
+                scheduleContentPropDesc = pd;
                 break;
             }
         }
-        assertNotNull(activitiesPropDesc);
+        assertNotNull(scheduleContentPropDesc);
 
-        assertTrue(activitiesPropDesc.getType().equals(ParserConstants.PROPTYPE_JSON));
+        assertTrue(scheduleContentPropDesc.getType().equals(ParserConstants.PROPTYPE_JSON));
 
     }
 

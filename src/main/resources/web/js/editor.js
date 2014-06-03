@@ -1643,6 +1643,7 @@ function courseSchedule() {
         var dataString = form.serialize();
         vrtxAdmin.serverFacade.postHtml(url, dataString, {
           success: function (results, status, resp) {
+            vrtxEditor.needToConfirm = false;
             csRef.sessionOnlyWindowClose();
           }
         });

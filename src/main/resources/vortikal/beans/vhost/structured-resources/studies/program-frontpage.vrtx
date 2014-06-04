@@ -149,13 +149,15 @@ resourcetype program-frontpage : program-document {
         <div class="vrtx-frontpage-box vrtx-distach-bottom">
           [call "comp:contact-box"]
         </div>
+        [def thispath resource-prop("./", "uri")]
         [if locale != 'en']
-          [def thispath resource-prop("./", "uri")]
           [def thispath thispath + '/studiestart']
-          [def studiestart-folder resource(thispath)]
-          [if studiestart-folder]
-            [call "include:events"  {"uri":thispath, "all-events-link":true, "feed-title":true, "max-events":2, "events-title": true, "include-if-empty":false}]
-          [endif]
+        [else]
+          [def thispath thispath + '/start-of-studies']
+        [endif]
+        [def studiestart-folder resource(thispath)]
+        [if studiestart-folder]
+          [call "include:events"  {"uri":thispath, "all-events-link":true, "feed-title":true, "max-events":2, "events-title": true, "include-if-empty":false}]
         [endif]
         [call "comp:additional-content" {"document":document, "main-content": "false"}]
       </div>

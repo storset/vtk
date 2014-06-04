@@ -911,6 +911,7 @@
         <ref bean="mediaHeightPropDef" />
         <ref bean="mediaWidthPropDef" />
         <ref bean="mediaDurationPropDef" />
+        <ref bean="videoref.streamablePercentCompletePropDef" />
       </list>
     </property>
     <property name="propertyListModelName" value="basicPropList" />

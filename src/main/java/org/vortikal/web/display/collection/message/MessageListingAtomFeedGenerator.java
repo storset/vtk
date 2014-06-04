@@ -53,7 +53,7 @@ public class MessageListingAtomFeedGenerator extends CollectionListingAtomFeedGe
                 URL baseURL = viewService.constructURL(result.getURI());
                 HtmlFragment summary = htmlUtil.linkResolveFilter(messageProp.getStringValue(), baseURL, RequestContext
                         .getRequestContext().getRequestURL(), useProtocolRelativeImages);
-                entry.setSummaryAsXhtml(summary.getStringRepresentation());
+                setFeedEntrySummary(entry, summary);
             } catch (Exception e) {
                 logger.warn("Could not set feed entry summary as XHTML" + e.getMessage());
 
@@ -63,4 +63,10 @@ public class MessageListingAtomFeedGenerator extends CollectionListingAtomFeedGe
         }
     }
 
+    /**
+     * Made public for testing. 
+     */
+    public void setFeedEntrySummary(Entry entry, HtmlFragment summary) throws Exception {
+        entry.setSummaryAsXhtml(summary.getStringRepresentation());
+    }
 }

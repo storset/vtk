@@ -1411,6 +1411,7 @@ function courseSchedule() {
               }
               return x < y ? -1 : x > y ? 1 : 0;
             });
+            // TODO: slice MEDSEM groups
             var startSlice = 0;
             var htmlMiddle = "";
             for(j = 0, len = htmlArr.length; j < len; j++) {

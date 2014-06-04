@@ -240,7 +240,8 @@
             "buildingAcronym": "GS",
             "roomId": "1501",
             "roomName": "Auditorium 1"
-          }]
+          }],
+          "vrtxOrphan": true
         }, {
           "id": "14H-EXPHIL03-1-1-1-2-1/44",
           "dtStart": "2014-10-27T12:15:00.000+01:00",
@@ -254,7 +255,8 @@
             "buildingAcronym": "GS",
             "roomId": "1501",
             "roomName": "Auditorium 1"
-          }]
+          }],
+          "vrtxOrphan": true
         }, {
           "id": "14H-EXPHIL03-1-1-1-2-1/45",
           "dtStart": "2014-11-03T12:15:00.000+01:00",

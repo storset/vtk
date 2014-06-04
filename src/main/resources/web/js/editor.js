@@ -1304,6 +1304,7 @@ function courseSchedule() {
     
     var id = sessionData.id;
     var session = sessionData.session;
+    var sessionDateTime = sessionData.sessionDateTime;
     var sequences = sessionData.sequences;
     var type = sessionData.type;
     var skipTier = sessionData.skipTier;
@@ -1313,7 +1314,8 @@ function courseSchedule() {
     if(!this.sessionsLookup[id]) {
       this.sessionsLookup[id] = {};
     }
-    var sessionHtml = this.getSessionHtml(id, session, sequences, descs, skipTier, editorJSONToHtml);    
+    var sessionDateTime = this.getDateTime(session.dtStart, session.dtEnd);
+    var sessionHtml = this.getSessionHtml(id, session, sessionDateTime, sequences, descs, skipTier, editorJSONToHtml);    
     
     this.lastElm = $(".properties"); 
     this.lastId = id;
@@ -1391,8 +1393,8 @@ function courseSchedule() {
         // Generate sessions HTML (get correctly sorted from map)
         for(j = 0, len = map.length; j < len; j++) {
           var session = sessions[map[j].index];
-          var sessionPreprocessed = sessionsProcessed[map[j].index];
-          var sessionHtml = this.getSessionHtml(id, session, sessionPreprocessed, sequences, descs, skipTier, editorJSONToHtmlFunc);
+          var sessionProcessed = sessionsProcessed[map[j].index];
+          var sessionHtml = this.getSessionHtml(id, session, sessionProcessed.dateTime, sequences, descs, skipTier, editorJSONToHtmlFunc);
           sessionsHtml += vrtxEdit.htmlFacade.getAccordionInteraction(!skipTier ? "5" : "4", sessionHtml.sessionId, "session", sessionHtml.title, sessionHtml.html);
         }
 
@@ -1429,8 +1431,8 @@ function courseSchedule() {
      
     return html;
   };
-  this.getSessionHtml = function(id, session, sessionProcessed, sequences, descs, skipTier, editorJSONToHtmlFunc) {
-    var sessionDatePostFixId = this.getDateAndPostFixId(sessionProcessed.dateTime),
+  this.getSessionHtml = function(id, session, sessionDateTime, sequences, descs, skipTier, editorJSONToHtmlFunc) {
+    var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime),
         sessionId = id + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId,
         sequenceId = session.id.replace(/\/[^\/]*$/, ""),
         sessionOrphan = session.vrtxOrphan,
@@ -1520,7 +1522,7 @@ function courseSchedule() {
           var sessionId = id + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId;
           
           if(findSessionId === sessionId) {
-            return { id: id, session: session, sequences: sequences, type: type, skipTier: skipTier };
+            return { id: id, session: session, sessionDateTime: sessionDateTime, sequences: sequences, type: type, skipTier: skipTier };
           }
         }
       }

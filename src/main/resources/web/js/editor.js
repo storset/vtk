@@ -1331,7 +1331,6 @@ function courseSchedule() {
     var editorJSONToHtmlFunc = editorJSONToHtml,
         vrtxEdit = vrtxEditor,
         html = "",
-        htmlMiddle = "",
         htmlArr = [],
         sessions = [],
         sequences = {}, // For fixed resources

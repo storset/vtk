@@ -405,7 +405,7 @@ function generateHTMLForType(d, supportThreads, type, scheduleI18n, canEdit) {
 
       // Sort groups
       if(dtShortNextDifferent) {
-        // Sort group code and group number if equal
+        // Sort group code and then group number (if codes are equal)
         htmlArr.sort(function(a, b) { // http://www.sitepoint.com/sophisticated-sorting-in-javascript/
           var x = a.groupCode, y = b.groupCode;
           if(x === y) {

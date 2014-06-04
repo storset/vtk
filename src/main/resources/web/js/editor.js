@@ -1362,24 +1362,37 @@ function courseSchedule() {
       }
       
       if(!skipTier || (skipTier && (i === (dataLen-1)))) {
-        // Sort sessions
-        sessions.sort(function(a, b) { // XXX: avoid parsing datetime for sessions twice
-          var dateTimeA = self.getDateTime(a.dtStart, a.dtEnd);
+        // Evaluate and cache dateTime
+        var map = [], sessionsProcessed = [];
+        for(j = 0, len = sessions.length; j < len; j++) {
+          var session = sessions[j];
+          var dateTimeA = self.getDateTime(session.dtStart, session.dtEnd);
           var startA = dateTimeA.start;
           var endA = dateTimeA.end;
-          var a = startA.year + "" + startA.month + "" + startA.date + "" + startA.hh + "" + startA.mm + "" + endA.hh + "" + endA.mm;;
-        
-          var dateTimeB = self.getDateTime(b.dtStart, b.dtEnd);
-          var startB = dateTimeB.start;
-          var endB = dateTimeB.end;
-          var b = startB.year + "" + startB.month + "" + startB.date + "" + startB.hh + "" + startB.mm + "" + endB.hh + "" + endB.mm;;
-        
-          return parseInt(a, 10) - parseInt(b, 10);
+          var a = startA.year + "" + startA.month + "" + startA.date + "" + startA.hh + "" + startA.mm + "" + endA.hh + "" + endA.mm;
+          map.push({
+            "index": j, // Save index
+            "value": a,
+            "orphan": session.vrtxOrphan
+          });
+          sessionsProcessed.push({
+            "dateTime": dateTimeA
+          });
+        }
+        // Sort
+        map.sort(function(a, b) {
+          var x = a.orphan, y = b.orphan;
+          if(x === y) {
+            return a.value > b.value ? 1 : -1;
+          }
+          return !x && y ? -1 : x && !y ? 1 : 0;
         });
         
-        // Generate sessions HTML
-        for(j = 0, len = sessions.length; j < len; j++) {
-          var sessionHtml = this.getSessionHtml(id, sessions[j], sequences, descs, skipTier, editorJSONToHtmlFunc);
+        // Generate sessions HTML (get correctly sorted from map)
+        for(j = 0, len = map.length; j < len; j++) {
+          var session = sessions[map[j].index];
+          var sessionPreprocessed = sessionsProcessed[map[j].index];
+          var sessionHtml = this.getSessionHtml(id, session, sessionPreprocessed, sequences, descs, skipTier, editorJSONToHtmlFunc);
           sessionsHtml += vrtxEdit.htmlFacade.getAccordionInteraction(!skipTier ? "5" : "4", sessionHtml.sessionId, "session", sessionHtml.title, sessionHtml.html);
         }
 
@@ -1416,8 +1429,8 @@ function courseSchedule() {
      
     return html;
   };
-  this.getSessionHtml = function(id, session, sequences, descs, skipTier, editorJSONToHtmlFunc) {
-    var sessionDatePostFixId = this.getDateAndPostFixId(session.dtStart, session.dtEnd),
+  this.getSessionHtml = function(id, session, sessionProcessed, sequences, descs, skipTier, editorJSONToHtmlFunc) {
+    var sessionDatePostFixId = this.getDateAndPostFixId(sessionProcessed.dateTime),
         sessionId = id + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId,
         sequenceId = session.id.replace(/\/[^\/]*$/, ""),
         sessionOrphan = session.vrtxOrphan,
@@ -1457,9 +1470,9 @@ function courseSchedule() {
       }
     }
   };
-  this.getDateAndPostFixId = function(s, e) {
-    var start = this.parseDate(s);
-    var end = this.parseDate(e);
+  this.getDateAndPostFixId = function(dateTime) {
+    var start = dateTime.start;
+    var end = dateTime.end;
     var strDate = start.date + ". " + this.i18n[start.month] + " " + start.year + " - kl " +
                   start.hh + ":" + start.mm + "&ndash;" + end.hh + ":" + end.mm;
     var postFixId = start.date + "-" + start.month + "-" + start.year + "-" + start.hh + "-" + start.mm + "-" + end.hh + "-" + end.mm;
@@ -1502,7 +1515,8 @@ function courseSchedule() {
         }
         for(j = 0, len = sessions.length; j < len; j++) {
           var session = sessions[j];
-          var sessionDatePostFixId = this.getDateAndPostFixId(session.dtStart, session.dtEnd);
+          var sessionDateTime = this.getDateTime(session.dtStart, session.dtEnd);
+          var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime);
           var sessionId = id + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId;
           
           if(findSessionId === sessionId) {

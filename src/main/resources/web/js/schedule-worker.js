@@ -341,8 +341,13 @@ function generateHTMLForType(d, supportThreads, type, scheduleI18n, canEdit) {
         return a.value > b.value ? 1 : -1;
       });
       // Generate sessions HTML (get correctly sorted from map)
+      var correctedCounter = 0;
       for(j = 0, len = map.length; j < len; j++) {
         var session = sessions[map[j].index];
+        if(session.vrtxOrphan) {
+          correctedCounter--;
+          continue;
+        }
         var sessionPreprocessed = sessionsProcessed[map[j].index];
         
         var dateTime = sessionPreprocessed.dateTime;
@@ -357,7 +362,7 @@ function generateHTMLForType(d, supportThreads, type, scheduleI18n, canEdit) {
         var title = getTitle(session, isCancelled, scheduleI18n);
         var place = getPlace(session);
 
-        var classes = (j & 1) ? "even" : "odd";     
+        var classes = ((j + correctedCounter) & 1) ? "even" : "odd";     
         if(isCancelled) {
           if(classes !== "") classes += " ";
           classes += "cancelled";

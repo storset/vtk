@@ -1188,6 +1188,7 @@ function courseSchedule() {
       "cancelled": "AVLYST",
       "cancelledVortexTooltip": "Aktiviteten kan avlyses i Vortex",
       "cancelledTPTooltip": "Aktiviteten er avlyst i timeplanleggingssystemet",
+      "orphan": "SLETTET",
       
       "vrtxTitle": "Tittel:",
       "vrtxStaff": "Forelesere:",
@@ -1230,6 +1231,7 @@ function courseSchedule() {
       "cancelled": "AVLYST",
       "cancelledVortexTooltip": "Aktiviteten kan avlyses i Vortex",
       "cancelledTPTooltip": "Aktiviteten er avlyst i timeplanleggingssystemet",
+      "orphan": "SLETTET",
       
       "vrtxTitle": "Tittel:",
       "vrtxStaff": "Forelesere:",
@@ -1272,6 +1274,7 @@ function courseSchedule() {
       "cancelled": "CANCELLED",
       "cancelledVortexTooltip": "The activity can be cancelled in Vortex",
       "cancelledTPTooltip": "The activity is cancelled in the schedulling system",
+      "orphan": "DELETED",
       
       "vrtxTitle": "Title:",
       "vrtxStaff": "Staff:",
@@ -1417,16 +1420,20 @@ function courseSchedule() {
     var sessionDatePostFixId = this.getDateAndPostFixId(session.dtStart, session.dtEnd),
         sessionId = id + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId,
         sequenceId = session.id.replace(/\/[^\/]*$/, ""),
-        sessionCancelled = (session.vrtxStatus && session.vrtxStatus === "cancelled") || (session.status && session.status === "cancelled"),
+        sessionOrphan = session.vrtxOrphan,
+        sessionCancelled = !session.vrtxOrphan && (session.vrtxStatus && session.vrtxStatus === "cancelled") || (session.status && session.status === "cancelled"),
         rooms = session.rooms,
         sessionTitle = sessionDatePostFixId.date + " " +
-                       "<span class='header-title'>" + (sessionCancelled ? "<span class='header-status'>" + this.i18n.cancelled + "</span> - " : "") + (session.vrtxTitle || session.title || session.id) + "</span>" +
+                       "<span class='header-title'>" + (sessionCancelled ? "<span class='header-status'>" + this.i18n.cancelled + "</span> - " : "") + 
+                       (sessionOrphan ? "<span class='header-status'>" + this.i18n.orphan + "</span> - " : "") +
+                       (session.vrtxTitle || session.title || session.id) + "</span>" +
                        (rooms ? (" - " + (rooms[0].buildingAcronym || rooms[0].buildingId) + " " + this.i18n.room + " " + rooms[0].roomId) : ""),
         sessionContent = editorJSONToHtmlFunc(id, sessionId, session, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
 
      this.sessionsLookup[id][sessionId] = {
        isEnhanced: false,
        isCancelled: sessionCancelled,
+       isOrphan: sessionOrphan,
        hasChanges: false,
        multiples: sessionContent.multiples,
        rtEditors: sessionContent.rtEditors,
@@ -1701,14 +1708,22 @@ function courseSchedule() {
           var titleElm = sessionElm.find("> .header > .header-title");
           var newTitle = content.find("> div:first-child input[type='text']");
           
-          var cancelledElm = content.find("input[name='vrtxStatus']");
-          if(cancelledElm.length) {
-            session.isCancelled = cancelledElm[0].checked;
+          var status = null;
+          if(session.isOrphan) {
+            status = csRef.i18n.orphan;
+          } else {
+            var cancelledElm = content.find("input[name='vrtxStatus']");
+            if(cancelledElm.length) {
+              session.isCancelled = cancelledElm[0].checked;
+            }
+            if(session.isCancelled) {
+              status = csRef.i18n.cancelled;
+            }
           }
           if(newTitle.length && newTitle.val() != "") {
-            titleElm.html((session.isCancelled ? " <span class='header-status'>" + csRef.i18n.cancelled + "</span> - " : "") + newTitle.val());
+            titleElm.html((status ? " <span class='header-status'>" + status + "</span> - " : "") + newTitle.val());
           } else {
-            titleElm.html((session.isCancelled ? " <span class='header-status'>" + csRef.i18n.cancelled + "</span> - " : "") + session.rawOrig.title);
+            titleElm.html((status ? " <span class='header-status'>" + status + "</span> - " : "") + session.rawOrig.title);
           }
         }
       };  
@@ -1871,15 +1886,17 @@ function editorJSONToHtml(id, sessionId, session, fixedResources, descs, i18n) {
         rtEditors.push(name + "-" + sessionId);
         break;
       case "checkbox":
-        if(!origVal || origVal !== "cancelled") {
-          html += vrtxEdit.htmlFacade.getCheckboxField({ title: i18n[name],
-                                                         name: name + "-" + sessionId,
-                                                         id: name + "-" + sessionId,
-                                                         checked: (val === "active" ? null : val),
-                                                         tooltip: i18n.cancelledVortexTooltip
-                                                       }, name);
-        } else {
-          html += "<abbr tabindex='0' class='tooltips cancelled-tp' title='" + i18n.cancelledTPTooltip + "'></abbr>";
+        if(!session.vrtxOrphan) {
+          if(!origVal || origVal !== "cancelled") {
+            html += vrtxEdit.htmlFacade.getCheckboxField({ title: i18n[name],
+                                                           name: name + "-" + sessionId,
+                                                           id: name + "-" + sessionId,
+                                                           checked: (val === "active" ? null : val),
+                                                           tooltip: i18n.cancelledVortexTooltip
+                                                         }, name);
+          } else {
+            html += "<abbr tabindex='0' class='tooltips cancelled-tp' title='" + i18n.cancelledTPTooltip + "'></abbr>";
+          }
         }
         break;
       default:
@@ -1902,7 +1919,7 @@ function editorHtmlToJSON(sessionElms, descs, rawOrig, rawPtr) {
     } else {
       var elm = sessionElms.find("input[name='" + name + "']");
     }
-    if(!elm.length) continue; // This should not happen
+    if(!elm.length) continue;
 
     if(desc.type === "checkbox") {
       if(elm[0].checked) {

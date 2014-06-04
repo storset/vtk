@@ -155,7 +155,8 @@
             "buildingAcronym": "GS",
             "roomId": "1501",
             "roomName": "Auditorium 1"
-          }]
+          }],
+          "vrtxOrphan": true
         }, {
           "id": "14H-EXPHIL03-1-1-1-2-1/38",
           "dtStart": "2014-09-15T12:15:00.000+02:00",

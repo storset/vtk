@@ -1332,6 +1332,7 @@ function courseSchedule() {
         vrtxEdit = vrtxEditor,
         html = "",
         htmlMiddle = "",
+        htmlArr = [],
         sessions = [],
         sequences = {}, // For fixed resources
         sessionsHtml = "",
@@ -1379,12 +1380,27 @@ function courseSchedule() {
           var sessionHtml = this.getSessionHtml(id, sessions[j], sequences, descs, skipTier, editorJSONToHtmlFunc);
           sessionsHtml += vrtxEdit.htmlFacade.getAccordionInteraction(!skipTier ? "5" : "4", sessionHtml.sessionId, "session", sessionHtml.title, sessionHtml.html);
         }
+
         if(!skipTier) {
           this.sessionsLookup[id].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
-          htmlMiddle += vrtxEdit.htmlFacade.getAccordionInteraction("4", id, type, this.i18n.titles.groupNum + " " + groupNumber, "");
+          htmlArr.push({ "groupCode": groupCode, "groupNr": groupNumber, "tableHtml": vrtxEdit.htmlFacade.getAccordionInteraction("4", id, type, this.i18n.titles.groupNum + " " + groupNumber, "") });
+          
           if(!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== dtShort) {
+            // Sort group code and group number if equal
+            htmlArr.sort(function(a, b) { // http://www.sitepoint.com/sophisticated-sorting-in-javascript/
+              var x = a.groupCode, y = b.groupCode;
+              if(x === y) {
+                return a.groupNr - b.groupNr;
+              }
+              return x < y ? -1 : x > y ? 1 : 0;
+            });
+            var startSlice = 0;
+            var htmlMiddle = "";
+            for(j = 0, len = htmlArr.length; j < len; j++) {
+              htmlMiddle += htmlArr[j].tableHtml;
+            }
             html += vrtxEdit.htmlFacade.getAccordionInteraction("3", dtShort, type, dt.teachingMethodName, "<div class='vrtx-grouped'>" + htmlMiddle + "</div>");
-            htmlMiddle = "";
+            htmlArr = [];
           }
           sessionsHtml = "";
           sessions = [];

@@ -210,7 +210,7 @@ function scheduleUtils() {
     for(var i = 0; i < len; i++) {
       if(i === split1) html += "</ul><ul class='thirds-middle'>";
       if(i === split2) html += "</ul><ul class='thirds-right'>";
-      html += notTime ? arr[i].tocHtml.replace(/^(<a[^>]+>).*$/, "$1") : arr[i].tocHtml;
+      html += notTime ? arr[i].tocHtml.replace(/^.*(<a[^>]+>[^<]+<\/a>).*$/, "<li>$1</li>") : arr[i].tocHtml;
     }
     html += "</ul></div>";
     return html;

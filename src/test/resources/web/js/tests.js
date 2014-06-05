@@ -132,11 +132,11 @@ test("Generating Table HTML", function () {
                                  "Resources - List of: Link + freetext");
 });
 test("Generating ToC HTML", function () {
-  equal(utils.splitThirds(['<li><a href="#sem-2-11">Group 11</a> - thu 16:30–18:15</li>',
-                           '<li><a href="#sem-2-12">Group 12</a> - thu 16:30–18:15</li>',
-                           '<li><a href="#sem-2-13">Group 13</a> - thu 16:30–18:15</li>',
-                           '<li><a href="#sem-2-14">Group 14</a> - thu 16:30–18:15</li>',
-                           '<li><a href="#sem-2-15">Group 15</a> - thu 12:15–14:00</li>'], "Seminar"),
+  equal(utils.splitThirds([{ tocHtml: '<li><a href="#sem-2-11">Group 11</a> - thu 16:30–18:15</li>' },
+                           { tocHtml: '<li><a href="#sem-2-12">Group 12</a> - thu 16:30–18:15</li>' },
+                           { tocHtml: '<li><a href="#sem-2-13">Group 13</a> - thu 16:30–18:15</li>' },
+                           { tocHtml: '<li><a href="#sem-2-14">Group 14</a> - thu 16:30–18:15</li>' },
+                           { tocHtml: '<li><a href="#sem-2-15">Group 15</a> - thu 12:15–14:00</li>' }], "Seminar"),
                            "<span class='display-as-h3'>Seminar</span><div class='course-schedule-toc-thirds'><ul class='thirds-left'><li><a href=\"#sem-2-11\">Group 11</a> - thu 16:30–18:15</li><li><a href=\"#sem-2-12\">Group 12</a> - thu 16:30–18:15</li></ul><ul class='thirds-middle'><li><a href=\"#sem-2-13\">Group 13</a> - thu 16:30–18:15</li><li><a href=\"#sem-2-14\">Group 14</a> - thu 16:30–18:15</li></ul><ul class='thirds-right'><li><a href=\"#sem-2-15\">Group 15</a> - thu 12:15–14:00</li></ul></div>",
                            "Split in thirds - Seminar groups");
 });

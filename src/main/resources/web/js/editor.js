@@ -1437,7 +1437,7 @@ function courseSchedule() {
               htmlMiddle += htmlArr[j].accHtml;
               var specialGroupCode = this.i18n[htmlArr[j].groupCode];
               if(specialGroupCode && (!htmlArr[j+1] || specialGroupCode != this.i18n[htmlArr[j+1].groupCode])) {
-                html += vrtxEdit.htmlFacade.getAccordionInteraction("3", dtShort, type, specialGroupCode, "<div class='vrtx-grouped'>" + htmlMiddle + "</div>");
+                html += vrtxEdit.htmlFacade.getAccordionInteraction("3", htmlArr[j].groupCode, type, specialGroupCode, "<div class='vrtx-grouped'>" + htmlMiddle + "</div>");
                 htmlMiddle = "";
               }
             }

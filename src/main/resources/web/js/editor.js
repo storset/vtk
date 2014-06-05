@@ -181,7 +181,7 @@ VrtxEditor.prototype.richtextEditorFacade = {
         rteFacade.setup(rteFacade.editorsForInit[i]);
         i++;
         if (i < len) {
-          setTimeout(richTextEditorsInitLoadTimer, rteFacade.initAsyncInterval);
+          setTimeout(arguments.callee, rteFacade.initAsyncInterval);
         }
       }, rteFacade.initAsyncInterval);
     }

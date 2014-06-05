@@ -7,7 +7,7 @@ var scheduleDeferred = $.Deferred();
 var scheduleDocumentReady = $.Deferred();
 var scheduleStartTime = +new Date();
 var scheduleDocReadyEndTime = 0;
-var scheduleSupportsThreads = false && typeof Worker === "function";
+var scheduleSupportsThreads = typeof Worker === "function";
 $(document).ready(function() {
   scheduleDocumentReady.resolve();
   scheduleDocReadyEndTime = +new Date() - scheduleStartTime;
@@ -33,7 +33,7 @@ function initSchedule() {
   }
   url += "?action=course-schedule";
   // Debug: Local development
-  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  // url = "/vrtx/__vrtx/static-resources/js/tp-test2.json";
   
   // GET JSON
   $.ajax({

@@ -1850,6 +1850,9 @@ function courseSchedule() {
   });
 }
 
+/* 
+ * Turn a block of JSON into HTML
+ */
 function editorJSONToHtml(id, sessionId, session, fixedResources, descs, i18n) {
   var html = "";
   var multiples = [];
@@ -1958,6 +1961,9 @@ function editorJSONToHtml(id, sessionId, session, fixedResources, descs, i18n) {
   return { html: html, multiples: multiples, rtEditors: rtEditors };
 }
 
+/* 
+ * Turn a block of HTML/DOM into JSON
+ */
 function editorHtmlToJSON(sessionElms, descs, rawOrig, rawPtr) {
   var vrtxEdit = vrtxEditor;
   var editorDetectChangeFunc = editorDetectChange;

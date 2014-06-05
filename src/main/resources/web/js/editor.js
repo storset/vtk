@@ -1914,9 +1914,17 @@ function editorJSONToHtml(id, sessionId, session, fixedResources, descs, i18n) {
         if(val) {
           var buttons = /* "<a class='vrtx-button create-fixed-resources-folder' id='" + sessionId + "-create-fixed-resources' href='javascript:void(0);'>Lag ressursmappe</a> "  */
                         "<a class='vrtx-button admin-fixed-resources-folder' href='" + val[0].url.replace(/[^\\/]*$/, "") + "?vrtx=admin&refreshparent=true" + "'>Last opp flere / administrer</a>";
-          for(var j = 0, propsLen = val.length; j < propsLen; j++) {
+          
+          var propsLen = val.length;
+          
+          if(propsLen > 1) propsVal += "<ul>";
+          for(var j = 0; j < propsLen; j++) {
+            if(propsLen > 1) propsVal += "<li>";
             propsVal += "<a href='" + val[j].url + "'>" + val[j].title + "</a>";
+            if(propsLen > 1) propsVal += "</li>";
           }
+          if(propsLen > 1) propsVal += "</ul>";
+          
           html += "<div class='vrtx-simple-html'><label>" + i18n[name] + "</label><div class='preview-html'>" + propsVal + "</div>" + buttons + "</div>";
         }
         break;

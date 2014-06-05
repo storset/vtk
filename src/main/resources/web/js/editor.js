@@ -2198,6 +2198,7 @@ function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown
     }
     
     autocompleteUsername(".vrtx-autocomplete-username", idstr + i);
+    autocompleteUsername(".vrtx-autocomplete-username", idstr + "id-" + i); // JSON name='id' fix
     
     var focusable = addBtn.prev().find("input[type='text'], select")
     if(focusable.length) {

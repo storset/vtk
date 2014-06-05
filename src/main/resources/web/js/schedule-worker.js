@@ -384,28 +384,31 @@ function generateHTMLForType(d, supportThreads, type, scheduleI18n, canEdit) {
           if(staffCount)     sessionsHtml += editLink("course-schedule-table-staff", "<span class='responsive-header'>" + scheduleI18n.tableStaff + "</span>" + sessionPreprocessed.staff, staffCount, canEdit, scheduleI18n);
         sessionsHtml += "</tr>";
       
-        if(tocTimeCount < tocTimeMax) {
-          var newTocTime = day.toLowerCase().substring(0,3) + " " + time;
-          if(tocTime.indexOf(newTocTime) === -1) {
+        
+        var newTocTime = day.toLowerCase().substring(0,3) + " " + time;
+        if(tocTime.indexOf(newTocTime) === -1) {
+          if(tocTimeCount < tocTimeMax) {
             if(tocTimeCount > 0) {
               tocTime += ", ";
               tocTime += "<span>";
             }
             tocTime += newTocTime;
             tocTime += "</span>";
-            tocTimeCount++;
           }
+          tocTimeCount++;
         }
       }
       
       // Generate table and ToC
-      tocTime = tocTime.replace(/,([^,]+)$/, " " + scheduleI18n.and + "$1");
       var section = { "groupCode": groupCode, "groupNr": groupNumber, "tableHtml": getTableStartHtml(activityId, caption, (passedCount === sessionsCount), resourcesCount, staffCount, scheduleI18n) + sessionsHtml + getTableEndHtml(passedCount === 0, scheduleI18n) };
+      
+      tocTime = tocTime.replace(/,([^,]+)$/, " " + scheduleI18n.and + "$1");
       if(!skipTier) {
-        section.tocHtml = "<li><span><a href='#" + activityId + "'>" + scheduleI18n.groupTitle + " " + groupNumber + "</a> - " + tocTime + "</li>";
+        section.tocHtml = "<li><span><a href='#" + activityId + "'>" + scheduleI18n.groupTitle + " " + groupNumber + "</a>" + (tocTimeCount <= tocTimeMax ? " - " + tocTime : "") + "</li>";
       } else {
         tocHtml += "<li><span><a href='#" + activityId + "'>" + dtLong + "</a> - " + tocTime + "</li>";
       }
+      
       htmlArr.push(section);
 
       // Sort groups

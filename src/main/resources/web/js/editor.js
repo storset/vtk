@@ -1190,6 +1190,12 @@ function courseSchedule() {
       "cancelledTPTooltip": "Aktiviteten er avlyst i timeplanleggingssystemet",
       "orphan": "SLETTET",
       
+      "P": "PBL",
+      "PF": "PBL felles",
+      "K": "Klinisk",
+      "KF": "Klinisk felles",
+      "S": "Sekundær",
+      
       "vrtxTitle": "Tittel:",
       "vrtxStaff": "Forelesere:",
       "vrtxStaffExternal": "Eksterne forelesere:",
@@ -1233,6 +1239,12 @@ function courseSchedule() {
       "cancelledTPTooltip": "Aktiviteten er avlyst i timeplanleggingssystemet",
       "orphan": "SLETTET",
       
+      "P": "PBL",
+      "PF": "PBL felles",
+      "K": "Klinisk",
+      "KF": "Klinisk felles",
+      "S": "Sekundær",
+      
       "vrtxTitle": "Tittel:",
       "vrtxStaff": "Forelesere:",
       "vrtxStaffExternal": "Eksterne forelesere:",
@@ -1275,6 +1287,12 @@ function courseSchedule() {
       "cancelledVortexTooltip": "The activity can be cancelled in Vortex",
       "cancelledTPTooltip": "The activity is cancelled in the schedulling system",
       "orphan": "DELETED",
+      
+      "P": "PBL",
+      "PF": "PBL plenary",
+      "K": "Clinical",
+      "KF": "Clinical plenary",
+      "S": "Secondary",
       
       "vrtxTitle": "Title:",
       "vrtxStaff": "Staff:",
@@ -1400,7 +1418,7 @@ function courseSchedule() {
 
         if(!skipTier) {
           this.sessionsLookup[id].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
-          htmlArr.push({ "groupCode": groupCode, "groupNr": groupNumber, "tableHtml": vrtxEdit.htmlFacade.getAccordionInteraction("4", id, type, this.i18n.titles.groupNum + " " + groupNumber, "") });
+          htmlArr.push({ "groupCode": groupCode, "groupNr": groupNumber, "accHtml": vrtxEdit.htmlFacade.getAccordionInteraction("4", id, type, this.i18n.titles.groupNum + " " + groupNumber, "") });
           
           if(!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== dtShort) {
             // Sort group code and group number if equal
@@ -1411,13 +1429,18 @@ function courseSchedule() {
               }
               return x < y ? -1 : x > y ? 1 : 0;
             });
-            // TODO: slice MEDSEM groups
-            var startSlice = 0;
             var htmlMiddle = "";
             for(j = 0, len = htmlArr.length; j < len; j++) {
-              htmlMiddle += htmlArr[j].tableHtml;
+              htmlMiddle += htmlArr[j].accHtml;
+              var specialGroupCode = this.i18n[htmlArr[j].groupCode];
+              if(specialGroupCode && (!htmlArr[j+1] || specialGroupCode != this.i18n[htmlArr[j+1].groupCode])) {
+                html += vrtxEdit.htmlFacade.getAccordionInteraction("3", dtShort, type, specialGroupCode, "<div class='vrtx-grouped'>" + htmlMiddle + "</div>");
+                htmlMiddle = "";
+              }
             }
-            html += vrtxEdit.htmlFacade.getAccordionInteraction("3", dtShort, type, dt.teachingMethodName, "<div class='vrtx-grouped'>" + htmlMiddle + "</div>");
+            if(htmlMiddle != "") {
+              html += vrtxEdit.htmlFacade.getAccordionInteraction("3", dtShort, type, dt.teachingMethodName, "<div class='vrtx-grouped'>" + htmlMiddle + "</div>");
+            }
             htmlArr = [];
           }
           sessionsHtml = "";

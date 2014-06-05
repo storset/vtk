@@ -201,7 +201,7 @@ function scheduleUtils() {
     html += "</div>";
     return html;
   };
-  this.splitThirds = function(arr, title) {
+  this.splitThirds = function(arr, title, notTime) {
     var html = "<span class='display-as-h3'>" + title + "</span>",
         len = arr.length,
         split1 = ceil(len / 3),
@@ -210,7 +210,7 @@ function scheduleUtils() {
     for(var i = 0; i < len; i++) {
       if(i === split1) html += "</ul><ul class='thirds-middle'>";
       if(i === split2) html += "</ul><ul class='thirds-right'>";
-      html += arr[i].tocHtml;
+      html += notTime ? arr[i].tocHtml.replace(/^(<a[^>]+>).*$/, "$1") : arr[i].tocHtml;
     }
     html += "</ul></div>";
     return html;
@@ -426,7 +426,7 @@ function generateHTMLForType(d, supportThreads, type, scheduleI18n, canEdit) {
           if(!skipTier) {
             var specialGroupCode = scheduleI18n[htmlArr[j].groupCode];
             if(specialGroupCode && (!htmlArr[j+1] || specialGroupCode != scheduleI18n[htmlArr[j+1].groupCode])) {
-              tocHtml += splitThirds(htmlArr.slice(startSlice, j + 1), specialGroupCode);
+              tocHtml += splitThirds(htmlArr.slice(startSlice, j + 1), specialGroupCode, len > 30);
               startSlice = j + 1;
             }
           }
@@ -434,7 +434,7 @@ function generateHTMLForType(d, supportThreads, type, scheduleI18n, canEdit) {
         }
         if(!skipTier) {
           if(startSlice === 0) {
-            tocHtml += splitThirds(htmlArr, dtLong);
+            tocHtml += splitThirds(htmlArr, dtLong, len > 30);
           }
         }
         htmlArr = [];

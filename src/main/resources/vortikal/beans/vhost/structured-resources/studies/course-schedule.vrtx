@@ -45,12 +45,13 @@ resourcetype course-schedule {
             "header-group": "[localized 'header-group']",
             "groupTitle": "[localized 'group-title']",
             "and": "[localized 'and']",
-            
-            "P": "[localized 'pbl']",
-            "PF": "[localized 'pblf']",
+
             "K": "[localized 'kl']",
-            "KF": "[localized 'klf']",
+            "P": "[localized 'pbl']",
             "S": "[localized 'sek']",
+            "KF": "[localized 'klf']",
+            "PF": "[localized 'pblf']",
+            "SF": "[localized 'sekf']",
 
             "d0": "[localized 'dSun']",
             "d1": "[localized 'dMon']",
@@ -130,11 +131,12 @@ resourcetype course-schedule {
     group-title: (en : "Group", no : "Gruppe", nn : "Gruppe"),
     and : (en : "and", no : "og", nn : "og"),
     
-    pbl : (en : "PBL", no : "PBL", nn : "PBL"),
-    pblf : (en : "PBL plenary", no : "PBL felles", nn : "PBL felles"),
-    kl : (en : "Clinical", no : "Klinisk", nn : "Klinisk"),
-    klf : (en : "Clinical plenary", no : "Klinisk felles", nn : "Klinisk felles"),
-    sek : (en : "Secondary", no : "Sekundær", nn : "Sekundær"),
+    kl : (en : "Clinical small groups", no : "Kliniske smågrupper", nn : "Kliniske smågrupper"),
+    pbl : (en : "PBL-groups", no : "PBL-grupper", nn : "PBL-grupper"),
+    sek : (en : "Secondary small groups", no : "Sekundære smågrupper", nn : "Sekundære smågrupper"),
+    klf : (en : "Clinical plenary teaching", no : "Klinisk fellesundervisning", nn : "Klinisk fellesundervisning"),
+    pblf : (en : "PBL plenary teaching", no : "PBL-fellesundervisning", nn : "PBL-fellesundervisning"),
+    sekf : (en : "Secondary plenary teaching", no : "Sekundær fellesundervisning", nn : "Sekundær fellesundervisning"),
 
     dSun : (en : "Sunday",    no : "Søndag",  nn : "Søndag"),
     dMon : (en : "Monday",    no : "Mandag",  nn : "Mandag"),

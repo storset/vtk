@@ -426,7 +426,8 @@ function generateHTMLForType(d, supportThreads, type, scheduleI18n, canEdit) {
           if(!skipTier) {
             var specialGroupCode = scheduleI18n[htmlArr[j].groupCode];
             if(specialGroupCode && (!htmlArr[j+1] || specialGroupCode != scheduleI18n[htmlArr[j+1].groupCode])) {
-              tocHtml += splitThirds(htmlArr.slice(startSlice, j + 1), specialGroupCode, len > 30);
+              var slicedHtmlArr = htmlArr.slice(startSlice, j + 1);
+              tocHtml += splitThirds(slicedHtmlArr, specialGroupCode, slicedHtmlArr.length > 30);
               startSlice = j + 1;
             }
           }

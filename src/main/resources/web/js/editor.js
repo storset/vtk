@@ -1913,7 +1913,7 @@ function editorJSONToHtml(id, sessionId, session, fixedResources, descs, i18n) {
       case "json-fixed":
         if(val) {
           var buttons = /* "<a class='vrtx-button create-fixed-resources-folder' id='" + sessionId + "-create-fixed-resources' href='javascript:void(0);'>Lag ressursmappe</a> "  */
-                        "<a class='vrtx-button admin-fixed-resources-folder' href='" + val[0].url.replace(/[^\\/]*$/, "") + "?vrtx=admin&refreshparent=true" + "'>Last opp flere / administrer</a>";
+                        (val[0].url ? "<a class='vrtx-button admin-fixed-resources-folder' href='" + val[0].url.replace(/[^\\/]*$/, "") + "?vrtx=admin&refreshparent=true" + "'>Last opp flere / administrer</a>" : "");
           
           var propsLen = val.length;
           

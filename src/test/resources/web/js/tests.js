@@ -132,11 +132,25 @@ test("Generating Table HTML", function () {
                                  "Resources - List of: Link + freetext");
 });
 test("Generating ToC HTML", function () {
-  equal(utils.splitThirds([{ tocHtml: '<li><a href="#sem-2-11">Group 11</a> - thu 16:30–18:15</li>' },
-                           { tocHtml: '<li><a href="#sem-2-12">Group 12</a> - thu 16:30–18:15</li>' },
-                           { tocHtml: '<li><a href="#sem-2-13">Group 13</a> - thu 16:30–18:15</li>' },
-                           { tocHtml: '<li><a href="#sem-2-14">Group 14</a> - thu 16:30–18:15</li>' },
-                           { tocHtml: '<li><a href="#sem-2-15">Group 15</a> - thu 12:15–14:00</li>' }], "Seminar"),
-                           "<span class='display-as-h3'>Seminar</span><div class='course-schedule-toc-thirds'><ul class='thirds-left'><li><a href=\"#sem-2-11\">Group 11</a> - thu 16:30–18:15</li><li><a href=\"#sem-2-12\">Group 12</a> - thu 16:30–18:15</li></ul><ul class='thirds-middle'><li><a href=\"#sem-2-13\">Group 13</a> - thu 16:30–18:15</li><li><a href=\"#sem-2-14\">Group 14</a> - thu 16:30–18:15</li></ul><ul class='thirds-right'><li><a href=\"#sem-2-15\">Group 15</a> - thu 12:15–14:00</li></ul></div>",
-                           "Split in thirds - Seminar groups");
+  var testData = [];
+  for(var i = 0, len = 5; i < len; i++) {
+    testData.push({ tocHtml: '<li><a href="#sem-1-"' + i + '">Group ' + i + '</a> - thu 12:30–14:15</li>' });
+  }
+  equal(utils.splitThirds(testData, "Seminar", testData.length > 30),
+                          "<span class='display-as-h3'>Seminar</span><div class='course-schedule-toc-thirds'><ul class='thirds-left'><li><a href=\"#sem-1-\"0\">Group 0</a> - thu 12:30–14:15</li><li><a href=\"#sem-1-\"1\">Group 1</a> - thu 12:30–14:15</li></ul><ul class='thirds-middle'><li><a href=\"#sem-1-\"2\">Group 2</a> - thu 12:30–14:15</li><li><a href=\"#sem-1-\"3\">Group 3</a> - thu 12:30–14:15</li></ul><ul class='thirds-right'><li><a href=\"#sem-1-\"4\">Group 4</a> - thu 12:30–14:15</li></ul></div>",
+                          "Split in thirds - Seminar groups");
+  var testData = [];
+  for(var i = 0, len = 30; i < len; i++) {
+    testData.push({ tocHtml: '<li><a href="#sem-1-"' + i + '">Group ' + i + '</a> - thu 12:30–14:15</li>' });
+  }
+  equal(utils.splitThirds(testData, "Seminar", testData.length > 30),
+                          "<span class='display-as-h3'>Seminar</span><div class='course-schedule-toc-thirds'><ul class='thirds-left'><li><a href=\"#sem-1-\"0\">Group 0</a> - thu 12:30–14:15</li><li><a href=\"#sem-1-\"1\">Group 1</a> - thu 12:30–14:15</li><li><a href=\"#sem-1-\"2\">Group 2</a> - thu 12:30–14:15</li><li><a href=\"#sem-1-\"3\">Group 3</a> - thu 12:30–14:15</li><li><a href=\"#sem-1-\"4\">Group 4</a> - thu 12:30–14:15</li><li><a href=\"#sem-1-\"5\">Group 5</a> - thu 12:30–14:15</li><li><a href=\"#sem-1-\"6\">Group 6</a> - thu 12:30–14:15</li><li><a href=\"#sem-1-\"7\">Group 7</a> - thu 12:30–14:15</li><li><a href=\"#sem-1-\"8\">Group 8</a> - thu 12:30–14:15</li><li><a href=\"#sem-1-\"9\">Group 9</a> - thu 12:30–14:15</li></ul><ul class='thirds-middle'><li><a href=\"#sem-1-\"10\">Group 10</a> - thu 12:30–14:15</li><li><a href=\"#sem-1-\"11\">Group 11</a> - thu 12:30–14:15</li><li><a href=\"#sem-1-\"12\">Group 12</a> - thu 12:30–14:15</li><li><a href=\"#sem-1-\"13\">Group 13</a> - thu 12:30–14:15</li><li><a href=\"#sem-1-\"14\">Group 14</a> - thu 12:30–14:15</li><li><a href=\"#sem-1-\"15\">Group 15</a> - thu 12:30–14:15</li><li><a href=\"#sem-1-\"16\">Group 16</a> - thu 12:30–14:15</li><li><a href=\"#sem-1-\"17\">Group 17</a> - thu 12:30–14:15</li><li><a href=\"#sem-1-\"18\">Group 18</a> - thu 12:30–14:15</li><li><a href=\"#sem-1-\"19\">Group 19</a> - thu 12:30–14:15</li></ul><ul class='thirds-right'><li><a href=\"#sem-1-\"20\">Group 20</a> - thu 12:30–14:15</li><li><a href=\"#sem-1-\"21\">Group 21</a> - thu 12:30–14:15</li><li><a href=\"#sem-1-\"22\">Group 22</a> - thu 12:30–14:15</li><li><a href=\"#sem-1-\"23\">Group 23</a> - thu 12:30–14:15</li><li><a href=\"#sem-1-\"24\">Group 24</a> - thu 12:30–14:15</li><li><a href=\"#sem-1-\"25\">Group 25</a> - thu 12:30–14:15</li><li><a href=\"#sem-1-\"26\">Group 26</a> - thu 12:30–14:15</li><li><a href=\"#sem-1-\"27\">Group 27</a> - thu 12:30–14:15</li><li><a href=\"#sem-1-\"28\">Group 28</a> - thu 12:30–14:15</li><li><a href=\"#sem-1-\"29\">Group 29</a> - thu 12:30–14:15</li></ul></div>",
+                          "Split in thirds (30) - Seminar groups");
+  var testData = [];
+  for(var i = 0, len = 31; i < len; i++) {
+    testData.push({ tocHtml: '<li><a href="#sem-1-"' + i + '">Group ' + i + '</a> - thu 12:30–14:15</li>' });
+  }                    
+  equal(utils.splitThirds(testData, "Seminar", testData.length > 30),
+                          "<span class='display-as-h3'>Seminar</span><div class='course-schedule-toc-thirds'><ul class='thirds-left'><li><a href=\"#sem-1-\"0\">Group 0</a></li><li><a href=\"#sem-1-\"1\">Group 1</a></li><li><a href=\"#sem-1-\"2\">Group 2</a></li><li><a href=\"#sem-1-\"3\">Group 3</a></li><li><a href=\"#sem-1-\"4\">Group 4</a></li><li><a href=\"#sem-1-\"5\">Group 5</a></li><li><a href=\"#sem-1-\"6\">Group 6</a></li><li><a href=\"#sem-1-\"7\">Group 7</a></li><li><a href=\"#sem-1-\"8\">Group 8</a></li><li><a href=\"#sem-1-\"9\">Group 9</a></li><li><a href=\"#sem-1-\"10\">Group 10</a></li></ul><ul class='thirds-middle'><li><a href=\"#sem-1-\"11\">Group 11</a></li><li><a href=\"#sem-1-\"12\">Group 12</a></li><li><a href=\"#sem-1-\"13\">Group 13</a></li><li><a href=\"#sem-1-\"14\">Group 14</a></li><li><a href=\"#sem-1-\"15\">Group 15</a></li><li><a href=\"#sem-1-\"16\">Group 16</a></li><li><a href=\"#sem-1-\"17\">Group 17</a></li><li><a href=\"#sem-1-\"18\">Group 18</a></li><li><a href=\"#sem-1-\"19\">Group 19</a></li><li><a href=\"#sem-1-\"20\">Group 20</a></li></ul><ul class='thirds-right'><li><a href=\"#sem-1-\"21\">Group 21</a></li><li><a href=\"#sem-1-\"22\">Group 22</a></li><li><a href=\"#sem-1-\"23\">Group 23</a></li><li><a href=\"#sem-1-\"24\">Group 24</a></li><li><a href=\"#sem-1-\"25\">Group 25</a></li><li><a href=\"#sem-1-\"26\">Group 26</a></li><li><a href=\"#sem-1-\"27\">Group 27</a></li><li><a href=\"#sem-1-\"28\">Group 28</a></li><li><a href=\"#sem-1-\"29\">Group 29</a></li><li><a href=\"#sem-1-\"30\">Group 30</a></li></ul></div>",
+                          "Split in thirds (above 30) - Seminar groups");
 });

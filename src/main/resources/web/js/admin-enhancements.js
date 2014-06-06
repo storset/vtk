@@ -2707,11 +2707,11 @@ function updateClientLastModifiedAlreadyRetrieved() {
 
 function isServerLastModifiedOlderThanClientLastModified(d) {
   var olderThanMs = 1000; // Ignore changes in 1 second to avoid most strange cases
-  
+
   var isOlder = true;
   vrtxAdmin._$.ajax({
     type: "GET",
-    url: location.pathname + "?vrtx=admin&mode=about",
+    url: location.pathname + "?vrtx=admin&mode=about" + (gup("service", location.search) === "view" ? "&service=view" : ""),
     async: false,
     cache: false,
     success: function (results, status, resp) {

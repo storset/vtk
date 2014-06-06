@@ -1336,7 +1336,7 @@ function courseSchedule() {
       this.sessionsLookup[id] = {};
     }
     var sessionDateTime = this.getDateTime(session.dtStart, session.dtEnd);
-    var sessionHtml = this.getSessionHtml(id, session, sessionDateTime, sequences, descs, skipTier, editorJSONToHtml);    
+    var sessionHtml = this.getSessionHtml(id, session, sessionDateTime, sequences, descs, skipTier, vrtxEditor);    
     
     this.lastElm = $(".properties"); 
     this.lastId = id;
@@ -1354,8 +1354,7 @@ function courseSchedule() {
     if(!dataLen) return "";
     
     // Store sessions HTML and multiple descriptions in lookup object
-    var editorJSONToHtmlFunc = editorJSONToHtml,
-        vrtxEdit = vrtxEditor,
+    var vrtxEdit = vrtxEditor,
         html = "",
         htmlArr = [],
         sessions = [],
@@ -1415,7 +1414,7 @@ function courseSchedule() {
         for(j = 0, len = map.length; j < len; j++) {
           var session = sessions[map[j].index];
           var sessionProcessed = sessionsProcessed[map[j].index];
-          var sessionHtml = this.getSessionHtml(id, session, sessionProcessed.dateTime, sequences, descs, skipTier, editorJSONToHtmlFunc);
+          var sessionHtml = this.getSessionHtml(id, session, sessionProcessed.dateTime, sequences, descs, skipTier, vrtxEdit);
           sessionsHtml += vrtxEdit.htmlFacade.getAccordionInteraction(!skipTier ? "5" : "4", sessionHtml.sessionId, "session", sessionHtml.title, sessionHtml.html);
         }
 
@@ -1458,7 +1457,7 @@ function courseSchedule() {
      
     return html;
   };
-  this.getSessionHtml = function(id, session, sessionDateTime, sequences, descs, skipTier, editorJSONToHtmlFunc) {
+  this.getSessionHtml = function(id, session, sessionDateTime, sequences, descs, skipTier, vrtxEdit) {
     var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime),
         sessionId = id + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId,
         sequenceId = session.id.replace(/\/[^\/]*$/, ""),
@@ -1470,7 +1469,7 @@ function courseSchedule() {
                        (sessionOrphan ? "<span class='header-status'>" + this.i18n.orphan + "</span> - " : "") +
                        (session.vrtxTitle || session.title || session.id) + "</span>" +
                        (rooms ? (" - " + (rooms[0].buildingAcronym || rooms[0].buildingId) + " " + this.i18n.room + " " + rooms[0].roomId) : ""),
-        sessionContent = editorJSONToHtmlFunc(id, sessionId, session, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
+        sessionContent = vrtxEdit.jsonSwitchHtmlFacade.jsonToHtml(id, sessionId, session, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
 
      this.sessionsLookup[id][sessionId] = {
        isEnhanced: false,
@@ -1603,7 +1602,7 @@ function courseSchedule() {
     var rawPtr = sessionLookup.rawPtr;
     var descsPtr = sessionLookup.descsPtr;
     
-    editorHtmlToJSON(sessionElms, descsPtr, rawOrig, rawPtr);
+    vrtxEditor.jsonSwitchHtmlFacade.htmlToJson(sessionElms, descsPtr, rawOrig, rawPtr);
 
     sessionLookup.hasChanges = editorDetectChange(rawPtr, rawOrig);
   };
@@ -1848,171 +1847,6 @@ function courseSchedule() {
       editorProperties.show();
     }, 50);
   });
-}
-
-/* 
- * Turn a block of JSON into HTML
- */
-function editorJSONToHtml(id, sessionId, session, fixedResources, descs, i18n) {
-  var html = "";
-  var multiples = [];
-  var rtEditors = [];
-  var vrtxEdit = vrtxEditor;
-  for(var name in descs) {
-    var desc = descs[name],
-        descProps = jQuery.extend(true, [], desc.props),
-        val = session[name] || fixedResources[name],
-        origVal = "",
-        propsVal = "",
-        browsable = false,
-        hasOrig = false;
-    
-    var origName = name.split("vrtx")[1];
-    if(origName) {
-      var origVal = session[origName.toLowerCase()];
-      if(origVal && origVal != "") {
-        if(!val || !val.length) {
-          val = origVal;
-        }
-        hasOrig = true;
-      }
-    }
-    switch(desc.type) {
-      case "json":
-        for(var i = 0, descPropsLen = descProps.length; i < descPropsLen; i++) {
-          descProps[i].title = i18n[name + "-" + descProps[i].name];
-          if(desc.multiple && desc.props[i].type === "resource_ref") {
-            browsable = true;
-          }
-        }
-        if(val) {
-          for(var j = 0, propsLen = val.length; j < propsLen; j++) {
-            for(i = 0; i < descPropsLen; i++) {
-              propsVal += (val[j][descProps[i].name] || "") + "###";
-            }
-            if(j < (propsLen - 1)) propsVal += "$$$";
-          }
-        }
-      case "string":
-        val = (propsVal != "") ? propsVal : val;
-        val = (desc.multiple && typeof val === "array") ? val.join(",") : val;
-        if(desc.multiple) {
-          multiples.push({
-            name: name,
-            json: descProps ? descProps : null, 
-            movable: desc.multiple.movable,
-            browsable: browsable
-          });
-        }
-        html += vrtxEdit.htmlFacade.getStringField({ title: i18n[name],
-                                                     name: (desc.autocomplete ? "vrtx-autocomplete-" + desc.autocomplete + " " : "") + name + "-" + sessionId,
-                                                     id: name + "-" + sessionId,
-                                                     val: val,
-                                                     size: desc.size
-                                                   }, name);
-        break;
-      case "json-fixed":
-        if(val) {
-          var buttons = /* "<a class='vrtx-button create-fixed-resources-folder' id='" + sessionId + "-create-fixed-resources' href='javascript:void(0);'>Lag ressursmappe</a> "  */
-                        (val[0].url ? "<a class='vrtx-button admin-fixed-resources-folder' href='" + val[0].url.replace(/[^\\/]*$/, "") + "?vrtx=admin&refreshparent=true" + "'>Last opp flere / administrer</a>" : "");
-          
-          var propsLen = val.length;
-          
-          if(propsLen > 1) propsVal += "<ul>";
-          for(var j = 0; j < propsLen; j++) {
-            if(propsLen > 1) propsVal += "<li>";
-            propsVal += "<a href='" + val[j].url + "'>" + val[j].title + "</a>";
-            if(propsLen > 1) propsVal += "</li>";
-          }
-          if(propsLen > 1) propsVal += "</ul>";
-          
-          html += "<div class='vrtx-simple-html'><label>" + i18n[name] + "</label><div class='preview-html'>" + propsVal + "</div>" + buttons + "</div>";
-        }
-        break;
-      case "html":
-        html += vrtxEdit.htmlFacade.getSimpleHtmlField({ title: i18n[name],
-                                                           name: name + "-" + sessionId,
-                                                           id: name + "-" + sessionId,
-                                                           val: val
-                                                         }, name + "-" + sessionId);
-        rtEditors.push(name + "-" + sessionId);
-        break;
-      case "checkbox":
-        if(!session.vrtxOrphan) {
-          if(!origVal || origVal !== desc.checkedVal) {
-            html += vrtxEdit.htmlFacade.getCheckboxField({ title: i18n[name],
-                                                           name: name + "-" + sessionId,
-                                                           id: name + "-" + sessionId,
-                                                           checked: (val === desc.checkedVal ? val : null),
-                                                           tooltip: i18n.cancelledVortexTooltip
-                                                         }, name);
-          } else {
-            html += "<abbr tabindex='0' class='tooltips cancelled-tp' title='" + i18n.cancelledTPTooltip + "'></abbr>";
-          }
-        }
-        break;
-      default:
-        break;
-    }
-  }
-   
-  return { html: html, multiples: multiples, rtEditors: rtEditors };
-}
-
-/* 
- * Turn a block of HTML/DOM into JSON
- */
-function editorHtmlToJSON(sessionElms, descs, rawOrig, rawPtr) {
-  var vrtxEdit = vrtxEditor;
-  var editorDetectChangeFunc = editorDetectChange;
-  for(var name in descs) {
-    var desc = descs[name],
-        val = "";
-    // XXX: support multiple CK-fields starting with same name
-    if(descs[name].type === "html") {
-      var elm = sessionElms.find("textarea[name^='" + name + "']");
-    } else {
-      var elm = sessionElms.find("input[name='" + name + "']");
-    }
-    if(!elm.length) continue;
-
-    if(desc.type === "checkbox") {
-      if(elm[0].checked) {
-        val = desc.checkedVal;
-      }
-    } else if(desc.type === "html") {
-      val = vrtxEdit.richtextEditorFacade.getInstanceValue(elm.attr("name"));
-    } else {
-      val = elm.val(); // To string (string)
-      if(desc.multiple && val.length) { // To array (multiple)
-        val = val.split("$$$");
-      }
-      if(desc.type === "json" && val.length) { // Object props into array (JSON multiple)
-        var arrProps = [];
-        for(var i = 0, arrLen = val.length; i < arrLen; i++) {
-          var newProp = null;
-          var prop = val[i].split("###");
-          for(var j = 0, descPropsLen = desc.props.length; j < descPropsLen; j++) { // Definition
-            if(prop[j] !== "") {
-              if(!newProp) {
-                newProp = {};
-              }
-              newProp[desc.props[j].name] = prop[j];
-            }
-          }
-          if(newProp) {
-            arrProps.push(newProp);
-          }
-        }
-        val = arrProps;
-      }
-    }
-    if(val && val.length && editorDetectChangeFunc(val, rawOrig[name.split("vrtx")[1].toLowerCase()])) {
-      rawPtr[name] = val;
-    } else {
-      delete rawPtr[name];
-    }
-  }
 }
 
 function editorDetectChange(o1, o2) {
@@ -2561,6 +2395,177 @@ function scrollToElm(movedElm) {
     }
   });
 }
+
+/**
+ * JSON<=>HTML/DOM facade
+ *
+ * @namespace
+ */
+VrtxEditor.prototype.jsonSwitchHtmlFacade = {
+  /* 
+   * Turn a block of JSON into HTML
+   */
+  jsonToHtml: function(id, sessionId, session, fixedResources, descs, i18n) {
+    var html = "";
+    var multiples = [];
+    var rtEditors = [];
+    var vrtxEdit = vrtxEditor;
+    for(var name in descs) {
+      var desc = descs[name],
+          descProps = jQuery.extend(true, [], desc.props),
+          val = session[name] || fixedResources[name],
+          origVal = "",
+          propsVal = "",
+          browsable = false,
+          hasOrig = false;
+    
+      var origName = name.split("vrtx")[1];
+      if(origName) {
+        var origVal = session[origName.toLowerCase()];
+        if(origVal && origVal != "") {
+          if(!val || !val.length) {
+            val = origVal;
+          }
+          hasOrig = true;
+        }
+      }
+      switch(desc.type) {
+        case "json":
+          for(var i = 0, descPropsLen = descProps.length; i < descPropsLen; i++) {
+            descProps[i].title = i18n[name + "-" + descProps[i].name];
+            if(desc.multiple && desc.props[i].type === "resource_ref") {
+              browsable = true;
+            }
+          }
+          if(val) {
+            for(var j = 0, propsLen = val.length; j < propsLen; j++) {
+              for(i = 0; i < descPropsLen; i++) {
+                propsVal += (val[j][descProps[i].name] || "") + "###";
+              }
+              if(j < (propsLen - 1)) propsVal += "$$$";
+            }
+          }
+        case "string":
+          val = (propsVal != "") ? propsVal : val;
+          val = (desc.multiple && typeof val === "array") ? val.join(",") : val;
+          if(desc.multiple) {
+            multiples.push({
+              name: name,
+              json: descProps ? descProps : null, 
+              movable: desc.multiple.movable,
+              browsable: browsable
+            });
+          }
+          html += vrtxEdit.htmlFacade.getStringField({ title: i18n[name],
+                                                       name: (desc.autocomplete ? "vrtx-autocomplete-" + desc.autocomplete + " " : "") + name + "-" + sessionId,
+                                                       id: name + "-" + sessionId,
+                                                       val: val,
+                                                       size: desc.size
+                                                     }, name);
+          break;
+        case "json-fixed":
+          if(val) {
+            var buttons = /* "<a class='vrtx-button create-fixed-resources-folder' id='" + sessionId + "-create-fixed-resources' href='javascript:void(0);'>Lag ressursmappe</a> "  */
+                          (val[0].url ? "<a class='vrtx-button admin-fixed-resources-folder' href='" + val[0].url.replace(/[^\\/]*$/, "") + "?vrtx=admin&refreshparent=true" + "'>Last opp flere / administrer</a>" : "");
+          
+            var propsLen = val.length;
+          
+            if(propsLen > 1) propsVal += "<ul>";
+            for(var j = 0; j < propsLen; j++) {
+              if(propsLen > 1) propsVal += "<li>";
+              propsVal += "<a href='" + val[j].url + "'>" + val[j].title + "</a>";
+              if(propsLen > 1) propsVal += "</li>";
+            }
+            if(propsLen > 1) propsVal += "</ul>";
+          
+            html += "<div class='vrtx-simple-html'><label>" + i18n[name] + "</label><div class='preview-html'>" + propsVal + "</div>" + buttons + "</div>";
+          }
+          break;
+        case "html":
+          html += vrtxEdit.htmlFacade.getSimpleHtmlField({ title: i18n[name],
+                                                           name: name + "-" + sessionId,
+                                                           id: name + "-" + sessionId,
+                                                           val: val
+                                                         }, name + "-" + sessionId);
+          rtEditors.push(name + "-" + sessionId);
+          break;
+        case "checkbox":
+          if(!session.vrtxOrphan) {
+            if(!origVal || origVal !== desc.checkedVal) {
+              html += vrtxEdit.htmlFacade.getCheckboxField({ title: i18n[name],
+                                                             name: name + "-" + sessionId,
+                                                             id: name + "-" + sessionId,
+                                                             checked: (val === desc.checkedVal ? val : null),
+                                                             tooltip: i18n.cancelledVortexTooltip
+                                                           }, name);
+            } else {
+              html += "<abbr tabindex='0' class='tooltips cancelled-tp' title='" + i18n.cancelledTPTooltip + "'></abbr>";
+            }
+          }
+          break;
+        default:
+          break;
+      }
+    }
+    return { html: html, multiples: multiples, rtEditors: rtEditors };
+  },
+
+ /* 
+  * Turn a block of HTML/DOM into JSON
+  */
+  htmlToJson: function (sessionElms, descs, rawOrig, rawPtr) {
+    var vrtxEdit = vrtxEditor;
+    var editorDetectChangeFunc = editorDetectChange;
+    for(var name in descs) {
+      var desc = descs[name],
+          val = "";
+      // XXX: support multiple CK-fields starting with same name
+      if(descs[name].type === "html") {
+        var elm = sessionElms.find("textarea[name^='" + name + "']");
+      } else {
+        var elm = sessionElms.find("input[name='" + name + "']");
+      }
+      if(!elm.length) continue;
+
+      if(desc.type === "checkbox") {
+        if(elm[0].checked) {
+          val = desc.checkedVal;
+        }
+      } else if(desc.type === "html") {
+        val = vrtxEdit.richtextEditorFacade.getInstanceValue(elm.attr("name"));
+      } else {
+        val = elm.val(); // To string (string)
+        if(desc.multiple && val.length) { // To array (multiple)
+          val = val.split("$$$");
+        }
+        if(desc.type === "json" && val.length) { // Object props into array (JSON multiple)
+          var arrProps = [];
+          for(var i = 0, arrLen = val.length; i < arrLen; i++) {
+            var newProp = null;
+            var prop = val[i].split("###");
+            for(var j = 0, descPropsLen = desc.props.length; j < descPropsLen; j++) { // Definition
+              if(prop[j] !== "") {
+                if(!newProp) {
+                  newProp = {};
+                }
+                newProp[desc.props[j].name] = prop[j];
+              }
+            }
+            if(newProp) {
+              arrProps.push(newProp);
+            }
+          }
+          val = arrProps;
+        }
+      }
+      if(val && val.length && editorDetectChangeFunc(val, rawOrig[name.split("vrtx")[1].toLowerCase()])) {
+        rawPtr[name] = val;
+      } else {
+        delete rawPtr[name];
+      }
+    }
+  }
+};
 
 /**
  * HTML facade (Input=>Template Engine=>HTML)

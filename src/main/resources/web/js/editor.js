@@ -1207,6 +1207,8 @@ function courseSchedule() {
       "vrtxResources-url": "Lenke",
       "vrtxResourcesText": "Fritekst ressurser:",
       "vrtxResourcesFixed": "Faste ressurser:",
+      "vrtxResourcesFixedUploadAdminFolder": "Last opp flere / administrer",
+      "vrtxResourcesFixedCreateFolder": "Lag mappe",
       "vrtxStatus": "Avlys"
     },
     "nn": {
@@ -1257,6 +1259,8 @@ function courseSchedule() {
       "vrtxResources-url": "Lenkje",
       "vrtxResourcesText": "Fritekst ressursar:",
       "vrtxResourcesFixed": "Faste ressursar:",
+      "vrtxResourcesFixedUploadAdminFolder": "Last opp fleire / administrer",
+      "vrtxResourcesFixedCreateFolder": "Lag mappe",
       "vrtxStatus": "Avlys"
     },
     "en": {
@@ -1307,6 +1311,8 @@ function courseSchedule() {
       "vrtxResources-url": "Link",
       "vrtxResourcesText": "Text resources:",
       "vrtxResourcesFixed": "Fixed resources:",
+      "vrtxResourcesFixedUploadAdminFolder": "Upload more / manage",
+      "vrtxResourcesFixedCreateFolder": "Create folder",
       "vrtxStatus": "Cancel"
     }
   };
@@ -2465,8 +2471,8 @@ VrtxEditor.prototype.jsonSwitchHtmlFacade = {
           break;
         case "json-fixed":
           if(val) {
-            var buttons = /* "<a class='vrtx-button create-fixed-resources-folder' id='" + sessionId + "-create-fixed-resources' href='javascript:void(0);'>Lag ressursmappe</a> "  */
-                          (val[0].url ? "<a class='vrtx-button admin-fixed-resources-folder' href='" + val[0].url.replace(/[^\\/]*$/, "") + "?vrtx=admin&refreshparent=true" + "'>Last opp flere / administrer</a>" : "");
+            var buttons = /* "<a class='vrtx-button create-fixed-resources-folder' id='" + sessionId + "-create-fixed-resources' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a> "  */
+                          (val[0].url ? "<a class='vrtx-button admin-fixed-resources-folder' href='" + val[0].url.replace(/[^\\/]*$/, "") + "?vrtx=admin&refreshparent=true" + "'>" + i18n[name + "UploadAdminFolder"] + "</a>" : "");
           
             var propsLen = val.length;
           

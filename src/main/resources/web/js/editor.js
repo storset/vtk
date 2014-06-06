@@ -1941,11 +1941,11 @@ function editorJSONToHtml(id, sessionId, session, fixedResources, descs, i18n) {
         break;
       case "checkbox":
         if(!session.vrtxOrphan) {
-          if(!origVal || origVal !== "cancelled") {
+          if(!origVal || origVal !== desc.checkedVal) {
             html += vrtxEdit.htmlFacade.getCheckboxField({ title: i18n[name],
                                                            name: name + "-" + sessionId,
                                                            id: name + "-" + sessionId,
-                                                           checked: (val === "active" ? null : val),
+                                                           checked: (val === desc.checkedVal ? val : null),
                                                            tooltip: i18n.cancelledVortexTooltip
                                                          }, name);
           } else {
@@ -1980,7 +1980,7 @@ function editorHtmlToJSON(sessionElms, descs, rawOrig, rawPtr) {
 
     if(desc.type === "checkbox") {
       if(elm[0].checked) {
-        val = "cancelled"; // TODO: Not very general
+        val = desc.checkedVal;
       }
     } else if(desc.type === "html") {
       val = vrtxEdit.richtextEditorFacade.getInstanceValue(elm.attr("name"));

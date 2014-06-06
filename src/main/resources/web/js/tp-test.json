@@ -68,7 +68,8 @@
             ]
          },
          "vrtxStatus":{
-           "type":"checkbox"
+           "type":"checkbox",
+           "checkedVal":"cancelled"
          }
     },
     "activities": [{
@@ -901,7 +902,8 @@
             ]
          },
          "vrtxStatus":{
-            "type":"checkbox"
+            "type":"checkbox",
+            "checkedVal":"cancelled"
          }
      },
     "activities": [{

@@ -4,7 +4,8 @@
    "plenary": {
      "vrtxEditableDescription": {
          "vrtxTitle":{
-            "type":"string"
+            "type":"string",
+            "size": 40
          },
          "vrtxStaff":{
             "type":"json",
@@ -17,6 +18,7 @@
                   "type":"string"
                }
             ],
+            "size": 20,
             "autocomplete":"username"
          },
          "vrtxStaffExternal":{
@@ -33,7 +35,8 @@
                   "name":"url",
                   "type":"resource_ref"
                }
-            ]
+            ],
+            "size": 20
          },
          "vrtxResources":{
             "type":"json",
@@ -49,7 +52,8 @@
                   "name":"url",
                   "type":"resource_ref"
                }
-            ]
+            ],
+            "size": 20
          },
          "vrtxResourcesText":{
            "type":"html"
@@ -65,7 +69,8 @@
                   "name":"url",
                   "type":"resource_ref"
                }
-            ]
+            ],
+            "size": 20
          },
          "vrtxStatus":{
            "type":"checkbox",
@@ -838,7 +843,8 @@
   "group": {
      "vrtxEditableDescription": {
          "vrtxTitle":{
-            "type":"string"
+            "type":"string",
+            "size": 40
          },
          "vrtxStaff":{
             "type":"json",
@@ -851,6 +857,7 @@
                   "type":"string"
                }
             ],
+            "size": 20,
             "autocomplete":"username"
          },
          "vrtxStaffExternal":{
@@ -867,7 +874,8 @@
                   "name":"url",
                   "type":"resource_ref"
                }
-            ]
+            ],
+            "size": 20
          },
          "vrtxResources":{
             "type":"json",
@@ -883,7 +891,8 @@
                   "name":"url",
                   "type":"resource_ref"
                }
-            ]
+            ],
+            "size": 20
          },
          "vrtxResourcesText":{
            "type":"html"
@@ -899,7 +908,8 @@
                   "name":"url",
                   "type":"resource_ref"
                }
-            ]
+            ],
+            "size": 20
          },
          "vrtxStatus":{
             "type":"checkbox",

@@ -1153,7 +1153,7 @@ function courseSchedule() {
   }
   url += "?action=course-schedule&mode=edit&t=" + (+new Date());
   // Debug: Local development
-  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   // Hide shortcut for saving working copy
   $("#vrtx-save-as-working-copy-shortcut, #saveWorkingCopyAction, #buttons-or-text").hide();
@@ -1865,8 +1865,7 @@ function editorJSONToHtml(id, sessionId, session, fixedResources, descs, i18n) {
         origVal = "",
         propsVal = "",
         browsable = false,
-        hasOrig = false,
-        size = 40;
+        hasOrig = false;
     
     var origName = name.split("vrtx")[1];
     if(origName) {
@@ -1894,7 +1893,6 @@ function editorJSONToHtml(id, sessionId, session, fixedResources, descs, i18n) {
             if(j < (propsLen - 1)) propsVal += "$$$";
           }
         }
-        size = 20;
       case "string":
         val = (propsVal != "") ? propsVal : val;
         val = (desc.multiple && typeof val === "array") ? val.join(",") : val;
@@ -1910,7 +1908,7 @@ function editorJSONToHtml(id, sessionId, session, fixedResources, descs, i18n) {
                                                      name: (desc.autocomplete ? "vrtx-autocomplete-" + desc.autocomplete + " " : "") + name + "-" + sessionId,
                                                      id: name + "-" + sessionId,
                                                      val: val,
-                                                     size: size
+                                                     size: desc.size
                                                    }, name);
         break;
       case "json-fixed":

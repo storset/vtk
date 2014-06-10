@@ -255,6 +255,7 @@ function generateHTMLForType(d, supportThreads, type, scheduleI18n, canEdit) {
       sequences = {}, // For fixed resources
       tablesHtmlArr = [],
       tocTimeMax = skipTier ? 3 : 2,
+      tocTimeNo = false,
       htmlArr = [];
   
   tocHtml += "<h2 class='course-schedule-toc-title accordion'>" + scheduleI18n["header-" + type] + "</h2>";
@@ -379,18 +380,22 @@ function generateHTMLForType(d, supportThreads, type, scheduleI18n, canEdit) {
           if(staffCount)     sessionsHtml += editLink("course-schedule-table-staff", "<span class='responsive-header'>" + scheduleI18n.tableStaff + "</span>" + sessionPreprocessed.staff, staffCount, canEdit, scheduleI18n);
         sessionsHtml += "</tr>";
       
-        
-        var newTocTime = day.toLowerCase().substring(0,3) + " " + time;
-        if(tocTime.indexOf(newTocTime) === -1) {
-          if(tocTimeCount < tocTimeMax) {
-            if(tocTimeCount > 0) {
-              tocTime += ", ";
-              tocTime += "<span>";
+        if(!tocTimeNo) {
+          var newTocTime = day.toLowerCase().substring(0,3) + " " + time;
+          if(tocTime.indexOf(newTocTime) === -1) {
+            if(tocTimeCount < tocTimeMax) {
+              if(tocTimeCount > 0) {
+                tocTime += ", ";
+                tocTime += "<span>";
+              }
+              tocTime += newTocTime;
+              tocTime += "</span>";
             }
-            tocTime += newTocTime;
-            tocTime += "</span>";
+            tocTimeCount++;
+            if(tocTimeCount >= tocTimeMax && !skipTier) {
+              tocTimeNo = true;
+            }
           }
-          tocTimeCount++;
         }
       }
       
@@ -399,7 +404,7 @@ function generateHTMLForType(d, supportThreads, type, scheduleI18n, canEdit) {
       
       tocTime = tocTime.replace(/,([^,]+)$/, " " + scheduleI18n.and + "$1");
       if(!skipTier) {
-        section.tocHtml = "<li><span><a href='#" + activityId + "'>" + scheduleI18n.groupTitle + " " + groupNumber + "</a>" + (tocTimeCount <= tocTimeMax ? " - " + tocTime : "") + "</li>";
+        section.tocHtml = "<li><span><a href='#" + activityId + "'>" + scheduleI18n.groupTitle + " " + groupNumber + "</a>" + (tocTimeCount <= tocTimeMax && !tocTimeNo ? " - " + tocTime : "") + "</li>";
       } else {
         tocHtml += "<li><span><a href='#" + activityId + "'>" + dtLong + "</a> - " + tocTime + "</li>";
       }
@@ -422,7 +427,7 @@ function generateHTMLForType(d, supportThreads, type, scheduleI18n, canEdit) {
             var specialGroupCode = scheduleI18n[htmlArr[j].groupCode];
             if(specialGroupCode && (!htmlArr[j+1] || specialGroupCode != scheduleI18n[htmlArr[j+1].groupCode])) {
               var slicedHtmlArr = htmlArr.slice(startSlice, j + 1);
-              tocHtml += splitThirds(slicedHtmlArr, specialGroupCode, slicedHtmlArr.length > 30);
+              tocHtml += splitThirds(slicedHtmlArr, specialGroupCode, tocTimeNo || slicedHtmlArr.length > 30);
               startSlice = j + 1;
             }
           }

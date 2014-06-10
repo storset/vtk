@@ -3958,14 +3958,15 @@ function openGeneral(url, width, height, winTitle, sOptions) {
   return oWindow;
 }
 
+/*
 function refreshParent() {
   window.opener.location.reload();
 }
-
 var refreshParentOnClose = gup("refreshparent", window.location.href);
 if(refreshParentOnClose) {
   window.onunload = refreshParent;    
 }
+*/
 
 // Callback from the image browser:
 function SetUrl(url) {

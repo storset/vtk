@@ -411,7 +411,6 @@ function generateHTMLForType(d, supportThreads, type, scheduleI18n, canEdit) {
       
       htmlArr.push(section);
 
-      // Sort groups
       if(dtShortNextDifferent) {
         // Sort group code and then group number (if codes are equal)
         htmlArr.sort(function(a, b) { // http://www.sitepoint.com/sophisticated-sorting-in-javascript/
@@ -421,6 +420,7 @@ function generateHTMLForType(d, supportThreads, type, scheduleI18n, canEdit) {
           }
           return x < y ? -1 : x > y ? 1 : 0;
         });
+        // Slice up ToC and concat tables html
         var startSlice = 0;
         for(j = 0, len = htmlArr.length; j < len; j++) {
           if(!skipTier) {

@@ -1157,7 +1157,7 @@ function courseSchedule() {
   
   // Hide shortcut for saving working copy
   $("#vrtx-save-as-working-copy-shortcut, #saveWorkingCopyAction, #buttons-or-text").hide();
-
+ 
   var allI18n = {
     "no": {
       "01": "jan",
@@ -1475,7 +1475,7 @@ function courseSchedule() {
                        (sessionOrphan ? "<span class='header-status'>" + this.i18n.orphan + "</span> - " : "") +
                        (session.vrtxTitle || session.title || session.id) + "</span>" +
                        (rooms ? (" - " + (rooms[0].buildingAcronym || rooms[0].buildingId) + " " + this.i18n.room + " " + rooms[0].roomId) : ""),
-        sessionContent = vrtxEdit.jsonSwitchHtmlFacade.jsonToHtml(id, sessionId, session, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
+        sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, session, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
 
      this.sessionsLookup[id][sessionId] = {
        isEnhanced: false,
@@ -1608,7 +1608,7 @@ function courseSchedule() {
     var rawPtr = sessionLookup.rawPtr;
     var descsPtr = sessionLookup.descsPtr;
     
-    vrtxEditor.jsonSwitchHtmlFacade.htmlToJson(sessionElms, descsPtr, rawOrig, rawPtr);
+    vrtxEditor.htmlFacade.htmlToJson(sessionElms, descsPtr, rawOrig, rawPtr);
 
     sessionLookup.hasChanges = editorDetectChange(rawPtr, rawOrig);
   };
@@ -2403,11 +2403,11 @@ function scrollToElm(movedElm) {
 }
 
 /**
- * JSON<=>HTML/DOM facade
+ * HTML facade (Input/JSON=>Template Engine=>HTML)
  *
  * @namespace
  */
-VrtxEditor.prototype.jsonSwitchHtmlFacade = {
+VrtxEditor.prototype.htmlFacade = {
   /* 
    * Turn a block of JSON into HTML
    */
@@ -2472,7 +2472,7 @@ VrtxEditor.prototype.jsonSwitchHtmlFacade = {
         case "json-fixed":
           if(val) {
             var buttons = /* "<a class='vrtx-button create-fixed-resources-folder' id='" + sessionId + "-create-fixed-resources' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a> "  */
-                          (val[0].url ? "<a class='vrtx-button admin-fixed-resources-folder' href='" + val[0].url.replace(/[^\\/]*$/, "") + "?vrtx=admin&refreshparent=true" + "'>" + i18n[name + "UploadAdminFolder"] + "</a>" : "");
+                          (val[0].url ? "<a class='vrtx-button admin-fixed-resources-folder' href='" + val[0].url.replace(/[^\\/]*$/, "") + "?vrtx=admin" + "'>" + i18n[name + "UploadAdminFolder"] + "</a>" : "");
           
             var propsLen = val.length;
           
@@ -2515,7 +2515,6 @@ VrtxEditor.prototype.jsonSwitchHtmlFacade = {
     }
     return { html: html, multiples: multiples, rtEditors: rtEditors };
   },
-
  /* 
   * Turn a block of HTML/DOM into JSON
   */
@@ -2570,15 +2569,7 @@ VrtxEditor.prototype.jsonSwitchHtmlFacade = {
         delete rawPtr[name];
       }
     }
-  }
-};
-
-/**
- * HTML facade (Input=>Template Engine=>HTML)
- *
- * @namespace
- */
-VrtxEditor.prototype.htmlFacade = {
+  },
   /* 
    * Interaction
    */

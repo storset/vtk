@@ -113,6 +113,16 @@ function initSchedule() {
                        "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))" + (scheduleSupportsThreads ? " [Uses Threads/Web Worker's]</p>" : "</p>") + */ html, function(fragment) {
           activitiesElm[0].appendChild(fragment);
           loadingUpdate("");
+          if(window.localStorage && window.localStorage.getItem(hasEditedKey)) {
+            var hash = window.localStorage.getItem(hasEditedKey);
+            window.localStorage.removeItem(hasEditedKey);
+            var elm = $("#" + hash);
+            if(elm.filter(":hidden").length) {
+              elm.closest(".course-schedule-table-wrapper")
+                 .find(".course-schedule-table-toggle-passed").click();
+            }
+            window.location.hash = hash;
+          }
           scheduleDeferred.resolve();
         });
       }
@@ -129,8 +139,8 @@ function initSchedule() {
       $(document).on("click", ".course-schedule-table-toggle-passed", function(e) {
         var link = $(this);
         var table = link.prev();
-        table.toggleClass("hiding-passed"); 
         var isHidingPassed = table.hasClass("hiding-passed");
+        table.toggleClass("hiding-passed");
         link.text(isHidingPassed ? scheduleI18n.tableShowPassed : scheduleI18n.tableHidePassed);
         if(!isHidingPassed) {
           $("html, body").finish().animate({ scrollTop: (table.offset().top - 20) }, 100);
@@ -159,17 +169,6 @@ function initSchedule() {
           e.stopPropagation();
           e.preventDefault();
         });
-      }
-      
-      if(window.localStorage && window.localStorage.getItem(hasEditedKey)) {
-        var hash = window.localStorage.getItem(hasEditedKey);
-        window.localStorage.removeItem(hasEditedKey);
-        var elm = $("#" + hash);
-        if(elm.filter(":hidden").length) {
-          elm.closest(".course-schedule-table-wrapper")
-             .find(".course-schedule-table-toggle-passed").click();
-          window.location.hash = hash;
-        }
       }
     });
   });

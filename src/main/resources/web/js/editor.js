@@ -1394,24 +1394,26 @@ function courseSchedule() {
         var map = [], sessionsProcessed = [];
         for(j = 0, len = sessions.length; j < len; j++) {
           var session = sessions[j];
-          var dateTimeA = self.getDateTime(session.dtStart, session.dtEnd);
-          var startA = dateTimeA.start;
-          var endA = dateTimeA.end;
-          var a = startA.year + "" + startA.month + "" + startA.date + "" + startA.hh + "" + startA.mm + "" + endA.hh + "" + endA.mm;
+          
+          var dateTime = self.getDateTime(session.dtStart, session.dtEnd);
+          var start = dateTime.start;
+          var end = dateTime.end;
+          var startEndString = start.year + "" + start.month + "" + start.date + "" + start.hh + "" + start.mm + "" + end.hh + "" + end.mm;
+          
           map.push({
             "index": j, // Save index
-            "value": a,
-            "orphan": session.vrtxOrphan
+            "startEndString": startEndString,
+            "isOrphan": session.vrtxOrphan
           });
           sessionsProcessed.push({
-            "dateTime": dateTimeA
+            "dateTime": dateTime
           });
         }
         // Sort
         map.sort(function(a, b) {
-          var x = a.orphan, y = b.orphan;
+          var x = a.isOrphan, y = b.isOrphan;
           if(x === y) {
-            return a.value > b.value ? 1 : -1;
+            return a.startEndString > b.startEndString ? 1 : -1;
           }
           return !x && y ? -1 : x && !y ? 1 : 0;
         });

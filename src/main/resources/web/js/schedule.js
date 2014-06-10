@@ -166,9 +166,10 @@ function initSchedule() {
         window.localStorage.removeItem(hasEditedKey);
         var elm = $("#" + hash);
         if(elm.filter(":hidden").length) {
-          elm.closest("table").next().click();
+          elm.closest(".course-schedule-table-wrapper")
+             .find(".course-schedule-table-toggle-passed").click();
+          window.location.hash = hash;
         }
-        window.location.hash = hash;
       }
     });
   });

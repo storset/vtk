@@ -118,7 +118,7 @@ resourcetype course-schedule {
     table-cancelled: (en : "CANCELLED", no : "AVLYST", nn : "AVLYST"), 
     table-place : (en : "Place", no : "Sted", nn : "Stad"),
     table-staff : (en : "Lecturer", no : "Foreleser", nn : "Foreleser"),
-    table-resources : (en : "Resources", no : "Ressurser", nn : "Ressursar"),
+    table-resources : (en : "Resources/curriculum", no : "Ressurser/pensum", nn : "Ressursar/pensum"),
     table-edit : (en : "Edit", no : "Rediger", nn : "Rediger"),
     table-edit-save : (en : "Save", no : "Lagre", nn : "Lagre"),
     table-edit-cancel : (en : "Cancel", no : "Avbryt", nn : "Avbryt"),

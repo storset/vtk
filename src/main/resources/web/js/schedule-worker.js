@@ -181,9 +181,9 @@ function scheduleUtils() {
       html += "<th class='course-schedule-table-day'>" + i18n.tableDay + "</th>";
       html += "<th class='course-schedule-table-time'>" + i18n.tableTime + "</th>";
       html += "<th class='course-schedule-table-title'>" + i18n.tableTitle + "</th>";
-      if(hasResources) html += "<th class='course-schedule-table-resources'>" + i18n.tableResources + "</th>";
       html += "<th class='course-schedule-table-place'>" + i18n.tablePlace + "</th>";
       if(hasStaff)     html += "<th class='course-schedule-table-staff'>" + i18n.tableStaff + "</th>";
+      if(hasResources) html += "<th class='course-schedule-table-resources'>" + i18n.tableResources + "</th>";
     html += "</tr></thead><tbody>";
     return html;
   };
@@ -375,9 +375,9 @@ function generateHTMLForType(d, supportThreads, type, scheduleI18n, canEdit) {
           sessionsHtml += "<td class='course-schedule-table-day'><span class='responsive-header'>" + scheduleI18n.tableDay + "</span>" + day + "</td>";
           sessionsHtml += "<td class='course-schedule-table-time'><span class='responsive-header'>" + scheduleI18n.tableTime + "</span>" + time + "</td>";
           sessionsHtml += "<td class='course-schedule-table-title'><span class='responsive-header'>" + scheduleI18n.tableTitle + "</span>" + title + "</td>";
-          if(resourcesCount) sessionsHtml += "<td class='course-schedule-table-resources'><span class='responsive-header'>" + scheduleI18n.tableResources + "</span>" + sessionPreprocessed.resources + "</td>";
-          sessionsHtml += editLink("course-schedule-table-place", "<span class='responsive-header'>" + scheduleI18n.tablePlace + "</span>" + place, !staffCount, canEdit, scheduleI18n);
-          if(staffCount)     sessionsHtml += editLink("course-schedule-table-staff", "<span class='responsive-header'>" + scheduleI18n.tableStaff + "</span>" + sessionPreprocessed.staff, staffCount, canEdit, scheduleI18n);
+          sessionsHtml += editLink("course-schedule-table-place", "<span class='responsive-header'>" + scheduleI18n.tablePlace + "</span>" + place, !staffCount && !resourcesCount, canEdit, scheduleI18n);
+          if(staffCount)     sessionsHtml += editLink("course-schedule-table-staff", "<span class='responsive-header'>" + scheduleI18n.tableStaff + "</span>" + sessionPreprocessed.staff, staffCount && !resourcesCount, canEdit, scheduleI18n);
+          if(resourcesCount) sessionsHtml += editLink("course-schedule-table-resources", "<span class='responsive-header'>" + scheduleI18n.tableResources + "</span>" + sessionPreprocessed.resources, !staffCount && resourcesCount, canEdit, scheduleI18n);
         sessionsHtml += "</tr>";
       
         if(!tocTimeNo) {

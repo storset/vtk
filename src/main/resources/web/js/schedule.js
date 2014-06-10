@@ -23,6 +23,7 @@ function initSchedule() {
   var useCache = true;
   var hasEditedKey = "hasEditedSession";
   if(window.localStorage && window.localStorage.getItem(hasEditedKey)) {
+    window.location.hash = window.localStorage.getItem(hasEditedKey);
     window.localStorage.removeItem(hasEditedKey);
     useCache = false;
   }
@@ -221,9 +222,9 @@ function refreshWhenRefocused(hasEditedKey, id) {
   var waitForClose = setTimeout(function() {
     if(document.hasFocus() || isVisible) {
       if(window.localStorage) {
-        window.localStorage.setItem(hasEditedKey, "true");
+        window.localStorage.setItem(hasEditedKey, id);
       }
-      location.href = location.href.replace(/#.*$/, "") + "#" + id;
+      window.location.reload(1);
     } else {
       setTimeout(arguments.callee, 50); 
     }

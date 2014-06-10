@@ -309,28 +309,31 @@ function generateHTMLForType(d, supportThreads, type, scheduleI18n, canEdit) {
       var map = [], sessionsProcessed = [];
       for(j = 0, len = sessions.length; j < len; j++) {
         var session = sessions[j];
-        var dateTimeA = getDateTime(session.dtStart, session.dtEnd);
-        var startA = dateTimeA.start;
-        var endA = dateTimeA.end;
-        var a = startA.year + "" + startA.month + "" + startA.date + "" + startA.hh + "" + startA.mm + "" + endA.hh + "" + endA.mm;
+        
+        var dateTime = getDateTime(session.dtStart, session.dtEnd);
+        var start = dateTime.start;
+        var end = dateTime.end;
+        var startEndString = start.year + "" + start.month + "" + start.date + "" + start.hh + "" + start.mm + "" + end.hh + "" + end.mm;
+        
         var staff = getStaff(session);
         if(staff.length) staffCount++;
         var sequenceId = session.id.replace(/\/[^\/]*$/, "");
         var resources = getResources(session, (sequences[sequenceId] || null));
         if(resources.length) resourcesCount++;
+        
         map.push({
           "index": j, // Save index
-          "value": a,
+          "startEndString": startEndString,
         });
         sessionsProcessed.push({
-          "dateTime": dateTimeA,
+          "dateTime": dateTime,
           "staff": staff,
           "resources": resources
         });
       }
       // Sort
       map.sort(function(a, b) {
-        return a.value > b.value ? 1 : -1;
+        return a.startEndString > b.startEndString ? 1 : -1;
       });
       // Generate sessions HTML (get correctly sorted from map)
       var correctedCounter = 0;

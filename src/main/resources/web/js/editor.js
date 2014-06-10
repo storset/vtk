@@ -533,9 +533,9 @@ VrtxEditor.prototype.setupEditorHeight = function setupEditorHeight(c, opts) {
   return opts.isCompleteEditor ? ((c.isContent || c.isCourseGroup) ? 400 : (c.isSupervisorBox ? 130 : (c.isCourseDescriptionB ? 200 : 220)))
                                : (c.isMessage ? 250
                                               : (c.isCaption ? 55 
-                                                             : ((c.isStudyField || c.isScheduleComment || c.isAdditionalContent) ? 150 
-                                                                                                                                 : (c.isIntro ? 100 
-                                                                                                                                              : 90))))
+                                                             : ((c.isStudyField || c.isScheduleComment || c.isAdditionalContent || c.isResourcesText) ? 150 
+                                                                                                                                                      : (c.isIntro ? 100 
+                                                                                                                                                                   : 90))))
 };
 
 VrtxEditor.prototype.setupEditorMaxHeight = function setupEditorMaxHeight(c, opts) {
@@ -547,10 +547,10 @@ VrtxEditor.prototype.setupEditorToolbar = function setupEditorToolbar(c, opts) {
   return classification.isMain ? ((c.isCourseDescriptionB || c.isCourseGroup) ? tb.studyRefToolbar 
                                                                               : (c.isStudyContent ? tb.studyToolbar
                                                                                                   : tb.completeToolbar))
-                               : (c.isMessage ? tb.messageToolbar
-                                              : (c.isStudyField ? tb.studyToolbar 
-                                                                : ((c.isIntro || c.isCaption || c.isScheduleComment) ? tb.inlineToolbar
-                                                                                                                     : tb.withoutSubSuperToolbar)));
+                               : ((c.isMessage || c.isResourcesText) ? tb.messageToolbar
+                                                                     : (c.isStudyField ? tb.studyToolbar 
+                                                                                       : ((c.isIntro || c.isCaption || c.isScheduleComment) ? tb.inlineToolbar
+                                                                                                                                            : tb.withoutSubSuperToolbar)));
 };
 
 VrtxEditor.prototype.setupEditorResizable = function setupEditorResizable(c, opts) {
@@ -591,8 +591,8 @@ VrtxEditor.prototype.classifyEditorInstance = function classifyEditorInstance(op
                            vrtxEdit.contains(name, "resource.video-description") ||
                            vrtxEdit.contains(name, "resource.audio-description");
   classification.isCaption = vrtxEdit.contains(name, "caption");
-  classification.isMessage = vrtxEdit.contains(name, "message") ||
-                             vrtxEdit.contains(name, "vrtxResourcesText");
+  classification.isMessage = vrtxEdit.contains(name, "message");
+  classification.isResourcesText = vrtxEdit.contains(name, "vrtxResourcesText");
   classification.isSupervisorBox = vrtxEdit.contains("supervisor-box");
   
   // Studies

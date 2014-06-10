@@ -18,13 +18,11 @@ function initSchedule() {
   var retrievedScheduleData = null;
   var activitiesElm = null;
   var endAjaxTime = 0;
-  var id = "";
   
   // Don't cache if has returned from editing a session
   var useCache = true;
   var hasEditedKey = "hasEditedSession";
   if(window.localStorage && window.localStorage.getItem(hasEditedKey)) {
-    id = window.localStorage.getItem(hasEditedKey);
     window.localStorage.removeItem(hasEditedKey);
     useCache = false;
   }
@@ -127,11 +125,7 @@ function initSchedule() {
       retrievedScheduleData = null;
       plenaryData = null;
       groupData = null;
-      
-      if(id !== "") {
-        $("html, body").finish().animate({ scrollTop: ($(id).offset().top - 20) }, 100);
-      }
-      
+
       // Toggle passed sessions
       $(document).on("click", ".course-schedule-table-toggle-passed", function(e) {
         var link = $(this);
@@ -227,9 +221,9 @@ function refreshWhenRefocused(hasEditedKey, id) {
   var waitForClose = setTimeout(function() {
     if(document.hasFocus() || isVisible) {
       if(window.localStorage) {
-        window.localStorage.setItem(hasEditedKey, id);
+        window.localStorage.setItem(hasEditedKey, "true");
       }
-      window.location.reload(1);
+      location.href = location.href.replace(/#.*$/, "") + "#" + id;
     } else {
       setTimeout(arguments.callee, 50); 
     }

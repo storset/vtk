@@ -2208,15 +2208,9 @@ function addJsonField(btn) {
     inputFieldName = j.name + "." + types[i].name + "." + vrtxEditor.multipleFieldsBoxes[j.name].counter;
     htmlTemplate += vrtxEditor.htmlFacade.getTypeHtml(types[i], inputFieldName);
     switch (types[i].type) {
-      case "html":
-        ckHtmls.push(inputFieldName);
-        break;
-      case "simple_html":
-        ckSimpleHtmls.push(inputFieldName);
-        break;
-      case "datetime":
-        dateTimes.push(inputFieldName);
-        break;
+      case "html":        ckHtmls.push(inputFieldName);       break;
+      case "simple_html": ckSimpleHtmls.push(inputFieldName); break;
+      case "datetime":    dateTimes.push(inputFieldName);     break;
     }
   }
 
@@ -2526,8 +2520,10 @@ VrtxEditor.prototype.htmlFacade = {
     for(var name in descs) {
       var desc = descs[name],
           val = "";
-      // XXX: support multiple CK-fields starting with same name
-      if(descs[name].type === "html") {
+      if(descs[name].type === "json-fixed") {
+        continue;
+        // XXX: support multiple CK-fields starting with same name
+      } else if(descs[name].type === "html") {
         var elm = sessionElms.find("textarea[name^='" + name + "']");
       } else {
         var elm = sessionElms.find("input[name='" + name + "']");

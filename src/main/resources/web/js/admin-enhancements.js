@@ -186,7 +186,9 @@ var isEmbedded = window.location.href.indexOf("&embed") !== -1;
 vrtxAdmin._$(document).ready(function () {
   var startReadyTime = +new Date(), vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
   
-  vrtxAdm.lang = datePickerLang;
+  if(typeof datePickerLang === "string") {
+     vrtxAdm.lang = datePickerLang;
+  }
   
   if(isEmbedded) {
     $("html").addClass("embedded"); // Temporary solution

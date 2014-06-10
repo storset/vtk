@@ -138,11 +138,11 @@ $(window).load(function () {
           ((typeof DATE_PICKER_INITIALIZED === "object") ? DATE_PICKER_INITIALIZED : nullDeferred),
           ((typeof IMAGE_EDITOR_INITIALIZED === "object") ? IMAGE_EDITOR_INITIALIZED : nullDeferred)).done(function () {
     vrtxAdm.log({ msg: "Editor initialized." });
-    storeInitPropValues(vrtxAdm.cachedContent);
+    storeInitPropValues($("#app-content > form, #contents"));
   });
 
   // CTRL+S save inside editors
-  if (typeof CKEDITOR !== "undefined" && vrtxEditor.editorForm.length) { // Don't add event if not regular editor
+  if (typeof CKEDITOR !== "undefined" && vrtxEditor.editorForm && vrtxEditor.editorForm.length) { // Don't add event if not regular editor
     vrtxEditor.richtextEditorFacade.setupCTRLS();
   }
 });
@@ -652,7 +652,7 @@ VrtxEditor.prototype.classifyEditorInstance = function classifyEditorInstance(op
 \*-------------------------------------------------------------------*/
 
 function storeInitPropValues(contents) {
-  if (!contents.length || vrtxEditor.editorForm.hasClass("vrtx-course-schedule")) return;
+  if (!contents.length || (vrtxEditor.editorForm && vrtxEditor.editorForm.hasClass("vrtx-course-schedule"))) return;
 
   var vrtxEdit = vrtxEditor;
 
@@ -688,7 +688,7 @@ function unsavedChangesInEditor() {
     return editorCourseSchedule.checkUnsavedChanges();
   }
   
-  var contents = vrtxAdmin.cachedContent;
+  var contents = $("#app-content > form, #contents");
 
   var currentStateOfInputFields = contents.find("input").not("[type=submit]").not("[type=button]")
                                                         .not("[type=checkbox]").not("[type=radio]"),

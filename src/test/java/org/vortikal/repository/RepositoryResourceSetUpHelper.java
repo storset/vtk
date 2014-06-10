@@ -43,12 +43,18 @@ public final class RepositoryResourceSetUpHelper {
 
     public static PropertyTypeDefinition getPropertyTypeDefinition(Namespace namespace, String name, Type type,
             ValueFormatter valueFormatter) {
+        return getPropertyTypeDefinition(namespace, name, type, valueFormatter, false);
+    }
+
+    public static PropertyTypeDefinition getPropertyTypeDefinition(Namespace namespace, String name, Type type,
+            ValueFormatter valueFormatter, boolean multiple) {
         PropertyTypeDefinitionImpl propDef = new PropertyTypeDefinitionImpl();
         propDef.setValueFactory(new ValueFactoryImpl());
         propDef.setValueFormatter(valueFormatter);
         propDef.setType(type);
         propDef.setNamespace(namespace);
         propDef.setName(name);
+        propDef.setMultiple(multiple);
         return propDef;
     }
 

@@ -18,11 +18,13 @@ function initSchedule() {
   var retrievedScheduleData = null;
   var activitiesElm = null;
   var endAjaxTime = 0;
+  var id = "";
   
   // Don't cache if has returned from editing a session
   var useCache = true;
   var hasEditedKey = "hasEditedSession";
   if(window.localStorage && window.localStorage.getItem(hasEditedKey)) {
+    id = window.localStorage.getItem(hasEditedKey);
     window.localStorage.removeItem(hasEditedKey);
     useCache = false;
   }
@@ -83,14 +85,9 @@ function initSchedule() {
           canEdit: schedulePermissions.hasReadWriteNotLocked
         }), htmlPlenary, thread1Finished);
       } else {
-        startThreadGenerateHTMLForType(retrievedScheduleData, htmlPlenary, thread1Finished,
-          "plenary",
-          scheduleI18n,
-          schedulePermissions.hasReadWriteNotLocked);
+        startThreadGenerateHTMLForType(retrievedScheduleData, htmlPlenary, thread1Finished, "plenary", scheduleI18n, schedulePermissions.hasReadWriteNotLocked);
       }
-    } else {
-      thread1Finished.resolve();
-    }
+    } else { thread1Finished.resolve(); }
     if(retrievedScheduleData["group"]) {
       if(scheduleSupportsThreads) {
         startThreadGenerateHTMLForType(JSON.stringify({
@@ -100,14 +97,9 @@ function initSchedule() {
           canEdit: schedulePermissions.hasReadWriteNotLocked
         }), htmlGroup, thread2Finished);
       } else {
-        startThreadGenerateHTMLForType(retrievedScheduleData, htmlGroup, thread2Finished,
-          "group",
-          scheduleI18n,
-          schedulePermissions.hasReadWriteNotLocked);
+        startThreadGenerateHTMLForType(retrievedScheduleData, htmlGroup, thread2Finished, "group", scheduleI18n, schedulePermissions.hasReadWriteNotLocked);
       }
-    } else {
-      thread2Finished.resolve();
-    }
+    } else { thread2Finished.resolve(); }
 
     var endMakingThreadsTime = +new Date() - startMakingThreadsTime;
     
@@ -136,6 +128,10 @@ function initSchedule() {
       plenaryData = null;
       groupData = null;
       
+      if(id !== "") {
+        $("html, body").finish().animate({ scrollTop: ($(id).offset().top - 20) }, 100);
+      }
+      
       // Toggle passed sessions
       $(document).on("click", ".course-schedule-table-toggle-passed", function(e) {
         var link = $(this);
@@ -160,12 +156,13 @@ function initSchedule() {
         // Open edit window for session on click
         $(document).on("click", "a.course-schedule-table-edit-link", function(e) {
           var row = $(this).closest("tr");
+          var idRow = row[0].id;
           var editUrl = window.location.pathname;
           if(/\/$/.test(editUrl)) {
             editUrl += "index.html";
           }
-          var openedEditWindow = popupEditWindow(820, 680, editUrl + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + row[0].id, "editActivity");
-          refreshWhenRefocused(hasEditedKey);
+          var openedEditWindow = popupEditWindow(820, 680, editUrl + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + idRow, "editActivity");
+          refreshWhenRefocused(hasEditedKey, idRow);
           e.stopPropagation();
           e.preventDefault();
         });
@@ -212,7 +209,7 @@ function popupEditWindow(w, h, url, name) {
   return openedWindow;
 }
 
-function refreshWhenRefocused(hasEditedKey) {
+function refreshWhenRefocused(hasEditedKey, id) {
   var isVisible = false;
   var visibilityEvent = "visibilitychange";
   var delayCheckVisibility = 450;
@@ -229,10 +226,10 @@ function refreshWhenRefocused(hasEditedKey) {
   }, delayCheckVisibility);
   var waitForClose = setTimeout(function() {
     if(document.hasFocus() || isVisible) {
-      window.location.reload(1);
       if(window.localStorage) {
-        window.localStorage.setItem(hasEditedKey, "true");
+        window.localStorage.setItem(hasEditedKey, id);
       }
+      window.location.reload(1);
     } else {
       setTimeout(arguments.callee, 50); 
     }

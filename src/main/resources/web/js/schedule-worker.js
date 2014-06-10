@@ -34,18 +34,10 @@ function scheduleUtils() {
     
     if(clientTimeZoneOffset === serverTimeZoneOffset) return date; // Same offset in same date
     
-    /* DST
-    var isServerDateDst = tzhh === 1;
-    var jan = new Date(date.getFullYear(), 0, 1);
-    var jul = new Date(date.getFullYear(), 6, 1);
-    var isClientDateDst = Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset()) > date.getTimezoneOffset(); */
-    
-    if(clientTimeZoneOffset > serverTimeZoneOffset) {
-      var nd = new Date(date.getTime() + (clientTimeZoneOffset - serverTimeZoneOffset)); 
-    } else {
-      var nd = new Date(date.getTime() + (serverTimeZoneOffset - clientTimeZoneOffset));
-    }
-    return nd;
+    // Timezone correction offset for local time
+    var offset = clientTimeZoneOffset > serverTimeZoneOffset ? clientTimeZoneOffset - serverTimeZoneOffset 
+                                                             : serverTimeZoneOffset - clientTimeZoneOffset;
+    return new Date(date.getTime() + offset);
   },
   formatName = function(name) {
     var arr = name.replace(/ +(?= )/g, "").split(" ");

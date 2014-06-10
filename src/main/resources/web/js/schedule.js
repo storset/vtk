@@ -119,7 +119,7 @@ function initSchedule() {
         scheduleDeferred.resolve();
       } else {
         activitiesElm.attr("aria-busy", "false");
-        asyncInnerHTML(/* "<p>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
+        asyncInnerHtml(/* "<p>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
                        "ms) || (AJAX-complete: " + endAjaxTime + "ms + Threads invoking/serializing: " + ((endMakingThreadsTime || 0) + (htmlPlenary.parseRetrievedJSONTime || 0) + (htmlGroup.parseRetrievedJSONTime || 0)) +
                        "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))" + (scheduleSupportsThreads ? " [Uses Threads/Web Worker's]</p>" : "</p>") + */ html, function(fragment) {
           activitiesElm[0].appendChild(fragment);
@@ -150,12 +150,14 @@ function initSchedule() {
         e.preventDefault();
       });
       
-      // Edit session
+      // If user can write and is not locked
       if(schedulePermissions.hasReadWriteNotLocked) {
+        // Toggle display on hover of row
         $(document).on("mouseover mouseout focusin focusout", "tbody tr", function(e) {
           var fn = (e.type === "mouseover" || e.type === "focusin") ? "addClass" : "removeClass";
           $(this).find(".course-schedule-table-edit-wrapper")[fn]("visible");
         });
+        // Open edit window for session on click
         $(document).on("click", "a.course-schedule-table-edit-link", function(e) {
           var row = $(this).closest("tr");
           var editUrl = window.location.pathname;
@@ -172,10 +174,10 @@ function initSchedule() {
   });
 }
 
-function asyncInnerHTML(HTML, callback) { // http://james.padolsey.com/javascript/asynchronous-innerhtml/
+function asyncInnerHtml(html, callback) { // http://james.padolsey.com/javascript/asynchronous-innerhtml/
   var temp = document.createElement('div'),
       frag = document.createDocumentFragment();
- temp.innerHTML = HTML;
+ temp.innerHTML = html;
  (function(){
    if(temp.firstChild){
      frag.appendChild(temp.firstChild);

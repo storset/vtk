@@ -23,8 +23,6 @@ function initSchedule() {
   var useCache = true;
   var hasEditedKey = "hasEditedSession";
   if(window.localStorage && window.localStorage.getItem(hasEditedKey)) {
-    window.location.hash = window.localStorage.getItem(hasEditedKey);
-    window.localStorage.removeItem(hasEditedKey);
     useCache = false;
   }
   
@@ -161,6 +159,16 @@ function initSchedule() {
           e.stopPropagation();
           e.preventDefault();
         });
+      }
+      
+      if(window.localStorage && window.localStorage.getItem(hasEditedKey)) {
+        var hash = window.localStorage.getItem(hasEditedKey);
+        window.localStorage.removeItem(hasEditedKey);
+        var elm = $("#" + hash);
+        if(elm.filter(":hidden").length) {
+          elm.closest("table").next().click();
+        }
+        window.location.hash = hash;
       }
     });
   });

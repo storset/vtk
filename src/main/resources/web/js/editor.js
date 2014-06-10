@@ -1145,6 +1145,24 @@ VrtxEditor.prototype.showHideSelect = function showHideSelect(select, init) {
 \*-------------------------------------------------------------------*/
 
 var onlySessionId = gup("sessionid", window.location.href);
+$(window).on("message", function(e) {
+  var data = e.data;
+  if(typeof data === "string" && data === "displaymsg") {
+    var d = new VrtxMsgDialog({
+      msg: vrtxAdmin.messages.courseSchedule.updated,
+      title: vrtxAdmin.messages.courseSchedule.updatedTitle,
+      width: 400
+    });
+    d.open();
+  }
+});
+function refreshParent() {
+  window.opener.postMessage("displaymsg", "*");
+}
+var refreshParentOnClose = gup("displaymsg", window.location.href);
+if(refreshParentOnClose) {
+  window.onunload = refreshParent;    
+}
 function courseSchedule() {
 
   var url = location.protocol + "//" + location.host + location.pathname;
@@ -2468,7 +2486,7 @@ VrtxEditor.prototype.htmlFacade = {
         case "json-fixed":
           if(val) {
             var buttons = /* "<a class='vrtx-button create-fixed-resources-folder' id='" + sessionId + "-create-fixed-resources' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a> "  */
-                          (val[0].url ? "<a class='vrtx-button admin-fixed-resources-folder' href='" + val[0].url.replace(/[^\\/]*$/, "") + "?vrtx=admin" + "'>" + i18n[name + "UploadAdminFolder"] + "</a>" : "");
+                          (val[0].url ? "<a class='vrtx-button admin-fixed-resources-folder' href='" + val[0].url.replace(/[^\\/]*$/, "") + "?vrtx=admin&displaymsg" + "'>" + i18n[name + "UploadAdminFolder"] + "</a>" : "");
           
             var propsLen = val.length;
           

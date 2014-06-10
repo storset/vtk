@@ -377,7 +377,7 @@ function generateHTMLForType(d, supportThreads, type, scheduleI18n, canEdit) {
           sessionsHtml += "<td class='course-schedule-table-title'><span class='responsive-header'>" + scheduleI18n.tableTitle + "</span>" + title + "</td>";
           sessionsHtml += editLink("course-schedule-table-place", "<span class='responsive-header'>" + scheduleI18n.tablePlace + "</span>" + place, !staffCount && !resourcesCount, canEdit, scheduleI18n);
           if(staffCount)     sessionsHtml += editLink("course-schedule-table-staff", "<span class='responsive-header'>" + scheduleI18n.tableStaff + "</span>" + sessionPreprocessed.staff, staffCount && !resourcesCount, canEdit, scheduleI18n);
-          if(resourcesCount) sessionsHtml += editLink("course-schedule-table-resources", "<span class='responsive-header'>" + scheduleI18n.tableResources + "</span>" + sessionPreprocessed.resources, !staffCount && resourcesCount, canEdit, scheduleI18n);
+          if(resourcesCount) sessionsHtml += editLink("course-schedule-table-resources", "<span class='responsive-header'>" + scheduleI18n.tableResources + "</span>" + sessionPreprocessed.resources, resourcesCount, canEdit, scheduleI18n);
         sessionsHtml += "</tr>";
       
         if(!tocTimeNo) {

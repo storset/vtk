@@ -191,7 +191,7 @@ function scheduleUtils() {
   };
   this.getTableEndHtml = function(isNoPassed, i18n) {
     var html = "</tbody></table>";
-    if(!isNoPassed) html += "<a class='course-schedule-table-toggle-passed' href='javascript:void(0);'>" + i18n.tableShowPassed + "</a>";
+    // if(!isNoPassed) html += "<a class='course-schedule-table-toggle-passed' href='javascript:void(0);'>" + i18n.tableShowPassed + "</a>";
     html += "</div>";
     return html;
   };

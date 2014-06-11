@@ -1480,16 +1480,16 @@ function courseSchedule() {
         sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, session, this.retrievedScheduleData.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
 
      this.sessionsLookup[id][sessionId] = {
-       sequenceId: sequenceId,
-       isEnhanced: false,
-       isCancelled: sessionCancelled,
-       isOrphan: sessionOrphan,
-       hasChanges: false,
+       rawPtr: session,
+       rawOrig: jQuery.extend(true, {}, session), // Copy object
+       descsPtr: descs,
        multiples: sessionContent.multiples,
        rtEditors: sessionContent.rtEditors,
-       rawPtr: session,
-       descsPtr: descs,
-       rawOrig: jQuery.extend(true, {}, session) // Copy object
+       sequenceId: sequenceId,
+       isCancelled: sessionCancelled,
+       isOrphan: sessionOrphan,
+       isEnhanced: false,
+       hasChanges: false
      };
      
      return { sessionId: sessionId, html: sessionContent.html, title: sessionTitle };

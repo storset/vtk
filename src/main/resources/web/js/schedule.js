@@ -136,11 +136,11 @@ function initSchedule() {
       groupData = null;
 
       // Toggle passed sessions
-      $(document).on("click", ".course-schedule-table-toggle-passed", function(e) {
+      activitiesElm.on("click", ".course-schedule-table-toggle-passed", function(e) {
         var link = $(this);
         var table = link.prev();
-        var isHidingPassed = table.hasClass("hiding-passed");
         table.toggleClass("hiding-passed");
+        var isHidingPassed = table.hasClass("hiding-passed");
         link.text(isHidingPassed ? scheduleI18n.tableShowPassed : scheduleI18n.tableHidePassed);
         if(!isHidingPassed) {
           $("html, body").finish().animate({ scrollTop: (table.offset().top - 20) }, 100);
@@ -152,12 +152,12 @@ function initSchedule() {
       // If user can write and is not locked
       if(schedulePermissions.hasReadWriteNotLocked) {
         // Toggle display on hover of row
-        $(document).on("mouseover mouseout focusin focusout", "tbody tr", function(e) {
+        activitiesElm.on("mouseover mouseout focusin focusout", "tbody tr", function(e) {
           var fn = (e.type === "mouseover" || e.type === "focusin") ? "addClass" : "removeClass";
           $(this).find(".course-schedule-table-edit-wrapper")[fn]("visible");
         });
         // Open edit window for session on click
-        $(document).on("click", "a.course-schedule-table-edit-link", function(e) {
+        activitiesElm.on("click", "a.course-schedule-table-edit-link", function(e) {
           var row = $(this).closest("tr");
           var idRow = row[0].id;
           var editUrl = window.location.pathname;

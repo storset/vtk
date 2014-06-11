@@ -1668,7 +1668,12 @@ function courseSchedule() {
     
     var collectionTitle = (sessionDisciplines ? sessionDisciplines.join(", ") : "") + " - " + sessionTitle + " - " + sequenceId;
     var collectionName = replaceInvalidChar((sessionDisciplines ? sessionDisciplines.join("-") : "") + "-" + sessionTitle + "-" + sequenceId, false);
-    var collectionUrl = cs.retrievedScheduleData.vrtxResourcesFixedUrl + collectionName;
+    
+    var collectionBaseUrl = cs.retrievedScheduleData.vrtxResourcesFixedUrl;
+    if(!/\/$/.test(collectionBaseUrl)) { // Add last '/' if missing
+      collectionBaseUrl += "/";
+    }
+    var collectionUrl = collectionBaseUrl + collectionName;
     
     vrtxAdmin.serverFacade.getHtml(baseUrl + "?vrtx=admin&service=create-collection-with-properties", {
       success: function (results, status, resp) {

@@ -1714,7 +1714,7 @@ function createCheckUncheckIndexFile(nameField, indexCheckbox) {
 
 function createTitleChange(titleField, nameField, indexCheckbox) {
   if (vrtxAdmin.createResourceReplaceTitle) {
-    var nameFieldVal = replaceInvalidChar(titleField.val());
+    var nameFieldVal = replaceInvalidChar(titleField.val(), true);
     if (!indexCheckbox || !indexCheckbox.length || !indexCheckbox.is(":checked")) {
       if (nameFieldVal.length > 50) {
         nameFieldVal = nameFieldVal.substring(0, 50);
@@ -1735,7 +1735,7 @@ function createFileNameChange(nameField) {
   var currentCaretPos = getCaretPos(nameField[0]);
 
   var nameFieldValBeforeReplacement = nameField.val();
-  var nameFieldVal = replaceInvalidChar(nameFieldValBeforeReplacement);
+  var nameFieldVal = replaceInvalidChar(nameFieldValBeforeReplacement, true);
   nameField.val(nameFieldVal);
   growField(nameField, nameFieldVal, 5, 100, 530);
 
@@ -1744,8 +1744,8 @@ function createFileNameChange(nameField) {
   $(".file-name-from-title").removeClass("file-name-from-title");
 }
 
-function replaceInvalidChar(val) {
-  val = val.toLowerCase();
+function replaceInvalidChar(val, isLowerCasing) {
+  if(isLowerCasing) val = val.toLowerCase();
   var replaceMap = {
     " ": "-",
     "&": "-",
@@ -3958,6 +3958,26 @@ function openGeneral(url, width, height, winTitle, sOptions) {
   sOptions += ",top=" + iTop;
   var oWindow = window.open(url, winTitle, sOptions);
   return oWindow;
+}
+
+// Show message on admin popup close in admin
+$(window).on("message", function(e) {
+  window.focus();
+  var data = e.originalEvent.data;
+  if(typeof data === "string" && data === "displaymsg") {
+    var d = new VrtxMsgDialog({
+      msg: vrtxAdmin.messages.courseSchedule.updated,
+      title: vrtxAdmin.messages.courseSchedule.updatedTitle,
+      width: 400
+    });
+    d.open();
+  }
+});
+function refreshParent() {
+  window.opener.postMessage("displaymsg", "*");
+}
+if(gup("displaymsg", location.href) === "yes") {
+  window.onunload = refreshParent;    
 }
 
 // Callback from the image browser:

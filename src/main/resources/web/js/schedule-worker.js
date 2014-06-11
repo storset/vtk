@@ -164,8 +164,10 @@ function scheduleUtils() {
   };
   this.getResources = function(session, fixedResources) {
     var resources = session.vrtxResources || [];
-    if(fixedResources && fixedResources.length) {
-      resources.push.apply(resources, fixedResources);
+    if(fixedResources) {
+      for(var i = 0, len = fixedResources.resources.length; i < len; i++) { 
+        resources.push({ "url": fixedResources.folderUrl + fixedResources.resources[i].name, "title": fixedResources.resources[i].title });
+      }
     }
     var val = jsonArrayToHtmlList(resources);
     var resourcesText = session.vrtxResourcesText;
@@ -296,7 +298,7 @@ function generateHTMLForType(d, supportThreads, type, scheduleI18n, canEdit) {
     for(var j = 0, len = dt.sequences.length; j < len; j++) {
       var sequence = dt.sequences[j];
       var fixedResources = sequence.vrtxResourcesFixed;
-      if(fixedResources && fixedResources.length) {
+      if(fixedResources) {
         sequences[sequence.id] = fixedResources;
         resourcesCount++;
       }

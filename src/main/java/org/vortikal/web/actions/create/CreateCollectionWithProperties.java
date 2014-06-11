@@ -93,14 +93,14 @@ public class CreateCollectionWithProperties {
     private CreateOperation bind(HttpServletRequest request) throws Exception {
         String uri = request.getParameter("uri");
         String type = request.getParameter("type");
-
-        String[] namespaces = request.getParameterValues("propertyNamespace");
-        String[] propNames = request.getParameterValues("propertyName");
-        String[] propValues = request.getParameterValues("propertyValue");
+        
+        String[] namespaces = request.getParameterValues("propertyNamespace[]");
+        String[] propNames = request.getParameterValues("propertyName[]");
+        String[] propValues = request.getParameterValues("propertyValue[]");
         Assert.hasText(uri, "Input 'uri' must be defined");
 
         List<PropertyOperation> propertyOps = new ArrayList<PropertyOperation>();
-
+        
         if (namespaces != null && propNames != null && propValues != null) {
             if (namespaces.length != propNames.length || namespaces.length != propValues.length) {
                 throw new IllegalArgumentException("Inputs 'propertyNamespaces', 'propertyNames' and 'propertyValues' "
@@ -166,7 +166,7 @@ public class CreateCollectionWithProperties {
                         ns = Namespace.getNamespace(op.namespace);
                     else
                         ns = Namespace.getNamespaceFromPrefix(op.namespace);
-
+                    
                     PropertyTypeDefinition propDef = typeInfo.getPropertyTypeDefinition(ns, op.name);
                     if (propDef.isMultiple()) {
                         String[] values = op.values.toArray(new String[op.values.size()]);

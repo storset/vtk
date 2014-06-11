@@ -1145,31 +1145,13 @@ VrtxEditor.prototype.showHideSelect = function showHideSelect(select, init) {
 \*-------------------------------------------------------------------*/
 
 var onlySessionId = gup("sessionid", window.location.href);
-$(window).on("message", function(e) {
-  var data = e.data;
-  if(typeof data === "string" && data === "displaymsg") {
-    var d = new VrtxMsgDialog({
-      msg: vrtxAdmin.messages.courseSchedule.updated,
-      title: vrtxAdmin.messages.courseSchedule.updatedTitle,
-      width: 400
-    });
-    d.open();
-  }
-});
-function refreshParent() {
-  window.opener.postMessage("displaymsg", "*");
-}
-var refreshParentOnClose = gup("displaymsg", window.location.href);
-if(refreshParentOnClose) {
-  window.onunload = refreshParent;    
-}
 function courseSchedule() {
 
-  var url = location.protocol + "//" + location.host + location.pathname;
-  if(/\/$/.test(url)) {
-    url += "index.html";
+  var baseUrl = location.protocol + "//" + location.host + location.pathname;
+  if(/\/$/.test(baseUrl)) {
+    baseUrl += "index.html";
   }
-  url += "?action=course-schedule&mode=edit&t=" + (+new Date());
+  url = baseUrl + "?action=course-schedule&mode=edit&t=" + (+new Date());
   // Debug: Local development
   // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
@@ -1401,7 +1383,7 @@ function courseSchedule() {
       for(var j = 0, len = dt.sequences.length; j < len; j++) {
         var sequence = dt.sequences[j];
         var fixedResources = sequence.vrtxResourcesFixed;
-        if(fixedResources && fixedResources.length) {
+        if(fixedResources) {
           sequences[sequence.id] = fixedResources;
         }
         sessions = sessions.concat(sequence.sessions);
@@ -1498,6 +1480,7 @@ function courseSchedule() {
         sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, session, this.retrievedScheduleData.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
 
      this.sessionsLookup[id][sessionId] = {
+       sequenceId: sequenceId,
        isEnhanced: false,
        isCancelled: sessionCancelled,
        isOrphan: sessionOrphan,
@@ -1562,7 +1545,7 @@ function courseSchedule() {
         for(var j = 0, len = dt.sequences.length; j < len; j++) {
           var sequence = dt.sequences[j];
           var fixedResources = sequence.vrtxResourcesFixed;
-          if(fixedResources && fixedResources.length) {
+          if(fixedResources) {
             sequences[sequence.id] = fixedResources;
           }
           sessions = sessions.concat(sequence.sessions);
@@ -1646,7 +1629,7 @@ function courseSchedule() {
   };
   this.sessionOnlyWindowClose = function() {
     if(onlySessionId) {
-      window.close();
+      location.href = location.pathname;
     }
   };
 
@@ -1674,7 +1657,46 @@ function courseSchedule() {
   
   // Create/admin fixed resource folders
   contents.on("click", ".create-fixed-resources-folder", function(e) {
-    alert("test");
+    var sessionId = this.id.split("create-fixed-resources-folder-")[1];
+    var id = sessionId.split("SID")[0];
+    sessionId = sessionId.split("SID")[1];
+    var session = cs.sessionsLookup[id][sessionId];
+    
+    var sessionDisciplines = session.rawPtr.discipline;
+    var sessionTitle = session.rawPtr.vrtxTitle || session.rawPtr.title;
+    var sequenceId = session.sequenceId;
+    
+    var collectionTitle = (sessionDisciplines ? sessionDisciplines.join(", ") : "") + " - " + sessionTitle + " - " + sequenceId;
+    var collectionName = replaceInvalidChar((sessionDisciplines ? sessionDisciplines.join("-") : "") + "-" + sessionTitle + "-" + sequenceId, false);
+    var collectionUrl = cs.retrievedScheduleData.vrtxResourcesFixedUrl + collectionName;
+    
+    vrtxAdmin.serverFacade.getHtml(baseUrl + "?vrtx=admin&service=create-collection-with-properties", {
+      success: function (results, status, resp) {
+        var form = $($.parseHTML(results)).find("#create-collection-form");
+        var csrf = form.find("input[name='csrf-prevention-token']").val();
+        var dataString = "uri=" + encodeURIComponent(collectionUrl) +
+                         "&type=fixed-resources-collection" +
+                         "&propertyNamespace%5B%5D=" +
+                         "&propertyName%5B%5D=userTitle" +
+                         "&propertyValue%5B%5D=" + encodeURIComponent(collectionTitle) +
+                         "&propertyNamespace%5B%5D=" + encodeURIComponent("http://www.uio.no/resource-types/fixed-resources-collection") +
+                         "&propertyName%5B%5D=fixed-resources-codes" +
+                         "&propertyValue%5B%5D=" + encodeURIComponent(sequenceId);
+        if(sessionDisciplines) {
+          for(var i = 0, len = sessionDisciplines.length; i < len; i++) {
+            dataString += "&propertyNamespace%5B%5D=" +
+                          "&propertyName%5B%5D=tags" +
+                          "&propertyValue%5B%5D=" + encodeURIComponent(sessionDisciplines[i]);
+          }
+        }
+        dataString += "&csrf-prevention-token=" + csrf;
+        vrtxAdmin.serverFacade.postHtml(form.attr("action"), dataString, {
+          success: function (results, status, resp) {
+            var fixedResourcesWindow = openPopup(collectionUrl + "?vrtx=admin&displaymsg=yes", 1000, 600, "adminFixedResources");
+          }
+        });
+      }
+    });
     e.preventDefault();
     e.stopPropagation();
   });
@@ -2487,15 +2509,16 @@ VrtxEditor.prototype.htmlFacade = {
           if(fixedResourcesUrl) {
             html += "<div class='vrtx-simple-html'><label>" + i18n[name] + "</label>";
             if(!val) { // Create
-              var button = "<a class='vrtx-button create-fixed-resources-folder' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a>";
+              var button = "<a class='vrtx-button create-fixed-resources-folder' id='create-fixed-resources-folder-" + id + "SID" + sessionId + "' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a>";
             } else { // Admin
-              var button = "<a class='vrtx-button admin-fixed-resources-folder' href='" + fixedResourcesUrl + "?vrtx=admin&displaymsg'>" + i18n[name + "UploadAdminFolder"] + "</a>";
+              var button = "<a class='vrtx-button admin-fixed-resources-folder' href='" + val.folderUrl + "?vrtx=admin&displaymsg=yes'>" + i18n[name + "UploadAdminFolder"] + "</a>";
               
-              var propsLen = val.length;
+              var propsArr = val.resources;
+              var propsLen = propsArr.length;
               if(propsLen > 1) propsVal += "<ul>";
               for(var j = 0; j < propsLen; j++) {
                 if(propsLen > 1) propsVal += "<li>";
-                propsVal += "<a href='" + val[j].url + "'>" + val[j].title + "</a>";
+                propsVal += "<a href='" + val.folderUrl + propsArr[j].name + "'>" + propsArr[j].title + "</a>";
                 if(propsLen > 1) propsVal += "</li>";
               }
               if(propsLen > 1) propsVal += "</ul>";

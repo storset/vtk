@@ -24,6 +24,7 @@ function initSchedule() {
   var hasEditedKey = "hasEditedSession";
   if(window.localStorage && window.localStorage.getItem(hasEditedKey)) {
     useCache = false;
+    window.localStorage.removeItem(hasEditedKey);
   }
   
   var url = location.protocol + "//" + location.host + location.pathname;
@@ -113,16 +114,6 @@ function initSchedule() {
                        "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))" + (scheduleSupportsThreads ? " [Uses Threads/Web Worker's]</p>" : "</p>") + */ html, function(fragment) {
           activitiesElm[0].appendChild(fragment);
           loadingUpdate("");
-          if(window.localStorage && window.localStorage.getItem(hasEditedKey)) {
-            var hash = window.localStorage.getItem(hasEditedKey);
-            window.localStorage.removeItem(hasEditedKey);
-            var elm = $("#" + hash);
-            if(elm.filter(":hidden").length) {
-              elm.closest(".course-schedule-table-wrapper")
-                 .find(".course-schedule-table-toggle-passed").click();
-            }
-            window.location.hash = hash;
-          }
           scheduleDeferred.resolve();
         });
       }
@@ -134,20 +125,6 @@ function initSchedule() {
       retrievedScheduleData = null;
       plenaryData = null;
       groupData = null;
-
-      // Toggle passed sessions
-      activitiesElm.on("click", ".course-schedule-table-toggle-passed", function(e) {
-        var link = $(this);
-        var table = link.prev();
-        table.toggleClass("hiding-passed");
-        var isHidingPassed = table.hasClass("hiding-passed");
-        link.text(isHidingPassed ? scheduleI18n.tableShowPassed : scheduleI18n.tableHidePassed);
-        if(!isHidingPassed) {
-          $("html, body").finish().animate({ scrollTop: (table.offset().top - 20) }, 100);
-        }
-        e.stopPropagation();
-        e.preventDefault();
-      });
       
       // If user can write and is not locked
       if(schedulePermissions.hasReadWriteNotLocked) {
@@ -164,8 +141,8 @@ function initSchedule() {
           if(/\/$/.test(editUrl)) {
             editUrl += "index.html";
           }
-          var openedEditWindow = popupEditWindow(820, 680, editUrl + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + idRow, "editActivity");
-          refreshWhenRefocused(hasEditedKey, idRow);
+          window.localStorage.setItem(hasEditedKey, "yes");
+          location.href = editUrl + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + idRow;
           e.stopPropagation();
           e.preventDefault();
         });
@@ -200,43 +177,6 @@ function loadingUpdate(msg) {
       loader.remove();
     }
   }
-}
-
-function popupEditWindow(w, h, url, name) {
-  var screenWidth = window.screen.width;
-  var screenHeight = window.screen.height;
-  var left = (screenWidth - w) / 2;
-  var top = (screenHeight - h) / 2;
-  var openedWindow = window.open(url, name, "height=" + h + ", width=" + w + ", left=" + left + ", top=" + top + ", status=no, resizable=no, toolbar=no, menubar=no, scrollbars=yes, location=no, directories=no");
-  openedWindow.focus();
-  return openedWindow;
-}
-
-function refreshWhenRefocused(hasEditedKey, id) {
-  var isVisible = false;
-  var visibilityEvent = "visibilitychange";
-  var delayCheckVisibility = 450;
-  var waitForVisibility = setTimeout(function() {
-    if(document.addEventListener) {
-      var detectVisibilityChange = function() {
-        isVisible = !document.hidden;
-        if(isVisible && document.removeEventListener) {
-          document.removeEventListener(visibilityEvent, detectVisibilityChange);
-        }
-      }
-      document.addEventListener(visibilityEvent, detectVisibilityChange, false);
-    }
-  }, delayCheckVisibility);
-  var waitForClose = setTimeout(function() {
-    if(document.hasFocus() || isVisible) {
-      if(window.localStorage) {
-        window.localStorage.setItem(hasEditedKey, id);
-      }
-      window.location.reload(1);
-    } else {
-      setTimeout(arguments.callee, 50); 
-    }
-  }, delayCheckVisibility);
 }
 
 function startThreadGenerateHTMLForType(data, htmlRef, threadRef, type, scheduleI18n, canEdit) {

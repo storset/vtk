@@ -1495,7 +1495,7 @@ function courseSchedule() {
                        (sessionOrphan ? "<span class='header-status'>" + this.i18n.orphan + "</span> - " : "") +
                        (session.vrtxTitle || session.title || session.id) + "</span>" +
                        (rooms ? (" - " + (rooms[0].buildingAcronym || rooms[0].buildingId) + " " + this.i18n.room + " " + rooms[0].roomId) : ""),
-        sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, session, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
+        sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, session, this.retrievedScheduleData.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
 
      this.sessionsLookup[id][sessionId] = {
        isEnhanced: false,
@@ -1673,12 +1673,12 @@ function courseSchedule() {
   }, false);
   
   // Create/admin fixed resource folders
-  $("#contents").on("click", ".create-fixed-resources-folder", function(e) {
-    alert("TODO Create");
+  contents.on("click", ".create-fixed-resources-folder", function(e) {
+    alert("test");
     e.preventDefault();
     e.stopPropagation();
   });
-  $("#contents").on("click", ".admin-fixed-resources-folder", function(e) {
+  contents.on("click", ".admin-fixed-resources-folder", function(e) {
     var fixedResourcesWindow = openPopup(this.href, 1000, 600, "adminFixedResources");
     e.preventDefault();
     e.stopPropagation();
@@ -2425,7 +2425,7 @@ VrtxEditor.prototype.htmlFacade = {
   /* 
    * Turn a block of JSON into HTML
    */
-  jsonToHtml: function(id, sessionId, session, fixedResources, descs, i18n) {
+  jsonToHtml: function(id, sessionId, session, fixedResourcesUrl, fixedResources, descs, i18n) {
     var html = "";
     var multiples = [];
     var rtEditors = [];
@@ -2484,21 +2484,24 @@ VrtxEditor.prototype.htmlFacade = {
                                                      }, name);
           break;
         case "json-fixed":
-          if(val) {
-            var buttons = /* "<a class='vrtx-button create-fixed-resources-folder' id='" + sessionId + "-create-fixed-resources' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a> "  */
-                          (val[0].url ? "<a class='vrtx-button admin-fixed-resources-folder' href='" + val[0].url.replace(/[^\\/]*$/, "") + "?vrtx=admin&displaymsg" + "'>" + i18n[name + "UploadAdminFolder"] + "</a>" : "");
-          
-            var propsLen = val.length;
-          
-            if(propsLen > 1) propsVal += "<ul>";
-            for(var j = 0; j < propsLen; j++) {
-              if(propsLen > 1) propsVal += "<li>";
-              propsVal += "<a href='" + val[j].url + "'>" + val[j].title + "</a>";
-              if(propsLen > 1) propsVal += "</li>";
+          if(fixedResourcesUrl) {
+            html += "<div class='vrtx-simple-html'><label>" + i18n[name] + "</label>";
+            if(!val) { // Create
+              var button = "<a class='vrtx-button create-fixed-resources-folder' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a>";
+            } else { // Admin
+              var button = "<a class='vrtx-button admin-fixed-resources-folder' href='" + fixedResourcesUrl + "?vrtx=admin&displaymsg'>" + i18n[name + "UploadAdminFolder"] + "</a>";
+              
+              var propsLen = val.length;
+              if(propsLen > 1) propsVal += "<ul>";
+              for(var j = 0; j < propsLen; j++) {
+                if(propsLen > 1) propsVal += "<li>";
+                propsVal += "<a href='" + val[j].url + "'>" + val[j].title + "</a>";
+                if(propsLen > 1) propsVal += "</li>";
+              }
+              if(propsLen > 1) propsVal += "</ul>";
+              html += "<div class='preview-html'>" + propsVal + "</div>";
             }
-            if(propsLen > 1) propsVal += "</ul>";
-          
-            html += "<div class='vrtx-simple-html'><label>" + i18n[name] + "</label><div class='preview-html'>" + propsVal + "</div>" + buttons + "</div>";
+            html += button + "</div>";
           }
           break;
         case "html":

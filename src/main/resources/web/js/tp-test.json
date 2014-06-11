@@ -1,6 +1,7 @@
 {
    "courseid":"EXPHIL03",
    "terminnr":1,
+   "vrtxResourcesFixedUrl": "/om/",
    "plenary": {
      "vrtxEditableDescription": {
          "vrtxTitle":{

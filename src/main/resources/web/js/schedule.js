@@ -142,7 +142,7 @@ function initSchedule() {
             editUrl += "index.html";
           }
           window.localStorage.setItem(hasEditedKey, "yes");
-          location.href = editUrl + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + encodeUriComponent(idRow);
+          location.href = editUrl + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + encodeURIComponent(idRow);
           e.stopPropagation();
           e.preventDefault();
         });

@@ -56,16 +56,16 @@ import org.vortikal.web.service.URL;
 public class CreateCollectionWithProperties {
 
     private String formView, successView;
-    
-    @RequestMapping(method=RequestMethod.GET)
+
+    @RequestMapping(method = RequestMethod.GET)
     public ModelAndView get() {
         Map<String, Object> model = new HashMap<String, Object>();
         URL submitURL = RequestContext.getRequestContext().getRequestURL();
         model.put("submitURL", submitURL);
         return new ModelAndView(getFormView(), model);
     }
-    
-    @RequestMapping(method=RequestMethod.POST)
+
+    @RequestMapping(method = RequestMethod.POST)
     public ModelAndView post(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         CreateOperation operation = bind(request);
@@ -89,34 +89,28 @@ public class CreateCollectionWithProperties {
     public void setSuccessView(String successView) {
         this.successView = successView;
     }
-    
+
     private CreateOperation bind(HttpServletRequest request) throws Exception {
         String uri = request.getParameter("uri");
         String type = request.getParameter("type");
-        
-//        Enumeration ps = request.getParameterNames();
-//        while (ps.hasMoreElements()) {
-//            String p = (String) ps.nextElement();
-//            System.out.println("__p: " + p + " = " + Arrays.asList(request.getParameterValues(p)));
-//        }
+
         String[] namespaces = request.getParameterValues("propertyNamespace");
         String[] propNames = request.getParameterValues("propertyName");
         String[] propValues = request.getParameterValues("propertyValue");
         Assert.hasText(uri, "Input 'uri' must be defined");
 
         List<PropertyOperation> propertyOps = new ArrayList<PropertyOperation>();
-        
+
         if (namespaces != null && propNames != null && propValues != null) {
             if (namespaces.length != propNames.length || namespaces.length != propValues.length) {
-                throw new IllegalArgumentException(
-                        "Inputs 'propertyNamespaces', 'propertyNames' and 'propertyValues' "
-                                + "must be of the same length");
+                throw new IllegalArgumentException("Inputs 'propertyNamespaces', 'propertyNames' and 'propertyValues' "
+                        + "must be of the same length");
             }
             for (int i = 0; i < namespaces.length; i++) {
                 if (!"".equals(propNames[i].trim()) && !"".equals(propValues[i].trim())) {
-                    
+
                     PropertyOperation existing = null;
-                    for (PropertyOperation op: propertyOps) {
+                    for (PropertyOperation op : propertyOps) {
                         if (op.namespace.equals(namespaces[i]) && op.name.equals(propNames[i])) {
                             existing = op;
                             break;
@@ -124,32 +118,32 @@ public class CreateCollectionWithProperties {
                     }
                     if (existing != null) {
                         existing.addValue(propValues[i]);
-                    } else propertyOps.add(new PropertyOperation(
-                            namespaces[i], propNames[i], propValues[i]));
-                    
+                    } else
+                        propertyOps.add(new PropertyOperation(namespaces[i], propNames[i], propValues[i]));
+
                 }
             }
         }
         return new CreateOperation(Path.fromString(uri), type, propertyOps);
     }
-    
+
     private class CreateOperation {
         Path uri;
         String typeProperty = null;
         List<PropertyOperation> propertyOps;
-        
+
         @Override
         public String toString() {
-            return "CreateOperation(uri=" + uri + ", typeProperty=" + 
-                    typeProperty + ", propertyOps=" + propertyOps + ")";
+            return "CreateOperation(uri=" + uri + ", typeProperty=" + typeProperty + ", propertyOps=" + propertyOps
+                    + ")";
         }
-        
+
         CreateOperation(Path uri, String typeProperty, List<PropertyOperation> propertyOps) {
-            this.uri= uri;
+            this.uri = uri;
             this.typeProperty = typeProperty;
             this.propertyOps = propertyOps;
         }
-        
+
         public void apply(Repository repository, String token) throws Exception {
             Resource collection = repository.createCollection(token, uri);
             if (this.typeProperty != null) {
@@ -159,33 +153,27 @@ public class CreateCollectionWithProperties {
                 collection.addProperty(property);
                 collection = repository.store(token, collection);
             }
-            
+
             TypeInfo typeInfo = repository.getTypeInfo(collection);
-            
-            System.out.println("__ops: " + propertyOps);
-            
+
             if (propertyOps != null) {
-                for (PropertyOperation op: propertyOps) {
+                for (PropertyOperation op : propertyOps) {
                     Namespace ns = null;
 
                     if (op.namespace == null || op.namespace.trim().equals(""))
                         ns = Namespace.DEFAULT_NAMESPACE;
                     else if (op.namespace.startsWith("http://"))
                         ns = Namespace.getNamespace(op.namespace);
-                    else ns = Namespace.getNamespaceFromPrefix(op.namespace);
+                    else
+                        ns = Namespace.getNamespaceFromPrefix(op.namespace);
 
-                    PropertyTypeDefinition propDef = 
-                            typeInfo.getPropertyTypeDefinition(ns, op.name);
+                    PropertyTypeDefinition propDef = typeInfo.getPropertyTypeDefinition(ns, op.name);
                     if (propDef.isMultiple()) {
-                       System.out.println("__multiple: " + propDef); 
                         String[] values = op.values.toArray(new String[op.values.size()]);
-                        Property property = typeInfo.createProperty(
-                                ns, op.name, values);
+                        Property property = typeInfo.createProperty(ns, op.name, values);
                         collection.addProperty(property);
                     } else {
-                        System.out.println("__single: " + propDef); 
-                        Property property = typeInfo.createProperty(
-                                ns, op.name, op.values.get(0));
+                        Property property = typeInfo.createProperty(ns, op.name, op.values.get(0));
                         collection.addProperty(property);
                     }
                 }
@@ -197,21 +185,21 @@ public class CreateCollectionWithProperties {
     private class PropertyOperation {
         String namespace, name;
         List<String> values;
+
         PropertyOperation(String namespace, String name, String value) {
             this.namespace = namespace;
             this.name = name;
             this.values = new ArrayList<String>();
             this.values.add(value);
         }
-        
+
         public void addValue(String value) {
             values.add(value);
         }
-        
+
         @Override
         public String toString() {
-            return "PropertyOp(namespace=" + namespace + ", name=" 
-                    + name + ", values=" + values + ")";
+            return "PropertyOp(namespace=" + namespace + ", name=" + name + ", values=" + values + ")";
         }
-    }        
+    }
 }

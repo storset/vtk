@@ -1629,7 +1629,7 @@ function courseSchedule() {
   };
   this.sessionOnlyWindowClose = function() {
     if(onlySessionId) {
-      $("#global-menu-leave-admin a").click();
+      location.href = $("#global-menu-leave-admin a").attr("href");
     }
   };
 

@@ -157,7 +157,7 @@ function initSchedule() {
       activitiesElm.on("click", "a.course-schedule-table-resources-after-toggle", function(e) {
         var wrapperElm = $(this).next();
         var isWrapperVisible = wrapperElm.hasClass("visible");
-        $(".course-schedule-table-resources-after-toggle.visible").removeClass("visible");
+        $(".course-schedule-table-resources-after.visible").removeClass("visible");
         if(!isWrapperVisible) {
           wrapperElm.addClass("visible");
         }

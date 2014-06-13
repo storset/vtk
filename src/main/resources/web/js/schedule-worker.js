@@ -210,15 +210,16 @@ function scheduleUtils() {
         if(htmlSplitted != null) { // Check length of resourcesText and split if exceeds limit
           var totExtraTxtLen = 0;
           for(var i = 0, len = htmlSplitted.length; i < len; i++) {
-            totExtraTxtLen += resourcesText.replace(/(<([^>]+)>)/ig,"").length; // http://css-tricks.com/snippets/javascript/strip-html-tags-in-javascript/
-            if(totExtraTxtLen > resourcesTxtLimit) {
-              valAfter += htmlSplitted[i];
+            var htmlSplittedSingle = htmlSplitted[i];
+            totExtraTxtLen += htmlSplittedSingle.replace(/(<([^>]+)>)/ig,"").length; // http://css-tricks.com/snippets/javascript/strip-html-tags-in-javascript/
+            if((totTxtLen + totExtraTxtLen) > resourcesTxtLimit) {
+              valAfter += htmlSplittedSingle;
               for(;i < len; i++) { // Add rest
                 valAfter += htmlSplitted[i];
               }
               break;
             } else {
-              val += htmlSplitted[i];
+              val += htmlSplittedSingle;
             }
           }
         } else {

@@ -166,7 +166,7 @@ function scheduleUtils() {
     var resources = session.vrtxResources || [];
     if(fixedResources) {
       for(var i = 0, len = fixedResources.resources.length; i < len; i++) { 
-        resources.push({ "url": fixedResources.folderUrl + fixedResources.resources[i].name, "title": fixedResources.resources[i].title });
+        resources.push({ "url": fixedResources.folderUrl + "/" + fixedResources.resources[i].name, "title": fixedResources.resources[i].title });
       }
     }
     var val = jsonArrayToHtmlList(resources);

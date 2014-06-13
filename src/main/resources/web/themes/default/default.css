@@ -3188,7 +3188,7 @@ body#vrtx-preview .tabMessage-big {
 
 html.embedded,
 html.embedded body {
-  background: #fff;
+  background: #999999;
 }
 
 html.embedded body {
@@ -3229,6 +3229,10 @@ html.embedded .submitButtons > * {
 
 html.embedded #vrtx-editor #app-content #editor {
   padding-top: 15px;
+}
+
+html.embedded .vrtx-close-dialog-editor {
+  margin-top: 5px;
 }
 
 html.embedded #vrtx-editor-title-submit-buttons h2 {

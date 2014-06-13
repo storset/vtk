@@ -152,6 +152,14 @@ function initSchedule() {
           e.stopPropagation();
           e.preventDefault();
         });
+        // Show hidden more resources
+        activitiesElm.on("click", "a.course-schedule-table-resources-after-show", function(e) {
+          var linkElm = $(this);
+          linkElm.hide();
+          linkElm.next().show();
+          e.stopPropagation();
+          e.preventDefault();
+        });
       }
     });
   });

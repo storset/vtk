@@ -228,7 +228,7 @@ function scheduleUtils() {
         }
       }
     }
-    return val + (valAfter != "" ? "...<div 'course-schedule-table-resources-after'>" + valAfter + "</div>" : "");
+    return val + (valAfter != "" ? "<a href='javascript:void(0);' class='course-schedule-table-resources-after-show'>...</a><div class='course-schedule-table-resources-after' style='display: none'>" + valAfter + "</div>" : "");
   };
   this.getTableStartHtml = function(activityId, caption, isAllPassed, hasResources, hasStaff, i18n) {
     var html = "<div tabindex='0' class='course-schedule-table-wrapper'>";

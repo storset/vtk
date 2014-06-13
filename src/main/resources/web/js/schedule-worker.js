@@ -206,11 +206,11 @@ function scheduleUtils() {
       if(totTxtLen > resourcesTxtLimit) {
         valAfter += resourcesText;
       } else {
-        var htmlSplitted = val.match(/<\s*(\w+\b)(?:(?!<\s*\/\s*\1\b)[\s\S])*<\s*\/\s*\1\s*>|\S+/gi); // http://stackoverflow.com/questions/19244318/javascript-split-messes-up-my-html-tags
+        var htmlSplitted = resourcesText.match(/<\s*(\w+\b)(?:(?!<\s*\/\s*\1\b)[\s\S])*<\s*\/\s*\1\s*>|\S+/gi); // http://stackoverflow.com/questions/19244318/javascript-split-messes-up-my-html-tags
         if(htmlSplitted != null) { // Check length of resourcesText and split if exceeds limit
           var totExtraTxtLen = 0;
           for(var i = 0, len = htmlSplitted.length; i < len; i++) {
-            totExtraTxtLen += resourcesText.replace(/(<([^>]+)>)/ig,"").length;
+            totExtraTxtLen += resourcesText.replace(/(<([^>]+)>)/ig,"").length; // http://css-tricks.com/snippets/javascript/strip-html-tags-in-javascript/
             if(totExtraTxtLen > resourcesTxtLimit) {
               valAfter += htmlSplitted[i];
               for(;i < len; i++) { // Add rest
@@ -221,6 +221,8 @@ function scheduleUtils() {
               val += htmlSplitted[i];
             }
           }
+        } else {
+          val += resourcesText;
         }
       }
     }

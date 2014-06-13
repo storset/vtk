@@ -129,7 +129,7 @@ public class SubFolderMenuProvider {
 
         Search search = new Search();
         if (RequestContext.getRequestContext().isPreviewUnpublished()) {
-            search.removeFilterFlag(Search.FilterFlag.UNPUBLISHED_COLLECTIONS);
+            search.removeFilterFlag(Search.FilterFlag.UNPUBLISHED_COLLECTIONS, Search.FilterFlag.UNPUBLISHED);
         }
         search.setLimit(this.collectionDisplayLimit);
         search.setQuery(query);

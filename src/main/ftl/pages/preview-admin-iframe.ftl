@@ -86,7 +86,7 @@
     <#else>
       <#assign url = url + "?" + previewViewParameter />
     </#if>
-    <#assign url = url + "&amp;" + previewRefreshParameter + "=" + dateStr />
+    <#assign url = url + "&amp;" + previewRefreshParameter + "=" + dateStr + "&amp;vrtxPreviewUnpublished"/>
 
     <div id="preview-mode-actions">
       <div id="preview-mode-actions-inner">

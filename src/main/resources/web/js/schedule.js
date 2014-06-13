@@ -112,12 +112,11 @@ function initSchedule() {
         var startAppend = +new Date();
         asyncInnerHtml("<p id='debug-perf'>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
                        "ms) || (AJAX-complete: " + endAjaxTime + "ms + Threads invoking/serializing: " + ((endMakingThreadsTime || 0) + (htmlPlenary.parseRetrievedJSONTime || 0) + (htmlGroup.parseRetrievedJSONTime || 0)) +
-                       "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))" + (scheduleSupportsThreads ? " [Uses Threads/Web Worker's]</p>" : "</p>") + html, function(fragment) {
-          activitiesElm[0].appendChild(fragment);
+                       "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))" + (scheduleSupportsThreads ? " [Uses Threads/Web Worker's]</p>" : "</p>") + html, function() {
           loadingUpdate("");
           $("#debug-perf").append(" -- Append of HTML took: " + (+new Date() - startAppend));
           scheduleDeferred.resolve();
-        });
+        }, activitiesElm);
       }
       
       // Just in case GC is not sweeping garbage..
@@ -153,17 +152,16 @@ function initSchedule() {
   });
 }
 
-function asyncInnerHtml(html, callback) { // http://james.padolsey.com/javascript/asynchronous-innerhtml/
+function asyncInnerHtml(html, callback, activitiesElm) {
   var temp = document.createElement('div'),
       frag = document.createDocumentFragment();
  temp.innerHTML = html;
  (function(){
-   if(temp.firstChild){
-     console.log("Append child to to documentfragment");
-     frag.appendChild(temp.firstChild);
-     setTimeout(arguments.callee, 0);
+   if(temp.firstChild) {
+     activitiesElm[0].appendChild(fragment);
+     setTimeout(arguments.callee, 15);
    } else {
-     callback(frag);
+     callback();
    }
  })();
 }

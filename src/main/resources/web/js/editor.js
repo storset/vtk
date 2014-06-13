@@ -1698,13 +1698,13 @@ function courseSchedule() {
         vrtxAdmin.serverFacade.postHtml(form.attr("action"), dataString, {
           success: function (results, status, resp) {
             linkElm.hide();
-            $("<a class='vrtx-button admin-fixed-resources-folder' href='" + collectionUrl + "?vrtx=admin&displaymsg=yes' style='display:none'>" + cs.i18n[name + "UploadAdminFolder"] + "</a>").insertAfter(linkElm);
+            $("<a class='vrtx-button admin-fixed-resources-folder' href='" + collectionUrl + "?vrtx=admin&displaymsg=yes'>" + cs.i18n["vrtxResourcesFixedUploadAdminFolder"] + "</a>").insertAfter(linkElm);
             var fixedResourcesWindow = openPopup(collectionUrl + "?vrtx=admin&displaymsg=yes", 1000, 600, "adminFixedResources");
           },
           error: function (xhr, textStatus, errMsg) {
             if(xhr.status === 500) { // XXX: assumption that already created, as it can take time before folder created is coming through
               linkElm.hide();
-              $("<a class='vrtx-button admin-fixed-resources-folder' href='" + collectionUrl + "?vrtx=admin&displaymsg=yes' style='display:none'>" + cs.i18n[name + "UploadAdminFolder"] + "</a>").insertAfter(linkElm);
+              $("<a class='vrtx-button admin-fixed-resources-folder' href='" + collectionUrl + "?vrtx=admin&displaymsg=yes'>" + cs.i18n["vrtxResourcesFixedUploadAdminFolder"] + "</a>").insertAfter(linkElm);
             }
             $("body").scrollTo(0, 200, { easing: 'swing', queue: true, axis: 'y' });
           }

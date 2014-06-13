@@ -214,6 +214,7 @@ function scheduleUtils() {
             totExtraTxtLen += htmlSplittedSingle.replace(/(<([^>]+)>)/ig,"").length; // http://css-tricks.com/snippets/javascript/strip-html-tags-in-javascript/
             if((totTxtLen + totExtraTxtLen) > resourcesTxtLimit) {
               valAfter += htmlSplittedSingle;
+              i++;
               for(;i < len; i++) { // Add rest
                 valAfter += htmlSplitted[i];
               }

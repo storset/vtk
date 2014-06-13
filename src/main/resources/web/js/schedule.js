@@ -119,7 +119,7 @@ function initSchedule() {
           },         
           function() {
             loadingUpdate("");
-            $("#debug-perf").append(" -- Append of HTML took: " + (+new Date() - startAppend));
+            $("#debug-perf").append(" -- Appending HTML after total: " + (+new Date() - startAppend) + "ms");
             scheduleDeferred.resolve();
         }, activitiesElm[0]);
       }
@@ -154,10 +154,8 @@ function initSchedule() {
         });
       }
       // Show hidden more resources
-      activitiesElm.on("click", "a.course-schedule-table-resources-after-show", function(e) {
-        var linkElm = $(this);
-        linkElm.hide();
-        linkElm.next().show();
+      activitiesElm.on("click", "a.course-schedule-table-resources-after-toggle", function(e) {
+        $(this).next().toggleClass("visible");
         e.stopPropagation();
         e.preventDefault();
       });

@@ -1555,7 +1555,6 @@ function courseSchedule() {
           var sessionDateTime = this.getDateTime(session.dtStart, session.dtEnd);
           var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime);
           var sessionId = id + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId;
-          console.log(findSessionId + " " + sessionId);
           if(findSessionId === sessionId) {
             return { id: id, session: session, sessionDateTime: sessionDateTime, sequences: sequences, type: type, skipTier: skipTier };
           }
@@ -1739,7 +1738,7 @@ function courseSchedule() {
     $(".vrtx-json").remove();
 
     if(onlySessionId) {
-      console.log(onlySessionId);
+      onlySessionId = decodeURIComponent(onlySessionId);
       var sessionOnly = csRef.getSessionOnlyHtml(onlySessionId);
       if(!sessionOnly) html = "<p>" + csRef.i18n.noSessionData + "</p>";
       var html = sessionOnly.html;

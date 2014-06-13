@@ -4,6 +4,7 @@
  */
 
 var scheduleDeferred = $.Deferred();
+var scheduleTocDeferred = $.Deferred();
 var scheduleDocumentReady = $.Deferred();
 var scheduleStartTime = +new Date();
 var scheduleDocReadyEndTime = 0;
@@ -112,11 +113,15 @@ function initSchedule() {
         var startAppend = +new Date();
         asyncInnerHtml("<p id='debug-perf'>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
                        "ms) || (AJAX-complete: " + endAjaxTime + "ms + Threads invoking/serializing: " + ((endMakingThreadsTime || 0) + (htmlPlenary.parseRetrievedJSONTime || 0) + (htmlGroup.parseRetrievedJSONTime || 0)) +
-                       "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))" + (scheduleSupportsThreads ? " [Uses Threads/Web Worker's]</p>" : "</p>") + html, function() {
-          loadingUpdate("");
-          $("#debug-perf").append(" -- Append of HTML took: " + (+new Date() - startAppend));
-          scheduleDeferred.resolve();
-        }, activitiesElm);
+                       "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))" + (scheduleSupportsThreads ? " [Uses Threads/Web Worker's]</p>" : "</p>") + html,
+          function() {
+            scheduleTocDeferred.resolve();
+          },         
+          function() {
+            loadingUpdate("");
+            $("#debug-perf").append(" -- Append of HTML took: " + (+new Date() - startAppend));
+            scheduleDeferred.resolve();
+        }, activitiesElm[0]);
       }
       
       // Just in case GC is not sweeping garbage..
@@ -152,18 +157,22 @@ function initSchedule() {
   });
 }
 
-function asyncInnerHtml(html, callback, activitiesElm) {
+function asyncInnerHtml(html, callbackTocComplete, callbackAllComplete, activitiesElm) {
   var temp = document.createElement('div');
- temp.innerHTML = html;
- (function(){
-   if(temp.firstChild) {
-     console.log("appendschild");
-     activitiesElm[0].appendChild(temp.firstChild);
-     setTimeout(arguments.callee, 15);
-   } else {
-     callback();
-   }
- })();
+  temp.innerHTML = html;
+  var i = 0;
+  (function(){
+    if(temp.firstChild) {
+      activitiesElm.appendChild(temp.firstChild);
+      i++;
+      if(i === 2) {
+        callbackTocComplete();
+      }
+      setTimeout(arguments.callee, 15);
+    } else {
+      callbackAllComplete();
+    }
+  })();
 }
 
 function loadingUpdate(msg) {

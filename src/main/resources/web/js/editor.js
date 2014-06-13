@@ -1698,13 +1698,13 @@ function courseSchedule() {
         vrtxAdmin.serverFacade.postHtml(form.attr("action"), dataString, {
           success: function (results, status, resp) {
             linkElm.hide();
-            linkElm.next().show();
+            $("<a class='vrtx-button admin-fixed-resources-folder' href='" + collectionUrl + "?vrtx=admin&displaymsg=yes' style='display:none'>" + i18n[name + "UploadAdminFolder"] + "</a>").insertAfter(linkElm);
             var fixedResourcesWindow = openPopup(collectionUrl + "?vrtx=admin&displaymsg=yes", 1000, 600, "adminFixedResources");
           },
           error: function (xhr, textStatus, errMsg) {
             if(xhr.status === 500) { // XXX: assumption that already created, as it can take time before folder created is coming through
               linkElm.hide();
-              linkElm.next().show();
+              $("<a class='vrtx-button admin-fixed-resources-folder' href='" + collectionUrl + "?vrtx=admin&displaymsg=yes' style='display:none'>" + i18n[name + "UploadAdminFolder"] + "</a>").insertAfter(linkElm);
             }
             $("body").scrollTo(0, 200, { easing: 'swing', queue: true, axis: 'y' });
           }
@@ -2525,8 +2525,7 @@ VrtxEditor.prototype.htmlFacade = {
           if(fixedResourcesUrl) {
             html += "<div class='vrtx-simple-html'><label>" + i18n[name] + "</label>";
             if(!val) { // Create
-              var buttons = "<a class='vrtx-button create-fixed-resources-folder' id='create-fixed-resources-folder-" + id + "SID" + sessionId + "' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a>" +
-                            "<a class='vrtx-button admin-fixed-resources-folder' href='" + val.folderUrl + "?vrtx=admin&displaymsg=yes' style='display:none'>" + i18n[name + "UploadAdminFolder"] + "</a>";
+              var buttons = "<a class='vrtx-button create-fixed-resources-folder' id='create-fixed-resources-folder-" + id + "SID" + sessionId + "' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a>";
             } else { // Admin
               var buttons = "<a class='vrtx-button admin-fixed-resources-folder' href='" + val.folderUrl + "?vrtx=admin&displaymsg=yes'>" + i18n[name + "UploadAdminFolder"] + "</a>";
               

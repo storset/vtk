@@ -157,6 +157,7 @@ function asyncInnerHtml(html, callback, activitiesElm) {
  temp.innerHTML = html;
  (function(){
    if(temp.firstChild) {
+     console.log("appendschild");
      activitiesElm[0].appendChild(temp.firstChild);
      setTimeout(arguments.callee, 15);
    } else {

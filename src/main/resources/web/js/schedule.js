@@ -165,7 +165,7 @@ function asyncInnerHtml(html, callbackTocComplete, callbackAllComplete, activiti
     if(temp.firstChild) {
       activitiesElm.appendChild(temp.firstChild);
       i++;
-      if(i === 2) {
+      if(i === 4) {
         callbackTocComplete();
       }
       setTimeout(arguments.callee, 15);

@@ -109,11 +109,13 @@ function initSchedule() {
         scheduleDeferred.resolve();
       } else {
         activitiesElm.attr("aria-busy", "false");
-        asyncInnerHtml(/* "<p>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
+        var startAppend = +new Date();
+        asyncInnerHtml("<p id='debug-perf'>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
                        "ms) || (AJAX-complete: " + endAjaxTime + "ms + Threads invoking/serializing: " + ((endMakingThreadsTime || 0) + (htmlPlenary.parseRetrievedJSONTime || 0) + (htmlGroup.parseRetrievedJSONTime || 0)) +
-                       "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))" + (scheduleSupportsThreads ? " [Uses Threads/Web Worker's]</p>" : "</p>") + */ html, function(fragment) {
+                       "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))" + (scheduleSupportsThreads ? " [Uses Threads/Web Worker's]</p>" : "</p>") + html, function(fragment) {
           activitiesElm[0].appendChild(fragment);
           loadingUpdate("");
+          $("#debug-perf").append(" -- Append of HTML took: " + (+new Date() - startAppend));
           scheduleDeferred.resolve();
         });
       }
@@ -157,6 +159,7 @@ function asyncInnerHtml(html, callback) { // http://james.padolsey.com/javascrip
  temp.innerHTML = html;
  (function(){
    if(temp.firstChild){
+     vrtxAdmin.log({msg:"Append child to to documentfragment"});
      frag.appendChild(temp.firstChild);
      setTimeout(arguments.callee, 0);
    } else {

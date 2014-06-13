@@ -79,38 +79,65 @@ function scheduleUtils() {
     }
     return val;
   },
-  jsonArrayToHtmlList = function(arr) {
+  jsonArrayToHtmlList = function(arr, split) {
     var val = "";
+    var valAfter = "";
+    var totTxtLen = 0;
     var arrLen = arr.length;
-    if(!arrLen) return val;
-    
-    if(arrLen > 1) val = "<ul>";
+    if(!arrLen) return  { val: val, valAfter: valAfter, txtLen: totTxtLen };
+
     for(var i = 0; i < arrLen; i++) {
-      if(arrLen > 1) val += "<li>";
       var obj = arr[i];
+      var midVal = "";
       if(obj.name && obj.url) {
-        val += "<a href='" + obj.url + "'>" + formatName(obj.name) + "</a>";
+        var txt = formatName(obj.name);
+        totTxtLen += txt.length;
+        midVal += "<a href='" + obj.url + "'>" + txt + "</a>";
       } else if(obj.title && obj.url) {
-        val += "<a href='" + obj.url + "'>" + obj.title + "</a>";
+        var txt = obj.title;
+        totTxtLen += txt.length;
+        midVal += "<a href='" + obj.url + "'>" + txt + "</a>";
       } else if(obj.url) {
-        val += "<a href='" + obj.url + "'>" + obj.url + "</a>";
+        var txt = obj.url;
+        totTxtLen += txt.length;
+        midVal += "<a href='" + obj.url + "'>" + txt + "</a>";
       } else if(obj.name) {
-        val += formatName(obj.name);
+        var txt = obj.name;
+        totTxtLen += txt.length;
+        midVal += txt;
       } else if(obj.title) {
-        val += obj.title;
+        var txt = obj.title;
+        totTxtLen += txt.length;
+        midVal += txt;
       } else if(obj.id) {
-        val += obj.id;
+        var txt = obj.id;
+        totTxtLen += txt.length;
+        midVal += txt;
       }
-      if(arrLen > 1) val += "</li>";
+      if(split && totTxtLen > resourcesTxtLimit) {
+        if(arrLen > 1) valAfter += "<li>";
+        valAfter += midVal;
+        if(arrLen > 1) valAfter += "</li>";
+      } else {
+        if(arrLen > 1) val += "<li>";
+        val += midVal;
+        if(arrLen > 1) val += "</li>";
+      }
     }
-    if(arrLen > 1) val += "</ul>";
-    return val;
+    if(arrLen > 1) {
+      val = "<ul>" + val + "</ul>";
+      if(valAfter != "") {
+        valAfter = "<ul>" + valAfter + "</ul>";
+      }
+    }
+    return { val: val, valAfter: valAfter, txtLen: totTxtLen };
   },
   ceil = function(n) {
     var f = (n << 0),
     f = f == n ? f : f + 1;
     return f;
-  };
+  },
+  resourcesTxtLimit = 70;
 
   /** Public */
   this.nowDate = getNowDate; // Cache
@@ -160,7 +187,7 @@ function scheduleUtils() {
     if(externalStaff && externalStaff.length) {
       staff.push.apply(staff, externalStaff);
     }
-    return jsonArrayToHtmlList(staff);
+    return jsonArrayToHtmlList(staff, false).val;
   };
   this.getResources = function(session, fixedResources) {
     var resources = session.vrtxResources || [];
@@ -169,12 +196,35 @@ function scheduleUtils() {
         resources.push({ "url": fixedResources.folderUrl + "/" + fixedResources.resources[i].name, "title": fixedResources.resources[i].title });
       }
     }
-    var val = jsonArrayToHtmlList(resources);
+    var v = jsonArrayToHtmlList(resources, true);
+    var totTxtLen = v.txtLen;
+    var val = v.val;
+    var valAfter = v.valAfter;
+
     var resourcesText = session.vrtxResourcesText;
-    if(resourcesText && resourcesText.length) {
-      val += resourcesText;
+    if(resourcesText && resourcesText.length) {   
+      if(totTxtLen > resourcesTxtLimit) {
+        valAfter += resourcesText;
+      } else {
+        var htmlSplitted = val.match(/<\s*(\w+\b)(?:(?!<\s*\/\s*\1\b)[\s\S])*<\s*\/\s*\1\s*>|\S+/gi); // http://stackoverflow.com/questions/19244318/javascript-split-messes-up-my-html-tags
+        if(htmlSplitted != null) { // Check length of resourcesText and split if exceeds limit
+          var totExtraTxtLen = 0;
+          for(var i = 0, len = htmlSplitted.length; i < len; i++) {
+            totExtraTxtLen += resourcesText.replace(/(<([^>]+)>)/ig,"").length;
+            if(totExtraTxtLen > resourcesTxtLimit) {
+              valAfter += htmlSplitted[i];
+              for(;i < len; i++) { // Add rest
+                valAfter += htmlSplitted[i];
+              }
+              break;
+            } else {
+              val += htmlSplitted[i];
+            }
+          }
+        }
+      }
     }
-    return val;
+    return val + (valAfter != "" ? "...<div 'course-schedule-table-resources-after'>" + valAfter + "</div>" : "");
   };
   this.getTableStartHtml = function(activityId, caption, isAllPassed, hasResources, hasStaff, i18n) {
     var html = "<div tabindex='0' class='course-schedule-table-wrapper'>";

@@ -153,12 +153,11 @@ function initSchedule() {
 }
 
 function asyncInnerHtml(html, callback, activitiesElm) {
-  var temp = document.createElement('div'),
-      frag = document.createDocumentFragment();
+  var temp = document.createElement('div');
  temp.innerHTML = html;
  (function(){
    if(temp.firstChild) {
-     activitiesElm[0].appendChild(fragment);
+     activitiesElm[0].appendChild(temp.firstChild);
      setTimeout(arguments.callee, 15);
    } else {
      callback();

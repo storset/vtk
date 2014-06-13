@@ -371,15 +371,6 @@ body#vrtx-simple-editor h3 {
   margin: 0 0 15px 0;
 }
 
-body#vrtx-simple-editor #vrtx-close-simple-structured-editor {
-  background: url("/vrtx/__vrtx/static-resources/themes/default/images/thickbox-close.png") no-repeat scroll center center transparent;
-  display: block;
-  width: 20px;
-  height: 20px;
-  float: right;
-  margin-top: 2px;
-}
-
 /* ^ Simple editor */
 
 /* ^ Vortex - Editor - Old documenttypes and folders */

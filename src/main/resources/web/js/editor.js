@@ -82,6 +82,12 @@ var accordionGrouped = null;
 $(document).ready(function () {
   var vrtxEdit = vrtxEditor;
   vrtxEdit.editorForm = $("#editor");
+  
+  // Simple structured / embedded editor
+  $("#app-content").on("click", "#vrtx-simple-editor .vrtx-back a, .vrtx-close-dialog-editor", function(e) {
+    $("#vrtx-embedded-cancel-button, #cancel").click();
+    e.preventDefault();
+  });  
 
   if (!vrtxEdit.isInAdmin || !vrtxEdit.editorForm.length) {
     vrtxEdit.richtextEditorFacade.setupMultiple(false);
@@ -1745,7 +1751,7 @@ function courseSchedule() {
       if(!html) html = "<p>" + csRef.i18n.noSessionData + "</p>";
 
       contents.find("#vrtx-editor-title-submit-buttons-inner-wrapper > h2")
-              .text(csRef.i18n.editOnlySessionTitle);
+              .html(csRef.i18n.editOnlySessionTitle + "<a href='javascript:void(0)' class='vrtx-close-dialog-editor'></a>");
       editorProperties.prepend("<h4 class='property-label'>" + sessionOnly.title + "</h4>" + html);
       
       csRef.enhanceSession(sessionOnly.id, onlySessionId, editorProperties);

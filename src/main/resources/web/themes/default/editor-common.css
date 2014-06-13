@@ -231,6 +231,14 @@ h2 {
   overflow: hidden;
 }
 
+.vrtx-close-dialog-editor {
+  background: url("/vrtx/__vrtx/static-resources/themes/default/images/thickbox-close.png") no-repeat scroll center center transparent;
+  display: block;
+  width: 20px;
+  height: 20px;
+  float: right;
+  margin-top: 2px;
+}
 
 /*-----------------------------------------*\
 	2. Dimensions and explicit settings

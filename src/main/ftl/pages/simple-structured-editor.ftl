@@ -64,11 +64,7 @@
     $(function() {
       var centerFromTop = (($(window).outerHeight() / 2) - $("#app-content").outerHeight());
       centerFromTop = !isNaN(centerFromTop) ? centerFromTop : 20;
-      $("#app-content").css("marginTop", centerFromTop + "px")
-                       .on("click", ".vrtx-back a, #vrtx-close-simple-structured-editor", function(e) {
-        $("#cancel").click();
-        e.preventDefault();
-      }); 
+      $("#app-content").css("marginTop", centerFromTop + "px"); 
     });  
   // -->
   </script>
@@ -76,9 +72,9 @@
 <body id="vrtx-simple-editor" class="forms-new">
 <div id="app-content">
   <#if isNew??>
-    <h3>${vrtx.getMsg("message-listing.new-message")}<a href="javascript:void(0)" id="vrtx-close-simple-structured-editor"></a></h3>
+    <h3>${vrtx.getMsg("message-listing.new-message")}<a href="javascript:void(0)" id="vrtx-close-simple-structured-editor" class="vrtx-close-dialog-editor"></a></h3>
   <#else>
-    <h3>${vrtx.getMsg("message-listing.edit-message")}<a href="javascript:void(0)" id="vrtx-close-simple-structured-editor"></a></h3>
+    <h3>${vrtx.getMsg("message-listing.edit-message")}<a href="javascript:void(0)" id="vrtx-close-simple-structured-editor" class="vrtx-close-dialog-editor"></a></h3>
   </#if>
   <#if url?exists>
     <form action="" method="post">

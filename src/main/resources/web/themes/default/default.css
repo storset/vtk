@@ -3207,6 +3207,16 @@ html.embedded #app-content #main {
   background: none;
 }
 
+html.embedded #app-content {
+  width: 770px;
+  margin: 0 auto;
+  padding: 20px;
+  position: relative;
+  background: #fff;
+  border: 2px solid #848484;
+  box-shadow: 1px 1px 5px 2px #848484;
+}
+
 html.embedded #app-head-wrapper,
 html.embedded #app-footer-wrapper,
 html.embedded #title-container,
@@ -3215,6 +3225,14 @@ html.embedded #app-tabs,
 html.embedded #active-tab,
 html.embedded .submitButtons > * {
   display: none;
+}
+
+html.embedded #vrtx-editor #app-content #editor {
+  padding-top: 15px;
+}
+
+html.embedded #vrtx-editor-title-submit-buttons h2 {
+  padding-bottom: 5px;
 }
 
 html.embedded #vrtx-editor-title-submit-buttons-inner-wrapper {

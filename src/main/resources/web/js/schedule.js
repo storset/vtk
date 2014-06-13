@@ -155,7 +155,12 @@ function initSchedule() {
       }
       // Show hidden more resources
       activitiesElm.on("click", "a.course-schedule-table-resources-after-toggle", function(e) {
-        $(this).next().toggleClass("visible");
+        var wrapperElm = $(this).next();
+        var isWrapperVisible = wrapperElm.hasClass("visible");
+        $(".course-schedule-table-resources-after-toggle.visible").removeClass("visible");
+        if(!isWrapperVisible) {
+          wrapperElm.addClass("visible");
+        }
         e.stopPropagation();
         e.preventDefault();
       });

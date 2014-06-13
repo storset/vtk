@@ -159,7 +159,7 @@ function asyncInnerHtml(html, callback) { // http://james.padolsey.com/javascrip
  temp.innerHTML = html;
  (function(){
    if(temp.firstChild){
-     vrtxAdmin.log({msg:"Append child to to documentfragment"});
+     console.log("Append child to to documentfragment");
      frag.appendChild(temp.firstChild);
      setTimeout(arguments.callee, 0);
    } else {

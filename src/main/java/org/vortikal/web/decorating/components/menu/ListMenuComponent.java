@@ -354,7 +354,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
         Search search = new Search();
         if (RequestContext.getRequestContext().isPreviewUnpublished()) {
-            search.removeFilterFlag(Search.FilterFlag.UNPUBLISHED_COLLECTIONS);
+            search.removeFilterFlag(Search.FilterFlag.UNPUBLISHED_COLLECTIONS, Search.FilterFlag.UNPUBLISHED);
         }
         search.setSorting(null);
         search.setQuery(q);

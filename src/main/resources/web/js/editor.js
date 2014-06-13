@@ -1703,6 +1703,10 @@ function courseSchedule() {
             var fixedResourcesWindow = openPopup(collectionUrl + "?vrtx=admin&displaymsg=yes", 1000, 600, "adminFixedResources");
           },
           error: function (xhr, textStatus, errMsg) {
+            if(xhr.status === 500) { // XXX: assumption that already created, as it can take time before folder created is coming through
+              linkElm.hide();
+              linkElm.next().show();
+            }
             $("body").scrollTo(0, 200, { easing: 'swing', queue: true, axis: 'y' });
           }
         });

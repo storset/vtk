@@ -1499,10 +1499,11 @@ function courseSchedule() {
         sessionCancelled = !session.vrtxOrphan && (session.vrtxStatus && session.vrtxStatus === "cancelled") || (session.status && session.status === "cancelled"),
         rooms = session.rooms,
         sessionTitle = "<span class='session-date'>" + sessionDatePostFixId.date + "</span>" +
-                       "<span class='session-title' data-orig='" + encodeURI(session.title || session.id) + "'>" + (sessionOrphan ? "<span class='header-status'>" + this.i18n.orphan + "</span> - " : "") +
+                       "<span class='session-title' data-orig='" + encodeURI(session.title || session.id) + "'>" + 
+                       (sessionOrphan ? "<span class='header-status'>" + this.i18n.orphan + "</span> - " : "") +
                        (sessionCancelled ? "<span class='header-status'>" + this.i18n.cancelled + "</span> - " : "") +
                        "<span class='header-title'>" + (session.vrtxTitle || session.title || session.id) + "</span></span>" +
-                       (rooms ? ("<span class='session-room'>" + (rooms[0].buildingAcronym || rooms[0].buildingId) + " " + rooms[0].roomId) + "</span>" : ""),
+                       (rooms ? (" - <span class='session-room'>" + (rooms[0].buildingAcronym || rooms[0].buildingId) + " " + rooms[0].roomId) + "</span>" : ""),
         sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, session, this.retrievedScheduleData.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
 
      this.sessionsLookup[id][sessionId] = {
@@ -1568,7 +1569,7 @@ function courseSchedule() {
     var end = dateTime.end;
     var endDate = this.getDate(end.year, parseInt(end.month, 10) - 1, parseInt(end.date, 10), parseInt(end.hh, 10), parseInt(end.mm, 10), end.tzpm, parseInt(end.tzhh, 10), parseInt(end.tzmm, 10));
     var endDay = this.i18n["d" + endDate.getDay()];
-    var strDate = endDay.substring(0,2) + ". " + parseInt(start.date, 10) + ". " + this.i18n["m" + start.month] + ". - kl " + start.hh + ":" + start.mm + "-" + end.hh + ":" + end.mm;
+    var strDate = endDay.substring(0,2) + ". " + parseInt(start.date, 10) + ". " + this.i18n["m" + start.month] + ". - " + start.hh + ":" + start.mm + "-" + end.hh + ":" + end.mm;
     var postFixId = start.date + "-" + start.month + "-" + start.year + "-" + start.hh + "-" + start.mm + "-" + end.hh + "-" + end.mm;
     return { date: strDate, postFixId: postFixId };
   };

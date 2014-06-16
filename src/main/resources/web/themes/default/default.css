@@ -3202,36 +3202,9 @@ html.embedded #app-content {
 html.embedded #app-head-wrapper,
 html.embedded #app-footer-wrapper,
 html.embedded #title-container,
-html.embedded #vrtx-editor-title-submit-buttons .submitButtons,
 html.embedded #app-tabs,
-html.embedded #active-tab,
-html.embedded .submitButtons > * {
+html.embedded #active-tab {
   display: none;
-}
-
-html.embedded #vrtx-editor #app-content #editor {
-  padding-top: 15px;
-}
-
-html.embedded .vrtx-close-dialog-editor {
-  margin-top: 5px;
-}
-
-html.embedded #vrtx-editor-title-submit-buttons h2 {
-  padding-bottom: 5px;
-}
-
-html.embedded #vrtx-editor-title-submit-buttons-inner-wrapper {
-  padding-top: 0;
-}
-
-html.embedded .submitButtons .vrtx-embedded-button {
-  display: inline-block;
-}
-
-html.embedded-loading #vrtx-editor #app-content #editor {
-  padding-top: 0px;
-  background: none;
 }
 
 /* ^ Embedding */

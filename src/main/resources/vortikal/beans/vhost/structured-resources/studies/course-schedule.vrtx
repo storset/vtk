@@ -152,18 +152,18 @@ resourcetype course-schedule {
     dFri : (en : "Friday",    no : "Fredag",  nn : "Fredag"),
     dSat : (en : "Saturday",  no : "Lørdag",  nn : "Lørdag"),
     
-    mJan : (en : "Jan", no : "Jan",  nn : "Jan"),
-    mFeb : (en : "Feb", no : "Feb",  nn : "Feb"),
-    mMar : (en : "Mar", no : "Mar",  nn : "Mar"),
-    mApr : (en : "Apr", no : "Apr",  nn : "Apr"),
-    mMay : (en : "May", no : "Mai",  nn : "Mai"),
-    mJun : (en : "Jun", no : "Jun",  nn : "Jun"),
-    mJul : (en : "Jul", no : "Jul",  nn : "Jul"),
-    mAug : (en : "Aug", no : "Aug",  nn : "Aug"),
-    mSep : (en : "Sep", no : "Sep",  nn : "Sep"),
-    mOct : (en : "Oct", no : "Okt",  nn : "Okt"),
-    mNov : (en : "Nov", no : "Nov",  nn : "Nov"),
-    mDec : (en : "Dec", no : "Des",  nn : "Des")
+    mJan : (en : "Jan", no : "jan",  nn : "jan"),
+    mFeb : (en : "Feb", no : "feb",  nn : "feb"),
+    mMar : (en : "Mar", no : "mar",  nn : "mar"),
+    mApr : (en : "Apr", no : "apr",  nn : "apr"),
+    mMay : (en : "May", no : "mai",  nn : "mai"),
+    mJun : (en : "Jun", no : "jun",  nn : "jun"),
+    mJul : (en : "Jul", no : "jul",  nn : "jul"),
+    mAug : (en : "Aug", no : "aug",  nn : "aug"),
+    mSep : (en : "Sep", no : "sep",  nn : "sep"),
+    mOct : (en : "Oct", no : "okt",  nn : "okt"),
+    mNov : (en : "Nov", no : "nov",  nn : "nov"),
+    mDec : (en : "Dec", no : "des",  nn : "des")
   }
   
 }

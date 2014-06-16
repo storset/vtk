@@ -145,14 +145,12 @@ function scheduleUtils() {
     return { start: startDateTime, end: endDateTime };
   };
   this.getDateFormatted = function(dateStart, dateEnd, i18n) {
-    return parseInt(dateStart.date, 10) + ". " + i18n["m" + parseInt(dateStart.month, 10)].toLowerCase() + ".";
-  },
-  this.getEndDateDayFormatted = function(dateStart, dateEnd, i18n) {
     var endDate = getDate(dateEnd.year, parseInt(dateEnd.month, 10) - 1, parseInt(dateEnd.date, 10), parseInt(dateEnd.hh, 10), parseInt(dateEnd.mm, 10), dateEnd.tzpm, parseInt(dateEnd.tzhh, 10), parseInt(dateEnd.tzmm, 10));
-    return { endDate: endDate, day: i18n["d" + endDate.getDay()] };
-  };
+    var endDay = i18n["d" + endDate.getDay()];
+    return { endDate: endDate, day: endDay, date: endDay.substring(0,2) + ". " + parseInt(dateStart.date, 10) + ". " + i18n["m" + parseInt(dateStart.month, 10)] + "." };
+  },
   this.getTimeFormatted = function(dateStart, dateEnd) {
-    return dateStart.hh + ":" + dateStart.mm + "&ndash;" + dateEnd.hh + ":" + dateEnd.mm;
+    return "<span>" + dateStart.hh + ":" + dateStart.mm + "-</span><span>" + dateEnd.hh + ":" + dateEnd.mm + "</span>";
   };
   this.getPostFixId = function(dateStart, dateEnd) {
     return dateStart.date + "-" + dateStart.month + "-" + dateStart.year + "-" + dateStart.hh + "-" + dateStart.mm + "-" + dateEnd.hh + "-" + dateEnd.mm;
@@ -232,7 +230,6 @@ function scheduleUtils() {
     var html = "<div tabindex='0' class='course-schedule-table-wrapper'>";
     html += "<table id='" + activityId + "' class='course-schedule-table uio-zebra hiding-passed" + (isAllPassed ? " all-passed" : "") + (hasResources ? " has-resources" : "")  + (hasStaff ? " has-staff" : "") + "'><caption>" + caption + "</caption><thead><tr>";
       html += "<th class='course-schedule-table-date'>" + i18n.tableDate + "</th>";
-      html += "<th class='course-schedule-table-day'>" + i18n.tableDay + "</th>";
       html += "<th class='course-schedule-table-time'>" + i18n.tableTime + "</th>";
       html += "<th class='course-schedule-table-title'>" + i18n.tableTitle + "</th>";
       html += "<th class='course-schedule-table-place'>" + i18n.tablePlace + "</th>";
@@ -404,10 +401,10 @@ function generateHTMLForType(d, supportThreads, type, scheduleI18n, canEdit) {
         var sessionId = (skipTier ? type : dtShort + "-" + id) + "-" + session.id.replace(/\//g, "-") + "-" + getPostFixId(dateTime.start, dateTime.end);
         var isCancelled = (session.status && session.status === "cancelled") ||
                           (session.vrtxStatus && session.vrtxStatus === "cancelled");
-        var date = getDateFormatted(dateTime.start, dateTime.end, scheduleI18n);
-        var endDateDay = getEndDateDayFormatted(dateTime.start, dateTime.end, scheduleI18n);
-        var endDate = endDateDay.endDate;
-        var day = endDateDay.day;
+        var dateEndDate = getDateFormatted(dateTime.start, dateTime.end, scheduleI18n);
+        var date = dateEndDate.date;
+        var endDate = dateEndDate.endDate;
+        var day = dateEndDate.day;
         var time = getTimeFormatted(dateTime.start, dateTime.end);
         var title = getTitle(session, isCancelled, scheduleI18n);
         var place = getPlace(session);
@@ -426,7 +423,6 @@ function generateHTMLForType(d, supportThreads, type, scheduleI18n, canEdit) {
 
         sessionsHtml += classes !== "" ? "<tr tabindex='0' id='" + sessionId + "' class='" + classes + "'>" : "<tr>";
           sessionsHtml += "<td class='course-schedule-table-date'><span class='responsive-header'>" + scheduleI18n.tableDate + "</span>" + date + "</td>";
-          sessionsHtml += "<td class='course-schedule-table-day'><span class='responsive-header'>" + scheduleI18n.tableDay + "</span>" + day + "</td>";
           sessionsHtml += "<td class='course-schedule-table-time'><span class='responsive-header'>" + scheduleI18n.tableTime + "</span>" + time + "</td>";
           sessionsHtml += "<td class='course-schedule-table-title'><span class='responsive-header'>" + scheduleI18n.tableTitle + "</span>" + title + "</td>";
           sessionsHtml += editLink("course-schedule-table-place", "<span class='responsive-header'>" + scheduleI18n.tablePlace + "</span>" + place, !staffCount && !resourcesCount, canEdit, scheduleI18n);

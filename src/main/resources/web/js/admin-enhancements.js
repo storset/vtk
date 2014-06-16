@@ -183,6 +183,7 @@ var VrtxAnimation = function(opts) {
 \*-------------------------------------------------------------------*/
 
 var isEmbedded = window.location.href.indexOf("&embed") !== -1;
+var onlySessionId = gup("sessionid", window.location.href);
 vrtxAdmin._$(document).ready(function () {
   var startReadyTime = +new Date(), vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
   
@@ -191,7 +192,11 @@ vrtxAdmin._$(document).ready(function () {
   }
   
   if(isEmbedded) {
-    $("html").addClass("embedded"); // Temporary solution
+    $("html").addClass("embedded embedded-loading"); // Temporary solution
+    if(onlySessionId) {
+      var free = $(window).height() - $("body").height();
+      $("#editor").height(free);
+    }
   }
 
   vrtxAdm.cacheDOMNodesForReuse();

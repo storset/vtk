@@ -1150,7 +1150,6 @@ VrtxEditor.prototype.showHideSelect = function showHideSelect(select, init) {
 
 \*-------------------------------------------------------------------*/
 
-var onlySessionId = gup("sessionid", window.location.href);
 function courseSchedule() {
 
   var baseUrl = location.protocol + "//" + location.host + location.pathname;
@@ -1166,20 +1165,27 @@ function courseSchedule() {
  
   var allI18n = {
     "no": {
-      "01": "jan",
-      "02": "feb",
-      "03": "mar",
-      "04": "apr",
-      "05": "mai",
-      "06": "jun",
-      "07": "jul",
-      "08": "aug",
-      "09": "sept",
-      "10": "okt",
-      "11": "nov",
-      "12": "des",
+      "m01": "jan",
+      "m02": "feb",
+      "m03": "mar",
+      "m04": "apr",
+      "m05": "mai",
+      "m06": "jun",
+      "m07": "jul",
+      "m08": "aug",
+      "m09": "sep",
+      "m10": "okt",
+      "m11": "nov",
+      "m12": "des",
       
-      "room": "rom",
+      "d0": "Søndag",
+      "d1": "Mandag",
+      "d2": "Tirsdag",
+      "d3": "Onsdag",
+      "d4": "Torsdag",
+      "d5": "Fredag",
+      "d6": "Lørdag",
+      
       "titles": {
         "plenary": "Fellesundervisning",
         "group": "Partiundervisning",
@@ -1218,20 +1224,27 @@ function courseSchedule() {
       "vrtxStatus": "Avlys"
     },
     "nn": {
-      "01": "jan",
-      "02": "feb",
-      "03": "mar",
-      "04": "apr",
-      "05": "mai",
-      "06": "jun",
-      "07": "jul",
-      "08": "aug",
-      "09": "sept",
-      "10": "okt",
-      "11": "nov",
-      "12": "des",
+      "m01": "jan",
+      "m02": "feb",
+      "m03": "mar",
+      "m04": "apr",
+      "m05": "mai",
+      "m06": "jun",
+      "m07": "jul",
+      "m08": "aug",
+      "m09": "sep",
+      "m10": "okt",
+      "m11": "nov",
+      "m12": "des",
       
-      "room": "rom",
+      "d0": "Søndag",
+      "d1": "Mandag",
+      "d2": "Tirsdag",
+      "d3": "Onsdag",
+      "d4": "Torsdag",
+      "d5": "Fredag",
+      "d6": "Lørdag",
+      
       "titles": {
         "plenary": "Fellesundervisning",
         "group": "Partiundervisning",
@@ -1270,20 +1283,27 @@ function courseSchedule() {
       "vrtxStatus": "Avlys"
     },
     "en": {
-      "01": "jan",
-      "02": "feb",
-      "03": "mar",
-      "04": "apr",
-      "05": "may",
-      "06": "jun",
-      "07": "jul",
-      "08": "aug",
-      "09": "sept",
-      "10": "oct",
-      "11": "nov",
-      "12": "dec",
+      "m01": "Jan",
+      "m02": "Feb",
+      "m03": "Mar",
+      "m04": "Apr",
+      "m05": "May",
+      "m06": "Jun",
+      "m07": "Jul",
+      "m08": "Aug",
+      "m09": "Sep",
+      "m10": "Oct",
+      "m11": "Nov",
+      "m12": "Dec",
       
-      "room": "room",
+      "d0": "Sunday",
+      "d1": "Monday",
+      "d2": "Tuesday",
+      "d3": "Wednesday",
+      "d4": "Thursday",
+      "d5": "Friday",
+      "d6": "Saturday",
+      
       "titles": {
         "plenary": "Plenary teaching",
         "group": "Group teaching",
@@ -1478,11 +1498,11 @@ function courseSchedule() {
         sessionOrphan = session.vrtxOrphan,
         sessionCancelled = !session.vrtxOrphan && (session.vrtxStatus && session.vrtxStatus === "cancelled") || (session.status && session.status === "cancelled"),
         rooms = session.rooms,
-        sessionTitle = sessionDatePostFixId.date + " " +
-                       "<span class='header-title'>" + (sessionCancelled ? "<span class='header-status'>" + this.i18n.cancelled + "</span> - " : "") + 
-                       (sessionOrphan ? "<span class='header-status'>" + this.i18n.orphan + "</span> - " : "") +
-                       (session.vrtxTitle || session.title || session.id) + "</span>" +
-                       (rooms ? (" - " + (rooms[0].buildingAcronym || rooms[0].buildingId) + " " + this.i18n.room + " " + rooms[0].roomId) : ""),
+        sessionTitle = "<span class='session-date'>" + sessionDatePostFixId.date + "</span>" +
+                       "<span class='session-title' data-orig='" + encodeURI(session.title || session.id) + "'>" + (sessionOrphan ? "<span class='header-status'>" + this.i18n.orphan + "</span> - " : "") +
+                       (sessionCancelled ? "<span class='header-status'>" + this.i18n.cancelled + "</span> - " : "") +
+                       "<span class='header-title'>" + (session.vrtxTitle || session.title || session.id) + "</span></span>" +
+                       (rooms ? ("<span class='session-room'>" + (rooms[0].buildingAcronym || rooms[0].buildingId) + " " + rooms[0].roomId) + "</span>" : ""),
         sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, session, this.retrievedScheduleData.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
 
      this.sessionsLookup[id][sessionId] = {
@@ -1510,21 +1530,12 @@ function courseSchedule() {
         loader.text(msg + "...");
       } else {
         loader.parent().remove();
+        if(onlySessionId) {
+          $("html").removeClass("embedded-loading");
+          $("#editor").css("height", "auto");
+        }
       }
     }
-  };
-  this.getDateAndPostFixId = function(dateTime) {
-    var start = dateTime.start;
-    var end = dateTime.end;
-    var strDate = start.date + ". " + this.i18n[start.month] + " " + start.year + " - kl " +
-                  start.hh + ":" + start.mm + "&ndash;" + end.hh + ":" + end.mm;
-    var postFixId = start.date + "-" + start.month + "-" + start.year + "-" + start.hh + "-" + start.mm + "-" + end.hh + "-" + end.mm;
-    return { date: strDate, postFixId: postFixId };
-  };
-  this.getDateTime = function(s, e) {
-    var startDateTime = this.parseDate(s);
-    var endDateTime = this.parseDate(e);
-    return { start: startDateTime, end: endDateTime };
   };
   this.parseDate = function(dateString) {
     // Old
@@ -1532,7 +1543,35 @@ function courseSchedule() {
             // 2014     - 08       - 18       T12        : 15       :00         .000         +    02       :00
     var m = /^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})\.([0-9]{3})([+-])([0-9]{2}):([0-9]{2})$/.exec(dateString);
     return { year: m[1], month: m[2], date: m[3], hh: m[4], mm: m[5], tzhh: m[9], tzmm: m[10] };
-  }
+  };
+  this.getDateTime = function(s, e) {
+    var startDateTime = this.parseDate(s);
+    var endDateTime = this.parseDate(e);
+    return { start: startDateTime, end: endDateTime };
+  };
+  this.getDate = function(year, month, date, hh, mm, tzpm, tzhh, tzmm) {
+    var date = new Date(year, month, date, hh, mm, 0, 0);
+    
+    var clientTimeZoneOffset = date.getTimezoneOffset();
+    var serverTimeZoneOffset = (tzhh * 60) + tzmm;
+    if(tzpm === "+") serverTimeZoneOffset = -serverTimeZoneOffset;
+    
+    if(clientTimeZoneOffset === serverTimeZoneOffset) return date; // Same offset in same date
+    
+    // Timezone correction offset for local time
+    var offset = clientTimeZoneOffset > serverTimeZoneOffset ? clientTimeZoneOffset - serverTimeZoneOffset 
+                                                             : serverTimeZoneOffset - clientTimeZoneOffset;
+    return new Date(date.getTime() + offset);
+  };
+  this.getDateAndPostFixId = function(dateTime) {
+    var start = dateTime.start;
+    var end = dateTime.end;
+    var endDate = this.getDate(end.year, parseInt(end.month, 10) - 1, parseInt(end.date, 10), parseInt(end.hh, 10), parseInt(end.mm, 10), end.tzpm, parseInt(end.tzhh, 10), parseInt(end.tzmm, 10));
+    var endDay = this.i18n["d" + endDate.getDay()];
+    var strDate = endDay.substring(0,2) + ". " + parseInt(start.date, 10) + ". " + this.i18n["m" + start.month] + ". - kl " + start.hh + ":" + start.mm + "-" + end.hh + ":" + end.mm;
+    var postFixId = start.date + "-" + start.month + "-" + start.year + "-" + start.hh + "-" + start.mm + "-" + end.hh + "-" + end.mm;
+    return { date: strDate, postFixId: postFixId };
+  };
   this.getSessionJSONFromId = function(findSessionId) {
     for(var type in this.retrievedScheduleData) {
       if(!this.retrievedScheduleData[type]) continue;
@@ -1725,6 +1764,25 @@ function courseSchedule() {
     e.preventDefault();
     e.stopPropagation();
   });
+  contents.on("click", "input[name='vrtxStatus']", function(e) {
+    var cancelledElm = $(this);
+    var content = cancelledElm.closest(onlySessionId ? ".properties" : ".accordion-wrapper");
+    var titleElm = content.find(onlySessionId ? ".property-label > .session-title" : "> .header > .session-title");
+    var newTitle = content.find("input[name='vrtxTitle']");
+    var hasNewTitle = newTitle.length && newTitle.val() != "";
+    var origTitle = decodeURI(titleElm.attr("data-orig"));
+    titleElm.html((cancelledElm[0].checked ? "<span class='header-status'>" + cs.i18n.cancelled + "</span> - " : "") +
+                  "<span class='header-title'>" + (hasNewTitle ? newTitle.val() : origTitle) + "</span>");
+    e.stopPropagation();
+  });
+  contents.on("keyup", "input[name='vrtxTitle']", $.debounce(50, true, function () {
+    var content = $(this).closest(onlySessionId ? ".properties" : ".accordion-wrapper");
+    var titleElm = content.find(onlySessionId ? ".property-label > .session-title" : "> .header > .session-title");
+    var newTitle = content.find("input[name='vrtxTitle']");
+    var hasNewTitle = newTitle.length && newTitle.val() != "";
+    var origTitle = decodeURI(titleElm.attr("data-orig"));
+    titleElm.find(".header-title").html(hasNewTitle ? newTitle.val() : origTitle);
+  }));
   
   var editorProperties = vrtxEditor.editorForm.find(".properties");
   editorProperties.hide();
@@ -1814,29 +1872,6 @@ function courseSchedule() {
           csRef.lastElm = null;
         
           csRef.saveSession(content, id, sessionId);
-          
-          // Update title
-          var session = csRef.sessionsLookup[id][sessionId];
-          var titleElm = sessionElm.find("> .header > .header-title");
-          var newTitle = content.find("> div:first-child input[type='text']");
-          
-          var status = null;
-          if(session.isOrphan) {
-            status = csRef.i18n.orphan;
-          } else {
-            var cancelledElm = content.find("input[name='vrtxStatus']");
-            if(cancelledElm.length) {
-              session.isCancelled = cancelledElm[0].checked;
-            }
-            if(session.isCancelled) {
-              status = csRef.i18n.cancelled;
-            }
-          }
-          if(newTitle.length && newTitle.val() != "") {
-            titleElm.html((status ? " <span class='header-status'>" + status + "</span> - " : "") + newTitle.val());
-          } else {
-            titleElm.html((status ? " <span class='header-status'>" + status + "</span> - " : "") + session.rawOrig.title);
-          }
         }
       };  
     

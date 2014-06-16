@@ -2223,28 +2223,6 @@ p.previewUnavailableReasons {
   color: #5e5e5e;
 }
 
-#editor-loading {
-  position: relative;
-  top: 0px;
-  left: 0px;
-  height: 100px;
-  width: 100%;
-  display: block;
-  background: transparent;
-}
-
-#editor-loading-inner {
-  background: transparent url(images/ajax-loader.gif) no-repeat center left;
-  display: block;
-  padding: 10px 5px 10px 42px;
-  font-size: 1.308em;
-  position: relative;
-  position: absolute;
-  top: 25%;
-  left: 41%;
-  color: #5e5e5e;
-}
-
 /* Preview mode and actions */
 
 #preview-mode-mobile-rotate-hv,
@@ -3245,6 +3223,11 @@ html.embedded #vrtx-editor-title-submit-buttons-inner-wrapper {
 
 html.embedded .submitButtons .vrtx-embedded-button {
   display: inline-block;
+}
+
+html.embedded-loading #vrtx-editor #app-content #editor {
+  padding-top: 0px;
+  background: none;
 }
 
 /* ^ Embedding */

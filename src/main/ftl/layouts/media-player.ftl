@@ -10,7 +10,7 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/media-player.ftl" as mpLib />
 
-<#macro mediaPlayer dateStr>
+<#macro mediaPlayer dateStr extendedDetails=false>
   <#if media?exists>
     <#if streamType?exists>
 

@@ -111,15 +111,15 @@ function initSchedule() {
       } else {
         activitiesElm.attr("aria-busy", "false");
         var startAppend = +new Date();
-        asyncInnerHtml("<p id='debug-perf'>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
+        asyncInnerHtml(/* "<p id='debug-perf'>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
                        "ms) || (AJAX-complete: " + endAjaxTime + "ms + Threads invoking/serializing: " + ((endMakingThreadsTime || 0) + (htmlPlenary.parseRetrievedJSONTime || 0) + (htmlGroup.parseRetrievedJSONTime || 0)) +
-                       "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))" + (scheduleSupportsThreads ? " [Uses Threads/Web Worker's]</p>" : "</p>") + html,
+                       "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))" + (scheduleSupportsThreads ? " [Uses Threads/Web Worker's]</p>" : "</p>") + */ html,
           function() {
             scheduleTocDeferred.resolve();
           },         
           function() {
             loadingUpdate("");
-            $("#debug-perf").append(" -- Appending HTML after total: " + (+new Date() - startAppend) + "ms");
+            /* $("#debug-perf").append(" -- Appending HTML after total: " + (+new Date() - startAppend) + "ms"); */
             scheduleDeferred.resolve();
         }, activitiesElm[0]);
       }

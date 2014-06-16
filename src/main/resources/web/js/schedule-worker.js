@@ -102,7 +102,7 @@ function scheduleUtils() {
         totTxtLen += txt.length;
         midVal += "<a href='" + obj.url + "'>" + txt + "</a>";
       } else if(obj.name) {
-        var txt = obj.name;
+        var txt = formatName(obj.name);
         totTxtLen += txt.length;
         midVal += txt;
       } else if(obj.title) {

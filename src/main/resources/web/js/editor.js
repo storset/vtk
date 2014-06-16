@@ -1721,6 +1721,7 @@ function courseSchedule() {
     }
     var collectionUrl = collectionBaseUrl + collectionName;
     
+    // Create fixed resources folder
     vrtxAdmin.serverFacade.getHtml(baseUrl + "?vrtx=admin&service=create-collection-with-properties", {
       success: function (results, status, resp) {
         var form = $($.parseHTML(results)).find("#create-collection-form");
@@ -1765,6 +1766,8 @@ function courseSchedule() {
     e.preventDefault();
     e.stopPropagation();
   });
+  
+  // Instant feedback on title and status change
   contents.on("click", "input[name='vrtxStatus']", function(e) {
     var cancelledElm = $(this);
     var content = cancelledElm.closest(onlySessionId ? ".properties" : ".accordion-wrapper");

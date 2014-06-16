@@ -446,7 +446,7 @@ function generateHTMLForType(d, supportThreads, type, scheduleI18n, canEdit) {
               tocTime += "</span>";
             }
             tocTimeCount++;
-            if(tocTimeCount >= tocTimeMax && !skipTier) {
+            if(tocTimeCount > tocTimeMax && !skipTier) {
               tocTimeNo = true;
             }
           }

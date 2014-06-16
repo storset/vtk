@@ -154,11 +154,17 @@ function initSchedule() {
         });
       }
       // Show hidden more resources
+      var removeVisibleMoreResources = function() {
+        var visibles = $(".course-schedule-table-resources-after.visible");
+        for(var i = 0, len = visibles.length; i < len; i++) {
+          $(visibles[i]).prev().click();
+        }
+      };
       activitiesElm.on("click", "a.course-schedule-table-resources-after-toggle", function(e) {
         var link = $(this);
         var wrapperElm = link.next();
         var isWrapperVisible = wrapperElm.hasClass("visible");
-        $(".course-schedule-table-resources-after.visible").removeClass("visible");
+        removeVisibleMoreResources();
         if(!isWrapperVisible) {
           wrapperElm.addClass("visible");
           link.text(scheduleI18n.hideMore + "...");
@@ -168,12 +174,7 @@ function initSchedule() {
         e.stopPropagation();
         e.preventDefault();
       });
-      $(document).on("click", "body", function(e) {
-        var visibles = $(".course-schedule-table-resources-after.visible");
-        for(var i = 0, len = visibles.length; i < len; i++) {
-          $(visibles[i]).prev().click();
-        }
-      });
+      $(document).on("click", "body", removeVisibleMoreResources);
     });
   });
 }

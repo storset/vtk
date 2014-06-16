@@ -88,40 +88,38 @@ function scheduleUtils() {
 
     for(var i = 0; i < arrLen; i++) {
       var obj = arr[i];
-      var midVal = "";
+
       if(obj.name && obj.url) {
         var txt = formatName(obj.name);
         totTxtLen += txt.length;
-        midVal += "<a href='" + obj.url + "'>" + txt + "</a>";
+        txt = "<a href='" + obj.url + "'>" + txt + "</a>";
       } else if(obj.title && obj.url) {
         var txt = obj.title;
         totTxtLen += txt.length;
-        midVal += "<a href='" + obj.url + "'>" + txt + "</a>";
+        txt = "<a href='" + obj.url + "'>" + txt + "</a>";
       } else if(obj.url) {
         var txt = obj.url;
         totTxtLen += txt.length;
-        midVal += "<a href='" + obj.url + "'>" + txt + "</a>";
+        txt = "<a href='" + obj.url + "'>" + txt + "</a>";
       } else if(obj.name) {
         var txt = formatName(obj.name);
         totTxtLen += txt.length;
-        midVal += txt;
       } else if(obj.title) {
         var txt = obj.title;
         totTxtLen += txt.length;
-        midVal += txt;
       } else if(obj.id) {
         var txt = obj.id;
         totTxtLen += txt.length;
-        midVal += txt;
       }
+      
+      var midVal = ((arrLen > 1) ? "<li>" : "<p>") +
+                   txt +
+                   ((arrLen > 1) ? "</li>" : "</p>");
+                   
       if(split && totTxtLen > resourcesTxtLimit) {
-        if(arrLen > 1) valAfter += "<li>";
         valAfter += midVal;
-        if(arrLen > 1) valAfter += "</li>";
       } else {
-        if(arrLen > 1) val += "<li>";
         val += midVal;
-        if(arrLen > 1) val += "</li>";
       }
     }
     if(arrLen > 1) {

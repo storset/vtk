@@ -114,6 +114,7 @@ function initSchedule() {
         asyncInnerHtml(/* "<p id='debug-perf'>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
                        "ms) || (AJAX-complete: " + endAjaxTime + "ms + Threads invoking/serializing: " + ((endMakingThreadsTime || 0) + (htmlPlenary.parseRetrievedJSONTime || 0) + (htmlGroup.parseRetrievedJSONTime || 0)) +
                        "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))" + (scheduleSupportsThreads ? " [Uses Threads/Web Worker's]</p>" : "</p>") + */ html,
+          htmlPlenary.tocHtml.length && htmlGroup.tocHtml.length,
           function() {
             scheduleTocDeferred.resolve();
           },         
@@ -178,7 +179,7 @@ function initSchedule() {
   });
 }
 
-function asyncInnerHtml(html, callbackTocComplete, callbackAllComplete, activitiesElm) {
+function asyncInnerHtml(html, hasPlenaryAndGroup, callbackTocComplete, callbackAllComplete, activitiesElm) {
   var temp = document.createElement('div');
   temp.innerHTML = html;
   var i = 0;
@@ -186,7 +187,8 @@ function asyncInnerHtml(html, callbackTocComplete, callbackAllComplete, activiti
     if(temp.firstChild) {
       activitiesElm.appendChild(temp.firstChild);
       i++;
-      if(i === 6) {
+      if((hasPlenaryAndGroup && i === 6) 
+     || (!hasPlenaryAndGroup && i === 3)) {
         callbackTocComplete();
       }
       setTimeout(arguments.callee, 15);

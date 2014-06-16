@@ -40,7 +40,7 @@ function scheduleUtils() {
     return new Date(date.getTime() + offset);
   },
   formatName = function(name) {
-    var arr = name.replace(/ +(?= )/g, "").split(" ");
+    var arr = $.trim(name).replace(/ +(?= )/g, "").split(" ");
     var arrLen = arr.length;
     if(!arrLen) return name;
     

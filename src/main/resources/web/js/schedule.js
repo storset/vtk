@@ -164,6 +164,9 @@ function initSchedule() {
         e.stopPropagation();
         e.preventDefault();
       });
+      $(document).on("click", "body", function(e) {
+        $(".course-schedule-table-resources-after.visible").removeClass("visible");
+      });
     });
   });
 }

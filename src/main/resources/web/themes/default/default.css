@@ -3164,6 +3164,10 @@ body#vrtx-preview .tabMessage-big {
 
 /* Embedding */
 
+html.embedded {
+  overflow-y: scroll;
+}
+
 html.embedded,
 html.embedded body {
   background: #999999;

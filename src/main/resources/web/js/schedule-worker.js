@@ -187,7 +187,7 @@ function scheduleUtils() {
     }
     return jsonArrayToHtmlList(staff, false).val;
   };
-  this.getResources = function(session, fixedResources) {
+  this.getResources = function(session, fixedResources, i18n) {
     var resources = session.vrtxResources || [];
     if(fixedResources) {
       for(var i = 0, len = fixedResources.resources.length; i < len; i++) { 
@@ -226,7 +226,7 @@ function scheduleUtils() {
         }
       }
     }
-    return val + (valAfter != "" ? "<a href='javascript:void(0);' class='course-schedule-table-resources-after-toggle'>...</a><div class='course-schedule-table-resources-after'>" + valAfter + "</div>" : "");
+    return val + (valAfter != "" ? "<a href='javascript:void(0);' class='course-schedule-table-resources-after-toggle'>" + i18n.showMore + "...</a><div class='course-schedule-table-resources-after'>" + valAfter + "</div>" : "");
   };
   this.getTableStartHtml = function(activityId, caption, isAllPassed, hasResources, hasStaff, i18n) {
     var html = "<div tabindex='0' class='course-schedule-table-wrapper'>";
@@ -373,7 +373,7 @@ function generateHTMLForType(d, supportThreads, type, scheduleI18n, canEdit) {
         var staff = getStaff(session);
         if(staff.length) staffCount++;
         var sequenceId = session.id.replace(/\/[^\/]*$/, "");
-        var resources = getResources(session, (sequences[sequenceId] || null));
+        var resources = getResources(session, (sequences[sequenceId] || null), scheduleI18n);
         if(resources.length) resourcesCount++;
         
         map.push({

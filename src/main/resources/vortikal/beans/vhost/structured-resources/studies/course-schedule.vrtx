@@ -45,6 +45,9 @@ resourcetype course-schedule {
             "header-group": "[localized 'header-group']",
             "groupTitle": "[localized 'group-title']",
             "and": "[localized 'and']",
+            
+            "showMore": "[localized 'showMore']",
+            "hideMore": "[localized 'hideMore']",
 
             "K": "[localized 'kl']",
             "P": "[localized 'pbl']",
@@ -130,6 +133,9 @@ resourcetype course-schedule {
     header-group : (en : "Group sessions", no : "Gruppeundervisning", nn : "Gruppeundervisning"),
     group-title: (en : "Group", no : "Gruppe", nn : "Gruppe"),
     and : (en : "and", no : "og", nn : "og"),
+    
+    showMore : (en : "Show more", no : "Vis mer", nn : "Vis meir"),
+    hideMore : (en : "Hide more", no : "Skjul mer", nn : "Skjul meir"),
     
     kl : (en : "Clinical small groups", no : "Kliniske smågrupper", nn : "Kliniske smågrupper"),
     pbl : (en : "PBL-groups", no : "PBL-grupper", nn : "PBL-grupper"),

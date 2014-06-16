@@ -169,7 +169,10 @@ function initSchedule() {
         e.preventDefault();
       });
       $(document).on("click", "body", function(e) {
-        $(".course-schedule-table-resources-after.visible").click();
+        var visibles = $(".course-schedule-table-resources-after.visible");
+        for(var i = 0, len = visibles.length; i < len; i++) {
+          $(visibles[i]).prev().click();
+        }
       });
     });
   });

@@ -9,6 +9,11 @@
   -
   -->
   
+<script type="text/javascript"><!--
+  var canEdit = "${canEdit?string}";
+// -->
+</script>
+  
 <@generateType result "plenary" />
 <@generateType result "group" />
 

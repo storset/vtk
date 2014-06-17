@@ -116,6 +116,7 @@
         
         <#local place><@getPlace session /></#local>
         <#local staff><@getStaff session /></#local>
+        <#local resources><@getResources session /></#local>
         
          <tr id="${sessionId}" class="${classes}"> 
            <td class='course-schedule-table-date'><span class='responsive-header'></span>${dateStart?string("d. MMM.")}</td>
@@ -123,7 +124,7 @@
            <td class='course-schedule-table-title'><span class='responsive-header'></span>${title}</td>
            <@editLink "course-schedule-table-place" "<span class='responsive-header'></span>${place}" hasNotStaffAndResources false />
            <#if hasStaff><@editLink "course-schedule-table-staff" "<span class='responsive-header'></span>${staff}" !hasResources false /></#if>
-           <#if hasResources><@editLink "course-schedule-table-resources" "<span class='responsive-header'></span>" hasResources false /></#if>
+           <#if hasResources><@editLink "course-schedule-table-resources" "<span class='responsive-header'></span>${resources}" hasResources false /></#if>
         </tr>
         
         </#if>
@@ -174,10 +175,20 @@
 </#macro>
 
 <#macro getResources session>
-
+  <#local resources = [] />
+  <#if session.vrtxResources?exists>
+    <#local resources = session.vrtxResources />
+  </#if>
+  <#local resourcesList = arrToList(resources, true) />
+  <#local totTxtLen = resourcesList.txtLen />
+  <#local val = resourcesList.val />
+  <#local valAfter = resourcesList.valAfter />
+  ${val} ${valAfter}
 </#macro>
 
 <#macro linkAbbr url="" title="" text="">
+
+  <#-- Short -->
   <#if url != "" && title != "">
     <a class='place-short' title='${title}' href='${url}'>
   <#elseif url != "">
@@ -185,27 +196,24 @@
   <#elseif title?exists>
     <abbr class='place-short' title='${title}'>
   </#if>
-  
   ${text}
-  
-  <#if url != ""> {
+  <#if url != "">
     </a>
   <#elseif title != "">
     </abbr>
   </#if>
   
+  <#-- Long -->
   <#if url != "">
     <a class='place-long' href='${url}'>
   <#else>
     <span class='place-long'>
   </#if>
-  
   <#if title != "">
     ${title}
   <#else>
     ${text}
   </#if>
-  
   <#if url != "">
     </a>
   <#else>
@@ -214,6 +222,8 @@
 </#macro>
 
 <#function arrToList arr split>
+  <#local resourcesTxtLimit = 70 />
+
   <#local val = "" />
   <#local valAfter = "" />
   <#local totTxtLen = 0 />

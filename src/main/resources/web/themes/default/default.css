@@ -740,16 +740,13 @@ a:hover {
   margin-left: 26px;
 }
 
-#resource-title.video,
-#resource-title.videoref {
+#resource-title.video {
   background: transparent url(images/file-video.gif) no-repeat 0px 5px;
 }
-#resource-title.video.unpublished,
-#resource-title.videoref.unpublished {
+#resource-title.video.unpublished {
   background: transparent url(images/file-video-unpublished.png) no-repeat 0px 5px;
 }
-#resource-title.video h1,
-#resource-title.videoref h1 {
+#resource-title.video h1 {
   margin-left: 40px;
 }
 
@@ -2080,22 +2077,14 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
 #directory-listing tr.video td.name a,
 #directory-listing tr.video td.name .unauthorizedListedResource-wrapper,
 #directory-listing tr.video td.name span.vrtx-trash-can-name-text,
-#directory-listing tr.video td.vrtx-report-name a,
-#directory-listing tr.videoref td.name a,
-#directory-listing tr.videoref td.name .unauthorizedListedResource-wrapper,
-#directory-listing tr.videoref td.name span.vrtx-trash-can-name-text,
-#directory-listing tr.videoref td.vrtx-report-name a {
+#directory-listing tr.video td.vrtx-report-name a {
   background: url(images/file-video-small.gif) no-repeat center left;
 }
 
 #directory-listing tr.video.unpublished td.name a,
 #directory-listing tr.video.unpublished td.name .unauthorizedListedResource-wrapper,
 #directory-listing tr.video.unpublished td.name span.vrtx-trash-can-name-text,
-#directory-listing tr.video.unpublished td.vrtx-report-name a,
-#directory-listing tr.videoref.unpublished td.name a,
-#directory-listing tr.videoref.unpublished td.name .unauthorizedListedResource-wrapper,
-#directory-listing tr.videoref.unpublished td.name span.vrtx-trash-can-name-text,
-#directory-listing tr.videoref.unpublished td.vrtx-report-name a {
+#directory-listing tr.video.unpublished td.vrtx-report-name a {
   background: url(images/file-video-small-unpublished.png) no-repeat center left;
 }
 

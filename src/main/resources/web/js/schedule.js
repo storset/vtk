@@ -34,7 +34,7 @@ function initSchedule() {
   }
   url += "?action=course-schedule";
   // Debug: Local development
-  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   // GET JSON
   $.ajax({
@@ -179,13 +179,9 @@ function initSchedule() {
 
 function asyncInnerHtml(html, callbackTocComplete, callbackAllComplete, activitiesElm) {
   if(html.length < 100000) {
-    var timer1 = setTimeout(function() {
-      activitiesElm.innerHTML = html;
-      callbackTocComplete();
-      var timer2 = setTimeout(function() {
-        callbackAllComplete();
-      }, 20);
-    }, 0);
+    activitiesElm.innerHTML = html;
+    callbackTocComplete();
+    callbackAllComplete();
     return;
   }
 
@@ -193,7 +189,6 @@ function asyncInnerHtml(html, callbackTocComplete, callbackAllComplete, activiti
   temp.innerHTML = html;
   
   var len = temp.childNodes.length;
-  
   var i = Math.min(10, len);
   var frag = document.createDocumentFragment();
   for(;i--;) {
@@ -219,7 +214,9 @@ function loadingUpdate(msg) {
   var loader = $("#loading-message");
   if(!loader.length) {
     var loaderHtml = "<p id='loading-message'>" + msg + "...</p>";
-    $("#activities").attr("aria-busy", "true").append(loaderHtml);
+    var activitiesElm = $("#activities");
+    activitiesElm.attr("aria-busy", "true");
+    $(loaderHtml).insertBefore(activitiesElm);
   } else {
     if(msg.length) {
       loader.text(msg + "...");

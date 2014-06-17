@@ -114,7 +114,6 @@ function initSchedule() {
         asyncInnerHtml(/* "<p id='debug-perf'>Total: " + (+new Date() - scheduleStartTime) + "ms <= ((DocReady: " + scheduleDocReadyEndTime +
                        "ms) || (AJAX-complete: " + endAjaxTime + "ms + Threads invoking/serializing: " + ((endMakingThreadsTime || 0) + (htmlPlenary.parseRetrievedJSONTime || 0) + (htmlGroup.parseRetrievedJSONTime || 0)) +
                        "ms + (Plenary: " + htmlPlenary.time + "ms || Group: " + htmlGroup.time + "ms)))" + (scheduleSupportsThreads ? " [Uses Threads/Web Worker's]</p>" : "</p>") + */ html,
-          htmlPlenary.tocHtml.length && htmlGroup.tocHtml.length,
           function() {
             scheduleTocDeferred.resolve();
           },         
@@ -135,10 +134,9 @@ function initSchedule() {
       
       // If user can write and is not locked
       if(schedulePermissions.hasReadWriteNotLocked) {
-        // Toggle display on hover of row
-        activitiesElm.on("mouseover mouseout focusin focusout", "tbody tr", function(e) {
-          var fn = (e.type === "mouseover" || e.type === "focusin") ? "addClass" : "removeClass";
-          $(this).find(".course-schedule-table-edit-wrapper")[fn]("visible");
+        // Toggle display on focus of row
+        activitiesElm.on("focusin focusout", "tbody tr", function(e) {
+          $(this)[e.type === "focusin" ? "addClass" : "removeClass"]("visible");
         });
         // Open edit window for session on click
         activitiesElm.on("click", "a.course-schedule-table-edit-link", function(e) {
@@ -179,23 +177,38 @@ function initSchedule() {
   });
 }
 
-function asyncInnerHtml(html, hasPlenaryAndGroup, callbackTocComplete, callbackAllComplete, activitiesElm) {
+function asyncInnerHtml(html, callbackTocComplete, callbackAllComplete, activitiesElm) {
+  if(html.length < 100000) {
+    activitiesElm.innerHtml = html;
+    callbackTocComplete();
+    callbackAllComplete();
+    return;
+  }
+
   var temp = document.createElement('div');
   temp.innerHTML = html;
-  var i = 0;
-  (function(){
-    if(temp.firstChild) {
-      activitiesElm.appendChild(temp.firstChild);
-      i++;
-      if((hasPlenaryAndGroup && i === 6) 
-     || (!hasPlenaryAndGroup && i === 3)) {
-        callbackTocComplete();
+  
+  var len = temp.childNodes.length;
+  
+  var i = Math.min(10, len);
+  var frag = document.createDocumentFragment();
+  for(;i--;) {
+	frag.appendChild(temp.firstChild);
+  }
+  activitiesElm.appendChild(frag);
+  
+  callbackTocComplete();
+
+  if(temp.firstChild) {
+    (function(){
+      if(temp.firstChild) {
+        activitiesElm.appendChild(temp.firstChild);
+        setTimeout(arguments.callee, 0);
+      } else {
+        callbackAllComplete();
       }
-      setTimeout(arguments.callee, 15);
-    } else {
-      callbackAllComplete();
-    }
-  })();
+    })();
+  }
 }
 
 function loadingUpdate(msg) {

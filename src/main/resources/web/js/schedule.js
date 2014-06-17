@@ -179,9 +179,13 @@ function initSchedule() {
 
 function asyncInnerHtml(html, callbackTocComplete, callbackAllComplete, activitiesElm) {
   if(html.length < 100000) {
-    activitiesElm.innerHTML = html;
-    callbackTocComplete();
-    callbackAllComplete();
+    var timer1 = setTimeout(function() {
+      activitiesElm.innerHTML = html;
+      callbackTocComplete();
+      var timer2 = setTimeout(function() {
+        callbackAllComplete();
+      }, 20);
+    }, 0);
     return;
   }
 

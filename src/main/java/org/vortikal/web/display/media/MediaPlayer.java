@@ -41,6 +41,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.util.repository.MimeHelper;
+import org.vortikal.util.text.TextUtils;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -86,7 +87,7 @@ public class MediaPlayer {
             String autoplay, String contentType, String streamType, String poster, String showDL) {
 
         if (URL.isEncoded(mediaRef)) {
-            mediaRef = URL.decode(mediaRef);
+            mediaRef = urlDecodeMediaRef(mediaRef);
         }
 
         Resource mediaResource = null;
@@ -151,7 +152,7 @@ public class MediaPlayer {
     public void addMediaPlayer(Map<String, Object> model, String mediaRef) {
 
         if (URL.isEncoded(mediaRef)) {
-            mediaRef = URL.decode(mediaRef);
+            mediaRef = urlDecodeMediaRef(mediaRef);
         }
 
         Resource mediaResource = null;
@@ -197,8 +198,8 @@ public class MediaPlayer {
     // Adds media URL to model. Local resources are resolved to absolute
     // URLs and external URLs are parsed for validity. In case of invalid
     // URL, nothing is added to model.
-    private void addMediaUrl(String resourceReferance, Map<String, Object> model) {
-        URL url = createUrl(resourceReferance);
+    private void addMediaUrl(String resourceRef, Map<String, Object> model) {
+        URL url = createUrl(resourceRef);
         if (url != null) {
             if (RequestContext.getRequestContext().isPreviewUnpublished()) {
                 url.setParameter("vrtxPreviewUnpublished", "true");
@@ -236,11 +237,13 @@ public class MediaPlayer {
      */
     private URL createUrl(String mediaRef) {
 
+        if (mediaRef == null) return null;
+        
         if (URL.isEncoded(mediaRef)) {
-            mediaRef = URL.decode(mediaRef);
+            mediaRef = urlDecodeMediaRef(mediaRef);
         }
 
-        if (mediaRef != null && mediaRef.startsWith("/")) {
+        if (mediaRef.startsWith("/")) {
             URL localURL = null;
             try {
                 Path uri = Path.fromString(mediaRef);
@@ -264,6 +267,11 @@ public class MediaPlayer {
             }
         }
         return null;
+    }
+    
+    private String urlDecodeMediaRef(String mediaRef) {
+        // For media file references we don't want '+' chars decoded into spaces.
+        return URL.decode(TextUtils.replaceAll(mediaRef, "+", "%2B"));
     }
 
     @Required

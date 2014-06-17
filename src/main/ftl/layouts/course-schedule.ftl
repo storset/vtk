@@ -274,7 +274,11 @@
 </#function>
 
 <#macro formatName name>
-  ${name}
+  <#local words = name?word_list />
+  <#list words as word>
+    <#if !word_has_next>${word}
+    <#else>${word?substring(0,1)}. </#if>
+  </#list>
 </#macro>
 
 <#macro editLink class html displayEditLink canEdit=false>

@@ -17,21 +17,39 @@
   <#local skipTier = type == "plenary" />
   
   <#local sequences = {} />
+  
   <#local sessions = [] />
+  <#local isAllPassed = false />
+  <#local hasResources = false />
+  <#local hasStaff = false />
+  
   <#list activities?sort_by("id") as activity>
     <#local id = activity.id />
     <#local dtShort = activity.teachingMethod?lower_case />
     <#local dtLong = activity.teachingMethodName />
     <#local isFor = dtShort == "for" />
-    
-    <#local isAllPassed = false />
-    <#local hasResources = true />
-    <#local hasStaff = true />
-    
+
     <#list activity.sequences as sequence>
       <#local sessions = sessions + sequence.sessions />
+      
+      <#if !hasStaff || !hasResources>
+        <#list sequence.sessions as session>
+          <#if !hasStaff &&
+              ((session.staff?exists && session.staff?size > 0)
+            || (session.vrtxStaff?exists) || (session.vrtxStaffExternal?exists))>
+            <#local hasStaff = true />
+          </#if>
+          <#if !hasResources &&
+              ((session.vrtxResources?exists && session.vrtxResources?size > 0)
+            || (session.vrtxResourcesText?exists))>
+            <#local hasResources = true />
+          </#if>
+          <#if hasStaff && hasResources><#break /></#if>
+        </#list>
+      </#if>
+      
       <#if sequence.vrtxResourcesFixed?exists>
-        
+        <#local hasResources = true />
       </#if>
     </#list>
     <#if !isFor || (isFor && (!activity_has_next || activities[activity_index + 1].teachingMethod?lower_case != dtShort))>
@@ -68,8 +86,7 @@
           </tr>
           </thead>
           <tbody>
-      
-      
+
       <#list sessions?sort_by("dtStart") as session>
         <#if !session.vrtxOrphan?exists>
       
@@ -112,7 +129,11 @@
       </tbody>
       </table>
       </div>
+      
       <#local sessions = [] />
+      <#local isAllPassed = false />
+      <#local hasResources = false />
+      <#local hasStaff = false />
     </#if>
   </#list>
 </#macro>

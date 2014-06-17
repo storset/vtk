@@ -113,13 +113,15 @@
         <#local classes = "" />
         
         <#local hasNotStaffAndResources = !hasStaff && !hasResources />
+        
+        <#local place><@getPlace session /></#local>
         <#local staff><@getStaff session /></#local>
         
          <tr id="${sessionId}" class="${classes}"> 
            <td class='course-schedule-table-date'><span class='responsive-header'></span>${dateStart?string("d. MMM.")}</td>
            <td class='course-schedule-table-time'><span class='responsive-header'></span>${dateStart?string("hh:mm")}-${dateEnd?string("hh:mm")}</td>
            <td class='course-schedule-table-title'><span class='responsive-header'></span>${title}</td>
-           <@editLink "course-schedule-table-place" "<span class='responsive-header'></span>" hasNotStaffAndResources false />
+           <@editLink "course-schedule-table-place" "<span class='responsive-header'></span>${place}" hasNotStaffAndResources false />
            <#if hasStaff><@editLink "course-schedule-table-staff" "<span class='responsive-header'></span>${staff}" !hasResources false /></#if>
            <#if hasResources><@editLink "course-schedule-table-resources" "<span class='responsive-header'></span>" hasResources false /></#if>
         </tr>
@@ -138,6 +140,25 @@
   </#list>
 </#macro>
 
+<#macro getPlace session>
+  <#local val = "" />
+  <#if session.rooms?exists>
+    <#local len = session.rooms?size />
+    <#if (len > 1)><ul></#if>
+    <#list session.rooms as room>
+      <#if (len > 1)><li></#if>
+        <#if room.buildingAcronym?exists>
+          <#local buildingText = room.buildingAcronym />
+        <#else>
+          <#local buildingText = room.buildingId />
+        </#if>
+        <@linkAbbr room.buildingUrl room.buildingName buildingText /> <@linkAbbr room.roomUrl room.roomName room.roomId />
+      <#if (len > 1)></li></#if>
+    </#list>
+    <#if (len > 1)></ul></#if>
+  </#if>
+</#macro>
+
 <#macro getStaff session>
   <#local staff = [] />
   <#if session.vrtxStaff?exists>
@@ -148,12 +169,48 @@
   <#if session.vrtxStaffExternal?exists>
     <#local staff = staff + session.vrtxStaffExternal />
   </#if>
-  <#local y = arrToList(staff, false).val />
-  ${y}
+  <#local staffList = arrToList(staff, false).val />
+  ${staffList}
 </#macro>
 
 <#macro getResources session>
 
+</#macro>
+
+<#macro linkAbbr url="" title="" text="">
+  <#if url != "" && title != "">
+    <a class='place-short' title='${title}' href='${url}'>
+  <#elseif url != "">
+    <a class='place-short' href='${url}'>
+  <#elseif title?exists>
+    <abbr class='place-short' title='${title}'>
+  </#if>
+  
+  ${text}
+  
+  <#if url != ""> {
+    </a>
+  <#elseif title != "">
+    </abbr>
+  </#if>
+  
+  <#if url != "">
+    <a class='place-long' href='${url}'>
+  <#else>
+    <span class='place-long'>
+  </#if>
+  
+  <#if title != "">
+    ${title}
+  <#else>
+    ${text}
+  </#if>
+  
+  <#if url != "">
+    </a>
+  <#else>
+    </span>
+  </#if>
 </#macro>
 
 <#function arrToList arr split>

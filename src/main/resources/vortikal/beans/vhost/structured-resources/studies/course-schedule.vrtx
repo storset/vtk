@@ -82,19 +82,15 @@ resourcetype course-schedule {
           };
         // -->
         </script>
-        <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/schedule-worker.js"></script>
         <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/schedule.js"></script>
         <script type="text/javascript"><!--
-          initSchedule();
+          //initSchedule();
         // -->
         </script>
       </head>
       <body id="vrtx-course-schedule">
         <h1>[call "resource:property" {"id":"title"}]</h1>
-        <p id="disabled-js">[localized 'disabled-js']</p>
-        <div id="activities">
-          
-        </div>
+        [call "resource:course-schedule"]
       </body>
     </html>
     ##

@@ -179,7 +179,7 @@ function initSchedule() {
 
 function asyncInnerHtml(html, callbackTocComplete, callbackAllComplete, activitiesElm) {
   if(html.length < 100000) {
-    activitiesElm.innerHtml = html;
+    activitiesElm.innerHTML = html;
     callbackTocComplete();
     callbackAllComplete();
     return;

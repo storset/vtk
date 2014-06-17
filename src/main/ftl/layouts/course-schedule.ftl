@@ -122,9 +122,9 @@
            <td class='course-schedule-table-date'><span class='responsive-header'></span>${dateStart?string("d. MMM.")}</td>
            <td class='course-schedule-table-time'><span class='responsive-header'></span>${dateStart?string("hh:mm")}-${dateEnd?string("hh:mm")}</td>
            <td class='course-schedule-table-title'><span class='responsive-header'></span>${title}</td>
-           <@editLink "course-schedule-table-place" "<span class='responsive-header'></span>${place}" hasNotStaffAndResources false />
-           <#if hasStaff><@editLink "course-schedule-table-staff" "<span class='responsive-header'></span>${staff}" !hasResources false /></#if>
-           <#if hasResources><@editLink "course-schedule-table-resources" "<span class='responsive-header'></span>${resources}" hasResources false /></#if>
+           <@editLink "course-schedule-table-place" "<span class='responsive-header'></span>${place}" hasNotStaffAndResources canEdit />
+           <#if hasStaff><@editLink "course-schedule-table-staff" "<span class='responsive-header'></span>${staff}" !hasResources canEdit /></#if>
+           <#if hasResources><@editLink "course-schedule-table-resources" "<span class='responsive-header'></span>${resources}" hasResources canEdit /></#if>
         </tr>
         
         </#if>

@@ -412,16 +412,6 @@
     <property name="relative" value="true" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
-  
-  <bean id="decorating.permissionProviderComponent" class="org.vortikal.web.decorating.components.PermissionProviderComponent">
-    <property name="namespace" ref="decorating.resourceNamespace" />
-    <property name="name" value="permission-flags" />
-    <property name="view" ref="decorating.permissionProviderComponent.view" />
-  </bean>
-
-  <bean id="decorating.permissionProviderComponent.view" parent="freemarkerView">
-    <property name="url" value="layouts/permission-flags.ftl" />
-  </bean>
 
   <bean id="decorating.breadcrumbComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />

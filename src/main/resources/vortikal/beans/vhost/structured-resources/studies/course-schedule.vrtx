@@ -77,9 +77,6 @@ resourcetype course-schedule {
             "m11": "[localized 'mNov']",
             "m12": "[localized 'mDec']"
           };
-          var schedulePermissions = {
-            "hasReadWriteNotLocked": [call 'resource:permission-flags']
-          };
         // -->
         </script>
         <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/schedule.js"></script>

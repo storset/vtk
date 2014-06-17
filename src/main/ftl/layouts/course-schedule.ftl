@@ -92,8 +92,11 @@
           </thead>
           <tbody>
 
+      <#local count = 0 />
       <#list sessions?sort_by("dtStart") as session>
         <#if !session.vrtxOrphan?exists>
+        
+        <#local count = count + 1 />
       
         <#local dateStart = session.dtStart?replace("T", " ")?date("yyyy-MM-dd hh:mm:ss") />
         <#local dateEnd = session.dtEnd?replace("T", " ")?date("yyyy-MM-dd hh:mm:ss") />
@@ -114,8 +117,12 @@
         <#if (session.status == "cancelled") || (session.vrtxStatus?exists && session.vrtxStatus == "cancelled")>
           <#local title = "<span class='course-schedule-table-status'>AVLYST</span>" + title />
         </#if>
-
-        <#local classes = "" />
+        
+        <#if count % 2 == 0>
+          <#local classes = "even" />
+        <#else>
+          <#local classes = "odd" />
+        </#if>
         
         <#local hasNotStaffAndResources = !hasStaff && !hasResources />
         
@@ -180,6 +187,8 @@
 </#macro>
 
 <#macro getResources session>
+  <#local resourcesTxtLimit = 70 />
+
   <#local resources = [] />
   <#if session.vrtxResources?exists>
     <#local resources = session.vrtxResources />
@@ -188,7 +197,20 @@
   <#local totTxtLen = resourcesList.txtLen />
   <#local val = resourcesList.val />
   <#local valAfter = resourcesList.valAfter />
-  ${val} ${valAfter}
+  <#if session.vrtxResourcesText?exists>
+    <#if (totTxtLen > resourcesTxtLimit)>
+      <#local valAfter = valAfter + session.vrtxResourcesText />
+    <#else>
+      <#local val = val + session.vrtxResourcesText />
+    </#if>
+  </#if>
+  
+  ${val}
+  
+  <#if valAfter != "">
+    <a href='javascript:void(0);' class='course-schedule-table-resources-after-toggle'>Vis mer...</a>
+    <div class='course-schedule-table-resources-after'>${valAfter}</div>
+  </#if>
 </#macro>
 
 <#macro linkAbbr url="" title="" text="">

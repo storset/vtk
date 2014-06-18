@@ -29,7 +29,8 @@
   <#local isAllPassed = false />
   <#local hasResources = false />
   <#local hasStaff = false />
-
+  
+  <#local tocHtml = "" />
   <#local tocTimeNo = false />
   <#local tocTime = "" />
   <#local tocTimeCount = 0 />
@@ -81,7 +82,7 @@
       <#if skipTier>
         <#local caption = dtLong />
       <#else>
-        <#local caption = dtLong + " - " + vrtx.getMsg("course-schedule.course-schedule.group-title")?lower_case + " " + groupNumber />
+        <#local caption = dtLong + " - " + vrtx.getMsg("course-schedule.group-title")?lower_case + " " + groupNumber />
       </#if>
       
       <div class="course-schedule-table-wrapper">
@@ -177,8 +178,16 @@
       </tbody>
       </table>
       </div>
-      
-      ${tocTime}
+       
+      <#if !skipTier>
+        <#local tocHtmlTime = "" />
+        <#if (tocTimeCount <= tocTimeMax && !tocTimeNo)>
+          <#local tocHtmlTime = " - " + tocTime />
+        </#if>
+        <#local tocHtml = tocHtml + "<li><span><a href='#" + activityId + "'>" + vrtx.getMsg("course-schedule.group-title") + " " + groupNumber + "</a>" + tocHtmlTime + "</li>" />
+      <#else>
+        <#local tocHtml = tocHtml + "<li><span><a href='#" + activityId + "'>" + dtLong + "</a> - " + tocTime + "</li>" />
+      </#if>       
       
       <#local sessions = [] />
       <#local isAllPassed = false />
@@ -188,6 +197,8 @@
       <#local tocTimeCount = 0 />
     </#if>
   </#list>
+  
+  ${tocHtml}
 </#macro>
 
 <#macro getPlace session>

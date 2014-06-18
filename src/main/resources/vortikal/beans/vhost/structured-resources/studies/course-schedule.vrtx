@@ -39,7 +39,9 @@ resourcetype course-schedule {
   localization {
     schedule : (en : "Schedule", no : "Timeplan", nn : "Timeplan"),
     title : (en : "Title", no : "Tittel", nn : "Tittel"),
-    header : (en : "Edit course schedule", no : "Rediger emnetimeplan", nn : "Rediger emnetimeplan")
+    header : (en : "Edit course schedule", no : "Rediger emnetimeplan", nn : "Rediger emnetimeplan"),
+    showMore : (en : "Show more", no : "Vis mer", nn : "Vis meir"),
+    hideMore : (en : "Hide more", no : "Skjul mer", nn : "Skjul meir")
   }
   
 }

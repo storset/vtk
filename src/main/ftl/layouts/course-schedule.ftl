@@ -117,7 +117,7 @@ ${groupHtml.tablesHtml}
          <#local title = session.id />
        </#if>
        <#if (session.status == "cancelled") || (session.vrtxStatus?exists && session.vrtxStatus == "cancelled")>
-         <#local title = "<span class='course-schedule-table-status'>" + vrtx.getMsg("course-schedule.course-schedule.table-cancelled") + "</span>" + title />
+         <#local title = "<span class='course-schedule-table-status'>" + vrtx.getMsg("course-schedule.table-cancelled") + "</span>" + title />
        </#if>
         
        <#if count % 2 == 0>
@@ -127,7 +127,8 @@ ${groupHtml.tablesHtml}
        </#if>
         
        <#local hasNotStaffAndResources = !hasStaff && !hasResources />
-        
+       
+       <#local day><span>${dateStart?string("EEE")}</#local>
        <#local time><span>${dateStart?string("HH:mm")}-</span><span>${dateEnd?string("HH:mm")}</span></#local>
        <#local place><@getPlace session /></#local>
        <#local staff><@getStaff session /></#local>
@@ -139,7 +140,7 @@ ${groupHtml.tablesHtml}
          
        <#local tablesHtmlMiddle>
          <tr id="${sessionId}" class="${classes}"> 
-           <td class='course-schedule-table-date'><span class='responsive-header'>${vrtx.getMsg("course-schedule.table-date")}</span>${dateStart?string("d. MMM.")}</td>
+           <td class='course-schedule-table-date'><span class='responsive-header'>${vrtx.getMsg("course-schedule.table-date")}</span>${day}. ${dateStart?string("d. MMM.")}</td>
            <td class='course-schedule-table-time'><span class='responsive-header'>${vrtx.getMsg("course-schedule.table-time")}</span>${time}</td>
            <td class='course-schedule-table-title'><span class='responsive-header'>${vrtx.getMsg("course-schedule.table-title")}</span>${title}</td>
            <@editLink "course-schedule-table-place" "<span class='responsive-header'>${placeHeader}</span>${place}" hasNotStaffAndResources canEdit />
@@ -150,7 +151,7 @@ ${groupHtml.tablesHtml}
        <#local tablesHtmlStart = tablesHtmlStart + tablesHtmlMiddle />
         
        <#if !tocTimeNo>
-         <#local newTocTime = "unk"?lower_case?substring(0,3) + " " + time />
+         <#local newTocTime = day?lower_case + " " + time />
          <#if !tocTime?contains(newTocTime)>
            <#if (tocTimeCount < tocTimeMax)>
              <#if (tocTimeCount > 0)>
@@ -184,7 +185,7 @@ ${groupHtml.tablesHtml}
        </#if>
        <#local tocHtmlMiddle = tocHtmlMiddle + "<li><span><a href='#" + activityId + "'>" + vrtx.getMsg("course-schedule.group-title") + " " + groupNumber + "</a>" + tocHtmlTime + "</li>" />
        <#if !activity_has_next || activities[activity_index + 1].dtShort != dtShort>
-          <#local tocHtml = tocHtml + dtLong + "<ul>" + tocHtmlMiddle + "</ul>" />
+          <#local tocHtml = tocHtml + "<span class='display-as-h3'>" + dtLong + "</span><ul>" + tocHtmlMiddle + "</ul>" />
           <#local tocHtmlMiddle = "" />
        </#if>
      <#else>
@@ -236,12 +237,20 @@ ${groupHtml.tablesHtml}
 
 <#macro getResources session>
   <#local resourcesTxtLimit = 70 />
-
+  
   <#local resources = [] />
   <#if session.vrtxResources?exists>
     <#local resources = session.vrtxResources />
   </#if>
-  <#local resourcesList = arrToList(resources, true) />
+
+  <#local sequenceId = session.id?split("/")[0] />
+  <#if sequences[sequenceId]?exists>
+    <#local resources = resources + sequences[sequenceId].resources />
+    <#local resourcesList = arrToList(resources, true, sequences[sequenceId].folderUrl) />
+  <#else>
+    <#local resourcesList = arrToList(resources, true) />
+  </#if>
+  
   <#local totTxtLen = resourcesList.txtLen />
   <#local val = resourcesList.val />
   <#local valAfter = resourcesList.valAfter />
@@ -256,7 +265,7 @@ ${groupHtml.tablesHtml}
   ${val}
   
   <#if valAfter != "">
-    <a href='javascript:void(0);' class='course-schedule-table-resources-after-toggle'>${vrtx.getMsg("course-schedule.course-schedule.showMore")}</a>
+    <a href='javascript:void(0);' class='course-schedule-table-resources-after-toggle'>${vrtx.getMsg("course-schedule.showMore")}</a>
     <div class='course-schedule-table-resources-after'>${valAfter}</div>
   </#if>
 </#macro>
@@ -296,7 +305,7 @@ ${groupHtml.tablesHtml}
   </#if>
 </#macro>
 
-<#function arrToList arr split>
+<#function arrToList arr split url="">
   <#local resourcesTxtLimit = 70 />
 
   <#local val = "" />
@@ -306,7 +315,11 @@ ${groupHtml.tablesHtml}
   <#if (arrLen <= 0)> <#return { "val": val, "valAfter": valAfter, "txtLen": totTxtLen }> </#if>
 
   <#list arr as obj>
-    <#if obj.name?exists && obj.url?exists>
+    <#if obj.title?exists && obj.name?exists>
+      <#local txt = obj.title />
+      <#local totTxtLen = totTxtLen + txt?length />
+      <#local txt = "<a href='" + url + "/" + obj.name + "'>" + txt + "</a>" />
+    <#elseif obj.name?exists && obj.url?exists>
       <#local txt><@formatName obj.name /></#local>
       <#local totTxtLen = totTxtLen + txt?length />
       <#local txt = "<a href='" + obj.url + "'>" + txt + "</a>" />

@@ -22,24 +22,23 @@
 <h2 class="course-schedule-toc-title accordion">${vrtx.getMsg("course-schedule.header-plenary")}</h2>
 <div class="course-schedule-toc-content"><ul>${plenaryHtml.tocHtml}</ul></div>
 <h2 class="course-schedule-toc-title accordion">${vrtx.getMsg("course-schedule.header-group")}</h2>
-<div class="course-schedule-toc-content"><ul>${groupHtml.tocHtml}</ul></div>
+<div class="course-schedule-toc-content">${groupHtml.tocHtml}</div>
 
 ${plenaryHtml.tablesHtml}
 ${groupHtml.tablesHtml}
 
 <#function generateType result type>
-  <#local activities = result[type].activities />
+  <#local activities = result[type] />
   <#local skipTier = type == "plenary" />
-  
-  <#local sequences = {} />
   
   <#local sessions = [] />
   <#local isAllPassed = false />
-  <#local hasResources = false />
-  <#local hasStaff = false />
+  <#local hasResources = true />
+  <#local hasStaff = true />
   
   <#local tablesHtml = "" />
   <#local tocHtml = "" />
+  <#local tocHtmlMiddle = "" />
   <#local tocTimeNo = false />
   <#local tocTime = "" />
   <#local tocTimeCount = 0 />
@@ -49,116 +48,96 @@ ${groupHtml.tablesHtml}
     <#local tocTimeMax = 2 />
   </#if>
   
-  <#list activities?sort_by("id") as activity>
+  <#list activities as activity>
     <#local id = activity.id />
-    <#local dtShort = activity.teachingMethod?lower_case />
-    <#local dtLong = activity.teachingMethodName />
+    <#local groupCode = activity.groupCode />
+    <#local groupCodeSp = activity.groupCodeSp />
+    <#local groupNumber = activity.groupNumber />
+    <#local dtShort = activity.dtShort />
+    <#local dtLong = activity.dtLong />
     <#local isFor = dtShort == "for" />
 
-    <#list activity.sequences as sequence>
-      <#local sessions = sessions + sequence.sessions />
-      
-      <#if !hasStaff || !hasResources>
-        <#list sequence.sessions as session>
-          <#if !hasStaff &&
-              ((session.staff?exists && session.staff?size > 0)
-            || (session.vrtxStaff?exists) || (session.vrtxStaffExternal?exists))>
-            <#local hasStaff = true />
-          </#if>
-          <#if !hasResources &&
-              ((session.vrtxResources?exists && session.vrtxResources?size > 0)
-            || (session.vrtxResourcesText?exists))>
-            <#local hasResources = true />
-          </#if>
-          <#if hasStaff && hasResources><#break /></#if>
-        </#list>
-      </#if>
-      
-      <#if sequence.vrtxResourcesFixed?exists>
-        <#local hasResources = true />
-      </#if>
-    </#list>
-    <#if !isFor || (isFor && (!activity_has_next || activities[activity_index + 1].teachingMethod?lower_case != dtShort))>
-      <#if isFor>
-        <#local activityId = dtShort />
-      <#else>
-        <#local activityId = dtShort + "-" + id />
-      </#if>
-      
-      <#local idSplit = id?split("-") />
-      <#local groupCode = idSplit[0] />
-      <#local groupNumber = idSplit[1] />
-      <#if skipTier>
-        <#local caption = dtLong />
+    <#if isFor>
+      <#local activityId = dtShort />
+    <#else>
+      <#local activityId = dtShort + "-" + id />
+    </#if>
+
+    <#if skipTier>
+      <#local caption = dtLong />
+    <#else>
+      <#if groupCodeSp != "">
+        <#local caption = vrtx.getMsg("course-schedule.special-group." + groupCodeSp) + " - " + vrtx.getMsg("course-schedule.group-title")?lower_case + " " + groupNumber />
       <#else>
         <#local caption = dtLong + " - " + vrtx.getMsg("course-schedule.group-title")?lower_case + " " + groupNumber />
       </#if>
+    </#if>
       
-      <#local tablesHtmlStart>
-      <div class="course-schedule-table-wrapper">
-        <table id="${activityId}" class="course-schedule-table uio-zebra hiding-passed<#if isAllPassed> all-passed</#if><#if hasResources> has-resources</#if><#if hasStaff> has-staff</#if>" >
-          <caption>${caption}</caption>
-          <thead>
-          <tr>
-            <th class="course-schedule-table-date">${vrtx.getMsg("course-schedule.table-date")}</th>
-            <th class="course-schedule-table-time">${vrtx.getMsg("course-schedule.table-time")}</th>
-            <th class="course-schedule-table-title">${vrtx.getMsg("course-schedule.table-title")}</th>
-            <th class="course-schedule-table-place">${vrtx.getMsg("course-schedule.table-place")}</th>
+    <#local tablesHtmlStart>
+    <div class="course-schedule-table-wrapper">
+      <table id="${activityId}" class="course-schedule-table uio-zebra hiding-passed<#if isAllPassed> all-passed</#if><#if hasResources> has-resources</#if><#if hasStaff> has-staff</#if>" >
+        <caption>${caption}</caption>
+        <thead>
+        <tr>
+          <th class="course-schedule-table-date">${vrtx.getMsg("course-schedule.table-date")}</th>
+          <th class="course-schedule-table-time">${vrtx.getMsg("course-schedule.table-time")}</th>
+          <th class="course-schedule-table-title">${vrtx.getMsg("course-schedule.table-title")}</th>
+          <th class="course-schedule-table-place">${vrtx.getMsg("course-schedule.table-place")}</th>
           <#if hasStaff>
             <th class="course-schedule-table-staff">${vrtx.getMsg("course-schedule.table-staff")}</th>
           </#if>
           <#if hasResources>
             <th class="course-schedule-table-resources">${vrtx.getMsg("course-schedule.table-resources")}</th>
           </#if>
-          </tr>
-          </thead>
-          <tbody>
-      </#local>
+        </tr>
+        </thead>
+        <tbody>
+     </#local>
 
-      <#local count = 0 />
-      <#list sessions?sort_by("dtStart") as session>
-        <#if !session.vrtxOrphan?exists>
+     <#local count = 0 />
+     <#local sessions = activity.sessions />
+     <#list sessions as session>
+       <#if !session.vrtxOrphan?exists>
         
-        <#local count = count + 1 />
-      
-        <#local dateStart = session.dtStart?replace("T", " ")?date("yyyy-MM-dd HH:mm:ss") />
-        <#local dateEnd = session.dtEnd?replace("T", " ")?date("yyyy-MM-dd HH:mm:ss") />
+       <#local count = count + 1 />
+       <#local dateStart = session.dtStart?replace("T", " ")?date("yyyy-MM-dd HH:mm:ss") />
+       <#local dateEnd = session.dtEnd?replace("T", " ")?date("yyyy-MM-dd HH:mm:ss") />
         
-        <#if skipTier>
-          <#local sessionId = type + "-" + session.id?replace("/", "-") + "-" + dateStart?string("dd-MM-yyyy-HH-mm") + "-" + dateEnd?string("HH-mm") />
-        <#else>
-          <#local sessionId = dtShort + "-" + id + "-" + session.id?replace("/", "-") + "-" + dateStart?string("dd-MM-yyyy-HH-mm") + "-" + dateEnd?string("HH-mm") />
-        </#if>
+       <#if skipTier>
+         <#local sessionId = type + "-" + session.id?replace("/", "-") + "-" + dateStart?string("dd-MM-yyyy-HH-mm") + "-" + dateEnd?string("HH-mm") />
+       <#else>
+         <#local sessionId = dtShort + "-" + id + "-" + session.id?replace("/", "-") + "-" + dateStart?string("dd-MM-yyyy-HH-mm") + "-" + dateEnd?string("HH-mm") />
+       </#if>
         
-        <#if session.vrtxTitle?exists>
-          <#local title = session.vrtxTitle />
-        <#elseif session.title?exists> 
-          <#local title = session.title />
-        <#else>
-          <#local title = session.id />
-        </#if>
-        <#if (session.status == "cancelled") || (session.vrtxStatus?exists && session.vrtxStatus == "cancelled")>
-          <#local title = "<span class='course-schedule-table-status'>" + vrtx.getMsg("course-schedule.course-schedule.table-cancelled") + "</span>" + title />
-        </#if>
+       <#if session.vrtxTitle?exists>
+         <#local title = session.vrtxTitle />
+       <#elseif session.title?exists> 
+         <#local title = session.title />
+       <#else>
+         <#local title = session.id />
+       </#if>
+       <#if (session.status == "cancelled") || (session.vrtxStatus?exists && session.vrtxStatus == "cancelled")>
+         <#local title = "<span class='course-schedule-table-status'>" + vrtx.getMsg("course-schedule.course-schedule.table-cancelled") + "</span>" + title />
+       </#if>
         
-        <#if count % 2 == 0>
-          <#local classes = "even" />
-        <#else>
-          <#local classes = "odd" />
-        </#if>
+       <#if count % 2 == 0>
+         <#local classes = "even" />
+       <#else>
+         <#local classes = "odd" />
+       </#if>
         
-        <#local hasNotStaffAndResources = !hasStaff && !hasResources />
+       <#local hasNotStaffAndResources = !hasStaff && !hasResources />
         
-        <#local time><span>${dateStart?string("HH:mm")}-</span><span>${dateEnd?string("HH:mm")}</span></#local>
-        <#local place><@getPlace session /></#local>
-        <#local staff><@getStaff session /></#local>
-        <#local resources><@getResources session /></#local>
+       <#local time><span>${dateStart?string("HH:mm")}-</span><span>${dateEnd?string("HH:mm")}</span></#local>
+       <#local place><@getPlace session /></#local>
+       <#local staff><@getStaff session /></#local>
+       <#local resources><@getResources session /></#local>
         
-         <#local placeHeader = vrtx.getMsg("course-schedule.table-place") />
-         <#local staffHeader = vrtx.getMsg("course-schedule.table-staff") />
-         <#local resourcesHeader = vrtx.getMsg("course-schedule.table-resources") />
+       <#local placeHeader = vrtx.getMsg("course-schedule.table-place") />
+       <#local staffHeader = vrtx.getMsg("course-schedule.table-staff") />
+       <#local resourcesHeader = vrtx.getMsg("course-schedule.table-resources") />
          
-         <#local tablesHtmlMiddle>
+       <#local tablesHtmlMiddle>
          <tr id="${sessionId}" class="${classes}"> 
            <td class='course-schedule-table-date'><span class='responsive-header'>${vrtx.getMsg("course-schedule.table-date")}</span>${dateStart?string("d. MMM.")}</td>
            <td class='course-schedule-table-time'><span class='responsive-header'>${vrtx.getMsg("course-schedule.table-time")}</span>${time}</td>
@@ -166,54 +145,57 @@ ${groupHtml.tablesHtml}
            <@editLink "course-schedule-table-place" "<span class='responsive-header'>${placeHeader}</span>${place}" hasNotStaffAndResources canEdit />
            <#if hasStaff><@editLink "course-schedule-table-staff" "<span class='responsive-header'>${staffHeader}</span>${staff}" !hasResources canEdit /></#if>
            <#if hasResources><@editLink "course-schedule-table-resources" "<span class='responsive-header'>${resourcesHeader}</span>${resources}" hasResources canEdit /></#if>
-        </tr>
-        </#local>
-        <#local tablesHtmlStart = tablesHtmlStart + tablesHtmlMiddle />
+         </tr>
+       </#local>
+       <#local tablesHtmlStart = tablesHtmlStart + tablesHtmlMiddle />
         
-        <#if !tocTimeNo>
-          <#local newTocTime = "unk"?lower_case?substring(0,3) + " " + time />
-          <#if !tocTime?contains(newTocTime)>
-            <#if (tocTimeCount < tocTimeMax)>
-              <#if (tocTimeCount > 0)>
-                <#local tocTime = tocTime + ", " />
-                <#local tocTime = tocTime + "<span>" />
-              </#if>
-              <#local tocTime = tocTime + newTocTime + "</span>" />
-            </#if>
-            <#local tocTimeCount = tocTimeCount + 1 />
-            <#if (tocTimeCount > tocTimeMax && !skipTier)>
-              <#local tocTimeNo = true />
-            </#if>
-          </#if>
-        </#if>
+       <#if !tocTimeNo>
+         <#local newTocTime = "unk"?lower_case?substring(0,3) + " " + time />
+         <#if !tocTime?contains(newTocTime)>
+           <#if (tocTimeCount < tocTimeMax)>
+             <#if (tocTimeCount > 0)>
+               <#local tocTime = tocTime + ", " />
+               <#local tocTime = tocTime + "<span>" />
+             </#if>
+             <#local tocTime = tocTime + newTocTime + "</span>" />
+           </#if>
+           <#local tocTimeCount = tocTimeCount + 1 />
+           <#if (tocTimeCount > tocTimeMax && !skipTier)>
+             <#local tocTimeNo = true />
+           </#if>
+         </#if>
+       </#if>
         
-        </#if>
-      </#list>
-      <#local tablesHtmlEnd>
-      </tbody>
-      </table>
-      </div>
-      </#local>
+       </#if>
+     </#list>
       
-      <#local tablesHtml = tablesHtml + tablesHtmlStart + tablesHtmlEnd />
+     <#local tablesHtmlEnd>
+       </tbody>
+       </table>
+       </div>
+     </#local>
+      
+     <#local tablesHtml = tablesHtml + tablesHtmlStart + tablesHtmlEnd />
        
-      <#if !skipTier>
-        <#local tocHtmlTime = "" />
-        <#if (tocTimeCount <= tocTimeMax && !tocTimeNo)>
-          <#local tocHtmlTime = " - " + tocTime />
-        </#if>
-        <#local tocHtml = tocHtml + "<li><span><a href='#" + activityId + "'>" + vrtx.getMsg("course-schedule.group-title") + " " + groupNumber + "</a>" + tocHtmlTime + "</li>" />
-      <#else>
-        <#local tocHtml = tocHtml + "<li><span><a href='#" + activityId + "'>" + dtLong + "</a> - " + tocTime + "</li>" />
-      </#if>       
+     <#if !skipTier>
+       <#local tocHtmlTime = "" />
+       <#if (tocTimeCount <= tocTimeMax && !tocTimeNo)>
+         <#local tocHtmlTime = " - " + tocTime />
+       </#if>
+       <#local tocHtmlMiddle = tocHtmlMiddle + "<li><span><a href='#" + activityId + "'>" + vrtx.getMsg("course-schedule.group-title") + " " + groupNumber + "</a>" + tocHtmlTime + "</li>" />
+       <#if !activity_has_next || activities[activity_index + 1].dtShort != dtShort>
+          <#local tocHtml = tocHtml + dtLong + "<ul>" + tocHtmlMiddle + "</ul>" />
+          <#local tocHtmlMiddle = "" />
+       </#if>
+     <#else>
+       <#local tocHtml = tocHtml + "<li><span><a href='#" + activityId + "'>" + dtLong + "</a> - " + tocTime + "</li>" />
+     </#if>
       
-      <#local sessions = [] />
-      <#local isAllPassed = false />
-      <#local hasResources = false />
-      <#local hasStaff = false />
-      <#local tocTime = "" />
-      <#local tocTimeCount = 0 />
-    </#if>
+     <#local isAllPassed = false />
+     <#local hasResources = false />
+     <#local hasStaff = false />
+     <#local tocTime = "" />
+     <#local tocTimeCount = 0 />
   </#list>
   
   <#return { "tocHtml": tocHtml, "tablesHtml": tablesHtml }>

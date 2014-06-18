@@ -22,7 +22,7 @@ resourcetype course-schedule {
         <script type="text/javascript"><!--
           var scheduleI18n = {
             "showMore": "[localized 'showMore']",
-            "hideMore": "[localized 'hideMore']",
+            "hideMore": "[localized 'hideMore']"
           };
         // -->
         </script>
@@ -39,7 +39,7 @@ resourcetype course-schedule {
   localization {
     schedule : (en : "Schedule", no : "Timeplan", nn : "Timeplan"),
     title : (en : "Title", no : "Tittel", nn : "Tittel"),
-    header : (en : "Edit course schedule", no : "Rediger emnetimeplan", nn : "Rediger emnetimeplan"),
+    header : (en : "Edit course schedule", no : "Rediger emnetimeplan", nn : "Rediger emnetimeplan")
   }
   
 }

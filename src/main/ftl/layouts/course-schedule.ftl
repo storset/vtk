@@ -29,6 +29,15 @@
   <#local isAllPassed = false />
   <#local hasResources = false />
   <#local hasStaff = false />
+
+  <#local tocTimeNo = false />
+  <#local tocTime = "" />
+  <#local tocTimeCount = 0 />
+  <#if skipTier>
+    <#local tocTimeMax = 3 />
+  <#else>
+    <#local tocTimeMax = 2 />
+  </#if>
   
   <#list activities?sort_by("id") as activity>
     <#local id = activity.id />
@@ -100,13 +109,13 @@
         
         <#local count = count + 1 />
       
-        <#local dateStart = session.dtStart?replace("T", " ")?date("yyyy-MM-dd hh:mm:ss") />
-        <#local dateEnd = session.dtEnd?replace("T", " ")?date("yyyy-MM-dd hh:mm:ss") />
+        <#local dateStart = session.dtStart?replace("T", " ")?date("yyyy-MM-dd HH:mm:ss") />
+        <#local dateEnd = session.dtEnd?replace("T", " ")?date("yyyy-MM-dd HH:mm:ss") />
         
         <#if skipTier>
-          <#local sessionId = type + "-" + session.id?replace("/", "-") + "-" + dateStart?string("dd-MM-yyyy-hh-mm") + "-" + dateEnd?string("hh-mm") />
+          <#local sessionId = type + "-" + session.id?replace("/", "-") + "-" + dateStart?string("dd-MM-yyyy-HH-mm") + "-" + dateEnd?string("HH-mm") />
         <#else>
-          <#local sessionId = dtShort + "-" + id + "-" + session.id?replace("/", "-") + "-" + dateStart?string("dd-MM-yyyy-hh-mm") + "-" + dateEnd?string("hh-mm") />
+          <#local sessionId = dtShort + "-" + id + "-" + session.id?replace("/", "-") + "-" + dateStart?string("dd-MM-yyyy-HH-mm") + "-" + dateEnd?string("HH-mm") />
         </#if>
         
         <#if session.vrtxTitle?exists>
@@ -128,6 +137,7 @@
         
         <#local hasNotStaffAndResources = !hasStaff && !hasResources />
         
+        <#local time><span>${dateStart?string("HH:mm")}-</span><span>${dateEnd?string("HH:mm")}</span></#local>
         <#local place><@getPlace session /></#local>
         <#local staff><@getStaff session /></#local>
         <#local resources><@getResources session /></#local>
@@ -138,12 +148,29 @@
         
          <tr id="${sessionId}" class="${classes}"> 
            <td class='course-schedule-table-date'><span class='responsive-header'>${vrtx.getMsg("course-schedule.table-date")}</span>${dateStart?string("d. MMM.")}</td>
-           <td class='course-schedule-table-time'><span class='responsive-header'>${vrtx.getMsg("course-schedule.table-time")}</span><span>${dateStart?string("hh:mm")}-</span><span>${dateEnd?string("hh:mm")}</span></td>
+           <td class='course-schedule-table-time'><span class='responsive-header'>${vrtx.getMsg("course-schedule.table-time")}</span>${time}</td>
            <td class='course-schedule-table-title'><span class='responsive-header'>${vrtx.getMsg("course-schedule.table-title")}</span>${title}</td>
            <@editLink "course-schedule-table-place" "<span class='responsive-header'>${placeHeader}</span>${place}" hasNotStaffAndResources canEdit />
            <#if hasStaff><@editLink "course-schedule-table-staff" "<span class='responsive-header'>${staffHeader}</span>${staff}" !hasResources canEdit /></#if>
            <#if hasResources><@editLink "course-schedule-table-resources" "<span class='responsive-header'>${resourcesHeader}</span>${resources}" hasResources canEdit /></#if>
         </tr>
+        
+        <#if !tocTimeNo>
+          <#local newTocTime = "unk"?lower_case?substring(0,3) + " " + time />
+          <#if !tocTime?contains(newTocTime)>
+            <#if (tocTimeCount < tocTimeMax)>
+              <#if (tocTimeCount > 0)>
+                <#local tocTime = tocTime + ", " />
+                <#local tocTime = tocTime + "<span>" />
+              </#if>
+              <#local tocTime = tocTime + newTocTime + "</span>" />
+            </#if>
+            <#local tocTimeCount = tocTimeCount + 1 />
+            <#if (tocTimeCount > tocTimeMax && !skipTier)>
+              <#local tocTimeNo = true />
+            </#if>
+          </#if>
+        </#if>
         
         </#if>
       </#list>
@@ -151,10 +178,14 @@
       </table>
       </div>
       
+      ${tocTime}
+      
       <#local sessions = [] />
       <#local isAllPassed = false />
       <#local hasResources = false />
       <#local hasStaff = false />
+      <#local tocTime = "" />
+      <#local tocTimeCount = 0 />
     </#if>
   </#list>
 </#macro>
@@ -331,7 +362,7 @@
     <#else>
      <div class='course-schedule-table-edit-wrapper'>
        ${html}
-       <a class='button course-schedule-table-edit-link' href='javascript:void'><span>${vrtx.getMsg("course-schedule.course-schedule.table-cancelled")}</span></a>
+       <a class='button course-schedule-table-edit-link' href='javascript:void'><span>${vrtx.getMsg("course-schedule.table-edit")}</span></a>
      </div>
     </#if>
   </td>  

@@ -16,10 +16,18 @@
 // -->
 </script>
   
-<@generateType result "plenary" />
-<@generateType result "group" />
+<#assign plenaryHtml = generateType(result, "plenary") />
+<#assign groupHtml = generateType(result, "group") />
 
-<#macro generateType result type>
+<h2 class="course-schedule-toc-title accordion">${vrtx.getMsg("course-schedule.header-plenary")}</h2>
+<div class="course-schedule-toc-content"><ul>${plenaryHtml.tocHtml}</ul></div>
+<h2 class="course-schedule-toc-title accordion">${vrtx.getMsg("course-schedule.header-group")}</h2>
+<div class="course-schedule-toc-content"><ul>${groupHtml.tocHtml}</ul></div>
+
+${plenaryHtml.tablesHtml}
+${groupHtml.tablesHtml}
+
+<#function generateType result type>
   <#local activities = result[type].activities />
   <#local skipTier = type == "plenary" />
   
@@ -30,6 +38,7 @@
   <#local hasResources = false />
   <#local hasStaff = false />
   
+  <#local tablesHtml = "" />
   <#local tocHtml = "" />
   <#local tocTimeNo = false />
   <#local tocTime = "" />
@@ -85,6 +94,7 @@
         <#local caption = dtLong + " - " + vrtx.getMsg("course-schedule.group-title")?lower_case + " " + groupNumber />
       </#if>
       
+      <#local tablesHtmlStart>
       <div class="course-schedule-table-wrapper">
         <table id="${activityId}" class="course-schedule-table uio-zebra hiding-passed<#if isAllPassed> all-passed</#if><#if hasResources> has-resources</#if><#if hasStaff> has-staff</#if>" >
           <caption>${caption}</caption>
@@ -103,6 +113,7 @@
           </tr>
           </thead>
           <tbody>
+      </#local>
 
       <#local count = 0 />
       <#list sessions?sort_by("dtStart") as session>
@@ -146,7 +157,8 @@
          <#local placeHeader = vrtx.getMsg("course-schedule.table-place") />
          <#local staffHeader = vrtx.getMsg("course-schedule.table-staff") />
          <#local resourcesHeader = vrtx.getMsg("course-schedule.table-resources") />
-        
+         
+         <#local tablesHtmlMiddle>
          <tr id="${sessionId}" class="${classes}"> 
            <td class='course-schedule-table-date'><span class='responsive-header'>${vrtx.getMsg("course-schedule.table-date")}</span>${dateStart?string("d. MMM.")}</td>
            <td class='course-schedule-table-time'><span class='responsive-header'>${vrtx.getMsg("course-schedule.table-time")}</span>${time}</td>
@@ -155,6 +167,8 @@
            <#if hasStaff><@editLink "course-schedule-table-staff" "<span class='responsive-header'>${staffHeader}</span>${staff}" !hasResources canEdit /></#if>
            <#if hasResources><@editLink "course-schedule-table-resources" "<span class='responsive-header'>${resourcesHeader}</span>${resources}" hasResources canEdit /></#if>
         </tr>
+        </#local>
+        <#local tablesHtmlStart = tablesHtmlStart + tablesHtmlMiddle />
         
         <#if !tocTimeNo>
           <#local newTocTime = "unk"?lower_case?substring(0,3) + " " + time />
@@ -175,9 +189,13 @@
         
         </#if>
       </#list>
+      <#local tablesHtmlEnd>
       </tbody>
       </table>
       </div>
+      </#local>
+      
+      <#local tablesHtml = tablesHtml + tablesHtmlStart + tablesHtmlEnd />
        
       <#if !skipTier>
         <#local tocHtmlTime = "" />
@@ -198,8 +216,8 @@
     </#if>
   </#list>
   
-  ${tocHtml}
-</#macro>
+  <#return { "tocHtml": tocHtml, "tablesHtml": tablesHtml }>
+</#function>
 
 <#macro getPlace session>
   <#local val = "" />

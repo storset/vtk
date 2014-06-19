@@ -29,7 +29,7 @@ resourcetype course-schedule {
       </head>
       <body id="vrtx-course-schedule">
         <h1>[call "resource:property" {"id":"title"}]</h1>
-        <div id="activities"></div>
+        [call "resource:course-schedule"]
         <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/schedule.js"></script>
       </body>
     </html>

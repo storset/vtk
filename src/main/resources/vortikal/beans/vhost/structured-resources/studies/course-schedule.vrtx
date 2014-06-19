@@ -21,81 +21,16 @@ resourcetype course-schedule {
         <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/include-jquery.js"></script>
         <script type="text/javascript"><!--
           var scheduleI18n = {
-            "loadingRetrievingData": "[localized 'loading-retrieving-data']",
-            "loadingGenerating": "[localized 'loading-generating']",
-            "noData": "[localized 'no-data']",
-
-            "tableFor": "[localized 'table-for']",
-            "tableDate": "[localized 'table-date']",
-            "tableDay": "[localized 'table-day']",
-            "tableTime": "[localized 'table-time']",
-            "tableTitle": "[localized 'table-title']",
-            "tableCancelled": "[localized 'table-cancelled']",
-            "tablePlace": "[localized 'table-place']",
-            "tableStaff": "[localized 'table-staff']",
-            "tableResources": "[localized 'table-resources']",
-            "tableEdit": "[localized 'table-edit']",
-            "tableEditSave": "[localized 'table-edit-save']",
-            "tableEditCancel": "[localized 'table-edit-cancel']",
-            "tableEditActivity": "[localized 'table-edit-activity']",
-            "tableShowPassed": "[localized 'table-show-passed']",
-            "tableHidePassed": "[localized 'table-hide-passed']",
-            
-            "header-plenary": "[localized 'header-plenary']",
-            "header-group": "[localized 'header-group']",
-            "groupTitle": "[localized 'group-title']",
-            "and": "[localized 'and']",
-            
             "showMore": "[localized 'showMore']",
-<<<<<<< HEAD
-            "hideMore": "[localized 'hideMore']",
-
-            "K": "[localized 'kl']",
-            "P": "[localized 'pbl']",
-            "S": "[localized 'sek']",
-            "KF": "[localized 'klf']",
-            "PF": "[localized 'pblf']",
-            "SF": "[localized 'sekf']",
-
-            "d0": "[localized 'dSun']",
-            "d1": "[localized 'dMon']",
-            "d2": "[localized 'dTue']",
-            "d3": "[localized 'dWed']",
-            "d4": "[localized 'dThu']",
-            "d5": "[localized 'dFri']",
-            "d6": "[localized 'dSat']",
-            
-            "m1": "[localized 'mJan']",
-            "m2": "[localized 'mFeb']",
-            "m3": "[localized 'mMar']",
-            "m4": "[localized 'mApr']",
-            "m5": "[localized 'mMay']",
-            "m6": "[localized 'mJun']",
-            "m7": "[localized 'mJul']",
-            "m8": "[localized 'mAug']",
-            "m9": "[localized 'mSep']",
-            "m10": "[localized 'mOct']",
-            "m11": "[localized 'mNov']",
-            "m12": "[localized 'mDec']"
-          };
-          var schedulePermissions = {
-            "hasReadWriteNotLocked": [call 'resource:permission-flags']
-=======
             "hideMore": "[localized 'hideMore']"
->>>>>>> schedule-ftl
           };
         // -->
-        </script>
-        <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/schedule-worker.js"></script>
-        <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/schedule.js"></script>
-        <script type="text/javascript"><!--
-          initSchedule();
-        -->
         </script>
       </head>
       <body id="vrtx-course-schedule">
         <h1>[call "resource:property" {"id":"title"}]</h1>
         <div id="activities"></div>
+        <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/schedule.js"></script>
       </body>
     </html>
     ##
@@ -105,71 +40,8 @@ resourcetype course-schedule {
     schedule : (en : "Schedule", no : "Timeplan", nn : "Timeplan"),
     title : (en : "Title", no : "Tittel", nn : "Tittel"),
     header : (en : "Edit course schedule", no : "Rediger emnetimeplan", nn : "Rediger emnetimeplan"),
-<<<<<<< HEAD
-    
-    loading-retrieving-data : (en : "Retrieving schedule data", no : "Henter timeplandata", nn : "Henter timeplandata"),
-    loading-generating : (en : "Generating schedule", no : "Lager timeplan", nn : "Lager timeplan"),
-    no-data: (en : "No data", no : "Ingen data", nn : "Ingen data"),
-    
-    disabled-js: (en : "You need to enable JavaScript to get the schedule",
-                  no : "Du må skru på JavaScript for få timeplanen",
-                  nn : "Du må skru på JavaScript for få timeplanen"),
-    
-    table-for : (en : "Lectures", no : "Forelesninger", nn : "Forelesninger"),
-    table-date : (en : "Date", no : "Dato", nn : "Dato"),
-    table-day : (en : "Day", no : "Dag", nn : "Dag"),
-    table-time : (en : "Time", no : "Tid", nn : "Tid"),
-    table-title : (en : "Activity", no : "Aktivitet", nn : "Aktivitet"),
-    table-cancelled: (en : "CANCELLED", no : "AVLYST", nn : "AVLYST"), 
-    table-place : (en : "Place", no : "Sted", nn : "Stad"),
-    table-staff : (en : "Lecturer", no : "Foreleser", nn : "Foreleser"),
-    table-resources : (en : "Resources/curriculum", no : "Ressurser/pensum", nn : "Ressursar/pensum"),
-    table-edit : (en : "Edit", no : "Rediger", nn : "Rediger"),
-    table-edit-save : (en : "Save", no : "Lagre", nn : "Lagre"),
-    table-edit-cancel : (en : "Cancel", no : "Avbryt", nn : "Avbryt"),
-    table-edit-activity : (en : "activity", no : "aktivitet", nn : "aktivitet"),
-    table-show-passed : (en : "Show earlier activities", no : "Vis tidligere aktiviteter", nn : "Vis tidligere aktiviteter"),
-    table-hide-passed : (en : "Hide earlier activities", no : "Skjul tidligere aktiviteter", nn : "Skjul tidligere aktiviteter"),
-    
-    header-plenary : (en : "Plenary sessions", no : "Fellesundervisning", nn : "Fellesundervisning"), 
-    header-group : (en : "Group sessions", no : "Gruppeundervisning", nn : "Gruppeundervisning"),
-    group-title: (en : "Group", no : "Gruppe", nn : "Gruppe"),
-    and : (en : "and", no : "og", nn : "og"),
-    
-    showMore : (en : "Show more", no : "Vis mer", nn : "Vis meir"),
-    hideMore : (en : "Hide more", no : "Skjul mer", nn : "Skjul meir"),
-    
-    kl : (en : "Clinical small groups", no : "Kliniske smågrupper", nn : "Kliniske smågrupper"),
-    pbl : (en : "PBL-groups", no : "PBL-grupper", nn : "PBL-grupper"),
-    sek : (en : "Secondary small groups", no : "Sekundære smågrupper", nn : "Sekundære smågrupper"),
-    klf : (en : "Clinical plenary teaching", no : "Klinisk fellesundervisning", nn : "Klinisk fellesundervisning"),
-    pblf : (en : "PBL plenary teaching", no : "PBL-fellesundervisning", nn : "PBL-fellesundervisning"),
-    sekf : (en : "Secondary plenary teaching", no : "Sekundær fellesundervisning", nn : "Sekundær fellesundervisning"),
-
-    dSun : (en : "Sunday",    no : "Søndag",  nn : "Søndag"),
-    dMon : (en : "Monday",    no : "Mandag",  nn : "Mandag"),
-    dTue : (en : "Tuesday",   no : "Tirsdag", nn : "Tirsdag"),
-    dWed : (en : "Wednesday", no : "Onsdag",  nn : "Onsdag"),
-    dThu : (en : "Thursday",  no : "Torsdag", nn : "Torsdag"),
-    dFri : (en : "Friday",    no : "Fredag",  nn : "Fredag"),
-    dSat : (en : "Saturday",  no : "Lørdag",  nn : "Lørdag"),
-    
-    mJan : (en : "Jan", no : "jan",  nn : "jan"),
-    mFeb : (en : "Feb", no : "feb",  nn : "feb"),
-    mMar : (en : "Mar", no : "mar",  nn : "mar"),
-    mApr : (en : "Apr", no : "apr",  nn : "apr"),
-    mMay : (en : "May", no : "mai",  nn : "mai"),
-    mJun : (en : "Jun", no : "jun",  nn : "jun"),
-    mJul : (en : "Jul", no : "jul",  nn : "jul"),
-    mAug : (en : "Aug", no : "aug",  nn : "aug"),
-    mSep : (en : "Sep", no : "sep",  nn : "sep"),
-    mOct : (en : "Oct", no : "okt",  nn : "okt"),
-    mNov : (en : "Nov", no : "nov",  nn : "nov"),
-    mDec : (en : "Dec", no : "des",  nn : "des")
-=======
     showMore : (en : "Show more", no : "Vis mer", nn : "Vis meir"),
     hideMore : (en : "Hide more", no : "Skjul mer", nn : "Skjul meir")
->>>>>>> schedule-ftl
   }
   
 }

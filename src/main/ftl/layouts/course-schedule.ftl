@@ -388,4 +388,3 @@ ${groupHtml.tablesHtml}
     </#if>
   </td>  
 </#macro>
->>>>>>> schedule-ftl

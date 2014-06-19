@@ -192,7 +192,7 @@
      <#if !skipTier>
        <#local tocHtmlTime = "" />
        <#if (tocTimeCount <= tocTimeMax && !tocTimeNo)>
-         <#local tocHtmlTime = " - " + tocTime />
+         <#local tocHtmlTime = " - " + tocTime?replace(",([^,]+)$", " " + vrtx.getMsg("course-schedule.and") + " $1", "r") />
        </#if>
        
        <#if tocHtmlMiddle != "">
@@ -239,7 +239,7 @@
           <#local groupCount = 0 />
        </#if>
      <#else>
-       <#local tocHtml = tocHtml + "<li><span><a href='#" + activityId + "'>" + dtLong?html + "</a> - " + tocTime + "</li>" />
+       <#local tocHtml = tocHtml + "<li><span><a href='#" + activityId + "'>" + dtLong?html + "</a> - " + tocTime?replace(",([^,]+)$", " " + vrtx.getMsg("course-schedule.and") + " $1", "r") + "</li>" />
        <#local groupCount = 0 />
      </#if>
       

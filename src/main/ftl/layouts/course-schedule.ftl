@@ -67,7 +67,7 @@ ${groupHtml.tablesHtml}
     <#local tablesHtmlStart>
     <div class="course-schedule-table-wrapper">
       <table id="${activityId}" class="course-schedule-table uio-zebra hiding-passed<#if isAllPassed> all-passed</#if><#if hasResources> has-resources</#if><#if hasStaff> has-staff</#if>" >
-        <caption>${caption}</caption>
+        <caption>${caption?html}</caption>
         <thead>
         <tr>
           <th class="course-schedule-table-date">${vrtx.getMsg("course-schedule.table-date")}</th>
@@ -108,7 +108,7 @@ ${groupHtml.tablesHtml}
          <#local title = session.id />
        </#if>
        <#if (session.status == "cancelled") || (session.vrtxStatus?exists && session.vrtxStatus == "cancelled")>
-         <#local title = "<span class='course-schedule-table-status'>" + vrtx.getMsg("course-schedule.table-cancelled") + "</span>" + title />
+         <#local title = "<span class='course-schedule-table-status'>" + vrtx.getMsg("course-schedule.table-cancelled") + "</span>" + title?html />
        </#if>
         
        <#if count % 2 == 0>
@@ -214,7 +214,7 @@ ${groupHtml.tablesHtml}
           <#local tocHtml = tocHtml + tocHtmlMiddleProcessed />
        </#if>
      <#else>
-       <#local tocHtml = tocHtml + "<li><span><a href='#" + activityId + "'>" + dtLong + "</a> - " + tocTime + "</li>" />
+       <#local tocHtml = tocHtml + "<li><span><a href='#" + activityId + "'>" + dtLong?html + "</a> - " + tocTime + "</li>" />
      </#if>
       
      <#local isAllPassed = false />
@@ -319,9 +319,9 @@ ${groupHtml.tablesHtml}
     <span class='place-long'>
   </#if>
   <#if title != "">
-    ${title}
+    ${title?html}
   <#else>
-    ${text}
+    ${text?html}
   </#if>
   <#if url != "">
     </a>
@@ -343,27 +343,28 @@ ${groupHtml.tablesHtml}
     <#if obj.title?exists && obj.name?exists>
       <#local txt = obj.title />
       <#local totTxtLen = totTxtLen + txt?length />
-      <#local txt = "<a href='" + url + "/" + obj.name + "'>" + txt + "</a>" />
+      <#local txt = "<a href='" + url + "/" + obj.name + "'>" + txt?html + "</a>" />
     <#elseif obj.name?exists && obj.url?exists>
       <#local txt><@formatName obj.name /></#local>
       <#local totTxtLen = totTxtLen + txt?length />
-      <#local txt = "<a href='" + obj.url + "'>" + txt + "</a>" />
+      <#local txt = "<a href='" + obj.url + "'>" + txt?html + "</a>" />
     <#elseif obj.title?exists && obj.url?exists>
       <#local txt = obj.title />
       <#local totTxtLen = totTxtLen + txt?length />
-      <#local txt = "<a href='" + obj.url + "'>" + txt + "</a>" />
+      <#local txt = "<a href='" + obj.url + "'>" + txt?html + "</a>" />
     <#elseif obj.url?exists>
       <#local txt = obj.url />
       <#local totTxtLen = totTxtLen + txt?length />
-      <#local txt = "<a href='" + obj.url + "'>" + txt + "</a>" />
+      <#local txt = "<a href='" + obj.url + "'>" + txt?html + "</a>" />
     <#elseif obj.name?exists>
       <#local txt><@formatName obj.name /></#local>
+      <#local txt = txt?html />
       <#local totTxtLen = totTxtLen + txt?length />
     <#elseif obj.title?exists>
-      <#local txt = obj.title />
+      <#local txt = obj.title?html />
       <#local totTxtLen = totTxtLen + txt?length />
     <#elseif obj.id?exists>
-      <#local txt = obj.id />
+      <#local txt = obj.id?html />
       <#local totTxtLen = totTxtLen + txt?length />
     </#if>
       

@@ -1,6 +1,5 @@
-diff -w -uNr OSMF.orig/framework/OSMF/org/osmf/net/httpstreaming/f4f/AdobeFragmentRunTable.as OSMF/framework/OSMF/org/osmf/net/httpstreaming/f4f/AdobeFragmentRunTable.as
 --- OSMF.orig/framework/OSMF/org/osmf/net/httpstreaming/f4f/AdobeFragmentRunTable.as	2012-03-21 10:45:00.000000000 +0100
-+++ OSMF/framework/OSMF/org/osmf/net/httpstreaming/f4f/AdobeFragmentRunTable.as	2013-12-18 13:01:10.611349849 +0100
++++ OSMF/framework/OSMF/org/osmf/net/httpstreaming/f4f/AdobeFragmentRunTable.as	2014-06-19 17:31:49.716598212 +0200
 @@ -386,7 +386,7 @@
  		
  		private function calculateFragmentId(fdp:FragmentDurationPair, time:Number):uint
@@ -10,4 +9,3 @@ diff -w -uNr OSMF.orig/framework/OSMF/org/osmf/net/httpstreaming/f4f/AdobeFragme
  			{
  				return fdp.firstFragment;
  			}
-

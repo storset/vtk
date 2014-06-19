@@ -53,6 +53,7 @@
     <#local tocTimeMax = 2 />
   </#if>
   
+  <#local groupCount = 0 />
   <#list activities as activity>
     <#local id = activity.id />
     <#local groupCode = activity.groupCode />
@@ -185,6 +186,8 @@
      </#local>
       
      <#local tablesHtml = tablesHtml + tablesHtmlStart + tablesHtmlEnd />
+     
+     <#local groupCount = groupCount + 1 />
        
      <#if !skipTier>
        <#local tocHtmlTime = "" />
@@ -221,7 +224,11 @@
               <#if ((count = colOneCount + colTwoCount) && colThreeCount > 0)>
                 </ul><ul class="thirds-right">
               </#if>
-              <li>${li}</li>
+              <#if (groupCount > 30)>
+                <li>${li?replace(".*(<a[^>]+>[^<]+<\\/a>).*", "$1", "r")}</li>
+              <#else>
+                <li>${li}</li>
+              </#if>
               <#local count = count + 1 />
             </#list>
             </ul>
@@ -229,9 +236,11 @@
           </#local>
           <#local tocHtmlMiddle = "" />
           <#local tocHtml = tocHtml + tocHtmlMiddleProcessed />
+          <#local groupCount = 0 />
        </#if>
      <#else>
        <#local tocHtml = tocHtml + "<li><span><a href='#" + activityId + "'>" + dtLong?html + "</a> - " + tocTime + "</li>" />
+       <#local groupCount = 0 />
      </#if>
       
      <#local isAllPassed = false />

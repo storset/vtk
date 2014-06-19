@@ -47,6 +47,7 @@ resourcetype course-schedule {
             "and": "[localized 'and']",
             
             "showMore": "[localized 'showMore']",
+<<<<<<< HEAD
             "hideMore": "[localized 'hideMore']",
 
             "K": "[localized 'kl']",
@@ -79,6 +80,9 @@ resourcetype course-schedule {
           };
           var schedulePermissions = {
             "hasReadWriteNotLocked": [call 'resource:permission-flags']
+=======
+            "hideMore": "[localized 'hideMore']"
+>>>>>>> schedule-ftl
           };
         // -->
         </script>
@@ -101,6 +105,7 @@ resourcetype course-schedule {
     schedule : (en : "Schedule", no : "Timeplan", nn : "Timeplan"),
     title : (en : "Title", no : "Tittel", nn : "Tittel"),
     header : (en : "Edit course schedule", no : "Rediger emnetimeplan", nn : "Rediger emnetimeplan"),
+<<<<<<< HEAD
     
     loading-retrieving-data : (en : "Retrieving schedule data", no : "Henter timeplandata", nn : "Henter timeplandata"),
     loading-generating : (en : "Generating schedule", no : "Lager timeplan", nn : "Lager timeplan"),
@@ -161,6 +166,10 @@ resourcetype course-schedule {
     mOct : (en : "Oct", no : "okt",  nn : "okt"),
     mNov : (en : "Nov", no : "nov",  nn : "nov"),
     mDec : (en : "Dec", no : "des",  nn : "des")
+=======
+    showMore : (en : "Show more", no : "Vis mer", nn : "Vis meir"),
+    hideMore : (en : "Hide more", no : "Skjul mer", nn : "Skjul meir")
+>>>>>>> schedule-ftl
   }
   
 }

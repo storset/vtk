@@ -174,16 +174,44 @@ ${groupHtml.tablesHtml}
        <#if (tocTimeCount <= tocTimeMax && !tocTimeNo)>
          <#local tocHtmlTime = " - " + tocTime />
        </#if>
-       <#local tocHtmlMiddle = tocHtmlMiddle + "<li><span><a href='#" + activityId + "'>" + vrtx.getMsg("course-schedule.group-title") + " " + groupNumber + "</a>" + tocHtmlTime + "</li>" />
+       
+       <#if tocHtmlMiddle != "">
+         <#local tocHtmlMiddle = tocHtmlMiddle + "####" />
+       </#if>
+       <#local tocHtmlMiddle = tocHtmlMiddle + "<span><a href='#" + activityId + "'>" + vrtx.getMsg("course-schedule.group-title") + " " + groupNumber + "</a>" + tocHtmlTime />
+       
        <#if !activity_has_next 
           || (   activities[activity_index + 1].dtShort != dtShort
               && activities[activity_index + 1].groupCodeSp != groupCodeSp)>
           <#if groupCodeSp != "">
-            <#local tocHtml = tocHtml + "<span class='display-as-h3'>" + vrtx.getMsg("course-schedule.special-group." + groupCodeSp?lower_case) + "</span><ul>" + tocHtmlMiddle + "</ul>" />
+            <#local tocHtml = tocHtml + "<span class='display-as-h3'>" + vrtx.getMsg("course-schedule.special-group." + groupCodeSp?lower_case) + "</span>" />
           <#else>
-            <#local tocHtml = tocHtml + "<span class='display-as-h3'>" + dtLong + "</span><ul>" + tocHtmlMiddle + "</ul>" />
+            <#local tocHtml = tocHtml + "<span class='display-as-h3'>" + dtLong + "</span>" />
           </#if>
+          
+          <#local tocHtmlMiddleArr = tocHtmlMiddle?split("####") />
+          <#local colOneCount = vrtx.getEvenlyColumnDistribution(tocHtmlMiddleArr?size, 1, 3) />
+          <#local colTwoCount = vrtx.getEvenlyColumnDistribution(tocHtmlMiddleArr?size, 2, 3) />
+          <#local colThreeCount = vrtx.getEvenlyColumnDistribution(tocHtmlMiddleArr?size, 3, 3) />
+          <#local count = 0 />
+          <#local tocHtmlMiddleProcessed>
+            <div class="course-schedule-toc-thirds">
+            <ul class="thirds-left">
+            <#list tocHtmlMiddleArr as li>
+              <#if (count = colOneCount && colTwoCount > 0)>
+                </ul><ul class="thirds-middle">
+              </#if>
+              <#if ((count = colOneCount + colTwoCount) && colThreeCount > 0)>
+                </ul><ul class="thirds-right">
+              </#if>
+              <li>${li}</li>
+              <#local count = count + 1 />
+            </#list>
+            </ul>
+            </div>
+          </#local>
           <#local tocHtmlMiddle = "" />
+          <#local tocHtml = tocHtml + tocHtmlMiddleProcessed />
        </#if>
      <#else>
        <#local tocHtml = tocHtml + "<li><span><a href='#" + activityId + "'>" + dtLong + "</a> - " + tocTime + "</li>" />

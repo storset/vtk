@@ -33,8 +33,6 @@ ${groupHtml.tablesHtml}
   
   <#local sessions = [] />
   <#local isAllPassed = false />
-  <#local hasResources = true />
-  <#local hasStaff = true />
   
   <#local tablesHtml = "" />
   <#local tocHtml = "" />
@@ -55,6 +53,8 @@ ${groupHtml.tablesHtml}
     <#local groupNumber = activity.groupNumber />
     <#local dtShort = activity.dtShort />
     <#local dtLong = activity.dtLong />
+    <#local hasResources = activity.hasResources />
+    <#local hasStaff = activity.hasStaff />
     <#local isFor = dtShort == "for" />
 
     <#if isFor>
@@ -67,7 +67,7 @@ ${groupHtml.tablesHtml}
       <#local caption = dtLong />
     <#else>
       <#if groupCodeSp != "">
-        <#local caption = vrtx.getMsg("course-schedule.special-group." + groupCodeSp) + " - " + vrtx.getMsg("course-schedule.group-title")?lower_case + " " + groupNumber />
+        <#local caption = vrtx.getMsg("course-schedule.special-group." + groupCodeSp?lower_case) + " - " + vrtx.getMsg("course-schedule.group-title")?lower_case + " " + groupNumber />
       <#else>
         <#local caption = dtLong + " - " + vrtx.getMsg("course-schedule.group-title")?lower_case + " " + groupNumber />
       </#if>
@@ -184,8 +184,14 @@ ${groupHtml.tablesHtml}
          <#local tocHtmlTime = " - " + tocTime />
        </#if>
        <#local tocHtmlMiddle = tocHtmlMiddle + "<li><span><a href='#" + activityId + "'>" + vrtx.getMsg("course-schedule.group-title") + " " + groupNumber + "</a>" + tocHtmlTime + "</li>" />
-       <#if !activity_has_next || activities[activity_index + 1].dtShort != dtShort>
-          <#local tocHtml = tocHtml + "<span class='display-as-h3'>" + dtLong + "</span><ul>" + tocHtmlMiddle + "</ul>" />
+       <#if !activity_has_next 
+          || (   activities[activity_index + 1].dtShort != dtShort
+              && activities[activity_index + 1].groupCodeSp != groupCodeSp)>
+          <#if groupCodeSp != "">
+            <#local tocHtml = tocHtml + "<span class='display-as-h3'>" + vrtx.getMsg("course-schedule.special-group." + groupCodeSp?lower_case) + "</span><ul>" + tocHtmlMiddle + "</ul>" />
+          <#else>
+            <#local tocHtml = tocHtml + "<span class='display-as-h3'>" + dtLong + "</span><ul>" + tocHtmlMiddle + "</ul>" />
+          </#if>
           <#local tocHtmlMiddle = "" />
        </#if>
      <#else>

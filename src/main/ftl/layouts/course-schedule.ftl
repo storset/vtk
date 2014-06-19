@@ -134,6 +134,7 @@
        </#if>
         
        <#local hasNotStaffAndResources = !hasStaff && !hasResources />
+       <#local hasNotResources = !hasResources />
        
        <#local day><span>${dateStart?string("EEE")}</#local>
        <#local time><span>${dateStart?string("HH:mm")}-</span><span>${dateEnd?string("HH:mm")}</span></#local>
@@ -151,7 +152,7 @@
            <td class='course-schedule-table-time'><span class='responsive-header'>${vrtx.getMsg("course-schedule.table-time")}</span>${time}</td>
            <td class='course-schedule-table-title'><span class='responsive-header'>${vrtx.getMsg("course-schedule.table-title")}</span>${title}</td>
            <@editLink "course-schedule-table-place" "<span class='responsive-header'>${placeHeader}</span>${place}" hasNotStaffAndResources canEdit />
-           <#if hasStaff><@editLink "course-schedule-table-staff" "<span class='responsive-header'>${staffHeader}</span>${staff}" !hasResources canEdit /></#if>
+           <#if hasStaff><@editLink "course-schedule-table-staff" "<span class='responsive-header'>${staffHeader}</span>${staff}" hasNotResources canEdit /></#if>
            <#if hasResources><@editLink "course-schedule-table-resources" "<span class='responsive-header'>${resourcesHeader}</span>${resources}" hasResources canEdit /></#if>
          </tr>
        </#local>

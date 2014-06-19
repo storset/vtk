@@ -1,22 +1,36 @@
 <#ftl strip_whitespace=true>
-
-<#import "/lib/vortikal.ftl" as vrtx/>
+<#--
+  - File: course-schedule.ftl
+  - 
+  - Description: Displays course schedule
+  -
+  - Model data:
+  -   canEdit
+  -   sequences
+  -   result
+  -->
   
+<#import "/lib/vortikal.ftl" as vrtx/>
+
 <script type="text/javascript"><!--
   var canEdit = "${canEdit?string}";
 // -->
 </script>
+
+<#if result?has_content>
+  <#assign plenaryHtml = generateType(result, "plenary") />
+  <#assign groupHtml = generateType(result, "group") />
+
+  <h2 class="course-schedule-toc-title accordion">${vrtx.getMsg("course-schedule.header-plenary")}</h2>
+  <div class="course-schedule-toc-content"><ul>${plenaryHtml.tocHtml}</ul></div>
+  <h2 class="course-schedule-toc-title accordion">${vrtx.getMsg("course-schedule.header-group")}</h2>
+  <div class="course-schedule-toc-content">${groupHtml.tocHtml}</div>
+
+  ${plenaryHtml.tablesHtml}
+  ${groupHtml.tablesHtml}
+<#else>
   
-<#assign plenaryHtml = generateType(result, "plenary") />
-<#assign groupHtml = generateType(result, "group") />
-
-<h2 class="course-schedule-toc-title accordion">${vrtx.getMsg("course-schedule.header-plenary")}</h2>
-<div class="course-schedule-toc-content"><ul>${plenaryHtml.tocHtml}</ul></div>
-<h2 class="course-schedule-toc-title accordion">${vrtx.getMsg("course-schedule.header-group")}</h2>
-<div class="course-schedule-toc-content">${groupHtml.tocHtml}</div>
-
-${plenaryHtml.tablesHtml}
-${groupHtml.tablesHtml}
+</#if>
 
 <#function generateType result type>
   <#local activities = result[type] />

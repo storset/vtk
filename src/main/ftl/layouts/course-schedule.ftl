@@ -18,16 +18,18 @@
 </script>
 
 <#if result?has_content>
-  <#assign plenaryHtml = generateType(result, "plenary") />
-  <#assign groupHtml = generateType(result, "group") />
+  <div id="activities">
+    <#assign plenaryHtml = generateType(result, "plenary") />
+    <#assign groupHtml = generateType(result, "group") />
 
-  <h2 class="course-schedule-toc-title accordion">${vrtx.getMsg("course-schedule.header-plenary")}</h2>
-  <div class="course-schedule-toc-content"><ul>${plenaryHtml.tocHtml}</ul></div>
-  <h2 class="course-schedule-toc-title accordion">${vrtx.getMsg("course-schedule.header-group")}</h2>
-  <div class="course-schedule-toc-content">${groupHtml.tocHtml}</div>
+    <h2 class="course-schedule-toc-title accordion">${vrtx.getMsg("course-schedule.header-plenary")}</h2>
+    <div class="course-schedule-toc-content"><ul>${plenaryHtml.tocHtml}</ul></div>
+    <h2 class="course-schedule-toc-title accordion">${vrtx.getMsg("course-schedule.header-group")}</h2>
+    <div class="course-schedule-toc-content">${groupHtml.tocHtml}</div>
 
-  ${plenaryHtml.tablesHtml}
-  ${groupHtml.tablesHtml}
+    ${plenaryHtml.tablesHtml}
+    ${groupHtml.tablesHtml}
+  </div>
 <#else>
   
 </#if>

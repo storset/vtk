@@ -72,6 +72,7 @@
   <scm>
     <connection>scm:git:ssh://git@utv.uio.no:7999/gpl/vortikal.git</connection>
     <developerConnection>scm:git:ssh://git@utv.uio.no:7999/gpl/vortikal.git</developerConnection>
+    <url>https://utv.uio.no/stash/projects/GPL/repos/vortikal/browse</url>
   </scm>
   <licenses>
     <license>

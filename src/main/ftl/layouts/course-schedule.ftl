@@ -315,9 +315,9 @@
       <#list htmlSplitted as m>
         <#local totExtraTxtLen = totExtraTxtLen + m?replace("(<([^>]+)>)", "", "r")?length /> <#-- http://css-tricks.com/snippets/javascript/strip-html-tags-in-javascript/ -->
         <#if ((totTxtLen + totExtraTxtLen) > resourcesTxtLimit)>
-          <#local valAfter = valAfter + m />;
+          <#local valAfter = valAfter + m />
         <#else>
-          <#local val = val + m />;
+          <#local val = val + m />
         </#if>
       </#list>
     </#if>

@@ -309,7 +309,17 @@
     <#if (totTxtLen > resourcesTxtLimit)>
       <#local valAfter = valAfter + session.vrtxResourcesText />
     <#else>
-      <#local val = val + session.vrtxResourcesText />
+      <#-- http://stackoverflow.com/questions/19244318/javascript-split-messes-up-my-html-tags -->
+      <#local htmlSplitted = session.vrtxResourcesText?matches("<\\s*(\\w+\\b)(?:(?!<\\s*\\/\\s*\\1\\b)[\\s\\S])*<\\s*\\/\\s*\\1\\s*>|\\S+") />
+      <#local totExtraTxtLen = 0 />
+      <#list htmlSplitted as m>
+        <#local totExtraTxtLen = totExtraTxtLen + m?replace("(<([^>]+)>)", "", "r")?length /> <#-- http://css-tricks.com/snippets/javascript/strip-html-tags-in-javascript/ -->
+        <#if ((totTxtLen + totExtraTxtLen) > resourcesTxtLimit)>
+          <#local valAfter = valAfter + m />;
+        <#else>
+          <#local val = val + m />;
+        </#if>
+      </#list>
     </#if>
   </#if>
   

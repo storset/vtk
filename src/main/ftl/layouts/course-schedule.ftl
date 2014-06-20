@@ -137,7 +137,7 @@
        <#local hasNotStaffAndResources = !hasStaff && !hasResources />
        <#local hasNotResources = !hasResources />
        
-       <#local day><span>${dateStart?string("EEE")}</#local>
+       <#local day>${dateStart?string("EEE")?capitalize}</#local>
        <#local time><span>${dateStart?string("HH:mm")}-</span><span>${dateEnd?string("HH:mm")}</span></#local>
        <#local place><@getPlace session /></#local>
        <#local staff><@getStaff session /></#local>
@@ -149,7 +149,7 @@
          
        <#local tablesHtmlMiddle>
          <tr id="${sessionId}" class="${classes}"> 
-           <td class='course-schedule-table-date'><span class='responsive-header'>${vrtx.getMsg("course-schedule.table-date")}</span>${day?capitalize}. ${dateStart?string("d. MMM.")}</td>
+           <td class='course-schedule-table-date'><span class='responsive-header'>${vrtx.getMsg("course-schedule.table-date")}</span>${day?substring(0, 2)}. ${dateStart?string("d. MMM.")}</td>
            <td class='course-schedule-table-time'><span class='responsive-header'>${vrtx.getMsg("course-schedule.table-time")}</span>${time}</td>
            <td class='course-schedule-table-title'><span class='responsive-header'>${vrtx.getMsg("course-schedule.table-title")}</span>${title}</td>
            <@editLink "course-schedule-table-place" "<span class='responsive-header'>${placeHeader}</span>${place}" hasNotStaffAndResources canEdit />

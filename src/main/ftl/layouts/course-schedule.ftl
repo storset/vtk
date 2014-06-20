@@ -149,7 +149,7 @@
          
        <#local tablesHtmlMiddle>
          <tr id="${sessionId}" class="${classes}"> 
-           <td class='course-schedule-table-date'><span class='responsive-header'>${vrtx.getMsg("course-schedule.table-date")}</span>${day}. ${dateStart?string("d. MMM.")}</td>
+           <td class='course-schedule-table-date'><span class='responsive-header'>${vrtx.getMsg("course-schedule.table-date")}</span>${day?capitalize}. ${dateStart?string("d. MMM.")}</td>
            <td class='course-schedule-table-time'><span class='responsive-header'>${vrtx.getMsg("course-schedule.table-time")}</span>${time}</td>
            <td class='course-schedule-table-title'><span class='responsive-header'>${vrtx.getMsg("course-schedule.table-title")}</span>${title}</td>
            <@editLink "course-schedule-table-place" "<span class='responsive-header'>${placeHeader}</span>${place}" hasNotStaffAndResources canEdit />

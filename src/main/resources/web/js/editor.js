@@ -1474,10 +1474,25 @@ function courseSchedule() {
             var htmlMiddle = "";
             for(j = 0, len = htmlArr.length; j < len; j++) {
               htmlMiddle += htmlArr[j].accHtml;
-              var specialGroupCode = this.i18n[htmlArr[j].groupCode];
-              if(specialGroupCode && (!htmlArr[j+1] || specialGroupCode != this.i18n[htmlArr[j+1].groupCode])) {
-                html += vrtxEdit.htmlFacade.getAccordionInteraction("3", htmlArr[j].groupCode, type, specialGroupCode, "<div class='vrtx-grouped'>" + htmlMiddle + "</div>");
-                htmlMiddle = "";
+              
+              var grCode = htmlArr[j].groupCode;
+              if(grCode.indexOf("-") !== -1) {
+                grCode = grCode.split("-")[1];
+              }
+              var specialGroupCode = this.i18n[grCode];
+              if(specialGroupCode) {
+                var doSplit = !htmlArr[j+1];
+                if(!doSplit) {
+                  var grCodeNext = htmlArr[j+1].groupCode;
+                  if(grCodeNext.indexOf("-") !== -1) {
+                    grCodeNext = grCodeNext.split("-")[1];
+                  }
+                  doSplit = specialGroupCode != this.i18n[grCodeNext];
+                }
+                if(doSplit) {
+                  html += vrtxEdit.htmlFacade.getAccordionInteraction("3", grCode, type, specialGroupCode, "<div class='vrtx-grouped'>" + htmlMiddle + "</div>");
+                  htmlMiddle = "";
+                }
               }
             }
             if(htmlMiddle != "") {

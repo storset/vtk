@@ -1158,7 +1158,7 @@ function courseSchedule() {
   }
   url = baseUrl + "?action=course-schedule&mode=edit&t=" + (+new Date());
   // Debug: Local development
-  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   // Hide shortcut for saving working copy
   $("#vrtx-save-as-working-copy-shortcut, #saveWorkingCopyAction, #buttons-or-text").hide();
@@ -1361,20 +1361,21 @@ function courseSchedule() {
     var sequences = sessionData.sequences;
     var type = sessionData.type;
     var skipTier = sessionData.skipTier;
+    var dtShort = sessionData.dtShort;
     
     var descs = this.retrievedScheduleData[type].vrtxEditableDescription;
 
-    if(!this.sessionsLookup[skipTier ? "plenary" : id]) {
-      this.sessionsLookup[skipTier ? "plenary" : id] = {};
+    if(!this.sessionsLookup[skipTier ? dtShort : id]) {
+      this.sessionsLookup[skipTier ? dtShort : id] = {};
     }
     var sessionDateTime = this.getDateTime(session.dtStart, session.dtEnd);
-    var sessionHtml = this.getSessionHtml(id, session, sessionDateTime, sequences, descs, skipTier, vrtxEditor);    
+    var sessionHtml = this.getSessionHtml(id, session, dtShort, sessionDateTime, sequences, descs, skipTier, vrtxEditor);    
     
     this.lastElm = $(".properties"); 
-    this.lastId = skipTier ? "plenary" : id;
+    this.lastId = skipTier ? dtShort : id;
     this.lastSessionId = sessionId;
                                                     
-    return { id: id, skipTier: skipTier, html: sessionHtml.html, title: sessionHtml.title };
+    return { id: id, skipTier: skipTier, dtShort: dtShort, html: sessionHtml.html, title: sessionHtml.title };
   };
   this.getActivitiesForTypeHtml = function(type, skipTier) {
     if(!this.retrievedScheduleData[type]) return "";
@@ -1396,6 +1397,7 @@ function courseSchedule() {
     for(var i = 0; i < dataLen; i++) {
       var dt = data[i],
           dtShort = dt.teachingMethod.toLowerCase(),
+          dtLong = dt.teachingMethodName,
           id = dtShort + "-" + dt.id,
           idSplit = dt.id.split("-");
           if(idSplit.length === 4) {
@@ -1412,7 +1414,7 @@ function courseSchedule() {
             var groupNumber = 0;
           }
 
-      this.sessionsLookup[skipTier ? "plenary" : id] = {};
+      this.sessionsLookup[skipTier ? dtShort : id] = {};
       
       // Add together sessions from sequences
       for(var j = 0, len = dt.sequences.length; j < len; j++) {
@@ -1457,11 +1459,14 @@ function courseSchedule() {
         for(j = 0, len = map.length; j < len; j++) {
           var session = sessions[map[j].index];
           var sessionProcessed = sessionsProcessed[map[j].index];
-          var sessionHtml = this.getSessionHtml(id, session, sessionProcessed.dateTime, sequences, descs, skipTier, vrtxEdit);
+          var sessionHtml = this.getSessionHtml(id, session, dtShort, sessionProcessed.dateTime, sequences, descs, skipTier, vrtxEdit);
           sessionsHtml += vrtxEdit.htmlFacade.getAccordionInteraction(!skipTier ? "5" : "4", sessionHtml.sessionId, "session", sessionHtml.title, sessionHtml.html);
         }
-
-        if(!skipTier) {
+        
+        if(skipTier) {
+          this.sessionsLookup[dtShort].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
+          html += vrtxEdit.htmlFacade.getAccordionInteraction("3", dtShort, (type + " skip-tier"), dtLong, "");
+        } else {
           this.sessionsLookup[id].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
           htmlArr.push({ "groupCode": groupCode, "groupNr": groupNumber, "accHtml": vrtxEdit.htmlFacade.getAccordionInteraction("4", id, type, this.i18n.titles.groupNum + " " + groupNumber, "") });
           
@@ -1503,19 +1508,15 @@ function courseSchedule() {
             }
             htmlArr = [];
           }
-          sessionsHtml = "";
-          sessions = [];
         }
+        sessionsHtml = "";
+        sessions = [];
       }
-    }
-    if(skipTier) {
-      this.sessionsLookup["plenary"].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
-      html += vrtxEdit.htmlFacade.getAccordionInteraction("3", id, (type + " skip-tier"), dt.teachingMethodName, "");
     }
      
     return html;
   };
-  this.getSessionHtml = function(id, session, sessionDateTime, sequences, descs, skipTier, vrtxEdit) {
+  this.getSessionHtml = function(id, session, dtShort, sessionDateTime, sequences, descs, skipTier, vrtxEdit) {
     var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime),
         sessionId = id + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId,
         sequenceIdSplit = session.id.split("/");
@@ -1537,7 +1538,7 @@ function courseSchedule() {
                        (rooms ? (" - <span class='session-room'>" + (rooms[0].buildingAcronym || rooms[0].buildingId) + " " + rooms[0].roomId) + "</span>" : ""),
         sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, session, this.retrievedScheduleData.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
 
-     this.sessionsLookup[skipTier ? "plenary" : id][sessionId] = {
+     this.sessionsLookup[skipTier ? dtShort : id][sessionId] = {
        rawPtr: session,
        rawOrig: jQuery.extend(true, {}, session), // Copy object
        descsPtr: descs,
@@ -1633,7 +1634,7 @@ function courseSchedule() {
           var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime);
           var sessionId = id + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId;
           if(findSessionId === sessionId) {
-            return { id: id, session: session, sessionDateTime: sessionDateTime, sequences: sequences, type: type, skipTier: skipTier };
+            return { id: id, session: session, sessionDateTime: sessionDateTime, sequences: sequences, type: type, skipTier: skipTier, dtShort: dtShort };
           }
         }
       }
@@ -1847,7 +1848,7 @@ function courseSchedule() {
               .html(csRef.i18n.editOnlySessionTitle + "<a href='javascript:void(0)' class='vrtx-close-dialog-editor'></a>");
       editorProperties.prepend("<h4 class='property-label'>" + sessionOnly.title + "</h4>" + html);
       
-      csRef.enhanceSession(sessionOnly.skipTier ? "plenary" : sessionOnly.id, onlySessionId, editorProperties);
+      csRef.enhanceSession(sessionOnly.skipTier ? sessionOnly.dtShort : sessionOnly.id, onlySessionId, editorProperties);
       
       var editorSubmitButtons = vrtxEditor.editorForm.find(".submitButtons");
       var newButtonsHtml = "<input class='vrtx-focus-button vrtx-embedded-button' id='vrtx-embedded-save-button' type='submit' value='Lagre' />" +
@@ -1939,7 +1940,7 @@ function courseSchedule() {
           var contentWrp = $("#" + id).parent().find(".accordion-content");
           if(isTier1) { // Lookup and add sessions HTML to DOM
             if(!contentWrp.children().length) { // If not already added
-              contentWrp.html("<div class='vrtx-grouped'>" + csRef.sessionsLookup["plenary"].html + "</div>");
+              contentWrp.html("<div class='vrtx-grouped'>" + csRef.sessionsLookup[id].html + "</div>");
             }
           }
           var optsH4 = {
@@ -1953,7 +1954,7 @@ function courseSchedule() {
                   contentWrp.html("<div class='vrtx-grouped'>" + csRef.sessionsLookup[id].html + "</div>");
                 }
               }
-              accordionOnActivateTier2(isTier1 ? "plenary" : id, isTier1, e, ui, accordion);
+              accordionOnActivateTier2(id, isTier1, e, ui, accordion);
             },
             animationSpeed: 200
           };

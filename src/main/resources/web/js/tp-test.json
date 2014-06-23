@@ -843,6 +843,43 @@
           }]
         }]
       }]
+    }, {
+      "teachingMethod": "OBL",
+      "teachingMethodName": "Oblig",
+      "id": "1-4",
+      "sequences": [{
+        "id": "14H-EXPHIL03-1-1-1-4-1",
+        "seqNo": 1,
+        "sessions": [{
+          "id": "14H-EXPHIL03-1-1-1-4-1/47",
+          "dtStart": "2014-11-20T12:15:00.000+01:00",
+          "dtEnd": "2014-11-20T14:00:00.000+01:00",
+          "weekNr": 47,
+          "status": "active",
+          "title": "Ekstra forelesning",
+          "rooms": [{
+            "buildingId": "BL27",
+            "buildingName": "Georg Sverdrups hus",
+            "buildingAcronym": "GS",
+            "roomId": "1501",
+            "roomName": "Auditorium 1"
+          }]
+        }, {
+          "id": "14H-EXPHIL03-1-1-1-4-1/48",
+          "dtStart": "2014-11-27T12:15:00.000+01:00",
+          "dtEnd": "2014-11-27T14:00:00.000+01:00",
+          "weekNr": 48,
+          "status": "active",
+          "title": "Ekstra forelesning",
+          "rooms": [{
+            "buildingId": "BL27",
+            "buildingName": "Georg Sverdrups hus",
+            "buildingAcronym": "GS",
+            "roomId": "1501",
+            "roomName": "Auditorium 1"
+          }]
+        }]
+      }]
     }]
   },
   "group": {

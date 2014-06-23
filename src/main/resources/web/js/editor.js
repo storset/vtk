@@ -1515,8 +1515,15 @@ function courseSchedule() {
   this.getSessionHtml = function(id, session, sessionDateTime, sequences, descs, skipTier, vrtxEdit) {
     var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime),
         sessionId = id + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId,
-        sequenceId = session.id.replace(/\/[^\/]*$/, ""),
-        sessionOrphan = session.vrtxOrphan,
+        sequenceIdSplit = session.id.split("/");
+    if(sequenceIdSplit.length == 3) {
+      var sequenceId = sequenceIdSplit[1];
+    } else if(sequenceIdSplit == 2) {
+      var sequenceId = sequenceIdSplit[0];
+    } else {
+      var sequenceId = sequenceIdSplit[0] || session.id;
+    }
+    var sessionOrphan = session.vrtxOrphan,
         sessionCancelled = !session.vrtxOrphan && (session.vrtxStatus && session.vrtxStatus === "cancelled") || (session.status && session.status === "cancelled"),
         rooms = session.rooms,
         sessionTitle = "<span class='session-date'>" + sessionDatePostFixId.date + "</span>" +

@@ -1399,14 +1399,14 @@ function courseSchedule() {
           id = dtShort + "-" + dt.id,
           idSplit = dt.id.split("-");
           if(idSplit.length === 3) {
-            groupCode = idSplit[0] + "-" + idSplit[1];
-            groupNumber = parseInt(idSplit[2], 10);
+            var groupCode = idSplit[0] + "-" + idSplit[1];
+            var groupNumber = parseInt(idSplit[2], 10);
           } else if(idSplit.length === 2) {
-            groupCode = idSplit[0];
-            groupNumber = parseInt(idSplit[1], 10);
+            var groupCode = idSplit[0];
+            var groupNumber = parseInt(idSplit[1], 10);
           } else {
-            groupCode = idSplit[0] || dt.id;
-            groupNumber = 0;
+            var groupCode = idSplit[0] || dt.id;
+            var groupNumber = 0;
           }
 
       this.sessionsLookup[id] = {};

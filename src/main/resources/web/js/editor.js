@@ -1396,14 +1396,12 @@ function courseSchedule() {
     for(var i = 0; i < dataLen; i++) {
       var dt = data[i],
           dtShort = dt.teachingMethod.toLowerCase(),
-          id = skipTier ? type : dtShort + "-" + dt.id,
+          id = dtShort + "-" + dt.id,
           idSplit = dt.id.split("-"),
           groupCode = idSplit[0],
           groupNumber = parseInt(idSplit[1], 10);
       
-      if(!skipTier || (skipTier && (i === 0))) {
-        this.sessionsLookup[id] = {};
-      }
+      this.sessionsLookup[id] = {};
       
       // Add together sessions from sequences
       for(var j = 0, len = dt.sequences.length; j < len; j++) {
@@ -1415,7 +1413,7 @@ function courseSchedule() {
         sessions = sessions.concat(sequence.sessions);
       }
       
-      if(!skipTier || (skipTier && (i === (dataLen-1)))) {
+      if(!skipTier || (dtShort != "for" || (dtShort === "for" && (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== dtShort))) {
         // Evaluate and cache dateTime
         var map = [], sessionsProcessed = [];
         for(j = 0, len = sessions.length; j < len; j++) {
@@ -1585,7 +1583,7 @@ function courseSchedule() {
       for(var i = 0; i < dataLen; i++) {
         var dt = data[i];
         var dtShort = dt.teachingMethod.toLowerCase();
-        var id = skipTier ? type : dtShort + "-" + dt.id;
+        var id = dtShort + "-" + dt.id;
         var sessions = [];
         var sequences = {};
         for(var j = 0, len = dt.sequences.length; j < len; j++) {

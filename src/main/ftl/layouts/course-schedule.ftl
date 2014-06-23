@@ -128,12 +128,7 @@
        <#local dateStart = session.dtStart?replace("T", " ")?date("yyyy-MM-dd HH:mm:ss") />
        <#local dateEnd = session.dtEnd?replace("T", " ")?date("yyyy-MM-dd HH:mm:ss") />
        <#local isPassed = (now > dateEnd) />
-        
-       <#if skipTier>
-         <#local sessionId = type + "-" + session.id?replace("/", "-") + "-" + dateStart?string("dd-MM-yyyy-HH-mm") + "-" + dateEnd?string("HH-mm") />
-       <#else>
-         <#local sessionId = dtShort + "-" + id + "-" + session.id?replace("/", "-") + "-" + dateStart?string("dd-MM-yyyy-HH-mm") + "-" + dateEnd?string("HH-mm") />
-       </#if>
+       <#local sessionId = dtShort + "-" + id + "-" + session.id?replace("/", "-") + "-" + dateStart?string("dd-MM-yyyy-HH-mm") + "-" + dateEnd?string("HH-mm") />
         
        <#if session.vrtxTitle?exists>
          <#local title = session.vrtxTitle />

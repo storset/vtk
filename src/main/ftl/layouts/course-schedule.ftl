@@ -312,7 +312,14 @@
     <#local resources = session.vrtxResources />
   </#if>
 
-  <#local sequenceId = session.id?split("/")[0] />
+  <#local sequenceIdSplit = session.id?split("/") />
+  <#if (sequenceIdSplit?size == 2)>
+    <#local sequenceId = sequenceIdSplit[0] />
+  <#elseif (sequenceIdSplit?size == 3)>
+    <#local sequenceId = sequenceIdSplit[1] />
+  <#elseif (sequenceIdSplit?size == 1 || !sequenceIdSplit?size)>
+    <#local sequenceId = session.id />
+  </#if>
   <#if sequences[sequenceId]?exists>
     <#local resources = resources + sequences[sequenceId].resources />
     <#local resourcesList = arrToList(resources, true, sequences[sequenceId].folderUrl) />

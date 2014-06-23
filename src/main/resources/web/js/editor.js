@@ -1840,29 +1840,34 @@ function courseSchedule() {
     if(onlySessionId) {
       onlySessionId = decodeURIComponent(onlySessionId);
       var sessionOnly = csRef.getSessionOnlyHtml(onlySessionId);
-      if(!sessionOnly) html = "<p>" + csRef.i18n.noSessionData + "</p>";
-      var html = sessionOnly.html;
-      if(!html) html = "<p>" + csRef.i18n.noSessionData + "</p>";
+      var html = !sessionOnly ? "<p>" + csRef.i18n.noSessionData + "</p>" : sessionOnly.html;
 
       contents.find("#vrtx-editor-title-submit-buttons-inner-wrapper > h2")
               .html(csRef.i18n.editOnlySessionTitle + "<a href='javascript:void(0)' class='vrtx-close-dialog-editor'></a>");
-      editorProperties.prepend("<h4 class='property-label'>" + sessionOnly.title + "</h4>" + html);
-      
-      csRef.enhanceSession(sessionOnly.skipTier ? sessionOnly.dtShort : sessionOnly.id, onlySessionId, editorProperties);
       
       var editorSubmitButtons = vrtxEditor.editorForm.find(".submitButtons");
-      var newButtonsHtml = "<input class='vrtx-focus-button vrtx-embedded-button' id='vrtx-embedded-save-button' type='submit' value='Lagre' />" +
-                           "<input class='vrtx-button vrtx-embedded-button' id='vrtx-embedded-cancel-button' type='submit' value='Avbryt' />";
+      
+      if(sessionOnly) {
+        editorProperties.prepend("<h4 class='property-label'>" + sessionOnly.title + "</h4>" + html);
+        csRef.enhanceSession(sessionOnly.skipTier ? sessionOnly.dtShort : sessionOnly.id, onlySessionId, editorProperties);
+
+        var newButtonsHtml = "<input class='vrtx-focus-button vrtx-embedded-button' id='vrtx-embedded-save-button' type='submit' value='Lagre' />" +
+                             "<input class='vrtx-button vrtx-embedded-button' id='vrtx-embedded-cancel-button' type='submit' value='Avbryt' />";
+       
+        /* Save and unlock */
+        editorSubmitButtons.on("click", "#vrtx-embedded-save-button", function(e) {
+          editorSubmitButtons.find("#saveAndViewButton").trigger("click");
+          e.stopPropagation();
+          e.preventDefault();
+        });
+      } else {
+        editorProperties.prepend(html);
+        var newButtonsHtml = "<input class='vrtx-button vrtx-embedded-button' id='vrtx-embedded-cancel-button' type='submit' value='Avbryt' />";
+      }
+      
       editorSubmitButtons.prepend(newButtonsHtml);
       contents.find("#vrtx-editor-title-submit-buttons").show();
-      
-      /* Save and unlock */
-      editorSubmitButtons.on("click", "#vrtx-embedded-save-button", function(e) {
-        editorSubmitButtons.find("#saveAndViewButton").trigger("click");
-        e.stopPropagation();
-        e.preventDefault();
-      });
-      
+
       /* Cancel is unlock */
       editorSubmitButtons.on("click", "#vrtx-embedded-cancel-button", function(e) {
         var form = $("form[name='unlockForm']");

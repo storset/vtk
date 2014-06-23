@@ -1374,7 +1374,7 @@ function courseSchedule() {
     this.lastId = skipTier ? "plenary" : id;
     this.lastSessionId = sessionId;
                                                     
-    return { id: id, html: sessionHtml.html, title: sessionHtml.title };
+    return { id: id, skipTier: skipTier, html: sessionHtml.html, title: sessionHtml.title };
   };
   this.getActivitiesForTypeHtml = function(type, skipTier) {
     if(!this.retrievedScheduleData[type]) return "";
@@ -1837,7 +1837,7 @@ function courseSchedule() {
               .html(csRef.i18n.editOnlySessionTitle + "<a href='javascript:void(0)' class='vrtx-close-dialog-editor'></a>");
       editorProperties.prepend("<h4 class='property-label'>" + sessionOnly.title + "</h4>" + html);
       
-      csRef.enhanceSession(sessionOnly.id, onlySessionId, editorProperties);
+      csRef.enhanceSession(sessionOnly.skipTier ? "plenary" : sessionOnly.id, onlySessionId, editorProperties);
       
       var editorSubmitButtons = vrtxEditor.editorForm.find(".submitButtons");
       var newButtonsHtml = "<input class='vrtx-focus-button vrtx-embedded-button' id='vrtx-embedded-save-button' type='submit' value='Lagre' />" +

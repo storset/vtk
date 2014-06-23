@@ -1398,7 +1398,10 @@ function courseSchedule() {
           dtShort = dt.teachingMethod.toLowerCase(),
           id = dtShort + "-" + dt.id,
           idSplit = dt.id.split("-");
-          if(idSplit.length === 3) {
+          if(idSplit.length === 4) {
+            var groupCode = idSplit[0] + "-" + idSplit[1] + "-" + idSplit[2];
+            var groupNumber = parseInt(idSplit[3], 10);
+          } else if(idSplit.length === 3) {
             var groupCode = idSplit[0] + "-" + idSplit[1];
             var groupNumber = parseInt(idSplit[2], 10);
           } else if(idSplit.length === 2) {

@@ -164,7 +164,7 @@
        <#local resourcesHeader = vrtx.getMsg("course-schedule.table-resources") />
          
        <#local tablesHtmlMiddle>
-         <tr class="course-schedule-table-tr-header"><td><span class="tr-header-date">${date}</span><span class="tr-header-time">${time}</span></td></tr>
+         <tr class="course-schedule-table-tr-header accordion"><td><span class="tr-header-date">${date}</span><span class="tr-header-time">${time}</span></td></tr>
          <tr id="${sessionId}" class="${classes}"> 
            <td class='course-schedule-table-date'><span class='responsive-header'>${vrtx.getMsg("course-schedule.table-date")}</span>${date}</td>
            <td class='course-schedule-table-time'><span class='responsive-header'>${vrtx.getMsg("course-schedule.table-time")}</span>${time}</td>

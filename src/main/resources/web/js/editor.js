@@ -1364,14 +1364,14 @@ function courseSchedule() {
     
     var descs = this.retrievedScheduleData[type].vrtxEditableDescription;
 
-    if(!this.sessionsLookup[id]) {
-      this.sessionsLookup[id] = {};
+    if(!this.sessionsLookup[skipTier ? "plenary" : id]) {
+      this.sessionsLookup[skipTier ? "plenary" : id] = {};
     }
     var sessionDateTime = this.getDateTime(session.dtStart, session.dtEnd);
     var sessionHtml = this.getSessionHtml(id, session, sessionDateTime, sequences, descs, skipTier, vrtxEditor);    
     
     this.lastElm = $(".properties"); 
-    this.lastId = id;
+    this.lastId = skipTier ? "plenary" : id;
     this.lastSessionId = sessionId;
                                                     
     return { id: id, html: sessionHtml.html, title: sessionHtml.title };
@@ -1409,7 +1409,7 @@ function courseSchedule() {
             var groupNumber = 0;
           }
 
-      this.sessionsLookup[id] = {};
+      this.sessionsLookup[skipTier ? "plenary" : id] = {};
       
       // Add together sessions from sequences
       for(var j = 0, len = dt.sequences.length; j < len; j++) {
@@ -1506,7 +1506,7 @@ function courseSchedule() {
       }
     }
     if(skipTier) {
-      this.sessionsLookup[id].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
+      this.sessionsLookup["plenary"].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
       html += vrtxEdit.htmlFacade.getAccordionInteraction("3", id, (type + " skip-tier"), dt.teachingMethodName, "");
     }
      
@@ -1527,7 +1527,7 @@ function courseSchedule() {
                        (rooms ? (" - <span class='session-room'>" + (rooms[0].buildingAcronym || rooms[0].buildingId) + " " + rooms[0].roomId) + "</span>" : ""),
         sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, session, this.retrievedScheduleData.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
 
-     this.sessionsLookup[id][sessionId] = {
+     this.sessionsLookup[skipTier ? "plenary" : id][sessionId] = {
        rawPtr: session,
        rawOrig: jQuery.extend(true, {}, session), // Copy object
        descsPtr: descs,

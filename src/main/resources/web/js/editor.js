@@ -1397,7 +1397,7 @@ function courseSchedule() {
       var dt = data[i],
           dtShort = dt.teachingMethod.toLowerCase(),
           id = dtShort + "-" + dt.id,
-          idSplit = dt.id.split("-"),
+          idSplit = dt.id.split("-");
           if(idSplit.length === 3) {
             groupCode = idSplit[0] + "-" + idSplit[1];
             groupNumber = parseInt(idSplit[2], 10);

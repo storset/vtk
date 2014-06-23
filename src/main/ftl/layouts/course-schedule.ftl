@@ -19,19 +19,34 @@
 
 <#if result?has_content>
   <div id="activities">
-    <#assign plenaryHtml = generateType(result, "plenary") />
-    <#assign groupHtml = generateType(result, "group") />
-
-    <h2 class="course-schedule-toc-title accordion">${vrtx.getMsg("course-schedule.header-plenary")}</h2>
-    <div class="course-schedule-toc-content"><ul>${plenaryHtml.tocHtml}</ul></div>
-    <h2 class="course-schedule-toc-title accordion">${vrtx.getMsg("course-schedule.header-group")}</h2>
-    <div class="course-schedule-toc-content">${groupHtml.tocHtml}</div>
-
-    ${plenaryHtml.tablesHtml}
-    ${groupHtml.tablesHtml}
+    <#-- Generate HTML -->
+    <#if result.plenary?has_content>
+      <#assign plenaryHtml = generateType(result, "plenary") />
+    <#if>
+    <#if result.group?has_content>
+      <#assign groupHtml = generateType(result, "group") />
+    <#if>
+    
+    <#-- Display ToC -->
+    <#if plenaryHtml?exists>
+      <h2 class="course-schedule-toc-title accordion">${vrtx.getMsg("course-schedule.header-plenary")}</h2>
+      <div class="course-schedule-toc-content"><ul>${plenaryHtml.tocHtml}</ul></div>
+    </#if>
+    <#if groupHtml?exists>
+      <h2 class="course-schedule-toc-title accordion">${vrtx.getMsg("course-schedule.header-group")}</h2>
+      <div class="course-schedule-toc-content">${groupHtml.tocHtml}</div>
+    </#if>
+    
+    <#-- Display tables -->
+    <#if plenaryHtml?exists>
+      ${plenaryHtml.tablesHtml}
+    </#if>
+    <#if groupHtml?exists>
+      ${groupHtml.tablesHtml}
+    </#if>
   </div>
 <#else>
-  
+  <p>${vrtx.getMsg("course-schedule.no-data")}</p>
 </#if>
 
 <#function generateType result type>
@@ -326,7 +341,7 @@
   ${val}
   
   <#if valAfter != "">
-    <a href='javascript:void(0);' class='course-schedule-table-resources-after-toggle'>${vrtx.getMsg("course-schedule.showMore")}</a>
+    <a href='javascript:void(0);' class='course-schedule-table-resources-after-toggle'>${vrtx.getMsg("course-schedule.showMore")}...</a>
     <div class='course-schedule-table-resources-after'>${valAfter}</div>
   </#if>
 </#macro>

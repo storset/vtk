@@ -82,7 +82,7 @@
     <#local hasStaff = activity.hasStaff />
     <#local isFor = dtShort == "for" />
 
-    <#if isFor>
+    <#if skipTier>
       <#local activityId = dtShort />
     <#else>
       <#local activityId = dtShort + "-" + id />
@@ -218,9 +218,8 @@
        </#if>
        <#local tocHtmlMiddle = tocHtmlMiddle + "<span><a href='#" + activityId + "'>" + vrtx.getMsg("course-schedule.group-title") + " " + groupNumber + "</a>" + tocHtmlTime />
        
-       <#if !activity_has_next 
-          || (   activities[activity_index + 1].dtShort != dtShort
-              && activities[activity_index + 1].groupCodeSp != groupCodeSp)>
+       <#if (!activity_has_next || (   (activities[activity_index + 1].dtShort != dtShort && groupCodeSp == "")
+                                     || activities[activity_index + 1].groupCodeSp != groupCodeSp))>
           <#if groupCodeSp != "">
             <#local tocHtml = tocHtml + "<span class='display-as-h3'>" + vrtx.getMsg("course-schedule.special-group." + groupCodeSp?lower_case) + "</span>" />
           <#else>

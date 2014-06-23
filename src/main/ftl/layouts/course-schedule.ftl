@@ -54,6 +54,8 @@
   <#local skipTier = type == "plenary" />
   
   <#local sessions = [] />
+  
+  <#local now = .now?date />
   <#local isAllPassed = false />
   
   <#local tablesHtml = "" />
@@ -98,7 +100,7 @@
       
     <#local tablesHtmlStart>
     <div class="course-schedule-table-wrapper">
-      <table id="${activityId}" class="course-schedule-table uio-zebra hiding-passed<#if isAllPassed> all-passed</#if><#if hasResources> has-resources</#if><#if hasStaff> has-staff</#if>" >
+      <table id="${activityId}" class="course-schedule-table <#if isAllPassed> all-passed</#if><#if hasResources> has-resources</#if><#if hasStaff> has-staff</#if>" >
         <caption>${caption?html}</caption>
         <thead>
         <tr>
@@ -125,6 +127,7 @@
        <#local count = count + 1 />
        <#local dateStart = session.dtStart?replace("T", " ")?date("yyyy-MM-dd HH:mm:ss") />
        <#local dateEnd = session.dtEnd?replace("T", " ")?date("yyyy-MM-dd HH:mm:ss") />
+       <#local isPassed = (now > dateEnd) />
         
        <#if skipTier>
          <#local sessionId = type + "-" + session.id?replace("/", "-") + "-" + dateStart?string("dd-MM-yyyy-HH-mm") + "-" + dateEnd?string("HH-mm") />
@@ -147,6 +150,9 @@
          <#local classes = "even" />
        <#else>
          <#local classes = "odd" />
+       </#if>
+       <#if isPassed>
+         <#local classes = classes + " passed" />
        </#if>
         
        <#local hasNotStaffAndResources = !hasStaff && !hasResources />

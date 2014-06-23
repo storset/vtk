@@ -22,10 +22,10 @@
     <#-- Generate HTML -->
     <#if result.plenary?has_content>
       <#assign plenaryHtml = generateType(result, "plenary") />
-    <#if>
+    </#if>
     <#if result.group?has_content>
       <#assign groupHtml = generateType(result, "group") />
-    <#if>
+    </#if>
     
     <#-- Display ToC -->
     <#if plenaryHtml?exists>

@@ -14,7 +14,7 @@
   <#if media?exists>
     <#if streamType?exists>
 
-      <@mpLib.genPlaceholder "${media?html}" dateStr />
+      <@mpLib.genPlaceholder "${media?html}" dateStr false true />
       <@mpLib.initFlash '${media?url("UTF-8")}' dateStr true />
 
     <#elseif contentType?exists>
@@ -50,7 +50,7 @@
       <#elseif contentType == "application/x-shockwave-flash"
                            && extension == "swf">
     
-	    <@mpLib.genPlaceholder "${media?html}" dateStr />
+	    <@mpLib.genPlaceholder "${media?html}" dateStr false true />
 	    <@mpLib.initFlash '${media?url("UTF-8")}' dateStr false false true />
 
       <#elseif contentType == "video/x-flv"

@@ -73,7 +73,6 @@
   <#local groupCount = 0 />
   <#list activities as activity>
     <#local id = activity.id />
-    <#local title = activity.title />
     <#local groupNumber = activity.groupNumber />
     <#local dtShort = activity.dtShort />
     <#local dtLong = activity.dtLong />
@@ -83,14 +82,16 @@
 
     <#if skipTier>
       <#local activityId = dtShort />
+      <#local activityTitle = dtLong />
     <#else>
       <#local activityId = dtShort + "-" + id />
+      <#local activityTitle = activity.title />
     </#if>
       
     <#local tablesHtmlStart>
     <div class="course-schedule-table-wrapper">
       <table id="${activityId}" class="course-schedule-table <#if isAllPassed> all-passed</#if><#if hasResources> has-resources</#if><#if hasStaff> has-staff</#if>" >
-        <caption>${title?html}</caption>
+        <caption>${activityTitle?html}</caption>
         <thead>
         <tr>
           <th class="course-schedule-table-date">${vrtx.getMsg("course-schedule.table-date")}</th>

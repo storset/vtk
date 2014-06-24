@@ -57,7 +57,7 @@ import org.vortikal.security.SecurityContext;
  * when an exception is thrown during processing of a single resource.
  * <li><code>abortOnInterrupt</code> - whether to continue with job or
  * not when job thread is interrupted during execution.
- * <li><code>ignoreLockedResources</code> - control whether to ignore locked
+ * <li><code>skipLockedResources</code> - control whether to skip locked
  * resources or not. A warning will be logged if this option is
  * <code>true</code> and a selected resource is locked at the time of execution.
  * <li><code>executeWhenReadOnly</code> - controls whether to execute jobs when
@@ -70,7 +70,7 @@ public abstract class AbstractResourceJob extends RepositoryJob {
     private PathSelector pathSelector;
     private boolean abortOnException = true;
     private boolean abortOnInterrupt = true;
-    private boolean ignoreLockedResources = true;
+    private boolean skipLockedResources = true;
     private boolean executeWhenReadOnly = false;
     
     private final Log logger = LogFactory.getLog(AbstractResourceJob.class);
@@ -107,11 +107,11 @@ public abstract class AbstractResourceJob extends RepositoryJob {
                 
                 try {
                     Resource resource = repository.retrieve(token, path, false);
-                    if (resource.getLock() != null && !isIgnoreLockedResources()) {
-                        logger.warn("Job " + getId() + ": resource is currently locked and will be ignored: " + path);
+                    if (resource.getLock() != null && isSkipLockedResources()) {
+                        logger.warn("Job " + getId() + ": resource is currently locked and will be skipped: " + path);
                         return;
                     }
-                    
+
                     executeForResource(resource, ctx);
                     
                 } catch (ResourceNotFoundException rnfe) {
@@ -295,10 +295,10 @@ public abstract class AbstractResourceJob extends RepositoryJob {
     }
 
     /**
-     * @return the ignoreLockedResources
+     * @return <code>true</code> if locked resources should be skipped entirely.
      */
-    public boolean isIgnoreLockedResources() {
-        return ignoreLockedResources;
+    public boolean isSkipLockedResources() {
+        return skipLockedResources;
     }
 
     /**
@@ -310,10 +310,10 @@ public abstract class AbstractResourceJob extends RepositoryJob {
      * is invoked in the subclass. If such a guarantee is needed, then the
      * subclass implementing the job logic will need to do resource locking itself.
      * 
-     * @param ignoreLockedResources the ignoreLockedResources to set
+     * @param skipLockedResources the ignoreLockedResources to set
      */
-    public void setIgnoreLockedResources(boolean ignoreLockedResources) {
-        this.ignoreLockedResources = ignoreLockedResources;
+    public void setSkipLockedResources(boolean skipLockedResources) {
+        this.skipLockedResources = skipLockedResources;
     }
 
     /**
@@ -324,7 +324,8 @@ public abstract class AbstractResourceJob extends RepositoryJob {
     }
 
     /**
-     * @param executeWhenReadOnly the executeWhenReadOnly to set
+     * @param executeWhenReadOnly set if job should execute even when repository
+     * is in a read-only state.
      */
     public void setExecuteWhenReadOnly(boolean executeWhenReadOnly) {
         this.executeWhenReadOnly = executeWhenReadOnly;

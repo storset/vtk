@@ -50,7 +50,14 @@ public class SystemChangeContext implements StoreContext {
     private final Date time;
     private final List<PropertyTypeDefinition> affectedProperties;
     private final PropertyTypeDefinition systemJobStatusPropDef;
+    private final boolean ignoreLocking;
 
+    /**
+     * 
+     * @param jobName name/identifier of system job performing the store
+     * @param affectedProperties the properties which shall be affected by the store
+     * @param systemJobStatusPropDef the property definition for system job status
+     */
     public SystemChangeContext(String jobName,
                                List<PropertyTypeDefinition> affectedProperties,
                                PropertyTypeDefinition systemJobStatusPropDef) {
@@ -58,14 +65,54 @@ public class SystemChangeContext implements StoreContext {
         this.time = new Date();
         this.affectedProperties = Collections.unmodifiableList(affectedProperties);
         this.systemJobStatusPropDef = systemJobStatusPropDef;
+        this.ignoreLocking = false;
+    }
+    
+    /**
+     * @param jobName name/identifier of system job performing the store
+     * @param affectedProperties the properties which shall be affected by the
+     * store
+     * @param systemJobStatusPropDef the property definition for system job
+     * status
+     * @param ignoreLocking Flags if repository should ignore any resource lock
+     * when the store operation is executed.
+     */
+    public SystemChangeContext(String jobName,
+                               List<PropertyTypeDefinition> affectedProperties,
+                               PropertyTypeDefinition systemJobStatusPropDef,
+                               boolean ignoreLocking) {
+        this.jobName = jobName;
+        this.time = new Date();
+        this.affectedProperties = Collections.unmodifiableList(affectedProperties);
+        this.systemJobStatusPropDef = systemJobStatusPropDef;
+        this.ignoreLocking = ignoreLocking;
     }
 
+    /**
+     * 
+     * @return name of system job
+     */
     public String getJobName() {
         return jobName;
     }
 
+    /**
+     * 
+     * @return timestamp of system job
+     */
     public Date getTimestamp() {
         return time;
+    }
+    
+    /**
+     * Flags if repository should ignore lock checking when the store operation
+     * is executed. This will allow store on locked resources. Only enable if
+     * certain that the store operation cannot affect user-editable data.
+     *
+     * @return <code>true</code> if locking shall be ignored.
+     */
+    public boolean isIgnoreLocking() {
+        return ignoreLocking;
     }
 
     public String getTimestampFormatted() {

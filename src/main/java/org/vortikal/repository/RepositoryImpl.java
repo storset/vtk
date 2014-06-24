@@ -957,8 +957,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new ResourceNotFoundException(uri);
         }
 
-        checkLock(original, principal);
-
         // Check if specialized store context:
         // System change
         if (storeContext != null) {
@@ -976,6 +974,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         // Regular store
+        checkLock(original, principal);
+
         if (original.hasPublishDate()) {
             this.authorizationManager.authorizeReadWrite(uri, principal);
         } else {
@@ -1018,6 +1018,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         // Require root role for system change
         this.authorizationManager.authorizeRootRoleAction(principal);
 
+        // System change stores can choose to ignore resource locking
+        if (!context.isIgnoreLocking()) {
+            checkLock(original, principal);
+        }
+
         try {
             ResourceImpl originalClone = (ResourceImpl) original.clone();
 
@@ -1051,6 +1056,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
     private Resource storeInheritableProps(Path uri, Resource resource, ResourceImpl original, Principal principal,
             InheritablePropertiesStoreContext context) throws IOException {
+
+        // Lock checking is delegated to specialized store context handling methods
+        // so make sure we check it first.
+        checkLock(original, principal);
+        
         // Normal write privilege required
         if (original.hasPublishDate()) {
             this.authorizationManager.authorizeReadWrite(uri, principal);

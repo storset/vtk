@@ -1158,7 +1158,7 @@ function courseSchedule() {
   }
   url = baseUrl + "?action=course-schedule&mode=edit&t=" + (+new Date());
   // Debug: Local development
-  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   // Hide shortcut for saving working copy
   $("#vrtx-save-as-working-copy-shortcut, #saveWorkingCopyAction, #buttons-or-text").hide();
@@ -1400,11 +1400,8 @@ function courseSchedule() {
           dtLong = dt.teachingMethodName,
           id = dtShort + "-" + dt.id,
           idSplit = dt.id.split("-");
-          if(idSplit.length === 4) {
-            var groupCode = idSplit[0] + "-" + idSplit[1] + "-" + idSplit[2];
-            var groupNumber = parseInt(idSplit[3], 10);
-          } else if(idSplit.length === 3) {
-            var groupCode = idSplit[0] + "-" + idSplit[1];
+          if(idSplit.length === 3) {
+            var groupCode = idSplit[1];
             var groupNumber = parseInt(idSplit[2], 10);
           } else if(idSplit.length === 2) {
             var groupCode = idSplit[0];
@@ -1484,18 +1481,11 @@ function courseSchedule() {
               htmlMiddle += htmlArr[j].accHtml;
               
               var grCode = htmlArr[j].groupCode;
-              if(grCode.indexOf("-") !== -1) {
-                grCode = grCode.split("-")[1];
-              }
               var specialGroupCode = this.i18n[grCode];
               if(specialGroupCode) {
                 var doSplit = !htmlArr[j+1];
                 if(!doSplit) {
-                  var grCodeNext = htmlArr[j+1].groupCode;
-                  if(grCodeNext.indexOf("-") !== -1) {
-                    grCodeNext = grCodeNext.split("-")[1];
-                  }
-                  doSplit = specialGroupCode != this.i18n[grCodeNext];
+                  doSplit = specialGroupCode != this.i18n[htmlArr[j+1].groupCode];
                 }
                 if(doSplit) {
                   html += vrtxEdit.htmlFacade.getAccordionInteraction("3", grCode, type, specialGroupCode, "<div class='vrtx-grouped'>" + htmlMiddle + "</div>");

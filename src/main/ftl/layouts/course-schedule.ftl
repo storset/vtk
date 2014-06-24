@@ -73,8 +73,7 @@
   <#local groupCount = 0 />
   <#list activities as activity>
     <#local id = activity.id />
-    <#local groupCode = activity.groupCode />
-    <#local groupCodeSp = activity.groupCodeSp />
+    <#local title = activity.title />
     <#local groupNumber = activity.groupNumber />
     <#local dtShort = activity.dtShort />
     <#local dtLong = activity.dtLong />
@@ -87,21 +86,11 @@
     <#else>
       <#local activityId = dtShort + "-" + id />
     </#if>
-
-    <#if skipTier>
-      <#local caption = dtLong />
-    <#else>
-      <#if groupCodeSp != "">
-        <#local caption = vrtx.getMsg("course-schedule.special-group." + groupCodeSp?lower_case) + " - " + vrtx.getMsg("course-schedule.group-title")?lower_case + " " + groupNumber />
-      <#else>
-        <#local caption = dtLong + " - " + vrtx.getMsg("course-schedule.group-title")?lower_case + " " + groupNumber />
-      </#if>
-    </#if>
       
     <#local tablesHtmlStart>
     <div class="course-schedule-table-wrapper">
       <table id="${activityId}" class="course-schedule-table <#if isAllPassed> all-passed</#if><#if hasResources> has-resources</#if><#if hasStaff> has-staff</#if>" >
-        <caption>${caption?html}</caption>
+        <caption>${title?html}</caption>
         <thead>
         <tr>
           <th class="course-schedule-table-date">${vrtx.getMsg("course-schedule.table-date")}</th>
@@ -218,14 +207,8 @@
        </#if>
        <#local tocHtmlMiddle = tocHtmlMiddle + "<span><a href='#" + activityId + "'>" + vrtx.getMsg("course-schedule.group-title") + " " + groupNumber + "</a>" + tocHtmlTime />
        
-       <#if (!activity_has_next || (   (activities[activity_index + 1].dtShort != dtShort && groupCodeSp == "")
-                                     || activities[activity_index + 1].groupCodeSp != groupCodeSp))>
-          <#if groupCodeSp != "">
-            <#local tocHtml = tocHtml + "<span class='display-as-h3'>" + vrtx.getMsg("course-schedule.special-group." + groupCodeSp?lower_case) + "</span>" />
-          <#else>
-            <#local tocHtml = tocHtml + "<span class='display-as-h3'>" + dtLong + "</span>" />
-          </#if>
-          
+       <#if (!activity_has_next || activities[activity_index + 1].dtShort != dtShort))>
+          <#local tocHtml = tocHtml + "<span class='display-as-h3'>" + dtLong + "</span>" />
           <#local tocHtmlMiddleArr = tocHtmlMiddle?split("####") />
           <#local colOneCount = vrtx.getEvenlyColumnDistribution(tocHtmlMiddleArr?size, 1, 3) />
           <#local colTwoCount = vrtx.getEvenlyColumnDistribution(tocHtmlMiddleArr?size, 2, 3) />

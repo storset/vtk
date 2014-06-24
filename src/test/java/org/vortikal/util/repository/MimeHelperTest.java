@@ -47,9 +47,12 @@ public class MimeHelperTest {
         assertEquals("video/mp4", MimeHelper.map("video.mp4"));
         assertEquals("video/mp4", MimeHelper.map("foo/bar/video.mp4"));
         assertEquals("video/mp4", MimeHelper.map("http://foo.com/bar/video.mp4"));
-        assertEquals("application/octet-stream", MimeHelper.map("special.file.nonExistingExtension"));
-        assertEquals("application/octet-stream", MimeHelper.map("foo"));
-        assertEquals("application/octet-stream", MimeHelper.map("foo."));
+        assertEquals(MimeHelper.DEFAULT_MIME_TYPE, MimeHelper.map("special.file.nonExistingExtension"));
+        assertEquals(MimeHelper.DEFAULT_MIME_TYPE, MimeHelper.map("foo"));
+        assertEquals(MimeHelper.DEFAULT_MIME_TYPE, MimeHelper.map("foo."));
+        assertEquals(MimeHelper.DEFAULT_MIME_TYPE, MimeHelper.map("/"));
+        assertEquals(MimeHelper.DEFAULT_MIME_TYPE, MimeHelper.map("."));
+        assertEquals(MimeHelper.DEFAULT_MIME_TYPE, MimeHelper.map(""));
         assertEquals("text/plain", MimeHelper.map(".txt"));
     }
 
@@ -63,10 +66,24 @@ public class MimeHelperTest {
         assertEquals("mp3", MimeHelper.findExtension("/foo/bar/audio.mp3"));
         assertEquals("mp3", MimeHelper.findExtension("http://foo.com/bar/audio.mp3"));
         assertEquals("", MimeHelper.findExtension(""));
+        assertEquals("", MimeHelper.findExtension("/"));
         assertEquals("", MimeHelper.findExtension("."));
         assertEquals("", MimeHelper.findExtension("a"));
         assertEquals("", MimeHelper.findExtension("a."));
         assertEquals("b", MimeHelper.findExtension("a.b"));
+    }
+
+    @Test
+    public void unknownTypePrefixes() {
+        assertEquals(MimeHelper.DEFAULT_MIME_TYPE, MimeHelper.map("._"));
+        assertEquals(MimeHelper.DEFAULT_MIME_TYPE, MimeHelper.map("._video.mp4"));
+        assertEquals(MimeHelper.DEFAULT_MIME_TYPE, MimeHelper.map("/foo/bar/._video.mp4"));
+        assertEquals(MimeHelper.DEFAULT_MIME_TYPE, MimeHelper.map("/._video.mp4"));
+        assertEquals("video/mp4", MimeHelper.map("/video.mp4"));
+        assertEquals("video/mp4", MimeHelper.map("._/video.mp4"));
+        assertEquals("video/mp4", MimeHelper.map("/._/video.mp4"));
+        assertEquals("video/mp4", MimeHelper.map("/.video.mp4"));
+        assertEquals("video/mp4", MimeHelper.map("/video._.mp4"));
     }
 
 }

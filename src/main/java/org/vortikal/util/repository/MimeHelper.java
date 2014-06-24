@@ -36,11 +36,12 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.vortikal.util.text.TextUtils;
 
 
 /**
  * Utility class for guessing MIME types based on file
- * extensions. Reads its properties set from a class path resource
+ * names. Reads its properties set from a class path resource
  * specified by the system property
  * <code>org.vortikal.mime.properties.file</code>. The default path
  * (if not specified) is
@@ -52,9 +53,13 @@ import org.apache.commons.logging.LogFactory;
  * ...
  * extensionN = MIME type N
  * </pre>
+ * where extensions should not include the leading dot.
+ * 
+ * <p>There is also a special key used to list file name prefixes which shall always
+ * be guessed to {@link #DEFAULT_MIME_TYPE}: <code>unknownTypePrefixes</code>. Its
+ * value should be a comma-separated list.
  */
 public class MimeHelper {
-
 
     /**
      * The default MIME type, returned when no other mapping exists
@@ -64,7 +69,8 @@ public class MimeHelper {
     public static final String DEFAULT_MIME_TYPE = "application/octet-stream";
 
     private static Properties properties;
-
+    private static String[] unknownTypePrefixes;
+            
     static {
         load();
     }
@@ -72,14 +78,29 @@ public class MimeHelper {
     /**
      * Maps a file name to a MIME type based on its file extension.
      *
-     * @param fileName a file name (or path).
+     * @param file a file name (or path).
      * @return the MIME type, or {@link #DEFAULT_MIME_TYPE} if no
      * mapping exists for the file extension in question.
      */
-    public static String map(String fileName) {
+    public static String map(String file) {
+        String fileName = getFilename(file);
+        
+        if (hasUnknownTypePrefix(fileName)) {
+            return DEFAULT_MIME_TYPE;
+        }
+        
         String extension = findExtension(fileName);
 
         return properties.getProperty(extension, DEFAULT_MIME_TYPE);
+    }
+    
+    private static boolean hasUnknownTypePrefix(String fileName) {
+        for (String prefix: unknownTypePrefixes) {
+            if (fileName.startsWith(prefix)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -87,21 +108,30 @@ public class MimeHelper {
      * If file name has no extension part, then the empty string is returned.
      * Otherwise a lower cased file extension without the leading dot is returned.
      * 
-     * @param fileName the file name or file path
+     * @param file the file name or file path
      * @return lower cased file extension without leading dot, or empty string
      *     if no file extension was found.
      */
-    public static String findExtension(String fileName) {
-        if (fileName.indexOf(".") < 0) {
+    public static String findExtension(String file) {
+        if (file.indexOf(".") < 0) {
             return "";
         }
 
-        if (fileName.lastIndexOf(".") >= (fileName.length() - 1)) {
+        if (file.lastIndexOf(".") >= (file.length() - 1)) {
             return "";
         }
 
-        return fileName.substring(fileName.lastIndexOf(".") + 1,
-            fileName.length()).toLowerCase();
+        return file.substring(file.lastIndexOf(".") + 1,
+            file.length()).toLowerCase();
+    }
+    
+    private static String getFilename(String file) {
+        int idx = file.lastIndexOf('/');
+        if (idx != -1) {
+            return file.substring(idx+1);
+        }
+        
+        return file;
     }
 
     protected static void load() {
@@ -123,5 +153,14 @@ public class MimeHelper {
             logger.warn("Caught IOException while reading MIME " +
                 "properties file: '" + fileName + "'.", e);
         }
+        
+        String unknownTypePrefixConfig = properties.getProperty("unknownTypePrefixes");
+        if (unknownTypePrefixConfig != null) {
+            unknownTypePrefixes = TextUtils.parseCsv(unknownTypePrefixConfig,',', 
+                    TextUtils.DISCARD|TextUtils.TRIM);
+        } else {
+            unknownTypePrefixes = new String[0];
+        }
+        
     }
 }

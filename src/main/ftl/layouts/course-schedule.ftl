@@ -207,7 +207,7 @@
        </#if>
        <#local tocHtmlMiddle = tocHtmlMiddle + "<span><a href='#" + activityId + "'>" + vrtx.getMsg("course-schedule.group-title") + " " + groupNumber + "</a>" + tocHtmlTime />
        
-       <#if (!activity_has_next || activities[activity_index + 1].dtShort != dtShort))>
+       <#if (!activity_has_next || activities[activity_index + 1].dtShort != dtShort)>
           <#local tocHtml = tocHtml + "<span class='display-as-h3'>" + dtLong + "</span>" />
           <#local tocHtmlMiddleArr = tocHtmlMiddle?split("####") />
           <#local colOneCount = vrtx.getEvenlyColumnDistribution(tocHtmlMiddleArr?size, 1, 3) />

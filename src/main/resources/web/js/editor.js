@@ -1433,7 +1433,7 @@ function courseSchedule() {
         
         if(skipTier) {
           this.sessionsLookup[(dtShort != "for" ? id : dtShort)].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
-          html += vrtxEdit.htmlFacade.getAccordionInteraction("3", dtShort, (type + " skip-tier"), dtLong, "");
+          html += vrtxEdit.htmlFacade.getAccordionInteraction("3", (dtShort != "for" ? id : dtShort), (type + " skip-tier"), dtLong, "");
         } else {
           this.sessionsLookup[id].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
           htmlArr.push({ "groupCode": groupCode, "groupNr": groupNumber, "accHtml": vrtxEdit.htmlFacade.getAccordionInteraction("4", id, type, title, "") });

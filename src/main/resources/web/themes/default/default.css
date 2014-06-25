@@ -741,7 +741,7 @@ a:hover {
 }
 
 #resource-title.video,
-#resource-title.video-ref {
+#resource-title.videoref {
   background: transparent url(images/file-video.gif) no-repeat 0px 5px;
 }
 #resource-title.video.unpublished,

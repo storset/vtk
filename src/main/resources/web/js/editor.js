@@ -1344,8 +1344,8 @@ function courseSchedule() {
     
     var descs = this.retrievedScheduleData[type].vrtxEditableDescription;
 
-    if(!this.sessionsLookup[skipTier ? (skipTier ? (dtShort != "for" ? id : dtShort) : id) : id]) {
-      this.sessionsLookup[skipTier ? (skipTier ? (dtShort != "for" ? id : dtShort) : id) : id) : id) : id : id] = {};
+    if(!this.sessionsLookup[skipTier ? (skipTier ? (dtShort != "for" ? id : dtShort) : id]) {
+      this.sessionsLookup[skipTier ? (skipTier ? (dtShort != "for" ? id : dtShort) : id] = {};
     }
     var sessionDateTime = this.getDateTime(session.dtStart, session.dtEnd);
     var sessionHtml = this.getSessionHtml(id, session, dtShort, sessionDateTime, sequences, descs, skipTier, vrtxEditor);    
@@ -1432,7 +1432,7 @@ function courseSchedule() {
         }
         
         if(skipTier) {
-          this.sessionsLookup[(dtShort != "for" ? id : dtShort)].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
+          this.sessionsLookup[dtShort != "for" ? id : dtShort].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
           html += vrtxEdit.htmlFacade.getAccordionInteraction("3", (dtShort != "for" ? id : dtShort), (type + " skip-tier"), dtLong, "");
         } else {
           this.sessionsLookup[id].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;

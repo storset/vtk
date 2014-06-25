@@ -1,4 +1,4 @@
-/* Copyright (c) 2012, University of Oslo, Norway
+/* Copyright (c) 2014, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,34 +28,30 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository;
+package org.vortikal.util;
 
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
-import org.vortikal.repository.resourcetype.ValueFactoryImpl;
-import org.vortikal.repository.resourcetype.ValueFormatter;
-import org.vortikal.repository.resourcetype.PropertyType.Type;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * Utility methods used for setup of resources used across different tests
- */
-public final class RepositoryResourceSetUpHelper {
+public class ListPartitioner {
 
-    public static PropertyTypeDefinition getPropertyTypeDefinition(Namespace namespace, String name, Type type,
-            ValueFormatter valueFormatter) {
-        return getPropertyTypeDefinition(namespace, name, type, valueFormatter, false);
-    }
-
-    public static PropertyTypeDefinition getPropertyTypeDefinition(Namespace namespace, String name, Type type,
-            ValueFormatter valueFormatter, boolean multiple) {
-        PropertyTypeDefinitionImpl propDef = new PropertyTypeDefinitionImpl();
-        propDef.setValueFactory(new ValueFactoryImpl());
-        propDef.setValueFormatter(valueFormatter);
-        propDef.setType(type);
-        propDef.setNamespace(namespace);
-        propDef.setName(name);
-        propDef.setMultiple(multiple);
-        return propDef;
+    /**
+     * Partition a provided list into list of sublists, each sublist containing
+     * a maximum amount of elements defined by provided limit.
+     * 
+     * @param listToPartition
+     *            The list to partition
+     * @param limit
+     *            Maximum limit of each partitioned sublist
+     * @return List of all sublists created
+     */
+    public static final <T> List<List<T>> partition(final List<T> listToPartition, final int limit) {
+        List<List<T>> subLists = new ArrayList<List<T>>();
+        final int size = listToPartition.size();
+        for (int i = 0; i < size; i += limit) {
+            subLists.add(new ArrayList<T>(listToPartition.subList(i, Math.min(size, i + limit))));
+        }
+        return subLists;
     }
 
 }

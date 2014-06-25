@@ -231,6 +231,71 @@ h2 {
   overflow: hidden;
 }
 
+#editor-loading {
+  position: relative;
+  top: 0px;
+  left: 0px;
+  height: 100px;
+  width: 100%;
+  display: block;
+  background: transparent;
+}
+
+html.embedded #editor-loading {
+  height: 100%;
+}
+
+#editor-loading-inner {
+  background: transparent url(images/ajax-loader.gif) no-repeat center left;
+  display: block;
+  padding: 10px 5px 10px 42px;
+  font-size: 1.308em;
+  position: relative;
+  position: absolute;
+  top: 38%;
+  left: 38%;
+  color: #5e5e5e;
+}
+
+.vrtx-close-dialog-editor {
+  background: url("/vrtx/__vrtx/static-resources/themes/default/images/thickbox-close.png") no-repeat scroll center center transparent;
+  display: block;
+  width: 20px;
+  height: 20px;
+  float: right;
+  margin-top: 2px;
+}
+
+html.embedded .vrtx-close-dialog-editor {
+  margin-top: 5px;
+}
+
+html.embedded #vrtx-editor #app-content #editor {
+  padding-top: 15px;
+}
+
+html.embedded #vrtx-editor-title-submit-buttons h2 {
+  padding-bottom: 5px;
+}
+
+html.embedded #vrtx-editor-title-submit-buttons-inner-wrapper {
+  padding-top: 0;
+}
+
+html.embedded #vrtx-editor-title-submit-buttons .submitButtons,
+html.embedded .submitButtons > * {
+  display: none;
+}
+
+html.embedded .submitButtons .vrtx-embedded-button {
+  display: inline-block;
+}
+
+html.embedded-loading #vrtx-editor #app-content #editor {
+  padding-top: 0px;
+  background: none;
+}
+
 
 /*-----------------------------------------*\
 	2. Dimensions and explicit settings

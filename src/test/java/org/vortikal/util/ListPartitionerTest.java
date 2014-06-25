@@ -1,4 +1,4 @@
-/* Copyright (c) 2012, University of Oslo, Norway
+/* Copyright (c) 2014, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,34 +28,40 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository;
+package org.vortikal.util;
 
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
-import org.vortikal.repository.resourcetype.ValueFactoryImpl;
-import org.vortikal.repository.resourcetype.ValueFormatter;
-import org.vortikal.repository.resourcetype.PropertyType.Type;
+import static org.junit.Assert.assertTrue;
 
-/**
- * Utility methods used for setup of resources used across different tests
- */
-public final class RepositoryResourceSetUpHelper {
+import java.util.Arrays;
+import java.util.List;
 
-    public static PropertyTypeDefinition getPropertyTypeDefinition(Namespace namespace, String name, Type type,
-            ValueFormatter valueFormatter) {
-        return getPropertyTypeDefinition(namespace, name, type, valueFormatter, false);
-    }
+import org.junit.Test;
 
-    public static PropertyTypeDefinition getPropertyTypeDefinition(Namespace namespace, String name, Type type,
-            ValueFormatter valueFormatter, boolean multiple) {
-        PropertyTypeDefinitionImpl propDef = new PropertyTypeDefinitionImpl();
-        propDef.setValueFactory(new ValueFactoryImpl());
-        propDef.setValueFormatter(valueFormatter);
-        propDef.setType(type);
-        propDef.setNamespace(namespace);
-        propDef.setName(name);
-        propDef.setMultiple(multiple);
-        return propDef;
+public class ListPartitionerTest {
+
+    @Test
+    public void testSplit() {
+
+        List<String> stringList = Arrays.asList("a", "b", "c", "d", "e", "f", "g");
+        List<List<String>> partitionedStringList = ListPartitioner.partition(stringList, 2);
+
+        assertTrue(partitionedStringList.size() == 4);
+        assertTrue(partitionedStringList.get(0).equals(Arrays.asList("a", "b")));
+        assertTrue(partitionedStringList.get(3).equals(Arrays.asList("g")));
+
+        List<Integer> intList = Arrays.asList(1, 2, 3, 4, 5);
+        List<List<Integer>> partitionedIntList = ListPartitioner.partition(intList, 3);
+
+        assertTrue(partitionedIntList.size() == 2);
+        assertTrue(partitionedIntList.get(0).equals(Arrays.asList(1, 2, 3)));
+        assertTrue(partitionedIntList.get(1).equals(Arrays.asList(4, 5)));
+
+        List<Boolean> boolList = Arrays.asList(false, true, true, false);
+        List<List<Boolean>> partitionedBoolList = ListPartitioner.partition(boolList, 4);
+
+        assertTrue(partitionedBoolList.size() == 1);
+        assertTrue(partitionedBoolList.get(0).equals(boolList));
+
     }
 
 }

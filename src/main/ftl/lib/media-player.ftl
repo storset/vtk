@@ -59,7 +59,7 @@
 <#macro genPlayButtonCSS showPlayButton>
   <style type="text/css">
     .vrtx-media-player-print { display: none; }
-    <#if !showPlayButton>
+    <#if showPlayButton>
     .vrtx-media-player-no-flash, .vrtx-media-player-no-flash img { width: 507px; height: 282px; float: left; }
     .vrtx-media-player-no-flash { background-color: #000000; position: relative; }
     .vrtx-media-player-no-flash .playbutton { 

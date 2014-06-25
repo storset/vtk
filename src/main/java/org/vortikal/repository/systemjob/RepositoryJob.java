@@ -59,6 +59,7 @@ public abstract class RepositoryJob extends AbstractTask implements Initializing
     private ResourceTypeTree resourceTypeTree;
     private List<String> affectedPropDefPointers;
     private List<PropertyTypeDefinition> affectedProperties;
+    private boolean ignoreLockingOnStore = false;
     
     private final Log logger = LogFactory.getLog(getClass());
     
@@ -70,7 +71,8 @@ public abstract class RepositoryJob extends AbstractTask implements Initializing
             SecurityContext.setSecurityContext(this.securityContext);
             
             SystemChangeContext systemChangeContext =
-                    new SystemChangeContext(getId(), this.affectedProperties, this.systemJobStatusPropDef);
+                    new SystemChangeContext(getId(), this.affectedProperties, 
+                            this.systemJobStatusPropDef, this.ignoreLockingOnStore);
             
             executeWithRepository(this.repository, systemChangeContext);
         } catch (Throwable t) {
@@ -118,6 +120,18 @@ public abstract class RepositoryJob extends AbstractTask implements Initializing
 
     public void setAffectedPropDefPointers(List<String> affectedPropDefPointers) {
         this.affectedPropDefPointers = affectedPropDefPointers;
+    }
+    
+    /**
+     * Set whether the provided {@link SystemChangeContext} should have the
+     * {@link SystemChangeContext#ignoreLocking} flag set.
+     * 
+     * Defaults to <code>false</code>.
+     * 
+     * @param ignoreLockingOnStore 
+     */
+    public void setIgnoreLockingOnStore(boolean ignoreLockingOnStore) {
+        this.ignoreLockingOnStore = ignoreLockingOnStore;
     }
 
 }

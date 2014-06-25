@@ -51,6 +51,7 @@ import org.vortikal.util.mail.MailHelper;
 import org.vortikal.util.mail.MailTemplateProvider;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
+import org.vortikal.web.service.URL;
 
 public class ShareViaEmailController implements Controller {
     private String viewName;
@@ -65,8 +66,8 @@ public class ShareViaEmailController implements Controller {
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
-        Path uri = requestContext.getResourceURI();
-
+        Path uri = URL.toPath(request);
+        
         Resource resource = repository.retrieve(token, uri, true);
         if (resource == null) {
             return null;

@@ -82,6 +82,12 @@ var accordionGrouped = null;
 $(document).ready(function () {
   var vrtxEdit = vrtxEditor;
   vrtxEdit.editorForm = $("#editor");
+  
+  // Simple structured / embedded editor
+  $("#app-content").on("click", "#vrtx-simple-editor .vrtx-back a, .vrtx-close-dialog-editor", function(e) {
+    $("#vrtx-embedded-cancel-button, #cancel").click();
+    e.preventDefault();
+  });  
 
   if (!vrtxEdit.isInAdmin || !vrtxEdit.editorForm.length) {
     vrtxEdit.richtextEditorFacade.setupMultiple(false);
@@ -138,11 +144,11 @@ $(window).load(function () {
           ((typeof DATE_PICKER_INITIALIZED === "object") ? DATE_PICKER_INITIALIZED : nullDeferred),
           ((typeof IMAGE_EDITOR_INITIALIZED === "object") ? IMAGE_EDITOR_INITIALIZED : nullDeferred)).done(function () {
     vrtxAdm.log({ msg: "Editor initialized." });
-    storeInitPropValues(vrtxAdm.cachedContent);
+    storeInitPropValues($("#app-content > form, #contents"));
   });
 
   // CTRL+S save inside editors
-  if (typeof CKEDITOR !== "undefined" && vrtxEditor.editorForm.length) { // Don't add event if not regular editor
+  if (typeof CKEDITOR !== "undefined" && vrtxEditor.editorForm && vrtxEditor.editorForm.length) { // Don't add event if not regular editor
     vrtxEditor.richtextEditorFacade.setupCTRLS();
   }
 });
@@ -533,9 +539,9 @@ VrtxEditor.prototype.setupEditorHeight = function setupEditorHeight(c, opts) {
   return opts.isCompleteEditor ? ((c.isContent || c.isCourseGroup) ? 400 : (c.isSupervisorBox ? 130 : (c.isCourseDescriptionB ? 200 : 220)))
                                : (c.isMessage ? 250
                                               : (c.isCaption ? 55 
-                                                             : ((c.isStudyField || c.isScheduleComment || c.isAdditionalContent) ? 150 
-                                                                                                                                 : (c.isIntro ? 100 
-                                                                                                                                              : 90))))
+                                                             : ((c.isStudyField || c.isScheduleComment || c.isAdditionalContent || c.isResourcesText) ? 150 
+                                                                                                                                                      : (c.isIntro ? 100 
+                                                                                                                                                                   : 90))))
 };
 
 VrtxEditor.prototype.setupEditorMaxHeight = function setupEditorMaxHeight(c, opts) {
@@ -547,10 +553,10 @@ VrtxEditor.prototype.setupEditorToolbar = function setupEditorToolbar(c, opts) {
   return classification.isMain ? ((c.isCourseDescriptionB || c.isCourseGroup) ? tb.studyRefToolbar 
                                                                               : (c.isStudyContent ? tb.studyToolbar
                                                                                                   : tb.completeToolbar))
-                               : (c.isMessage ? tb.messageToolbar
-                                              : (c.isStudyField ? tb.studyToolbar 
-                                                                : ((c.isIntro || c.isCaption || c.isScheduleComment) ? tb.inlineToolbar
-                                                                                                                     : tb.withoutSubSuperToolbar)));
+                               : ((c.isMessage || c.isResourcesText) ? tb.messageToolbar
+                                                                     : (c.isStudyField ? tb.studyToolbar 
+                                                                                       : ((c.isIntro || c.isCaption || c.isScheduleComment) ? tb.inlineToolbar
+                                                                                                                                            : tb.withoutSubSuperToolbar)));
 };
 
 VrtxEditor.prototype.setupEditorResizable = function setupEditorResizable(c, opts) {
@@ -591,8 +597,8 @@ VrtxEditor.prototype.classifyEditorInstance = function classifyEditorInstance(op
                            vrtxEdit.contains(name, "resource.video-description") ||
                            vrtxEdit.contains(name, "resource.audio-description");
   classification.isCaption = vrtxEdit.contains(name, "caption");
-  classification.isMessage = vrtxEdit.contains(name, "message") ||
-                             vrtxEdit.contains(name, "vrtxResourcesText");
+  classification.isMessage = vrtxEdit.contains(name, "message");
+  classification.isResourcesText = vrtxEdit.contains(name, "vrtxResourcesText");
   classification.isSupervisorBox = vrtxEdit.contains("supervisor-box");
   
   // Studies
@@ -652,7 +658,7 @@ VrtxEditor.prototype.classifyEditorInstance = function classifyEditorInstance(op
 \*-------------------------------------------------------------------*/
 
 function storeInitPropValues(contents) {
-  if (!contents.length || vrtxEditor.editorForm.hasClass("vrtx-course-schedule")) return;
+  if (!contents.length || (vrtxEditor.editorForm && vrtxEditor.editorForm.hasClass("vrtx-course-schedule"))) return;
 
   var vrtxEdit = vrtxEditor;
 
@@ -688,7 +694,7 @@ function unsavedChangesInEditor() {
     return editorCourseSchedule.checkUnsavedChanges();
   }
   
-  var contents = vrtxAdmin.cachedContent;
+  var contents = $("#app-content > form, #contents");
 
   var currentStateOfInputFields = contents.find("input").not("[type=submit]").not("[type=button]")
                                                         .not("[type=checkbox]").not("[type=radio]"),
@@ -1144,36 +1150,42 @@ VrtxEditor.prototype.showHideSelect = function showHideSelect(select, init) {
 
 \*-------------------------------------------------------------------*/
 
-var onlySessionId = gup("sessionid", window.location.href);
 function courseSchedule() {
 
-  var url = location.protocol + "//" + location.host + location.pathname;
-  if(/\/$/.test(url)) {
-    url += "index.html";
+  var baseUrl = location.protocol + "//" + location.host + location.pathname;
+  if(/\/$/.test(baseUrl)) {
+    baseUrl += "index.html";
   }
-  url += "?action=course-schedule&mode=edit&t=" + (+new Date());
+  url = baseUrl + "?action=course-schedule&mode=edit&t=" + (+new Date());
   // Debug: Local development
   // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   // Hide shortcut for saving working copy
   $("#vrtx-save-as-working-copy-shortcut, #saveWorkingCopyAction, #buttons-or-text").hide();
-
+ 
   var allI18n = {
     "no": {
-      "01": "jan",
-      "02": "feb",
-      "03": "mar",
-      "04": "apr",
-      "05": "mai",
-      "06": "jun",
-      "07": "jul",
-      "08": "aug",
-      "09": "sept",
-      "10": "okt",
-      "11": "nov",
-      "12": "des",
+      "m01": "jan",
+      "m02": "feb",
+      "m03": "mar",
+      "m04": "apr",
+      "m05": "mai",
+      "m06": "jun",
+      "m07": "jul",
+      "m08": "aug",
+      "m09": "sep",
+      "m10": "okt",
+      "m11": "nov",
+      "m12": "des",
       
-      "room": "rom",
+      "d0": "Søndag",
+      "d1": "Mandag",
+      "d2": "Tirsdag",
+      "d3": "Onsdag",
+      "d4": "Torsdag",
+      "d5": "Fredag",
+      "d6": "Lørdag",
+      
       "titles": {
         "plenary": "Fellesundervisning",
         "group": "Partiundervisning",
@@ -1189,41 +1201,43 @@ function courseSchedule() {
       "cancelledVortexTooltip": "Aktiviteten kan avlyses i Vortex",
       "cancelledTPTooltip": "Aktiviteten er avlyst i timeplanleggingssystemet",
       "orphan": "SLETTET",
-      
-      "K": "Kliniske smågrupper",
-      "P": "PBL-grupper",
-      "S": "Sekundære smågrupper",
-      "KF": "Klinisk fellesundervisning",
-      "PF": "PBL-fellesundervisning",
-      "SF": "Sekundær fellesundervisning",
 
-      "vrtxTitle": "Tittel:",
-      "vrtxStaff": "Forelesere:",
-      "vrtxStaffExternal": "Eksterne forelesere:",
+      "vrtxTitle": "Tittel",
+      "vrtxStaff": "Forelesere",
+      "vrtxStaffExternal": "Eksterne forelesere",
       "vrtxStaffExternal-name": "Navn",
       "vrtxStaffExternal-url": "Lenke",
-      "vrtxResources": "Ressurser:",
+      "vrtxResources": "Ressurser",
       "vrtxResources-title": "Tittel",
       "vrtxResources-url": "Lenke",
-      "vrtxResourcesText": "Fritekst ressurser:",
-      "vrtxResourcesFixed": "Faste ressurser:",
+      "vrtxResourcesText": "Pensum",
+      "vrtxResourcesFixed": "Faste ressurser",
+      "vrtxResourcesFixedUploadAdminFolder": "Last opp flere / administrer",
+      "vrtxResourcesFixedCreateFolder": "Lag mappe",
       "vrtxStatus": "Avlys"
     },
     "nn": {
-      "01": "jan",
-      "02": "feb",
-      "03": "mar",
-      "04": "apr",
-      "05": "mai",
-      "06": "jun",
-      "07": "jul",
-      "08": "aug",
-      "09": "sept",
-      "10": "okt",
-      "11": "nov",
-      "12": "des",
+      "m01": "jan",
+      "m02": "feb",
+      "m03": "mar",
+      "m04": "apr",
+      "m05": "mai",
+      "m06": "jun",
+      "m07": "jul",
+      "m08": "aug",
+      "m09": "sep",
+      "m10": "okt",
+      "m11": "nov",
+      "m12": "des",
       
-      "room": "rom",
+      "d0": "Søndag",
+      "d1": "Mandag",
+      "d2": "Tirsdag",
+      "d3": "Onsdag",
+      "d4": "Torsdag",
+      "d5": "Fredag",
+      "d6": "Lørdag",
+      
       "titles": {
         "plenary": "Fellesundervisning",
         "group": "Partiundervisning",
@@ -1240,40 +1254,42 @@ function courseSchedule() {
       "cancelledTPTooltip": "Aktiviteten er avlyst i timeplanleggingssystemet",
       "orphan": "SLETTET",
       
-      "K": "Kliniske smågrupper",
-      "P": "PBL-grupper",
-      "S": "Sekundære smågrupper",
-      "KF": "Klinisk fellesundervisning",
-      "PF": "PBL-fellesundervisning",
-      "SF": "Sekundær fellesundervisning",
-      
-      "vrtxTitle": "Tittel:",
-      "vrtxStaff": "Forelesere:",
-      "vrtxStaffExternal": "Eksterne forelesere:",
+      "vrtxTitle": "Tittel",
+      "vrtxStaff": "Forelesere",
+      "vrtxStaffExternal": "Eksterne forelesere",
       "vrtxStaffExternal-name": "Namn",
       "vrtxStaffExternal-url": "Lenkje",
-      "vrtxResources": "Ressursar:",
+      "vrtxResources": "Ressursar",
       "vrtxResources-title": "Tittel",
       "vrtxResources-url": "Lenkje",
-      "vrtxResourcesText": "Fritekst ressursar:",
-      "vrtxResourcesFixed": "Faste ressursar:",
+      "vrtxResourcesText": "Pensum",
+      "vrtxResourcesFixed": "Faste ressursar",
+      "vrtxResourcesFixedUploadAdminFolder": "Last opp fleire / administrer",
+      "vrtxResourcesFixedCreateFolder": "Lag mappe",
       "vrtxStatus": "Avlys"
     },
     "en": {
-      "01": "jan",
-      "02": "feb",
-      "03": "mar",
-      "04": "apr",
-      "05": "may",
-      "06": "jun",
-      "07": "jul",
-      "08": "aug",
-      "09": "sept",
-      "10": "oct",
-      "11": "nov",
-      "12": "dec",
+      "m01": "Jan",
+      "m02": "Feb",
+      "m03": "Mar",
+      "m04": "Apr",
+      "m05": "May",
+      "m06": "Jun",
+      "m07": "Jul",
+      "m08": "Aug",
+      "m09": "Sep",
+      "m10": "Oct",
+      "m11": "Nov",
+      "m12": "Dec",
       
-      "room": "room",
+      "d0": "Sunday",
+      "d1": "Monday",
+      "d2": "Tuesday",
+      "d3": "Wednesday",
+      "d4": "Thursday",
+      "d5": "Friday",
+      "d6": "Saturday",
+      
       "titles": {
         "plenary": "Plenary teaching",
         "group": "Group teaching",
@@ -1290,23 +1306,18 @@ function courseSchedule() {
       "cancelledTPTooltip": "The activity is cancelled in the schedulling system",
       "orphan": "DELETED",
       
-      "K": "Clinical small groups",
-      "P": "PBL-groups",
-      "S": "Secondary small groups",
-      "KF": "Clinical plenary teaching",
-      "PF": "PBL plenary teaching",
-      "SF": "Secondary plenary teaching",
-      
-      "vrtxTitle": "Title:",
-      "vrtxStaff": "Staff:",
-      "vrtxStaffExternal": "External staff:",
+      "vrtxTitle": "Title",
+      "vrtxStaff": "Staff",
+      "vrtxStaffExternal": "External staff",
       "vrtxStaffExternal-name": "Name",
       "vrtxStaffExternal-url": "Link",
-      "vrtxResources": "Resources:",
+      "vrtxResources": "Resources",
       "vrtxResources-title": "Title",
       "vrtxResources-url": "Link",
-      "vrtxResourcesText": "Text resources:",
-      "vrtxResourcesFixed": "Fixed resources:",
+      "vrtxResourcesText": "Curriculum",
+      "vrtxResourcesFixed": "Fixed resources",
+      "vrtxResourcesFixedUploadAdminFolder": "Upload more / manage",
+      "vrtxResourcesFixedCreateFolder": "Create folder",
       "vrtxStatus": "Cancel"
     }
   };
@@ -1329,20 +1340,21 @@ function courseSchedule() {
     var sequences = sessionData.sequences;
     var type = sessionData.type;
     var skipTier = sessionData.skipTier;
+    var dtShort = sessionData.dtShort;
     
     var descs = this.retrievedScheduleData[type].vrtxEditableDescription;
 
-    if(!this.sessionsLookup[id]) {
-      this.sessionsLookup[id] = {};
+    if(!this.sessionsLookup[skipTier ? (dtShort != "for" ? id : dtShort) : id]) {
+      this.sessionsLookup[skipTier ? (dtShort != "for" ? id : dtShort) : id] = {};
     }
     var sessionDateTime = this.getDateTime(session.dtStart, session.dtEnd);
-    var sessionHtml = this.getSessionHtml(id, session, sessionDateTime, sequences, descs, skipTier, editorJSONToHtml);    
+    var sessionHtml = this.getSessionHtml(id, session, dtShort, sessionDateTime, sequences, descs, skipTier, vrtxEditor);    
     
     this.lastElm = $(".properties"); 
-    this.lastId = id;
+    this.lastId = skipTier ? dtShort : id;
     this.lastSessionId = sessionId;
                                                     
-    return { id: id, html: sessionHtml.html, title: sessionHtml.title };
+    return { id: id, skipTier: skipTier, dtShort: dtShort, html: sessionHtml.html, title: sessionHtml.title };
   };
   this.getActivitiesForTypeHtml = function(type, skipTier) {
     if(!this.retrievedScheduleData[type]) return "";
@@ -1354,8 +1366,7 @@ function courseSchedule() {
     if(!dataLen) return "";
     
     // Store sessions HTML and multiple descriptions in lookup object
-    var editorJSONToHtmlFunc = editorJSONToHtml,
-        vrtxEdit = vrtxEditor,
+    var vrtxEdit = vrtxEditor,
         html = "",
         htmlArr = [],
         sessions = [],
@@ -1365,48 +1376,49 @@ function courseSchedule() {
     for(var i = 0; i < dataLen; i++) {
       var dt = data[i],
           dtShort = dt.teachingMethod.toLowerCase(),
-          id = skipTier ? type : dtShort + "-" + dt.id,
-          idSplit = dt.id.split("-"),
-          groupCode = idSplit[0],
-          groupNumber = parseInt(idSplit[1], 10);
-      
-      if(!skipTier || (skipTier && (i === 0))) {
-        this.sessionsLookup[id] = {};
-      }
+          dtLong = dt.teachingMethodName,
+          id = dtShort + "-" + dt.id,
+          title = skipTier ? dtLong : (dt.title || dtLong),
+          groupCode = dtShort,
+          groupNumber = ((dt.party && dt.party.name) ? parseInt(dt.party.name, 10) : 0);
+
+      this.sessionsLookup[skipTier ? (dtShort != "for" ? id : dtShort) : id] = {};
       
       // Add together sessions from sequences
       for(var j = 0, len = dt.sequences.length; j < len; j++) {
         var sequence = dt.sequences[j];
         var fixedResources = sequence.vrtxResourcesFixed;
-        if(fixedResources && fixedResources.length) {
+        if(fixedResources) {
           sequences[sequence.id] = fixedResources;
         }
         sessions = sessions.concat(sequence.sessions);
       }
       
-      if(!skipTier || (skipTier && (i === (dataLen-1)))) {
+      if(!skipTier || (dtShort != "for" || (dtShort === "for" && (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== dtShort)))) {
         // Evaluate and cache dateTime
         var map = [], sessionsProcessed = [];
         for(j = 0, len = sessions.length; j < len; j++) {
           var session = sessions[j];
-          var dateTimeA = self.getDateTime(session.dtStart, session.dtEnd);
-          var startA = dateTimeA.start;
-          var endA = dateTimeA.end;
-          var a = startA.year + "" + startA.month + "" + startA.date + "" + startA.hh + "" + startA.mm + "" + endA.hh + "" + endA.mm;
+          
+          var dateTime = self.getDateTime(session.dtStart, session.dtEnd);
+          var start = dateTime.start;
+          var end = dateTime.end;
+          var startEndString = start.year + "" + start.month + "" + start.date + "" + start.hh + "" + start.mm + "" + end.hh + "" + end.mm;
+          
           map.push({
             "index": j, // Save index
-            "value": a,
-            "orphan": session.vrtxOrphan
+            "startEndString": startEndString,
+            "isOrphan": session.vrtxOrphan
           });
           sessionsProcessed.push({
-            "dateTime": dateTimeA
+            "dateTime": dateTime
           });
         }
         // Sort
         map.sort(function(a, b) {
-          var x = a.orphan, y = b.orphan;
+          var x = a.isOrphan, y = b.isOrphan;
           if(x === y) {
-            return a.value > b.value ? 1 : -1;
+            return a.startEndString > b.startEndString ? 1 : -1;
           }
           return !x && y ? -1 : x && !y ? 1 : 0;
         });
@@ -1415,13 +1427,16 @@ function courseSchedule() {
         for(j = 0, len = map.length; j < len; j++) {
           var session = sessions[map[j].index];
           var sessionProcessed = sessionsProcessed[map[j].index];
-          var sessionHtml = this.getSessionHtml(id, session, sessionProcessed.dateTime, sequences, descs, skipTier, editorJSONToHtmlFunc);
+          var sessionHtml = this.getSessionHtml(id, session, dtShort, sessionProcessed.dateTime, sequences, descs, skipTier, vrtxEdit);
           sessionsHtml += vrtxEdit.htmlFacade.getAccordionInteraction(!skipTier ? "5" : "4", sessionHtml.sessionId, "session", sessionHtml.title, sessionHtml.html);
         }
-
-        if(!skipTier) {
+        
+        if(skipTier) {
+          this.sessionsLookup[dtShort != "for" ? id : dtShort].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
+          html += vrtxEdit.htmlFacade.getAccordionInteraction("3", (dtShort != "for" ? id : dtShort), (type + " skip-tier"), dtLong, "");
+        } else {
           this.sessionsLookup[id].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
-          htmlArr.push({ "groupCode": groupCode, "groupNr": groupNumber, "accHtml": vrtxEdit.htmlFacade.getAccordionInteraction("4", id, type, this.i18n.titles.groupNum + " " + groupNumber, "") });
+          htmlArr.push({ "groupCode": groupCode, "groupNr": groupNumber, "accHtml": vrtxEdit.htmlFacade.getAccordionInteraction("4", id, type, title, "") });
           
           if(!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== dtShort) {
             // Sort group code and group number if equal
@@ -1435,53 +1450,53 @@ function courseSchedule() {
             var htmlMiddle = "";
             for(j = 0, len = htmlArr.length; j < len; j++) {
               htmlMiddle += htmlArr[j].accHtml;
-              var specialGroupCode = this.i18n[htmlArr[j].groupCode];
-              if(specialGroupCode && (!htmlArr[j+1] || specialGroupCode != this.i18n[htmlArr[j+1].groupCode])) {
-                html += vrtxEdit.htmlFacade.getAccordionInteraction("3", htmlArr[j].groupCode, type, specialGroupCode, "<div class='vrtx-grouped'>" + htmlMiddle + "</div>");
-                htmlMiddle = "";
-              }
             }
             if(htmlMiddle != "") {
-              html += vrtxEdit.htmlFacade.getAccordionInteraction("3", dtShort, type, dt.teachingMethodName, "<div class='vrtx-grouped'>" + htmlMiddle + "</div>");
+              html += vrtxEdit.htmlFacade.getAccordionInteraction("3", dtShort, type, dtLong, "<div class='vrtx-grouped'>" + htmlMiddle + "</div>");
             }
             htmlArr = [];
           }
-          sessionsHtml = "";
-          sessions = [];
         }
+        sessionsHtml = "";
+        sessions = [];
       }
-    }
-    if(skipTier) {
-      this.sessionsLookup[id].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
-      html += vrtxEdit.htmlFacade.getAccordionInteraction("3", id, (type + " skip-tier"), dt.teachingMethodName, "");
     }
      
     return html;
   };
-  this.getSessionHtml = function(id, session, sessionDateTime, sequences, descs, skipTier, editorJSONToHtmlFunc) {
+  this.getSessionHtml = function(id, session, dtShort, sessionDateTime, sequences, descs, skipTier, vrtxEdit) {
     var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime),
         sessionId = id + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId,
-        sequenceId = session.id.replace(/\/[^\/]*$/, ""),
-        sessionOrphan = session.vrtxOrphan,
+        sequenceIdSplit = session.id.split("/");
+    if(sequenceIdSplit.length == 3) {
+      var sequenceId = sequenceIdSplit[1];
+    } else if(sequenceIdSplit == 2) {
+      var sequenceId = sequenceIdSplit[0];
+    } else {
+      var sequenceId = sequenceIdSplit[0] || session.id;
+    }
+    var sessionOrphan = session.vrtxOrphan,
         sessionCancelled = !session.vrtxOrphan && (session.vrtxStatus && session.vrtxStatus === "cancelled") || (session.status && session.status === "cancelled"),
         rooms = session.rooms,
-        sessionTitle = sessionDatePostFixId.date + " " +
-                       "<span class='header-title'>" + (sessionCancelled ? "<span class='header-status'>" + this.i18n.cancelled + "</span> - " : "") + 
+        sessionTitle = "<span class='session-date'>" + sessionDatePostFixId.date + "</span>" +
+                       "<span class='session-title' data-orig='" + encodeURI(session.title || session.id) + "'>" + 
                        (sessionOrphan ? "<span class='header-status'>" + this.i18n.orphan + "</span> - " : "") +
-                       (session.vrtxTitle || session.title || session.id) + "</span>" +
-                       (rooms ? (" - " + (rooms[0].buildingAcronym || rooms[0].buildingId) + " " + this.i18n.room + " " + rooms[0].roomId) : ""),
-        sessionContent = editorJSONToHtmlFunc(id, sessionId, session, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
+                       (sessionCancelled ? "<span class='header-status'>" + this.i18n.cancelled + "</span> - " : "") +
+                       "<span class='header-title'>" + (session.vrtxTitle || session.title || session.id) + "</span></span>" +
+                       (rooms ? (" - <span class='session-room'>" + (rooms[0].buildingAcronym || rooms[0].buildingId) + " " + rooms[0].roomId) + "</span>" : ""),
+        sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, session, this.retrievedScheduleData.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
 
-     this.sessionsLookup[id][sessionId] = {
-       isEnhanced: false,
-       isCancelled: sessionCancelled,
-       isOrphan: sessionOrphan,
-       hasChanges: false,
+     this.sessionsLookup[skipTier ? (dtShort != "for" ? id : dtShort) : id][sessionId] = {
+       rawPtr: session,
+       rawOrig: jQuery.extend(true, {}, session), // Copy object
+       descsPtr: descs,
        multiples: sessionContent.multiples,
        rtEditors: sessionContent.rtEditors,
-       rawPtr: session,
-       descsPtr: descs,
-       rawOrig: jQuery.extend(true, {}, session) // Copy object
+       sequenceId: sequenceId,
+       isCancelled: sessionCancelled,
+       isOrphan: sessionOrphan,
+       isEnhanced: false,
+       hasChanges: false
      };
      
      return { sessionId: sessionId, html: sessionContent.html, title: sessionTitle };
@@ -1496,21 +1511,12 @@ function courseSchedule() {
         loader.text(msg + "...");
       } else {
         loader.parent().remove();
+        if(onlySessionId) {
+          $("html").removeClass("embedded-loading");
+          $("#editor").css("height", "auto");
+        }
       }
     }
-  };
-  this.getDateAndPostFixId = function(dateTime) {
-    var start = dateTime.start;
-    var end = dateTime.end;
-    var strDate = start.date + ". " + this.i18n[start.month] + " " + start.year + " - kl " +
-                  start.hh + ":" + start.mm + "&ndash;" + end.hh + ":" + end.mm;
-    var postFixId = start.date + "-" + start.month + "-" + start.year + "-" + start.hh + "-" + start.mm + "-" + end.hh + "-" + end.mm;
-    return { date: strDate, postFixId: postFixId };
-  };
-  this.getDateTime = function(s, e) {
-    var startDateTime = this.parseDate(s);
-    var endDateTime = this.parseDate(e);
-    return { start: startDateTime, end: endDateTime };
   };
   this.parseDate = function(dateString) {
     // Old
@@ -1518,7 +1524,35 @@ function courseSchedule() {
             // 2014     - 08       - 18       T12        : 15       :00         .000         +    02       :00
     var m = /^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})\.([0-9]{3})([+-])([0-9]{2}):([0-9]{2})$/.exec(dateString);
     return { year: m[1], month: m[2], date: m[3], hh: m[4], mm: m[5], tzhh: m[9], tzmm: m[10] };
-  }
+  };
+  this.getDateTime = function(s, e) {
+    var startDateTime = this.parseDate(s);
+    var endDateTime = this.parseDate(e);
+    return { start: startDateTime, end: endDateTime };
+  };
+  this.getDate = function(year, month, date, hh, mm, tzpm, tzhh, tzmm) {
+    var date = new Date(year, month, date, hh, mm, 0, 0);
+    
+    var clientTimeZoneOffset = date.getTimezoneOffset();
+    var serverTimeZoneOffset = (tzhh * 60) + tzmm;
+    if(tzpm === "+") serverTimeZoneOffset = -serverTimeZoneOffset;
+    
+    if(clientTimeZoneOffset === serverTimeZoneOffset) return date; // Same offset in same date
+    
+    // Timezone correction offset for local time
+    var offset = clientTimeZoneOffset > serverTimeZoneOffset ? clientTimeZoneOffset - serverTimeZoneOffset 
+                                                             : serverTimeZoneOffset - clientTimeZoneOffset;
+    return new Date(date.getTime() + offset);
+  };
+  this.getDateAndPostFixId = function(dateTime) {
+    var start = dateTime.start;
+    var end = dateTime.end;
+    var endDate = this.getDate(end.year, parseInt(end.month, 10) - 1, parseInt(end.date, 10), parseInt(end.hh, 10), parseInt(end.mm, 10), end.tzpm, parseInt(end.tzhh, 10), parseInt(end.tzmm, 10));
+    var endDay = this.i18n["d" + endDate.getDay()];
+    var strDate = endDay.substring(0,2) + ". " + parseInt(start.date, 10) + ". " + this.i18n["m" + start.month] + ". - " + start.hh + ":" + start.mm + "-" + end.hh + ":" + end.mm;
+    var postFixId = start.date + "-" + start.month + "-" + start.year + "-" + start.hh + "-" + start.mm + "-" + end.hh + "-" + end.mm;
+    return { date: strDate, postFixId: postFixId };
+  };
   this.getSessionJSONFromId = function(findSessionId) {
     for(var type in this.retrievedScheduleData) {
       if(!this.retrievedScheduleData[type]) continue;
@@ -1531,13 +1565,13 @@ function courseSchedule() {
       for(var i = 0; i < dataLen; i++) {
         var dt = data[i];
         var dtShort = dt.teachingMethod.toLowerCase();
-        var id = skipTier ? type : dtShort + "-" + dt.id;
+        var id = dtShort + "-" + dt.id;
         var sessions = [];
         var sequences = {};
         for(var j = 0, len = dt.sequences.length; j < len; j++) {
           var sequence = dt.sequences[j];
           var fixedResources = sequence.vrtxResourcesFixed;
-          if(fixedResources && fixedResources.length) {
+          if(fixedResources) {
             sequences[sequence.id] = fixedResources;
           }
           sessions = sessions.concat(sequence.sessions);
@@ -1547,9 +1581,8 @@ function courseSchedule() {
           var sessionDateTime = this.getDateTime(session.dtStart, session.dtEnd);
           var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime);
           var sessionId = id + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId;
-          
           if(findSessionId === sessionId) {
-            return { id: id, session: session, sessionDateTime: sessionDateTime, sequences: sequences, type: type, skipTier: skipTier };
+            return { id: id, session: session, sessionDateTime: sessionDateTime, sequences: sequences, type: type, skipTier: skipTier, dtShort: dtShort };
           }
         }
       }
@@ -1603,7 +1636,7 @@ function courseSchedule() {
     var rawPtr = sessionLookup.rawPtr;
     var descsPtr = sessionLookup.descsPtr;
     
-    editorHtmlToJSON(sessionElms, descsPtr, rawOrig, rawPtr);
+    vrtxEditor.htmlFacade.htmlToJson(sessionElms, descsPtr, rawOrig, rawPtr);
 
     sessionLookup.hasChanges = editorDetectChange(rawPtr, rawOrig);
   };
@@ -1621,7 +1654,7 @@ function courseSchedule() {
   };
   this.sessionOnlyWindowClose = function() {
     if(onlySessionId) {
-      window.close();
+      location.href = $("#global-menu-leave-admin a").attr("href");
     }
   };
 
@@ -1648,16 +1681,92 @@ function courseSchedule() {
   }, false);
   
   // Create/admin fixed resource folders
-  $("#contents").on("click", ".create-fixed-resources-folder", function(e) {
-    alert("TODO Create");
+  contents.on("click", ".create-fixed-resources-folder", function(e) {
+    var linkElm = $(this);
+    var sessionId = linkElm[0].id.split("create-fixed-resources-folder-")[1];
+    var id = sessionId.split("SID")[0];
+    sessionId = sessionId.split("SID")[1];
+    var session = cs.sessionsLookup[id][sessionId];
+    
+    var sessionDisciplines = session.rawPtr.discipline;
+    var sessionTitle = session.rawPtr.vrtxTitle || session.rawPtr.title;
+    var sequenceId = session.sequenceId;
+    
+    var collectionTitle = (sessionDisciplines ? sessionDisciplines.join(", ") + " - " : "") + sessionTitle + " - " + sequenceId;
+    var collectionName = replaceInvalidChar((sessionDisciplines ? sessionDisciplines.join("-") + "-" : "") + sessionTitle + "-" + sequenceId, false);
+    
+    var collectionBaseUrl = cs.retrievedScheduleData.vrtxResourcesFixedUrl;
+    if(!/\/$/.test(collectionBaseUrl)) { // Add last '/' if missing
+      collectionBaseUrl += "/";
+    }
+    var collectionUrl = collectionBaseUrl + collectionName;
+    
+    // Create fixed resources folder
+    vrtxAdmin.serverFacade.getHtml(baseUrl + "?vrtx=admin&service=create-collection-with-properties", {
+      success: function (results, status, resp) {
+        var form = $($.parseHTML(results)).find("#create-collection-form");
+        var csrf = form.find("input[name='csrf-prevention-token']").val();
+        var dataString = "uri=" + encodeURIComponent(collectionUrl) +
+                         "&type=fixed-resources-collection" +
+                         "&propertyNamespace%5B%5D=" +
+                         "&propertyName%5B%5D=userTitle" +
+                         "&propertyValue%5B%5D=" + encodeURIComponent(collectionTitle) +
+                         "&propertyNamespace%5B%5D=" + encodeURIComponent("http://www.uio.no/resource-types/fixed-resources-collection") +
+                         "&propertyName%5B%5D=fixed-resources-codes" +
+                         "&propertyValue%5B%5D=" + encodeURIComponent(sequenceId);
+        if(sessionDisciplines) {
+          for(var i = 0, len = sessionDisciplines.length; i < len; i++) {
+            dataString += "&propertyNamespace%5B%5D=" +
+                          "&propertyName%5B%5D=tags" +
+                          "&propertyValue%5B%5D=" + encodeURIComponent(sessionDisciplines[i]);
+          }
+        }
+        dataString += "&csrf-prevention-token=" + csrf;
+        vrtxAdmin.serverFacade.postHtml(form.attr("action"), dataString, {
+          success: function (results, status, resp) {
+            linkElm.hide();
+            $("<a class='vrtx-button admin-fixed-resources-folder' href='" + collectionUrl + "?vrtx=admin&displaymsg=yes'>" + cs.i18n["vrtxResourcesFixedUploadAdminFolder"] + "</a>").insertAfter(linkElm);
+            var fixedResourcesWindow = openPopup(collectionUrl + "?vrtx=admin&displaymsg=yes", 1000, 600, "adminFixedResources");
+          },
+          error: function (xhr, textStatus, errMsg) {
+            if(xhr.status === 500) { // XXX: assumption that already created, as it can take time before folder created is coming through
+              linkElm.hide();
+              $("<a class='vrtx-button admin-fixed-resources-folder' href='" + collectionUrl + "?vrtx=admin&displaymsg=yes'>" + cs.i18n["vrtxResourcesFixedUploadAdminFolder"] + "</a>").insertAfter(linkElm);
+            }
+            $("body").scrollTo(0, 200, { easing: 'swing', queue: true, axis: 'y' });
+          }
+        });
+      }
+    });
     e.preventDefault();
     e.stopPropagation();
   });
-  $("#contents").on("click", ".admin-fixed-resources-folder", function(e) {
+  contents.on("click", ".admin-fixed-resources-folder", function(e) {
     var fixedResourcesWindow = openPopup(this.href, 1000, 600, "adminFixedResources");
     e.preventDefault();
     e.stopPropagation();
   });
+  
+  // Instant feedback on title and status change
+  contents.on("click", "input[name='vrtxStatus']", function(e) {
+    var cancelledElm = $(this);
+    var content = cancelledElm.closest(onlySessionId ? ".properties" : ".accordion-wrapper");
+    var titleElm = content.find(onlySessionId ? ".property-label > .session-title" : "> .header > .session-title");
+    var newTitle = content.find("input[name='vrtxTitle']");
+    var hasNewTitle = newTitle.length && newTitle.val() != "";
+    var origTitle = decodeURI(titleElm.attr("data-orig"));
+    titleElm.html((cancelledElm[0].checked ? "<span class='header-status'>" + cs.i18n.cancelled + "</span> - " : "") +
+                  "<span class='header-title'>" + (hasNewTitle ? newTitle.val() : origTitle) + "</span>");
+    e.stopPropagation();
+  });
+  contents.on("keyup", "input[name='vrtxTitle']", $.debounce(50, true, function () {
+    var content = $(this).closest(onlySessionId ? ".properties" : ".accordion-wrapper");
+    var titleElm = content.find(onlySessionId ? ".property-label > .session-title" : "> .header > .session-title");
+    var newTitle = content.find("input[name='vrtxTitle']");
+    var hasNewTitle = newTitle.length && newTitle.val() != "";
+    var origTitle = decodeURI(titleElm.attr("data-orig"));
+    titleElm.find(".header-title").html(hasNewTitle ? newTitle.val() : origTitle);
+  }));
   
   var editorProperties = vrtxEditor.editorForm.find(".properties");
   editorProperties.hide();
@@ -1677,29 +1786,36 @@ function courseSchedule() {
     $(".vrtx-json").remove();
 
     if(onlySessionId) {
+      onlySessionId = decodeURIComponent(onlySessionId);
       var sessionOnly = csRef.getSessionOnlyHtml(onlySessionId);
-      var html = sessionOnly.html;
-      if(!html) html = "<p>" + csRef.i18n.noSessionData + "</p>";
+      var html = !sessionOnly ? "<p>" + csRef.i18n.noSessionData + "</p>" : sessionOnly.html;
 
       contents.find("#vrtx-editor-title-submit-buttons-inner-wrapper > h2")
-              .text(csRef.i18n.editOnlySessionTitle);
-      editorProperties.prepend("<h4 class='property-label'>" + sessionOnly.title + "</h4>" + html);
-      
-      csRef.enhanceSession(sessionOnly.id, onlySessionId, editorProperties);
+              .html(csRef.i18n.editOnlySessionTitle + "<a href='javascript:void(0)' class='vrtx-close-dialog-editor'></a>");
       
       var editorSubmitButtons = vrtxEditor.editorForm.find(".submitButtons");
-      var newButtonsHtml = "<input class='vrtx-focus-button vrtx-embedded-button' id='vrtx-embedded-save-button' type='submit' value='Lagre' />" +
-                           "<input class='vrtx-button vrtx-embedded-button' id='vrtx-embedded-cancel-button' type='submit' value='Avbryt' />";
+      
+      if(sessionOnly) {
+        editorProperties.prepend("<h4 class='property-label'>" + sessionOnly.title + "</h4>" + html);
+        csRef.enhanceSession(sessionOnly.skipTier ? sessionOnly.dtShort : sessionOnly.id, onlySessionId, editorProperties);
+
+        var newButtonsHtml = "<input class='vrtx-focus-button vrtx-embedded-button' id='vrtx-embedded-save-button' type='submit' value='Lagre' />" +
+                             "<input class='vrtx-button vrtx-embedded-button' id='vrtx-embedded-cancel-button' type='submit' value='Avbryt' />";
+       
+        /* Save and unlock */
+        editorSubmitButtons.on("click", "#vrtx-embedded-save-button", function(e) {
+          editorSubmitButtons.find("#saveAndViewButton").trigger("click");
+          e.stopPropagation();
+          e.preventDefault();
+        });
+      } else {
+        editorProperties.prepend(html);
+        var newButtonsHtml = "<input class='vrtx-button vrtx-embedded-button' id='vrtx-embedded-cancel-button' type='submit' value='Avbryt' />";
+      }
+      
       editorSubmitButtons.prepend(newButtonsHtml);
       contents.find("#vrtx-editor-title-submit-buttons").show();
-      
-      /* Save and unlock */
-      editorSubmitButtons.on("click", "#vrtx-embedded-save-button", function(e) {
-        editorSubmitButtons.find("#saveAndViewButton").trigger("click");
-        e.stopPropagation();
-        e.preventDefault();
-      });
-      
+
       /* Cancel is unlock */
       editorSubmitButtons.on("click", "#vrtx-embedded-cancel-button", function(e) {
         var form = $("form[name='unlockForm']");
@@ -1745,29 +1861,6 @@ function courseSchedule() {
           csRef.lastElm = null;
         
           csRef.saveSession(content, id, sessionId);
-          
-          // Update title
-          var session = csRef.sessionsLookup[id][sessionId];
-          var titleElm = sessionElm.find("> .header > .header-title");
-          var newTitle = content.find("> div:first-child input[type='text']");
-          
-          var status = null;
-          if(session.isOrphan) {
-            status = csRef.i18n.orphan;
-          } else {
-            var cancelledElm = content.find("input[name='vrtxStatus']");
-            if(cancelledElm.length) {
-              session.isCancelled = cancelledElm[0].checked;
-            }
-            if(session.isCancelled) {
-              status = csRef.i18n.cancelled;
-            }
-          }
-          if(newTitle.length && newTitle.val() != "") {
-            titleElm.html((status ? " <span class='header-status'>" + status + "</span> - " : "") + newTitle.val());
-          } else {
-            titleElm.html((status ? " <span class='header-status'>" + status + "</span> - " : "") + session.rawOrig.title);
-          }
         }
       };  
     
@@ -1800,7 +1893,7 @@ function courseSchedule() {
           var contentWrp = $("#" + id).parent().find(".accordion-content");
           if(isTier1) { // Lookup and add sessions HTML to DOM
             if(!contentWrp.children().length) { // If not already added
-              contentWrp.html("<div class='vrtx-grouped'>" + csRef.sessionsLookup["plenary"].html + "</div>");
+              contentWrp.html("<div class='vrtx-grouped'>" + csRef.sessionsLookup[id].html + "</div>");
             }
           }
           var optsH4 = {
@@ -1814,7 +1907,7 @@ function courseSchedule() {
                   contentWrp.html("<div class='vrtx-grouped'>" + csRef.sessionsLookup[id].html + "</div>");
                 }
               }
-              accordionOnActivateTier2(isTier1 ? "plenary" : id, isTier1, e, ui, accordion);
+              accordionOnActivateTier2(id, isTier1, e, ui, accordion);
             },
             animationSpeed: 200
           };
@@ -1848,167 +1941,6 @@ function courseSchedule() {
       editorProperties.show();
     }, 50);
   });
-}
-
-function editorJSONToHtml(id, sessionId, session, fixedResources, descs, i18n) {
-  var html = "";
-  var multiples = [];
-  var rtEditors = [];
-  var vrtxEdit = vrtxEditor;
-  for(var name in descs) {
-    var desc = descs[name],
-        descProps = jQuery.extend(true, [], desc.props),
-        val = session[name] || fixedResources[name],
-        origVal = "",
-        propsVal = "",
-        browsable = false,
-        hasOrig = false,
-        size = 40;
-    
-    var origName = name.split("vrtx")[1];
-    if(origName) {
-      var origVal = session[origName.toLowerCase()];
-      if(origVal && origVal != "") {
-        if(!val || !val.length) {
-          val = origVal;
-        }
-        hasOrig = true;
-      }
-    }
-    switch(desc.type) {
-      case "json":
-        for(var i = 0, descPropsLen = descProps.length; i < descPropsLen; i++) {
-          descProps[i].title = i18n[name + "-" + descProps[i].name];
-          if(desc.multiple && desc.props[i].type === "resource_ref") {
-            browsable = true;
-          }
-        }
-        if(val) {
-          for(var j = 0, propsLen = val.length; j < propsLen; j++) {
-            for(i = 0; i < descPropsLen; i++) {
-              propsVal += (val[j][descProps[i].name] || "") + "###";
-            }
-            if(j < (propsLen - 1)) propsVal += "$$$";
-          }
-        }
-        size = 20;
-      case "string":
-        val = (propsVal != "") ? propsVal : val;
-        val = (desc.multiple && typeof val === "array") ? val.join(",") : val;
-        if(desc.multiple) {
-          multiples.push({
-            name: name,
-            json: descProps ? descProps : null, 
-            movable: desc.multiple.movable,
-            browsable: browsable
-          });
-        }
-        html += vrtxEdit.htmlFacade.getStringField({ title: i18n[name],
-                                                     name: (desc.autocomplete ? "vrtx-autocomplete-" + desc.autocomplete + " " : "") + name + "-" + sessionId,
-                                                     id: name + "-" + sessionId,
-                                                     val: val,
-                                                     size: size
-                                                   }, name);
-        break;
-      case "json-fixed":
-        if(val) {
-          var buttons = /* "<a class='vrtx-button create-fixed-resources-folder' id='" + sessionId + "-create-fixed-resources' href='javascript:void(0);'>Lag ressursmappe</a> "  */
-                        "<a class='vrtx-button admin-fixed-resources-folder' href='" + val[0].url.replace(/[^\\/]*$/, "") + "?vrtx=admin&refreshparent=true" + "'>Last opp flere / administrer</a>";
-          
-          var propsLen = val.length;
-          
-          if(propsLen > 1) propsVal += "<ul>";
-          for(var j = 0; j < propsLen; j++) {
-            if(propsLen > 1) propsVal += "<li>";
-            propsVal += "<a href='" + val[j].url + "'>" + val[j].title + "</a>";
-            if(propsLen > 1) propsVal += "</li>";
-          }
-          if(propsLen > 1) propsVal += "</ul>";
-          
-          html += "<div class='vrtx-simple-html'><label>" + i18n[name] + "</label><div class='preview-html'>" + propsVal + "</div>" + buttons + "</div>";
-        }
-        break;
-      case "html":
-        html += vrtxEdit.htmlFacade.getSimpleHtmlField({ title: i18n[name],
-                                                           name: name + "-" + sessionId,
-                                                           id: name + "-" + sessionId,
-                                                           val: val
-                                                         }, name + "-" + sessionId);
-        rtEditors.push(name + "-" + sessionId);
-        break;
-      case "checkbox":
-        if(!session.vrtxOrphan) {
-          if(!origVal || origVal !== "cancelled") {
-            html += vrtxEdit.htmlFacade.getCheckboxField({ title: i18n[name],
-                                                           name: name + "-" + sessionId,
-                                                           id: name + "-" + sessionId,
-                                                           checked: (val === "active" ? null : val),
-                                                           tooltip: i18n.cancelledVortexTooltip
-                                                         }, name);
-          } else {
-            html += "<abbr tabindex='0' class='tooltips cancelled-tp' title='" + i18n.cancelledTPTooltip + "'></abbr>";
-          }
-        }
-        break;
-      default:
-        break;
-    }
-  }
-   
-  return { html: html, multiples: multiples, rtEditors: rtEditors };
-}
-
-function editorHtmlToJSON(sessionElms, descs, rawOrig, rawPtr) {
-  var vrtxEdit = vrtxEditor;
-  var editorDetectChangeFunc = editorDetectChange;
-  for(var name in descs) {
-    var desc = descs[name],
-        val = "";
-    // XXX: support multiple CK-fields starting with same name
-    if(descs[name].type === "html") {
-      var elm = sessionElms.find("textarea[name^='" + name + "']");
-    } else {
-      var elm = sessionElms.find("input[name='" + name + "']");
-    }
-    if(!elm.length) continue;
-
-    if(desc.type === "checkbox") {
-      if(elm[0].checked) {
-        val = "cancelled"; // TODO: Not very general
-      }
-    } else if(desc.type === "html") {
-      val = vrtxEdit.richtextEditorFacade.getInstanceValue(elm.attr("name"));
-    } else {
-      val = elm.val(); // To string (string)
-      if(desc.multiple && val.length) { // To array (multiple)
-        val = val.split("$$$");
-      }
-      if(desc.type === "json" && val.length) { // Object props into array (JSON multiple)
-        var arrProps = [];
-        for(var i = 0, arrLen = val.length; i < arrLen; i++) {
-          var newProp = null;
-          var prop = val[i].split("###");
-          for(var j = 0, descPropsLen = desc.props.length; j < descPropsLen; j++) { // Definition
-            if(prop[j] !== "") {
-              if(!newProp) {
-                newProp = {};
-              }
-              newProp[desc.props[j].name] = prop[j];
-            }
-          }
-          if(newProp) {
-            arrProps.push(newProp);
-          }
-        }
-        val = arrProps;
-      }
-    }
-    if(val && val.length && editorDetectChangeFunc(val, rawOrig[name.split("vrtx")[1].toLowerCase()])) {
-      rawPtr[name] = val;
-    } else {
-      delete rawPtr[name];
-    }
-  }
 }
 
 function editorDetectChange(o1, o2) {
@@ -2362,15 +2294,9 @@ function addJsonField(btn) {
     inputFieldName = j.name + "." + types[i].name + "." + vrtxEditor.multipleFieldsBoxes[j.name].counter;
     htmlTemplate += vrtxEditor.htmlFacade.getTypeHtml(types[i], inputFieldName);
     switch (types[i].type) {
-      case "html":
-        ckHtmls.push(inputFieldName);
-        break;
-      case "simple_html":
-        ckSimpleHtmls.push(inputFieldName);
-        break;
-      case "datetime":
-        dateTimes.push(inputFieldName);
-        break;
+      case "html":        ckHtmls.push(inputFieldName);       break;
+      case "simple_html": ckSimpleHtmls.push(inputFieldName); break;
+      case "datetime":    dateTimes.push(inputFieldName);     break;
     }
   }
 
@@ -2559,11 +2485,179 @@ function scrollToElm(movedElm) {
 }
 
 /**
- * HTML facade (Input=>Template Engine=>HTML)
+ * HTML facade (Input/JSON=>Template Engine=>HTML)
  *
  * @namespace
  */
 VrtxEditor.prototype.htmlFacade = {
+  /* 
+   * Turn a block of JSON into HTML
+   */
+  jsonToHtml: function(id, sessionId, session, fixedResourcesUrl, fixedResources, descs, i18n) {
+    var html = "";
+    var multiples = [];
+    var rtEditors = [];
+    var vrtxEdit = vrtxEditor;
+    for(var name in descs) {
+      var desc = descs[name],
+          descProps = jQuery.extend(true, [], desc.props),
+          val = session[name] || fixedResources[name],
+          origVal = "",
+          propsVal = "",
+          browsable = false,
+          hasOrig = false;
+    
+      var origName = name.split("vrtx")[1];
+      if(origName) {
+        var origVal = session[origName.toLowerCase()];
+        if(origVal && origVal != "") {
+          if(!val || !val.length) {
+            val = origVal;
+          }
+          hasOrig = true;
+        }
+      }
+      switch(desc.type) {
+        case "json":
+          for(var i = 0, descPropsLen = descProps.length; i < descPropsLen; i++) {
+            descProps[i].title = i18n[name + "-" + descProps[i].name];
+            if(desc.multiple && desc.props[i].type === "resource_ref") {
+              browsable = true;
+            }
+          }
+          if(val) {
+            for(var j = 0, propsLen = val.length; j < propsLen; j++) {
+              for(i = 0; i < descPropsLen; i++) {
+                propsVal += (val[j][descProps[i].name] || "") + "###";
+              }
+              if(j < (propsLen - 1)) propsVal += "$$$";
+            }
+          }
+        case "string":
+          val = (propsVal != "") ? propsVal : val;
+          val = (desc.multiple && typeof val === "array") ? val.join(",") : val;
+          if(desc.multiple) {
+            multiples.push({
+              name: name,
+              json: descProps ? descProps : null, 
+              movable: desc.multiple.movable,
+              browsable: browsable
+            });
+          }
+          html += vrtxEdit.htmlFacade.getStringField({ title: i18n[name],
+                                                       name: (desc.autocomplete ? "vrtx-autocomplete-" + desc.autocomplete + " " : "") + name + "-" + sessionId,
+                                                       id: name + "-" + sessionId,
+                                                       val: val,
+                                                       size: desc.size
+                                                     }, name);
+          break;
+        case "json-fixed":
+          if(fixedResourcesUrl) {
+            html += "<div class='vrtx-simple-html'><label>" + i18n[name] + "</label>";
+            if(!val) { // Create
+              var buttons = "<a class='vrtx-button create-fixed-resources-folder' id='create-fixed-resources-folder-" + id + "SID" + sessionId + "' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a>";
+            } else { // Admin
+              var buttons = "<a class='vrtx-button admin-fixed-resources-folder' href='" + val.folderUrl + "?vrtx=admin&displaymsg=yes'>" + i18n[name + "UploadAdminFolder"] + "</a>";
+              
+              var propsArr = val.resources;
+              var propsLen = propsArr.length;
+              if(propsLen > 1) propsVal += "<ul>";
+              for(var j = 0; j < propsLen; j++) {
+                if(propsLen > 1) propsVal += "<li>";
+                propsVal += "<a href='" + val.folderUrl + propsArr[j].name + "'>" + propsArr[j].title + "</a>";
+                if(propsLen > 1) propsVal += "</li>";
+              }
+              if(propsLen > 1) propsVal += "</ul>";
+              html += "<div class='preview-html'>" + propsVal + "</div>";
+            }
+            html += buttons + "</div>";
+          }
+          break;
+        case "html":
+          html += vrtxEdit.htmlFacade.getSimpleHtmlField({ title: i18n[name],
+                                                           name: name + "-" + sessionId,
+                                                           id: name + "-" + sessionId,
+                                                           val: val
+                                                         }, name + "-" + sessionId);
+          rtEditors.push(name + "-" + sessionId);
+          break;
+        case "checkbox":
+          if(!session.vrtxOrphan) {
+            if(!origVal || origVal !== desc.checkedVal) {
+              html += vrtxEdit.htmlFacade.getCheckboxField({ title: i18n[name],
+                                                             name: name + "-" + sessionId,
+                                                             id: name + "-" + sessionId,
+                                                             checked: (val === desc.checkedVal ? val : null),
+                                                             tooltip: i18n.cancelledVortexTooltip
+                                                           }, name);
+            } else {
+              html += "<abbr tabindex='0' class='tooltips cancelled-tp' title='" + i18n.cancelledTPTooltip + "'></abbr>";
+            }
+          }
+          break;
+        default:
+          break;
+      }
+    }
+    return { html: html, multiples: multiples, rtEditors: rtEditors };
+  },
+ /* 
+  * Turn a block of HTML/DOM into JSON
+  */
+  htmlToJson: function (sessionElms, descs, rawOrig, rawPtr) {
+    var vrtxEdit = vrtxEditor;
+    var editorDetectChangeFunc = editorDetectChange;
+    for(var name in descs) {
+      var desc = descs[name],
+          val = "";
+      if(descs[name].type === "json-fixed") {
+        continue;
+        // XXX: support multiple CK-fields starting with same name
+      } else if(descs[name].type === "html") {
+        var elm = sessionElms.find("textarea[name^='" + name + "']");
+      } else {
+        var elm = sessionElms.find("input[name='" + name + "']");
+      }
+      if(!elm.length) continue;
+
+      if(desc.type === "checkbox") {
+        if(elm[0].checked) {
+          val = desc.checkedVal;
+        }
+      } else if(desc.type === "html") {
+        val = vrtxEdit.richtextEditorFacade.getInstanceValue(elm.attr("name"));
+      } else {
+        val = elm.val(); // To string (string)
+        if(desc.multiple && val.length) { // To array (multiple)
+          val = val.split("$$$");
+        }
+        if(desc.type === "json" && val.length) { // Object props into array (JSON multiple)
+          var arrProps = [];
+          for(var i = 0, arrLen = val.length; i < arrLen; i++) {
+            var newProp = null;
+            var prop = val[i].split("###");
+            for(var j = 0, descPropsLen = desc.props.length; j < descPropsLen; j++) { // Definition
+              if(prop[j] !== "") {
+                if(!newProp) {
+                  newProp = {};
+                }
+                newProp[desc.props[j].name] = prop[j];
+              }
+            }
+            if(newProp) {
+              arrProps.push(newProp);
+            }
+          }
+          val = arrProps;
+        }
+      }
+      if(val && val.length && editorDetectChangeFunc(val, rawOrig[name.split("vrtx")[1].toLowerCase()])) {
+        rawPtr[name] = val;
+      } else {
+        delete rawPtr[name];
+      }
+    }
+  },
   /* 
    * Interaction
    */

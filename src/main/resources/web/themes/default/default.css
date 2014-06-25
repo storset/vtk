@@ -741,7 +741,7 @@ a:hover {
 }
 
 #resource-title.video,
-#resource-title.videoref {
+#resource-title.video-ref {
   background: transparent url(images/file-video.gif) no-repeat 0px 5px;
 }
 #resource-title.video.unpublished,
@@ -2234,28 +2234,6 @@ p.previewUnavailableReasons {
   color: #5e5e5e;
 }
 
-#editor-loading {
-  position: relative;
-  top: 0px;
-  left: 0px;
-  height: 100px;
-  width: 100%;
-  display: block;
-  background: transparent;
-}
-
-#editor-loading-inner {
-  background: transparent url(images/ajax-loader.gif) no-repeat center left;
-  display: block;
-  padding: 10px 5px 10px 42px;
-  font-size: 1.308em;
-  position: relative;
-  position: absolute;
-  top: 25%;
-  left: 41%;
-  color: #5e5e5e;
-}
-
 /* Preview mode and actions */
 
 #preview-mode-mobile-rotate-hv,
@@ -3197,9 +3175,13 @@ body#vrtx-preview .tabMessage-big {
 
 /* Embedding */
 
+html.embedded {
+  overflow-y: scroll;
+}
+
 html.embedded,
 html.embedded body {
-  background: #fff;
+  background: #999999;
 }
 
 html.embedded body {
@@ -3218,22 +3200,22 @@ html.embedded #app-content #main {
   background: none;
 }
 
+html.embedded #app-content {
+  width: 770px;
+  margin: 0 auto;
+  padding: 20px;
+  position: relative;
+  background: #fff;
+  border: 2px solid #848484;
+  box-shadow: 1px 1px 5px 2px #848484;
+}
+
 html.embedded #app-head-wrapper,
 html.embedded #app-footer-wrapper,
 html.embedded #title-container,
-html.embedded #vrtx-editor-title-submit-buttons .submitButtons,
 html.embedded #app-tabs,
-html.embedded #active-tab,
-html.embedded .submitButtons > * {
+html.embedded #active-tab {
   display: none;
-}
-
-html.embedded #vrtx-editor-title-submit-buttons-inner-wrapper {
-  padding-top: 0;
-}
-
-html.embedded .submitButtons .vrtx-embedded-button {
-  display: inline-block;
 }
 
 /* ^ Embedding */

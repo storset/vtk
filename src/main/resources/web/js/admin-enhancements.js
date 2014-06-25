@@ -183,13 +183,20 @@ var VrtxAnimation = function(opts) {
 \*-------------------------------------------------------------------*/
 
 var isEmbedded = window.location.href.indexOf("&embed") !== -1;
+var onlySessionId = gup("sessionid", window.location.href);
 vrtxAdmin._$(document).ready(function () {
   var startReadyTime = +new Date(), vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
   
-  vrtxAdm.lang = datePickerLang;
+  if(typeof datePickerLang === "string") {
+     vrtxAdm.lang = datePickerLang;
+  }
   
   if(isEmbedded) {
-    $("html").addClass("embedded"); // Temporary solution
+    $("html").addClass("embedded embedded-loading"); // Temporary solution
+    if(onlySessionId) {
+      var free = $(window).height() - $("body").height();
+      $("#editor").height(free);
+    }
   }
 
   vrtxAdm.cacheDOMNodesForReuse();
@@ -1712,7 +1719,7 @@ function createCheckUncheckIndexFile(nameField, indexCheckbox) {
 
 function createTitleChange(titleField, nameField, indexCheckbox) {
   if (vrtxAdmin.createResourceReplaceTitle) {
-    var nameFieldVal = replaceInvalidChar(titleField.val());
+    var nameFieldVal = replaceInvalidChar(titleField.val(), true);
     if (!indexCheckbox || !indexCheckbox.length || !indexCheckbox.is(":checked")) {
       if (nameFieldVal.length > 50) {
         nameFieldVal = nameFieldVal.substring(0, 50);
@@ -1733,7 +1740,7 @@ function createFileNameChange(nameField) {
   var currentCaretPos = getCaretPos(nameField[0]);
 
   var nameFieldValBeforeReplacement = nameField.val();
-  var nameFieldVal = replaceInvalidChar(nameFieldValBeforeReplacement);
+  var nameFieldVal = replaceInvalidChar(nameFieldValBeforeReplacement, true);
   nameField.val(nameFieldVal);
   growField(nameField, nameFieldVal, 5, 100, 530);
 
@@ -1742,8 +1749,8 @@ function createFileNameChange(nameField) {
   $(".file-name-from-title").removeClass("file-name-from-title");
 }
 
-function replaceInvalidChar(val) {
-  val = val.toLowerCase();
+function replaceInvalidChar(val, isLowerCasing) {
+  if(isLowerCasing) val = val.toLowerCase();
   var replaceMap = {
     " ": "-",
     "&": "-",
@@ -2707,11 +2714,11 @@ function updateClientLastModifiedAlreadyRetrieved() {
 
 function isServerLastModifiedOlderThanClientLastModified(d) {
   var olderThanMs = 1000; // Ignore changes in 1 second to avoid most strange cases
-  
+
   var isOlder = true;
   vrtxAdmin._$.ajax({
     type: "GET",
-    url: location.pathname + "?vrtx=admin&mode=about",
+    url: location.pathname + "?vrtx=admin&mode=about" + (gup("service", location.search) === "view" ? "&service=view" : ""),
     async: false,
     cache: false,
     success: function (results, status, resp) {
@@ -3958,12 +3965,23 @@ function openGeneral(url, width, height, winTitle, sOptions) {
   return oWindow;
 }
 
+// Show message on admin popup close in admin
+$(window).on("message", function(e) {
+  window.focus();
+  var data = e.originalEvent.data;
+  if(typeof data === "string" && data === "displaymsg") {
+    var d = new VrtxMsgDialog({
+      msg: vrtxAdmin.messages.courseSchedule.updated,
+      title: vrtxAdmin.messages.courseSchedule.updatedTitle,
+      width: 400
+    });
+    d.open();
+  }
+});
 function refreshParent() {
-  window.opener.location.reload();
+  window.opener.postMessage("displaymsg", "*");
 }
-
-var refreshParentOnClose = gup("refreshparent", window.location.href);
-if(refreshParentOnClose) {
+if(gup("displaymsg", location.href) === "yes") {
   window.onunload = refreshParent;    
 }
 

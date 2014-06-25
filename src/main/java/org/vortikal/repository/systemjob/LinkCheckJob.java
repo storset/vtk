@@ -84,7 +84,7 @@ public class LinkCheckJob extends AbstractResourceJob {
     private static final Log logger = LogFactory.getLog(LinkCheckJob.class);
 
     public LinkCheckJob() {
-        setIgnoreLockedResources(false);
+        setSkipLockedResources(false);
     }
     
     @Override

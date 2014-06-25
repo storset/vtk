@@ -36,12 +36,13 @@ import org.vortikal.repository.Resource;
 
 /**
  * A repository job which simply stores all resources matched by
- * the path selector. Resources are stored with the <code>SystemChangeContext</code>.
+ * the path selector. Resources are stored with the provided 
+ * <code>SystemChangeContext</code>.
  */
 public class StoreResourceJob extends AbstractResourceJob {
 
     public StoreResourceJob() {
-        setAbortOnException(false);
+        setAbortOnException(false); // For compatibility with old jobs after previous refactoring.
     }
 
     @Override

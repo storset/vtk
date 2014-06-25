@@ -1,10 +1,12 @@
 {
    "courseid":"EXPHIL03",
    "terminnr":1,
+   "vrtxResourcesFixedUrl": "/om/",
    "plenary": {
      "vrtxEditableDescription": {
          "vrtxTitle":{
-            "type":"string"
+            "type":"string",
+            "size": 40
          },
          "vrtxStaff":{
             "type":"json",
@@ -17,6 +19,7 @@
                   "type":"string"
                }
             ],
+            "size": 20,
             "autocomplete":"username"
          },
          "vrtxStaffExternal":{
@@ -33,7 +36,8 @@
                   "name":"url",
                   "type":"resource_ref"
                }
-            ]
+            ],
+            "size": 20
          },
          "vrtxResources":{
             "type":"json",
@@ -49,7 +53,8 @@
                   "name":"url",
                   "type":"resource_ref"
                }
-            ]
+            ],
+            "size": 20
          },
          "vrtxResourcesText":{
            "type":"html"
@@ -62,13 +67,15 @@
                   "type":"string"
                },
                {
-                  "name":"url",
-                  "type":"resource_ref"
+                  "name":"name",
+                  "type":"string"
                }
-            ]
+            ],
+            "size": 20
          },
          "vrtxStatus":{
-           "type":"checkbox"
+           "type":"checkbox",
+           "checkedVal":"cancelled"
          }
     },
     "activities": [{
@@ -78,9 +85,12 @@
       "sequences": [{
         "id": "14H-EXPHIL03-1-1-1-2-1",
         "seqNo": 1,
-        "vrtxResourcesFixed": [
-          { "title": "Fast ressurs", "url": "/foo/test.txt" }
-        ],
+        "vrtxResourcesFixed": {
+          "folderUrl": "/foo/",
+          "resources": [
+            { "title": "Fast ressurs", "name": "test.txt" }
+          ]
+        },
         "sessions": [{
           "id": "14H-EXPHIL03-1-1-1-2-1/34",
           "dtStart": "2014-08-18T12:15:00.000+02:00",
@@ -349,7 +359,8 @@
             "buildingAcronym": "GS",
             "roomId": "1501",
             "roomName": "Auditorium 1"
-          }]
+          }],
+          "discipline": ["Foobarian teknologi", "Bazbaz basar"]
         }, {
           "id": "14H-EXPHIL03-1-1-1-3-1/35",
           "dtStart": "2014-08-26T12:15:00.000+02:00",
@@ -832,12 +843,50 @@
           }]
         }]
       }]
+    }, {
+      "teachingMethod": "OBL",
+      "teachingMethodName": "Oblig",
+      "id": "1-4",
+      "sequences": [{
+        "id": "14H-EXPHIL03-1-1-1-4-1",
+        "seqNo": 1,
+        "sessions": [{
+          "id": "14H-EXPHIL03-1-1-1-4-1/47",
+          "dtStart": "2014-11-20T12:15:00.000+01:00",
+          "dtEnd": "2014-11-20T14:00:00.000+01:00",
+          "weekNr": 47,
+          "status": "active",
+          "title": "Ekstra forelesning",
+          "rooms": [{
+            "buildingId": "BL27",
+            "buildingName": "Georg Sverdrups hus",
+            "buildingAcronym": "GS",
+            "roomId": "1501",
+            "roomName": "Auditorium 1"
+          }]
+        }, {
+          "id": "14H-EXPHIL03-1-1-1-4-1/48",
+          "dtStart": "2014-11-27T12:15:00.000+01:00",
+          "dtEnd": "2014-11-27T14:00:00.000+01:00",
+          "weekNr": 48,
+          "status": "active",
+          "title": "Ekstra forelesning",
+          "rooms": [{
+            "buildingId": "BL27",
+            "buildingName": "Georg Sverdrups hus",
+            "buildingAcronym": "GS",
+            "roomId": "1501",
+            "roomName": "Auditorium 1"
+          }]
+        }]
+      }]
     }]
   },
   "group": {
      "vrtxEditableDescription": {
          "vrtxTitle":{
-            "type":"string"
+            "type":"string",
+            "size": 40
          },
          "vrtxStaff":{
             "type":"json",
@@ -850,6 +899,7 @@
                   "type":"string"
                }
             ],
+            "size": 20,
             "autocomplete":"username"
          },
          "vrtxStaffExternal":{
@@ -866,7 +916,8 @@
                   "name":"url",
                   "type":"resource_ref"
                }
-            ]
+            ],
+            "size": 20
          },
          "vrtxResources":{
             "type":"json",
@@ -882,7 +933,8 @@
                   "name":"url",
                   "type":"resource_ref"
                }
-            ]
+            ],
+            "size": 20
          },
          "vrtxResourcesText":{
            "type":"html"
@@ -895,13 +947,15 @@
                   "type":"string"
                },
                {
-                  "name":"url",
-                  "type":"resource_ref"
+                  "name":"name",
+                  "type":"string"
                }
-            ]
+            ],
+            "size": 20
          },
          "vrtxStatus":{
-            "type":"checkbox"
+            "type":"checkbox",
+            "checkedVal":"cancelled"
          }
      },
     "activities": [{

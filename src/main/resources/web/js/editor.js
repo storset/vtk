@@ -1201,13 +1201,6 @@ function courseSchedule() {
       "cancelledVortexTooltip": "Aktiviteten kan avlyses i Vortex",
       "cancelledTPTooltip": "Aktiviteten er avlyst i timeplanleggingssystemet",
       "orphan": "SLETTET",
-      
-      "K": "K-grupper",
-      "P": "P-grupper",
-      "S": "S-grupper",
-      "KF": "Fellesundervisning (K)",
-      "PF": "Fellesundervisning (P)",
-      "SF": "Fellesundervisning (S)",
 
       "vrtxTitle": "Tittel",
       "vrtxStaff": "Forelesere",
@@ -1261,13 +1254,6 @@ function courseSchedule() {
       "cancelledTPTooltip": "Aktiviteten er avlyst i timeplanleggingssystemet",
       "orphan": "SLETTET",
       
-      "K": "K-grupper",
-      "P": "P-grupper",
-      "S": "S-grupper",
-      "KF": "Fellesundervisning (K)",
-      "PF": "Fellesundervisning (P)",
-      "SF": "Fellesundervisning (S)",
-      
       "vrtxTitle": "Tittel",
       "vrtxStaff": "Forelesere",
       "vrtxStaffExternal": "Eksterne forelesere",
@@ -1319,13 +1305,6 @@ function courseSchedule() {
       "cancelledVortexTooltip": "The activity can be cancelled in Vortex",
       "cancelledTPTooltip": "The activity is cancelled in the schedulling system",
       "orphan": "DELETED",
-      
-      "K": "K-groups",
-      "P": "P-groups",
-      "S": "S-groups",
-      "KF": "Plenary teaching (K)",
-      "PF": "Plenary teaching (P)",
-      "SF": "Plenary teaching (S)",
       
       "vrtxTitle": "Title",
       "vrtxStaff": "Staff",
@@ -1399,17 +1378,9 @@ function courseSchedule() {
           dtShort = dt.teachingMethod.toLowerCase(),
           dtLong = dt.teachingMethodName,
           id = dtShort + "-" + dt.id,
-          idSplit = dt.id.split("-");
-          if(idSplit.length === 3) {
-            var groupCode = idSplit[1];
-            var groupNumber = parseInt(idSplit[2], 10);
-          } else if(idSplit.length === 2) {
-            var groupCode = idSplit[0];
-            var groupNumber = parseInt(idSplit[1], 10);
-          } else {
-            var groupCode = idSplit[0] || dt.id;
-            var groupNumber = 0;
-          }
+          title = skipTier ? dtLong : (dt.title || dtLong),
+          groupCode = dtShort,
+          groupNumber = ((dt.party && dt.party.name) ? parseInt(dt.party.name, 10) : 0);
 
       this.sessionsLookup[skipTier ? dtShort : id] = {};
       
@@ -1465,7 +1436,7 @@ function courseSchedule() {
           html += vrtxEdit.htmlFacade.getAccordionInteraction("3", dtShort, (type + " skip-tier"), dtLong, "");
         } else {
           this.sessionsLookup[id].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
-          htmlArr.push({ "groupCode": groupCode, "groupNr": groupNumber, "accHtml": vrtxEdit.htmlFacade.getAccordionInteraction("4", id, type, this.i18n.titles.groupNum + " " + groupNumber, "") });
+          htmlArr.push({ "groupCode": groupCode, "groupNr": groupNumber, "accHtml": vrtxEdit.htmlFacade.getAccordionInteraction("4", id, type, title, "") });
           
           if(!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== dtShort) {
             // Sort group code and group number if equal
@@ -1479,22 +1450,9 @@ function courseSchedule() {
             var htmlMiddle = "";
             for(j = 0, len = htmlArr.length; j < len; j++) {
               htmlMiddle += htmlArr[j].accHtml;
-              
-              var grCode = htmlArr[j].groupCode;
-              var specialGroupCode = this.i18n[grCode];
-              if(specialGroupCode) {
-                var doSplit = !htmlArr[j+1];
-                if(!doSplit) {
-                  doSplit = specialGroupCode != this.i18n[htmlArr[j+1].groupCode];
-                }
-                if(doSplit) {
-                  html += vrtxEdit.htmlFacade.getAccordionInteraction("3", grCode, type, specialGroupCode, "<div class='vrtx-grouped'>" + htmlMiddle + "</div>");
-                  htmlMiddle = "";
-                }
-              }
             }
             if(htmlMiddle != "") {
-              html += vrtxEdit.htmlFacade.getAccordionInteraction("3", dtShort, type, dt.teachingMethodName, "<div class='vrtx-grouped'>" + htmlMiddle + "</div>");
+              html += vrtxEdit.htmlFacade.getAccordionInteraction("3", dtShort, type, dtLong, "<div class='vrtx-grouped'>" + htmlMiddle + "</div>");
             }
             htmlArr = [];
           }

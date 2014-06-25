@@ -1344,8 +1344,8 @@ function courseSchedule() {
     
     var descs = this.retrievedScheduleData[type].vrtxEditableDescription;
 
-    if(!this.sessionsLookup[skipTier ? dtShort : id]) {
-      this.sessionsLookup[skipTier ? dtShort : id] = {};
+    if(!this.sessionsLookup[skipTier ? (skipTier ? (dtShort != "for" ? id : dtShort) : id) : id]) {
+      this.sessionsLookup[skipTier ? (skipTier ? (dtShort != "for" ? id : dtShort) : id) : id) : id) : id : id] = {};
     }
     var sessionDateTime = this.getDateTime(session.dtStart, session.dtEnd);
     var sessionHtml = this.getSessionHtml(id, session, dtShort, sessionDateTime, sequences, descs, skipTier, vrtxEditor);    
@@ -1382,7 +1382,7 @@ function courseSchedule() {
           groupCode = dtShort,
           groupNumber = ((dt.party && dt.party.name) ? parseInt(dt.party.name, 10) : 0);
 
-      this.sessionsLookup[skipTier ? dtShort : id] = {};
+      this.sessionsLookup[skipTier ? (skipTier ? (dtShort != "for" ? id : dtShort) : id) : id] = {};
       
       // Add together sessions from sequences
       for(var j = 0, len = dt.sequences.length; j < len; j++) {
@@ -1432,7 +1432,7 @@ function courseSchedule() {
         }
         
         if(skipTier) {
-          this.sessionsLookup[dtShort].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
+          this.sessionsLookup[(dtShort != "for" ? id : dtShort)].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
           html += vrtxEdit.htmlFacade.getAccordionInteraction("3", dtShort, (type + " skip-tier"), dtLong, "");
         } else {
           this.sessionsLookup[id].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
@@ -1486,7 +1486,7 @@ function courseSchedule() {
                        (rooms ? (" - <span class='session-room'>" + (rooms[0].buildingAcronym || rooms[0].buildingId) + " " + rooms[0].roomId) + "</span>" : ""),
         sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, session, this.retrievedScheduleData.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
 
-     this.sessionsLookup[skipTier ? dtShort : id][sessionId] = {
+     this.sessionsLookup[skipTier ? (dtShort != "for" ? id : dtShort) : id][sessionId] = {
        rawPtr: session,
        rawOrig: jQuery.extend(true, {}, session), // Copy object
        descsPtr: descs,

@@ -1344,8 +1344,8 @@ function courseSchedule() {
     
     var descs = this.retrievedScheduleData[type].vrtxEditableDescription;
 
-    if(!this.sessionsLookup[skipTier ? (skipTier ? (dtShort != "for" ? id : dtShort) : id]) {
-      this.sessionsLookup[skipTier ? (skipTier ? (dtShort != "for" ? id : dtShort) : id] = {};
+    if(!this.sessionsLookup[skipTier ? (dtShort != "for" ? id : dtShort) : id]) {
+      this.sessionsLookup[skipTier ? (dtShort != "for" ? id : dtShort) : id] = {};
     }
     var sessionDateTime = this.getDateTime(session.dtStart, session.dtEnd);
     var sessionHtml = this.getSessionHtml(id, session, dtShort, sessionDateTime, sequences, descs, skipTier, vrtxEditor);    
@@ -1382,7 +1382,7 @@ function courseSchedule() {
           groupCode = dtShort,
           groupNumber = ((dt.party && dt.party.name) ? parseInt(dt.party.name, 10) : 0);
 
-      this.sessionsLookup[skipTier ? (skipTier ? (dtShort != "for" ? id : dtShort) : id) : id] = {};
+      this.sessionsLookup[skipTier ? (dtShort != "for" ? id : dtShort) : id] = {};
       
       // Add together sessions from sequences
       for(var j = 0, len = dt.sequences.length; j < len; j++) {

@@ -133,7 +133,11 @@ public class MediaPlayer {
         model.put("extension", MimeHelper.findExtension(mediaRef));
         model.put("nanoTime", System.nanoTime());
 
-        addMediaUrl(mediaRef, model);
+        if (mediaResource != null) {
+            addMediaUrl(mediaResource,  model);
+        } else {
+            addMediaUrl(mediaRef, model);
+        }
     }
 
     /**
@@ -180,8 +184,12 @@ public class MediaPlayer {
         }
 
         model.put("nanoTime", System.nanoTime());
-        
-        addMediaUrl(mediaRef, model);
+
+        if (mediaResource != null) {
+            addMediaUrl(mediaResource, model);
+        } else {
+            addMediaUrl(mediaRef, model);
+        }
     }
 
     private Resource getLocalResource(String resourceRef) throws Exception {
@@ -194,8 +202,12 @@ public class MediaPlayer {
         
         return null;
     }
+    
+    private void addMediaUrl(Resource mediaResource, Map<String,Object> model) {
+        model.put("media", this.viewService.constructURL(mediaResource));
+    }
 
-    // Adds media URL to model. Local resources are resolved to absolute
+    // Adds media URL to model, possibly non-local or unreadable local resource. Local resources are resolved to absolute
     // URLs and external URLs are parsed for validity. In case of invalid
     // URL, nothing is added to model.
     private void addMediaUrl(String resourceRef, Map<String, Object> model) {
@@ -204,21 +216,21 @@ public class MediaPlayer {
             if (RequestContext.getRequestContext().isPreviewUnpublished()) {
                 url.setParameter("vrtxPreviewUnpublished", "true");
             }
-
+            
             model.put("media", url);
         }
     }
 
-    private void addPosterUrl(Resource mediaFile, Map<String, Object> model) {
-        if (mediaFile == null)
+    private void addPosterUrl(Resource mediaResource, Map<String, Object> model) {
+        if (mediaResource == null)
             return;
         URL poster = null;
-        Property posterImageProp = mediaFile.getProperty(posterImagePropDef);
-        Property thumbnail = mediaFile.getProperty(thumbnailPropDef);
+        Property posterImageProp = mediaResource.getProperty(posterImagePropDef);
+        Property thumbnail = mediaResource.getProperty(thumbnailPropDef);
         if (posterImageProp != null) {
             poster = createUrl(posterImageProp.getStringValue());
         } else if (thumbnail != null) {
-            poster = thumbnailService.constructURL(mediaFile.getURI());
+            poster = thumbnailService.constructURL(mediaResource);
         }
 
         if (poster != null) {

@@ -175,7 +175,9 @@ public class ManuallyApproveResourcesSearcher {
                 URL url = getPropertySetURL(ps, localHostURL);
                 boolean approved = alreadyApproved.contains(url.toString());
                 ManuallyApproveResource m = mapPropertySetToManuallyApprovedResource(ps, localHostURL, source, approved);
-                result.add(m);
+                if (!result.contains(m)) {
+                    result.add(m);
+                }
             }
         }
 

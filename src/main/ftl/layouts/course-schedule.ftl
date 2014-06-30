@@ -17,7 +17,15 @@
 // -->
 </script>
 
+<#--
+<#assign formatDatesT = 0 />
+<#assign formatNameT = 0 />
+<#assign placeT = 0 />
+<#assign staffT = 0 />
+<#assign resourcesT = 0 />
 <#assign startTime = .now?long />
+-->
+
 <#if result?has_content>
   <div id="activities">
     <#-- Generate HTML -->
@@ -49,11 +57,17 @@
 <#else>
   <p>${vrtx.getMsg("course-schedule.no-data")}</p>
 </#if>
+<#--
 <#assign endTime = .now?long />
 <#assign genTime = endTime - startTime />
-<p>Start: ${endTime}ms.</p>
-<p>End: ${startTime}ms.</p>
-<p>${genTime?round}ms.</p>
+<p>Total: ${genTime?round}ms.</p>
+
+<p>Format dates: ${formatDatesT?round}ms.</p>
+<p>Formatname: ${formatNameT?round}ms.</p>
+<p>Place (includes 2x Link abbr): ${placeT?round}ms.</p>
+<p>Staff (includes List): ${staffT?round}ms.</p>
+<p>Resources (includes List): ${resourcesT?round}ms.</p>
+-->
 
 <#function generateType result type>
   <#local activities = result[type] />
@@ -130,6 +144,8 @@
      <#local sessions = activity.sessions />
      <#list sessions as session>
        <#if !session.vrtxOrphan?exists>
+       
+       <#-- <#assign formatDatesStartT = .now?long /> -->
         
        <#local count = count + 1 />
        <#local dateStart = session.dtStart?replace("T", " ")?date("yyyy-MM-dd HH:mm:ss") />
@@ -156,13 +172,18 @@
        <#if isPassed>
          <#local classes = classes + " passed" />
        </#if>
-        
+
        <#local hasNotStaffAndResources = !hasStaff && !hasResources />
        <#local hasNotResources = !hasResources />
-       
+
        <#local day>${dateStart?string("EEE")?capitalize}</#local>
        <#local time><span>${dateStart?string("HH:mm")}-</span><span>${dateEnd?string("HH:mm")}</span></#local>
        <#local date>${day?substring(0, 2)}. ${dateStart?string("d. MMM.")}</#local>
+       
+       <#--
+       <#assign formatDatesEndT = .now?long />
+       <#assign formatDatesT = formatDatesT + (formatDatesEndT - formatDatesStartT) /> -->
+       
        <#local place><@getPlace session /></#local>
        <#local staff><@getStaff session /></#local>
        <#local resources><@getResources showMoreI18n session /></#local>
@@ -268,6 +289,8 @@
 </#function>
 
 <#macro getPlace session>
+  <#-- <#assign placeStartT = .now?long /> -->
+
   <#local val = "" />
   <#if session.rooms?exists>
     <#local len = session.rooms?size />
@@ -284,9 +307,15 @@
     </#list>
     <#if (len > 1)></ul></#if>
   </#if>
+  
+  <#--
+  <#assign placeEndT = .now?long />
+  <#assign placeT = placeT + (placeEndT - placeStartT)  /> -->
 </#macro>
 
 <#macro getStaff session>
+  <#-- <#assign staffStartT = .now?long /> -->
+
   <#local staff = [] />
   <#if session.vrtxStaff?exists>
     <#local staff = session.vrtxStaff />
@@ -296,11 +325,17 @@
   <#if session.vrtxStaffExternal?exists>
     <#local staff = staff + session.vrtxStaffExternal />
   </#if>
+
   <#local staffList = arrToList(staff, false).val />
   ${staffList}
+  <#-- 
+  <#assign staffEndT = .now?long />
+  <#assign staffT = staffT + (staffEndT - staffStartT)  /> -->
 </#macro>
 
 <#macro getResources i18nShowMore session>
+  <#-- <#assign resourcesStartT = .now?long /> -->
+
   <#local resourcesTxtLimit = 70 />
   
   <#local resources = [] />
@@ -350,10 +385,12 @@
     <a href='javascript:void(0);' class='course-schedule-table-resources-after-toggle'>${i18nShowMore}...</a>
     <div class='course-schedule-table-resources-after'>${valAfter}</div>
   </#if>
+  <#-- 
+  <#assign resourcesEndT = .now?long />
+  <#assign resourcesT = resourcesT + (resourcesEndT - resourcesStartT)  /> -->
 </#macro>
 
 <#macro linkAbbr url="" title="" text="">
-
   <#-- Short -->
   <#if url != "" && title != "">
     <a class='place-short' title='${title}' href='${url}'>
@@ -455,11 +492,15 @@
 </#function>
 
 <#macro formatName name>
+  <#-- <#assign formatNameStartT = .now?long /> -->
   <#local words = name?word_list />
   <#list words as word>
     <#if !word_has_next>${word}
     <#else>${word?substring(0,1)}. </#if>
   </#list>
+  <#-- 
+  <#assign formatNameEndT = .now?long />
+  <#assign formatNameT = formatNameT + (formatNameEndT - formatNameStartT)  /> -->
 </#macro>
 
 <#macro editLink class html i18nEdit displayEditLink canEdit=false>
@@ -472,5 +513,5 @@
        <a class='button course-schedule-table-edit-link' href='javascript:void'><span>${i18nEdit}</span></a>
      </div>
     </#if>
-  </td>  
+  </td>
 </#macro>

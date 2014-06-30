@@ -227,10 +227,6 @@ div.manually-approve-from table th input {
   float: left;
 }
 
-#manually-approve-container .prev-next { 
-  float: right;
-}
-
 #manually-approve-container .next,
 #manually-approve-container .prev {
   float: left;

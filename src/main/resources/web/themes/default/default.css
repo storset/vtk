@@ -3040,6 +3040,12 @@ table.resourceInfo.revisions tr:nth-child(even) td {
 
 /* Paging */
 
+.vrtx-course-schedule .prev-next,
+#manually-approve-container .prev-next { 
+  float: right;
+}
+
+.vrtx-course-schedule .next,
 .vrtx-report-paging .next,
 #manually-approve-container .next {
   margin-left: 20px !important;
@@ -3047,6 +3053,7 @@ table.resourceInfo.revisions tr:nth-child(even) td {
   padding: 0 12px 0 0;
 }
 
+.vrtx-course-schedule .prev,
 .vrtx-report-paging .prev,
 #manually-approve-container .prev {
   background: url(images/arrow-grey-prev.gif) no-repeat center left;

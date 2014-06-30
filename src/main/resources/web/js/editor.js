@@ -1158,7 +1158,7 @@ function courseSchedule() {
   }
   url = baseUrl + "?action=course-schedule&mode=edit&t=" + (+new Date());
   // Debug: Local development
-   url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   // Hide shortcut for saving working copy
   $("#vrtx-save-as-working-copy-shortcut, #saveWorkingCopyAction, #buttons-or-text").hide();
@@ -1580,7 +1580,7 @@ function courseSchedule() {
     var postFixId = start.date + "-" + start.month + "-" + start.year + "-" + start.hh + "-" + start.mm + "-" + end.hh + "-" + end.mm;
     return { date: strDate, postFixId: postFixId };
   };
-  this.getSessionJSONFromId = function(findSessionId) {
+  this.getSessionJSONFromId = function(findSessionId) { // XXX: Refactor with getActivitiesForTypeHtml
     var foundObj = null;
     var nextId = null;
     var prevId = null;

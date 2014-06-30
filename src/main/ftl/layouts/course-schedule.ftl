@@ -76,6 +76,17 @@
     <#local tocTimeMax = 2 />
   </#if>
   
+  <#local dateI18n = vrtx.getMsg("course-schedule.table-date") />
+  <#local timeI18n = vrtx.getMsg("course-schedule.table-time") />
+  <#local titleI18n = vrtx.getMsg("course-schedule.table-title") />
+  <#local placeI18n = vrtx.getMsg("course-schedule.table-place") />
+  <#local staffI18n = vrtx.getMsg("course-schedule.table-staff") />
+  <#local resourcesI18n = vrtx.getMsg("course-schedule.table-resources") />
+  <#local cancelledI18n = vrtx.getMsg("course-schedule.table-cancelled") />
+  <#local andI18n = vrtx.getMsg("course-schedule.and") />
+  <#local editI18n = vrtx.getMsg("course-schedule.table-edit") />
+  <#local showMoreI18n = vrtx.getMsg("course-schedule.showMore") />
+  
   <#local groupCount = 0 />
   <#list activities as activity>
     <#local id = activity.id />
@@ -100,15 +111,15 @@
         <caption>${activityTitle?html}</caption>
         <thead>
         <tr>
-          <th class="course-schedule-table-date">${vrtx.getMsg("course-schedule.table-date")}</th>
-          <th class="course-schedule-table-time">${vrtx.getMsg("course-schedule.table-time")}</th>
-          <th class="course-schedule-table-title">${vrtx.getMsg("course-schedule.table-title")}</th>
-          <th class="course-schedule-table-place">${vrtx.getMsg("course-schedule.table-place")}</th>
+          <th class="course-schedule-table-date">${dateI18n}</th>
+          <th class="course-schedule-table-time">${timeI18n}</th>
+          <th class="course-schedule-table-title">${titleI18n}</th>
+          <th class="course-schedule-table-place">${placeI18n}</th>
           <#if hasStaff>
-            <th class="course-schedule-table-staff">${vrtx.getMsg("course-schedule.table-staff")}</th>
+            <th class="course-schedule-table-staff">${staffI18n}</th>
           </#if>
           <#if hasResources>
-            <th class="course-schedule-table-resources">${vrtx.getMsg("course-schedule.table-resources")}</th>
+            <th class="course-schedule-table-resources">${resourcesI18n}</th>
           </#if>
         </tr>
         </thead>
@@ -134,7 +145,7 @@
          <#local title = session.id />
        </#if>
        <#if (session.status == "cancelled") || (session.vrtxStatus?exists && session.vrtxStatus == "cancelled")>
-         <#local title = "<span class='course-schedule-table-status'>" + vrtx.getMsg("course-schedule.table-cancelled") + "</span>" + title?html />
+         <#local title = "<span class='course-schedule-table-status'>" + cancelledI18n + "</span>" + title?html />
        </#if>
         
        <#if count % 2 == 0>
@@ -154,21 +165,17 @@
        <#local date>${day?substring(0, 2)}. ${dateStart?string("d. MMM.")}</#local>
        <#local place><@getPlace session /></#local>
        <#local staff><@getStaff session /></#local>
-       <#local resources><@getResources session /></#local>
-        
-       <#local placeHeader = vrtx.getMsg("course-schedule.table-place") />
-       <#local staffHeader = vrtx.getMsg("course-schedule.table-staff") />
-       <#local resourcesHeader = vrtx.getMsg("course-schedule.table-resources") />
-         
+       <#local resources><@getResources showMoreI18n session /></#local>
+
        <#local tablesHtmlMiddle>
          <tr class="course-schedule-table-tr-header accordion"><td><span class="tr-header-date">${date}</span><span class="tr-header-time">${time}</span></td></tr>
          <tr id="${sessionId}" class="${classes}"> 
-           <td class='course-schedule-table-date'><span class='responsive-header'>${vrtx.getMsg("course-schedule.table-date")}</span>${date}</td>
-           <td class='course-schedule-table-time'><span class='responsive-header'>${vrtx.getMsg("course-schedule.table-time")}</span>${time}</td>
-           <td class='course-schedule-table-title'><span class='responsive-header'>${vrtx.getMsg("course-schedule.table-title")}</span>${title}</td>
-           <@editLink "course-schedule-table-place" "<span class='responsive-header'>${placeHeader}</span>${place}" hasNotStaffAndResources canEdit />
-           <#if hasStaff><@editLink "course-schedule-table-staff" "<span class='responsive-header'>${staffHeader}</span>${staff}" hasNotResources canEdit /></#if>
-           <#if hasResources><@editLink "course-schedule-table-resources" "<span class='responsive-header'>${resourcesHeader}</span>${resources}" hasResources canEdit /></#if>
+           <td class='course-schedule-table-date'><span class='responsive-header'>${dateI18n}</span>${date}</td>
+           <td class='course-schedule-table-time'><span class='responsive-header'>${timeI18n}</span>${time}</td>
+           <td class='course-schedule-table-title'><span class='responsive-header'>${titleI18n}</span>${title}</td>
+           <@editLink "course-schedule-table-place" "<span class='responsive-header'>${placeI18n}</span>${place}" editI18n hasNotStaffAndResources canEdit />
+           <#if hasStaff><@editLink "course-schedule-table-staff" "<span class='responsive-header'>${staffI18n}</span>${staff}" editI18n hasNotResources canEdit /></#if>
+           <#if hasResources><@editLink "course-schedule-table-resources" "<span class='responsive-header'>${resourcesI18n}</span>${resources}" editI18n hasResources canEdit /></#if>
          </tr>
        </#local>
        <#local tablesHtmlStart = tablesHtmlStart + tablesHtmlMiddle />
@@ -206,7 +213,7 @@
      <#if !skipTier>
        <#local tocHtmlTime = "" />
        <#if (tocTimeCount <= tocTimeMax && !tocTimeNo)>
-         <#local tocHtmlTime = " - " + tocTime?replace(",([^,]+)$", " " + vrtx.getMsg("course-schedule.and") + " $1", "r") />
+         <#local tocHtmlTime = " - " + tocTime?replace(",([^,]+)$", " " + andI18n + " $1", "r") />
        </#if>
        
        <#if tocHtmlMiddle != "">
@@ -246,7 +253,7 @@
           <#local groupCount = 0 />
        </#if>
      <#else>
-       <#local tocHtml = tocHtml + "<li><span><a href='#" + activityId + "'>" + dtLong?html + "</a> - " + tocTime?replace(",([^,]+)$", " " + vrtx.getMsg("course-schedule.and") + " $1", "r") + "</li>" />
+       <#local tocHtml = tocHtml + "<li><span><a href='#" + activityId + "'>" + dtLong?html + "</a> - " + tocTime?replace(",([^,]+)$", " " + andI18n + " $1", "r") + "</li>" />
        <#local groupCount = 0 />
      </#if>
       
@@ -293,7 +300,7 @@
   ${staffList}
 </#macro>
 
-<#macro getResources session>
+<#macro getResources i18nShowMore session>
   <#local resourcesTxtLimit = 70 />
   
   <#local resources = [] />
@@ -340,7 +347,7 @@
   ${val}
   
   <#if valAfter != "">
-    <a href='javascript:void(0);' class='course-schedule-table-resources-after-toggle'>${vrtx.getMsg("course-schedule.showMore")}...</a>
+    <a href='javascript:void(0);' class='course-schedule-table-resources-after-toggle'>${i18nShowMore}...</a>
     <div class='course-schedule-table-resources-after'>${valAfter}</div>
   </#if>
 </#macro>
@@ -455,14 +462,14 @@
   </#list>
 </#macro>
 
-<#macro editLink class html displayEditLink canEdit=false>
+<#macro editLink class html i18nEdit displayEditLink canEdit=false>
   <td class="${class}<#if displayEditLink && canEdit> course-schedule-table-edit-cell</#if>">
     <#if !displayEditLink || !canEdit>
       ${html}
     <#else>
      <div class='course-schedule-table-edit-wrapper'>
        ${html}
-       <a class='button course-schedule-table-edit-link' href='javascript:void'><span>${vrtx.getMsg("course-schedule.table-edit")}</span></a>
+       <a class='button course-schedule-table-edit-link' href='javascript:void'><span>${i18nEdit}</span></a>
      </div>
     </#if>
   </td>  

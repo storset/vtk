@@ -17,6 +17,7 @@
 // -->
 </script>
 
+<#assign startTime = .now?long />
 <#if result?has_content>
   <div id="activities">
     <#-- Generate HTML -->
@@ -48,6 +49,9 @@
 <#else>
   <p>${vrtx.getMsg("course-schedule.no-data")}</p>
 </#if>
+<#assign endTime = .now?long />
+<#assign genTime = endTime - startTime />
+<p>${genTime}ms.</p>
 
 <#function generateType result type>
   <#local activities = result[type] />

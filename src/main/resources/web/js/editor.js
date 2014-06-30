@@ -539,9 +539,9 @@ VrtxEditor.prototype.setupEditorHeight = function setupEditorHeight(c, opts) {
   return opts.isCompleteEditor ? ((c.isContent || c.isCourseGroup) ? 400 : (c.isSupervisorBox ? 130 : (c.isCourseDescriptionB ? 200 : 220)))
                                : (c.isMessage ? 250
                                               : (c.isCaption ? 55 
-                                                             : ((c.isStudyField || c.isScheduleComment || c.isAdditionalContent || c.isResourcesText) ? 150 
-                                                                                                                                                      : (c.isIntro ? 100 
-                                                                                                                                                                   : 90))))
+                                                             : ((c.isStudyField || c.isScheduleComment || c.isAdditionalContent) ? 150 
+                                                                                                                                 : (c.isIntro ? 100 
+                                                                                                                                              : 90))))
 };
 
 VrtxEditor.prototype.setupEditorMaxHeight = function setupEditorMaxHeight(c, opts) {
@@ -1792,6 +1792,7 @@ function courseSchedule() {
 
       contents.find("#vrtx-editor-title-submit-buttons-inner-wrapper > h2")
               .html(csRef.i18n.editOnlySessionTitle + "<a href='javascript:void(0)' class='vrtx-close-dialog-editor'></a>");
+      document.title = csRef.i18n.editOnlySessionTitle;
       
       var editorSubmitButtons = vrtxEditor.editorForm.find(".submitButtons");
       

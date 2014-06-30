@@ -1717,7 +1717,7 @@ function courseSchedule() {
 
     sessionLookup.hasChanges = editorDetectChange(rawPtr, rawOrig);
   };
-  this.saved = function() {
+  this.saved = function(isSaveView) {
     for(var type in this.sessionsLookup) {
       for(var session in this.sessionsLookup[type]) {
         var sessionObj = this.sessionsLookup[type][session];
@@ -1727,10 +1727,10 @@ function courseSchedule() {
         }
       }
     }
-    this.sessionOnlyWindowClose();
+    this.sessionOnlyWindowClose(isSaveView);
   };
-  this.sessionOnlyWindowClose = function() {
-    if(onlySessionId) {
+  this.sessionOnlyWindowClose = function(isSaveView) {
+    if(onlySessionId && isSaveView) {
       location.href = $("#global-menu-leave-admin a").attr("href");
     }
   };
@@ -1909,7 +1909,7 @@ function courseSchedule() {
         vrtxAdmin.serverFacade.postHtml(url, dataString, {
           success: function (results, status, resp) {
             vrtxEditor.needToConfirm = false;
-            csRef.sessionOnlyWindowClose();
+            csRef.sessionOnlyWindowClose(true);
           }
         });
         e.stopPropagation();

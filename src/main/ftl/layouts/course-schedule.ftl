@@ -51,7 +51,9 @@
 </#if>
 <#assign endTime = .now?long />
 <#assign genTime = endTime - startTime />
-<p>${genTime}ms.</p>
+<p>Start: ${endTime}ms.</p>
+<p>End: ${startTime}ms.</p>
+<p>${genTime?round}ms.</p>
 
 <#function generateType result type>
   <#local activities = result[type] />

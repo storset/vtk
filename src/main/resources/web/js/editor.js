@@ -539,9 +539,9 @@ VrtxEditor.prototype.setupEditorHeight = function setupEditorHeight(c, opts) {
   return opts.isCompleteEditor ? ((c.isContent || c.isCourseGroup) ? 400 : (c.isSupervisorBox ? 130 : (c.isCourseDescriptionB ? 200 : 220)))
                                : (c.isMessage ? 250
                                               : (c.isCaption ? 55 
-                                                             : ((c.isStudyField || c.isScheduleComment || c.isAdditionalContent || c.isResourcesText) ? 150 
-                                                                                                                                                      : (c.isIntro ? 100 
-                                                                                                                                                                   : 90))))
+                                                             : ((c.isStudyField || c.isScheduleComment || c.isAdditionalContent) ? 150 
+                                                                                                                                 : (c.isIntro ? 100 
+                                                                                                                                              : 90))))
 };
 
 VrtxEditor.prototype.setupEditorMaxHeight = function setupEditorMaxHeight(c, opts) {
@@ -1201,6 +1201,13 @@ function courseSchedule() {
       "cancelledVortexTooltip": "Aktiviteten kan avlyses i Vortex",
       "cancelledTPTooltip": "Aktiviteten er avlyst i timeplanleggingssystemet",
       "orphan": "SLETTET",
+      
+      "prev": "Forrige",
+      "next": "Neste",
+      
+      "saveView": "Lagre og vis",
+      "save": "Lagre",
+      "cancel": "Avbryt",
 
       "vrtxTitle": "Tittel",
       "vrtxStaff": "Forelesere",
@@ -1254,6 +1261,13 @@ function courseSchedule() {
       "cancelledTPTooltip": "Aktiviteten er avlyst i timeplanleggingssystemet",
       "orphan": "SLETTET",
       
+      "prev": "Forrige",
+      "next": "Neste",
+      
+      "saveView": "Lagre og vis",
+      "save": "Lagre",
+      "cancel": "Avbryt",
+      
       "vrtxTitle": "Tittel",
       "vrtxStaff": "Forelesere",
       "vrtxStaffExternal": "Eksterne forelesere",
@@ -1306,6 +1320,13 @@ function courseSchedule() {
       "cancelledTPTooltip": "The activity is cancelled in the schedulling system",
       "orphan": "DELETED",
       
+      "prev": "Previous",
+      "next": "Next",
+      
+      "saveView": "Save and view",
+      "save": "Save",
+      "cancel": "Cancel",
+      
       "vrtxTitle": "Title",
       "vrtxStaff": "Staff",
       "vrtxStaffExternal": "External staff",
@@ -1341,6 +1362,8 @@ function courseSchedule() {
     var type = sessionData.type;
     var skipTier = sessionData.skipTier;
     var dtShort = sessionData.dtShort;
+    var prevId = sessionData.prevId;
+    var nextId = sessionData.nextId;
     
     var descs = this.retrievedScheduleData[type].vrtxEditableDescription;
 
@@ -1348,7 +1371,7 @@ function courseSchedule() {
       this.sessionsLookup[skipTier ? (dtShort != "for" ? id : dtShort) : id] = {};
     }
     var sessionDateTime = this.getDateTime(session.dtStart, session.dtEnd);
-    var sessionHtml = this.getSessionHtml(id, session, dtShort, sessionDateTime, sequences, descs, skipTier, vrtxEditor);    
+    var sessionHtml = this.getSessionHtml(id, prevId, nextId, session, dtShort, sessionDateTime, sequences, descs, skipTier, vrtxEditor);    
     
     this.lastElm = $(".properties"); 
     this.lastId = skipTier ? dtShort : id;
@@ -1427,7 +1450,7 @@ function courseSchedule() {
         for(j = 0, len = map.length; j < len; j++) {
           var session = sessions[map[j].index];
           var sessionProcessed = sessionsProcessed[map[j].index];
-          var sessionHtml = this.getSessionHtml(id, session, dtShort, sessionProcessed.dateTime, sequences, descs, skipTier, vrtxEdit);
+          var sessionHtml = this.getSessionHtml(id, null, null, session, dtShort, sessionProcessed.dateTime, sequences, descs, skipTier, vrtxEdit);
           sessionsHtml += vrtxEdit.htmlFacade.getAccordionInteraction(!skipTier ? "5" : "4", sessionHtml.sessionId, "session", sessionHtml.title, sessionHtml.html);
         }
         
@@ -1464,7 +1487,7 @@ function courseSchedule() {
      
     return html;
   };
-  this.getSessionHtml = function(id, session, dtShort, sessionDateTime, sequences, descs, skipTier, vrtxEdit) {
+  this.getSessionHtml = function(id, prevId, nextId, session, dtShort, sessionDateTime, sequences, descs, skipTier, vrtxEdit) {
     var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime),
         sessionId = id + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId,
         sequenceIdSplit = session.id.split("/");
@@ -1483,7 +1506,11 @@ function courseSchedule() {
                        (sessionOrphan ? "<span class='header-status'>" + this.i18n.orphan + "</span> - " : "") +
                        (sessionCancelled ? "<span class='header-status'>" + this.i18n.cancelled + "</span> - " : "") +
                        "<span class='header-title'>" + (session.vrtxTitle || session.title || session.id) + "</span></span>" +
-                       (rooms ? (" - <span class='session-room'>" + (rooms[0].buildingAcronym || rooms[0].buildingId) + " " + rooms[0].roomId) + "</span>" : ""),
+                       (rooms ? (" - <span class='session-room'>" + (rooms[0].buildingAcronym || rooms[0].buildingId) + " " + rooms[0].roomId) + "</span>" : "") +
+                       ((prevId || nextId) ? "<div class='prev-next'>" : "") +
+                       (prevId ? "<a class='prev' href='" + window.location.protocol + "//" + window.location.host + window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + prevId + "'>" + this.i18n.prev + "</a>" : "") +
+                       (nextId ? "<a class='next' href='" + window.location.protocol + "//" + window.location.host + window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + nextId + "'>" + this.i18n.next + "</a>" : "") +
+                       ((prevId || nextId) ? "</div>" : ""),
         sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, session, this.retrievedScheduleData.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
 
      this.sessionsLookup[skipTier ? (dtShort != "for" ? id : dtShort) : id][sessionId] = {
@@ -1553,7 +1580,12 @@ function courseSchedule() {
     var postFixId = start.date + "-" + start.month + "-" + start.year + "-" + start.hh + "-" + start.mm + "-" + end.hh + "-" + end.mm;
     return { date: strDate, postFixId: postFixId };
   };
-  this.getSessionJSONFromId = function(findSessionId) {
+  this.getSessionJSONFromId = function(findSessionId) { // XXX: Refactor with getActivitiesForTypeHtml
+    var foundObj = null;
+    var nextId = null;
+    var prevId = null;
+    var sessions = [];
+    var sequences = {};
     for(var type in this.retrievedScheduleData) {
       if(!this.retrievedScheduleData[type]) continue;
       var data = this.retrievedScheduleData[type].activities;
@@ -1566,8 +1598,6 @@ function courseSchedule() {
         var dt = data[i];
         var dtShort = dt.teachingMethod.toLowerCase();
         var id = dtShort + "-" + dt.id;
-        var sessions = [];
-        var sequences = {};
         for(var j = 0, len = dt.sequences.length; j < len; j++) {
           var sequence = dt.sequences[j];
           var fixedResources = sequence.vrtxResourcesFixed;
@@ -1576,18 +1606,65 @@ function courseSchedule() {
           }
           sessions = sessions.concat(sequence.sessions);
         }
-        for(j = 0, len = sessions.length; j < len; j++) {
-          var session = sessions[j];
-          var sessionDateTime = this.getDateTime(session.dtStart, session.dtEnd);
-          var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime);
-          var sessionId = id + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId;
-          if(findSessionId === sessionId) {
-            return { id: id, session: session, sessionDateTime: sessionDateTime, sequences: sequences, type: type, skipTier: skipTier, dtShort: dtShort };
+        if(!skipTier || (dtShort != "for" || (dtShort === "for" && (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== dtShort)))) {
+          // Evaluate and cache dateTime
+          var map = [], sessionsProcessed = [];
+          for(j = 0, len = sessions.length; j < len; j++) {
+            var session = sessions[j];
+          
+            var dateTime = this.getDateTime(session.dtStart, session.dtEnd);
+            var start = dateTime.start;
+            var end = dateTime.end;
+            var startEndString = start.year + "" + start.month + "" + start.date + "" + start.hh + "" + start.mm + "" + end.hh + "" + end.mm;
+          
+            map.push({
+              "index": j, // Save index
+              "startEndString": startEndString,
+              "isOrphan": session.vrtxOrphan
+            });
+            sessionsProcessed.push({
+              "dateTime": dateTime
+            });
           }
+          // Sort
+          map.sort(function(a, b) {
+            var x = a.isOrphan, y = b.isOrphan;
+            if(x === y) {
+              return a.startEndString > b.startEndString ? 1 : -1;
+            }
+            return !x && y ? -1 : x && !y ? 1 : 0;
+          });
+          for(j = 0, len = map.length; j < len; j++) {
+            var session = sessions[map[j].index];
+            var sessionProcessed = sessionsProcessed[map[j].index];
+            var sessionDateTime = sessionProcessed.dateTime;
+            var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime);
+            var sessionId = id + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId;
+
+            if(foundObj && !nextId) {
+              nextId = sessionId;
+              break;
+            }
+            if(findSessionId === sessionId) {
+              foundObj = { id: id, prevId: prevId, session: session, sessionDateTime: sessionDateTime, sequences: sequences, type: type, skipTier: skipTier, dtShort: dtShort };
+            } else {
+              prevId = sessionId;
+            }
+          }
+          sessions = [];
+        }
+        if(nextId) {
+          break;
         }
       }
+      if(nextId) {
+        break;
+      }
     }
-    return null;
+    if(foundObj) {
+      foundObj.nextId = nextId;
+    }
+    return foundObj;
   };
   this.enhanceSession = function(id, sessionId, contentElm) {
     var session = this.sessionsLookup[id][sessionId];
@@ -1640,7 +1717,7 @@ function courseSchedule() {
 
     sessionLookup.hasChanges = editorDetectChange(rawPtr, rawOrig);
   };
-  this.saved = function() {
+  this.saved = function(isSaveView) {
     for(var type in this.sessionsLookup) {
       for(var session in this.sessionsLookup[type]) {
         var sessionObj = this.sessionsLookup[type][session];
@@ -1650,10 +1727,10 @@ function courseSchedule() {
         }
       }
     }
-    this.sessionOnlyWindowClose();
+    this.sessionOnlyWindowClose(isSaveView);
   };
-  this.sessionOnlyWindowClose = function() {
-    if(onlySessionId) {
+  this.sessionOnlyWindowClose = function(isSaveView) {
+    if(onlySessionId && isSaveView) {
       location.href = $("#global-menu-leave-admin a").attr("href");
     }
   };
@@ -1792,19 +1869,27 @@ function courseSchedule() {
 
       contents.find("#vrtx-editor-title-submit-buttons-inner-wrapper > h2")
               .html(csRef.i18n.editOnlySessionTitle + "<a href='javascript:void(0)' class='vrtx-close-dialog-editor'></a>");
+      document.title = csRef.i18n.editOnlySessionTitle;
       
       var editorSubmitButtons = vrtxEditor.editorForm.find(".submitButtons");
       
       if(sessionOnly) {
         editorProperties.prepend("<h4 class='property-label'>" + sessionOnly.title + "</h4>" + html);
-        csRef.enhanceSession(sessionOnly.skipTier ? sessionOnly.dtShort : sessionOnly.id, onlySessionId, editorProperties);
+        csRef.enhanceSession((sessionOnly.skipTier ? (sessionOnly.dtShort != "for" ? sessionOnly.id : sessionOnly.dtShort) : sessionOnly.id), onlySessionId, editorProperties);
+        var newButtonsHtml = "<input class='vrtx-button vrtx-embedded-button' id='vrtx-embedded-save-view-button' type='submit' value='" + csRef.i18n.saveView + "' />" +
+                             "<input class='vrtx-focus-button vrtx-embedded-button' id='vrtx-embedded-save-button' type='submit' value='" + csRef.i18n.save + "' />" +
+                             "<input class='vrtx-button vrtx-embedded-button' id='vrtx-embedded-cancel-button' type='submit' value='" + csRef.i18n.cancel + "' />";
 
-        var newButtonsHtml = "<input class='vrtx-focus-button vrtx-embedded-button' id='vrtx-embedded-save-button' type='submit' value='Lagre' />" +
-                             "<input class='vrtx-button vrtx-embedded-button' id='vrtx-embedded-cancel-button' type='submit' value='Avbryt' />";
-       
         /* Save and unlock */
-        editorSubmitButtons.on("click", "#vrtx-embedded-save-button", function(e) {
+        editorSubmitButtons.on("click", "#vrtx-embedded-save-view-button", function(e) {
           editorSubmitButtons.find("#saveAndViewButton").trigger("click");
+          e.stopPropagation();
+          e.preventDefault();
+        });
+        
+        /* Save */
+        editorSubmitButtons.on("click", "#vrtx-embedded-save-button", function(e) {
+          editorSubmitButtons.find("#updateAction").trigger("click");
           e.stopPropagation();
           e.preventDefault();
         });
@@ -1824,7 +1909,7 @@ function courseSchedule() {
         vrtxAdmin.serverFacade.postHtml(url, dataString, {
           success: function (results, status, resp) {
             vrtxEditor.needToConfirm = false;
-            csRef.sessionOnlyWindowClose();
+            csRef.sessionOnlyWindowClose(true);
           }
         });
         e.stopPropagation();

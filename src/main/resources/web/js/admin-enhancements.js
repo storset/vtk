@@ -877,7 +877,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
           vrtxAdm.editorSaveButton = link;
           // ! Edit single course schedule session
           vrtxAdm.editorSaveIsRedirectView = (this.id === "saveAndViewButton" || this.id === "saveViewAction")
-                                             && (typeof vrtxEditor === "undefined" || !(vrtxEditor.editorForm.hasClass("vrtx-course-schedule") && onlySessionId.length));
+                                          && (typeof vrtxEditor === "undefined" || !(vrtxEditor.editorForm.hasClass("vrtx-course-schedule") && onlySessionId.length));
           ajaxSave();
           _$.when(vrtxAdm.asyncEditorSavedDeferred).done(function () {
             vrtxAdm.removeMsg("error");
@@ -2694,7 +2694,7 @@ function ajaxSave() {
           }, Math.round(waitMinMs - endTime));
         }
         if(typeof vrtxEditor != "undefined" && vrtxEditor.editorForm.hasClass("vrtx-course-schedule")) {
-          editorCourseSchedule.saved();
+          editorCourseSchedule.saved(vrtxAdm.editorSaveButtonName === "updateViewAction");
         }
       },
       error: function (xhr, textStatus, errMsg) {

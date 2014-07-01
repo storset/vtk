@@ -1374,7 +1374,7 @@ function courseSchedule() {
     var sessionHtml = this.getSessionHtml(id, prevId, nextId, session, dtShort, sessionDateTime, sequences, descs, skipTier, vrtxEditor);    
     
     this.lastElm = $(".properties"); 
-    this.lastId = skipTier ? dtShort : id;
+    this.lastId = skipTier ? (dtShort != "for" ? id : dtShort) : id;
     this.lastSessionId = sessionId;
                                                     
     return { id: id, skipTier: skipTier, dtShort: dtShort, html: sessionHtml.html, title: sessionHtml.title };
@@ -1489,7 +1489,7 @@ function courseSchedule() {
   };
   this.getSessionHtml = function(id, prevId, nextId, session, dtShort, sessionDateTime, sequences, descs, skipTier, vrtxEdit) {
     var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime),
-        sessionId = id + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId,
+        sessionId = id + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId,
         sequenceIdSplit = session.id.split("/");
     if(sequenceIdSplit.length == 3) {
       var sequenceId = sequenceIdSplit[1];
@@ -1639,7 +1639,7 @@ function courseSchedule() {
             var sessionProcessed = sessionsProcessed[map[j].index];
             var sessionDateTime = sessionProcessed.dateTime;
             var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime);
-            var sessionId = id + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId;
+            var sessionId = id + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
 
             if(foundObj && !nextId) {
               nextId = sessionId;

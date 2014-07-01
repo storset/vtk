@@ -151,7 +151,7 @@
        <#local dateStart = session.dtStart?replace("T", " ")?date("yyyy-MM-dd HH:mm:ss") />
        <#local dateEnd = session.dtEnd?replace("T", " ")?date("yyyy-MM-dd HH:mm:ss") />
        <#local isPassed = (now > dateEnd) />
-       <#local sessionId = dtShort + "-" + id + "-" + session.id?replace("/", "-") + "-" + dateStart?string("dd-MM-yyyy-HH-mm") + "-" + dateEnd?string("HH-mm") />
+       <#local sessionId = dtShort + "-" + id + "-" + session.id?replace("/", "-")?replace("#", "-") + "-" + dateStart?string("dd-MM-yyyy-HH-mm") + "-" + dateEnd?string("HH-mm") />
         
        <#if session.vrtxTitle?exists>
          <#local title = session.vrtxTitle />

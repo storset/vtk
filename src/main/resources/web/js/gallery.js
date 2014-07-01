@@ -376,16 +376,14 @@
     }
     
     function resizeContainers(activeSrc, active, activeDesc) {
-      var width = Math.max(images[activeSrc][widthProp], 150); // Min 150x100px containers
+      var width = Math.max(images[activeSrc][widthProp], isFullscreen ? 500 : 150); // Min 150x100px containers
       var height = Math.max(images[activeSrc][heightProp], 100);
       active.css("height", height + "px");
       wrpNavNextPrev.css("height", height + "px");
       wrpNavNextPrevSpans.css("height", height + "px");
       wrpNav.css("width", width + "px");
       wrpContainer.css("width", width + "px");
-      if(!isFullscreen) {
-        activeDesc.css("width", (width - 30)); 
-      }
+      activeDesc.css("width", (width - 30));
     }
 
     function resizeToggleFullscreen() {

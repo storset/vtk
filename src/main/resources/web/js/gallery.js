@@ -194,12 +194,8 @@
       }
       var id = genId(src);
       if(wrp.find("a#" + id).length) return;
-      var description = "<div id='" + id + "-description' class='" + container.substring(1) + "-description" + (!images[src].desc ? " empty-description" : "") + "' style='display: none; width: " + (images[src].width - 30) + "px'>" +
-                          images[src].desc + "<a href='javascript:void(0);' class='toggle-fullscreen minimized'>" + (isResponsive ? settings.i18n.showFullscreenResponsive : settings.i18n.showFullscreen) + "</a>" +
-                      + "</div>";
-      console.log(description);
-      console.log($.parseHTML(description));
-      $($.parseHTML(description)).insertBefore(wrpThumbs);
+      var description = "<div id='" + id + "-description' class='" + container.substring(1) + "-description" + (!images[src].desc ? " empty-description" : "") + "' style='display: none; width: " + (images[src].width - 30) + "px'>" + images[src].desc + "<a href='javascript:void(0);' class='toggle-fullscreen minimized'>" + (isResponsive ? settings.i18n.showFullscreenResponsive : settings.i18n.showFullscreen) + "</a></div>";
+      $($.parseHTML(description.replace(/&quot;/g, "\"")).insertBefore(wrpThumbs);
       wrpContainer.append("<a id='" + id + "' style='display: none' href='" + src + "' class='" + container.substring(1) + "-link'>" +
                             "<img src='" + src + "' alt='" + images[src].alt + "' style='width: " + images[src][widthProp] + "px; height: " + images[src][heightProp] + "px;' />" +
                           "</a>");

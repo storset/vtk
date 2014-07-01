@@ -1374,7 +1374,7 @@ function courseSchedule() {
     var sessionHtml = this.getSessionHtml(id, prevId, nextId, session, dtShort, sessionDateTime, sequences, descs, skipTier, vrtxEditor);    
     
     this.lastElm = $(".properties"); 
-    this.lastId = skipTier ? dtShort : id;
+    this.lastId = skipTier ? (dtShort != "for" ? id : dtShort) : id;
     this.lastSessionId = sessionId;
                                                     
     return { id: id, skipTier: skipTier, dtShort: dtShort, html: sessionHtml.html, title: sessionHtml.title };

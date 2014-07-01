@@ -195,7 +195,7 @@
       var id = genId(src);
       if(wrp.find("a#" + id).length) return;
       var description = "<div id='" + id + "-description' class='" + container.substring(1) + "-description" + (!images[src].desc ? " empty-description" : "") + "' style='display: none; width: " + (images[src].width - 30) + "px'>" + images[src].desc + "<a href='javascript:void(0);' class='toggle-fullscreen minimized'>" + (isResponsive ? settings.i18n.showFullscreenResponsive : settings.i18n.showFullscreen) + "</a></div>";
-      $($.parseHTML(description.replace(/&quot;/g, "\"")).insertBefore(wrpThumbs);
+      $($.parseHTML(description)).insertBefore(wrpThumbs);
       wrpContainer.append("<a id='" + id + "' style='display: none' href='" + src + "' class='" + container.substring(1) + "-link'>" +
                             "<img src='" + src + "' alt='" + images[src].alt + "' style='width: " + images[src][widthProp] + "px; height: " + images[src][heightProp] + "px;' />" +
                           "</a>");
@@ -322,8 +322,8 @@
       // HTML unescape and encode quotes in alt and title if not already encoded
       var alt = dims.alt;
       var title = dims.title;
-      images[src].alt = alt != "" ? $("<div/>").html(alt).text().replace(/\'/g, "&#39;").replace(/\"/g, "&quot;") : null;
-      images[src].title = title != "" ? $("<div/>").html(title).text().replace(/\'/g, "&#39;").replace(/\"/g, "&quot;") : null;
+      images[src].alt = alt != "" ? $("<div/>").html(alt).text().replace(/\'/g, "&#39;") : null;
+      images[src].title = title != "" ? $("<div/>").html(title).text().replace(/\'/g, "&#39;") : null;
       // Add description
       var desc = "";
       if (images[src].title) desc += "<p class='" + container.substring(1) + "-title'>" + images[src].title + "</p>";

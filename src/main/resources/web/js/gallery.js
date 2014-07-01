@@ -195,13 +195,13 @@
       var id = genId(src);
       if(wrp.find("a#" + id).length) return;
       var description = "<div id='" + id + "-description' class='" + container.substring(1) + "-description" + (!images[src].desc ? " empty-description" : "") + "' style='display: none; width: " + (images[src].width - 30) + "px'>" +
-                          images[src].desc + "<a href='javascript:void(0);' class='toggle-fullscreen minimized'>" + (isResponsive ? settings.i18n.showFullscreenResponsive : settings.i18n.showFullscreen) + "</a>"
+                          images[src].desc + "<a href='javascript:void(0);' class='toggle-fullscreen minimized'>" + (isResponsive ? settings.i18n.showFullscreenResponsive : settings.i18n.showFullscreen) + "</a>" +
                       + "</div>";
-      console.log(description)
-      console.log($.parseHTML(description))
+      console.log(description);
+      console.log($.parseHTML(description));
       $($.parseHTML(description)).insertBefore(wrpThumbs);
       wrpContainer.append("<a id='" + id + "' style='display: none' href='" + src + "' class='" + container.substring(1) + "-link'>" +
-                            "<img src='" + src + "' alt='' style='width: " + images[src][widthProp] + "px; height: " + images[src][heightProp] + "px;' />" +
+                            "<img src='" + src + "' alt='" + images[src].alt + "' style='width: " + images[src][widthProp] + "px; height: " + images[src][heightProp] + "px;' />" +
                           "</a>");
     }
     
@@ -324,11 +324,14 @@
       images[src].height = regularDims[1];
 
       // HTML unescape and encode quotes in alt and title if not already encoded
+      var alt = dims.alt;
       var title = dims.title;
+      images[src].alt = alt != "" ? $("<div/>").html(alt).text().replace(/\'/g, "&#39;").replace(/\"/g, "&quot;") : null;
       images[src].title = title != "" ? $("<div/>").html(title).text().replace(/\'/g, "&#39;").replace(/\"/g, "&quot;") : null;
       // Add description
       var desc = "";
       if (images[src].title) desc += "<p class='" + container.substring(1) + "-title'>" + images[src].title + "</p>";
+      if (images[src].alt)   desc += images[src].alt;
       images[src].desc = desc;
     }
 
@@ -378,14 +381,14 @@
     }
     
     function resizeContainers(activeSrc, active, activeDesc) {
-      var width = Math.max(images[activeSrc][widthProp], isFullscreen ? 500 : 150); // Min. 150x100px (or 500x100px in fullscreen) containers
+      var width = Math.max(images[activeSrc][widthProp], (isFullscreen ? 500 : 150)); // Min 150x100px containers
       var height = Math.max(images[activeSrc][heightProp], 100);
       active.css("height", height + "px");
       wrpNavNextPrev.css("height", height + "px");
       wrpNavNextPrevSpans.css("height", height + "px");
       wrpNav.css("width", width + "px");
       wrpContainer.css("width", width + "px");
-      activeDesc.css("width", (width - 30));
+      activeDesc.css("width", (width - 30)); 
     }
 
     function resizeToggleFullscreen() {

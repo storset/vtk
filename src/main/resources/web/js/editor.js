@@ -1489,7 +1489,7 @@ function courseSchedule() {
   };
   this.getSessionHtml = function(id, prevId, nextId, session, dtShort, sessionDateTime, sequences, descs, skipTier, vrtxEdit) {
     var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime),
-        sessionId = encodeURIComponent(id + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId),
+        sessionId = id + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId,
         sequenceIdSplit = session.id.split("/");
     if(sequenceIdSplit.length == 3) {
       var sequenceId = sequenceIdSplit[1];
@@ -1639,7 +1639,7 @@ function courseSchedule() {
             var sessionProcessed = sessionsProcessed[map[j].index];
             var sessionDateTime = sessionProcessed.dateTime;
             var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime);
-            var sessionId = encodeURIComponent(id + "-" + session.id.replace(/\//g, "-") + "-" + sessionDatePostFixId.postFixId);
+            var sessionId = id + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
 
             if(foundObj && !nextId) {
               nextId = sessionId;
@@ -1863,6 +1863,7 @@ function courseSchedule() {
     $(".vrtx-json").remove();
 
     if(onlySessionId) {
+      onlySessionId = decodeURIComponent(onlySessionId);
       var sessionOnly = csRef.getSessionOnlyHtml(onlySessionId);
       var html = !sessionOnly ? "<p>" + csRef.i18n.noSessionData + "</p>" : sessionOnly.html;
 

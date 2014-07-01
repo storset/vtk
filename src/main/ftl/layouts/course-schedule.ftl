@@ -158,7 +158,7 @@
        <#elseif session.title?exists> 
          <#local title = session.title />
        <#else>
-         <#local title = session.id />
+         <#local title = "" />
        </#if>
        <#if (session.status == "cancelled") || (session.vrtxStatus?exists && session.vrtxStatus == "cancelled")>
          <#local title = "<span class='course-schedule-table-status'>" + cancelledI18n + "</span>" + title?html />

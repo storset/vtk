@@ -30,20 +30,21 @@
  */
 package org.vortikal.web.decorating;
 
-import java.util.Map;
+import java.util.List;
 
 import org.vortikal.text.html.HtmlPageParser;
-import org.vortikal.text.tl.DirectiveNodeFactory;
+import org.vortikal.text.tl.DirectiveHandler;
+import org.vortikal.util.io.InputSource;
 
 public class SimpleDynamicDecoratorTemplateFactory implements TemplateFactory {
 
     private ComponentResolver componentResolver;
-    private Map<String, DirectiveNodeFactory> directiveHandlers;
+    private List<DirectiveHandler> directiveHandlers;
     private HtmlPageParser htmlParser = null;
 
     
     @Override
-    public Template newTemplate(TemplateSource templateSource)
+    public Template newTemplate(InputSource templateSource)
             throws InvalidTemplateException {
         return new DynamicDecoratorTemplate(templateSource, this.componentResolver, 
                 this.directiveHandlers, this.htmlParser);
@@ -53,8 +54,7 @@ public class SimpleDynamicDecoratorTemplateFactory implements TemplateFactory {
         this.componentResolver = componentResolver;
     }
 
-    public void setDirectiveHandlers(
-            Map<String, DirectiveNodeFactory> directiveHandlers) {
+    public void setDirectiveHandlers(List<DirectiveHandler> directiveHandlers) {
         this.directiveHandlers = directiveHandlers;
     }
     

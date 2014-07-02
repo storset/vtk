@@ -1,4 +1,4 @@
-/* Copyright (c) 2011, University of Oslo, Norway
+/* Copyright (c) 2014, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,24 +28,31 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.text.tl;
+package org.vortikal.web.decorating;
 
-public class ParseException extends RuntimeException {
+import java.util.List;
 
-    private static final long serialVersionUID = 7893144696840185807L;
-    private int line;
+public class DynamicComponentResolver implements ComponentResolver {
+
+    private DynamicComponentLibrary library;
     
-    public ParseException(String msg, int line) {
-        super(msg);
-        this.line = line;
+    public DynamicComponentResolver(DynamicComponentLibrary library) {
+        this.library = library;
     }
     
-    public ParseException(String msg, Throwable cause, int line) {
-        super(msg, cause);
-        this.line = line;
+    @Override
+    public DecoratorComponent resolveComponent(String namespace, String name) {
+        for (DecoratorComponent component: library.components()) {
+            if (namespace.equals(component.getNamespace()) 
+                    && name.equals(component.getName())) return component;
+        }
+        return null;
     }
     
-    public int getLineNumber() {
-        return this.line;
+    @Override
+    public List<DecoratorComponent> listComponents() {
+        return library.components();
     }
+    
+    
 }

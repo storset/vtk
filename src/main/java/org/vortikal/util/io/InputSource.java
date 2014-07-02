@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,41 +28,21 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.text.tl;
+package org.vortikal.util.io;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+import java.io.InputStream;
 
-public class DirectiveParseContext {
-
-    private String name;
-    private Parser parser;
-    private List<Token> arguments;
-    private String nodeText;
- 
-    public DirectiveParseContext(String name, Parser parser, 
-            List<Token> arguments, String nodeText) {
-        this.name = name;
-        this.parser = parser;
-        this.arguments = arguments;
-        this.nodeText = nodeText;
-    }
-
-    public String getName() {
-        return this.name;
-    }
+public interface InputSource {
     
-    public Parser getParser() {
-        return this.parser;
-    }
+    public String getID();
 
-    public List<Token> getArguments() {
-        List<Token> copy = new ArrayList<Token>();
-        copy.addAll(this.arguments);
-        return copy;
-    }
+    public long getLastModified() throws IOException;
 
-    public String getNodeText() {
-        return this.nodeText;
-    }
+    public String getCharacterEncoding() throws IOException;
+    
+    public InputStream getInputStream() throws IOException;
+    
 }
+
+

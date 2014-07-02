@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2014, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,8 +30,45 @@
  */
 package org.vortikal.text.tl;
 
-public interface DirectiveNodeFactory {
+import java.io.StringWriter;
+import java.io.Writer;
 
-    public Node create(DirectiveParseContext ctx) throws Exception;
+import org.vortikal.text.tl.Parser.Directive;
 
+public class StripHandler implements DirectiveHandler {
+
+    public String[] tokens() {
+        return new String[] { "strip", "endstrip" };
+    }
+    
+    @Override
+    public void directive(Directive directive, TemplateContext context) {
+        String name = directive.name();
+        
+        if ("strip".equals(name)) {
+            context.push(new DirectiveState(directive));
+            return;
+        }
+        if ("endstrip".equals(name)) {
+            DirectiveState state = context.pop();
+            if (state == null || !"strip".equals(state.directive().name())) {
+                context.error("Misplaced directive: endstrip");
+                return;
+            }
+            if (state.directive().args().size() != 0) {
+                context.error("Strip does not take arguments"); 
+                return;
+            }
+            final NodeList nodes = state.nodes();
+            context.add(new Node() {
+                @Override
+                public boolean render(Context ctx, Writer out) throws Exception {
+                    StringWriter buffer = new StringWriter();
+                    nodes.render(ctx, buffer);
+                    out.write(buffer.getBuffer().toString().trim());
+                    return true;
+                }
+            });
+        }
+    }
 }

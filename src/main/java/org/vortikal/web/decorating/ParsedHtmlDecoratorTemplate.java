@@ -55,6 +55,7 @@ import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.text.html.HtmlText;
 import org.vortikal.text.html.HtmlUtil;
+import org.vortikal.util.io.InputSource;
 
 
 /**
@@ -68,7 +69,7 @@ public class ParsedHtmlDecoratorTemplate implements Template {
     private HtmlPageParser htmlParser;
     private TextualComponentParser componentParser;
     private ComponentResolver componentResolver;
-    private TemplateSource templateSource;
+    private InputSource templateSource;
 
     private CompiledTemplate compiledTemplate;
     private long lastModified = -1;
@@ -76,7 +77,7 @@ public class ParsedHtmlDecoratorTemplate implements Template {
     public ParsedHtmlDecoratorTemplate(HtmlPageParser htmlParser, 
             TextualComponentParser componentParser,
             ComponentResolver componentResolver,
-            TemplateSource templateSource) throws Exception {
+            InputSource templateSource) throws Exception {
 
         if (htmlParser == null) {
             throw new IllegalArgumentException("Argument 'htmlParser' is NULL");
@@ -169,7 +170,7 @@ public class ParsedHtmlDecoratorTemplate implements Template {
 
         public CompiledTemplate(HtmlPageParser htmlParser, 
                 TextualComponentParser componentParser,
-                TemplateSource templateSource) throws InvalidTemplateException {
+                InputSource templateSource) throws InvalidTemplateException {
 
             HtmlPage page = null;
             InputStream is = null;

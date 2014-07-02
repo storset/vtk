@@ -33,6 +33,7 @@ package org.vortikal.text.tl.expr;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -361,7 +362,7 @@ public class Expression {
             ExpressionNode emptymap = new MapNode(new HashMap<ExpressionNode, ExpressionNode>());
             return emptymap;
         }
-        Map<ExpressionNode, ExpressionNode> map = new HashMap<ExpressionNode, ExpressionNode>();
+        Map<ExpressionNode, ExpressionNode> map = new LinkedHashMap<ExpressionNode, ExpressionNode>();
         ExpressionNode key = logicalExpression();
         expect(MAPPING);
         readSymbol();
@@ -546,7 +547,7 @@ public class Expression {
         }
         @Override
         public Object eval(Context ctx) {
-            Map<Object, Object> result = new HashMap<Object, Object>();
+            Map<Object, Object> result = new LinkedHashMap<Object, Object>();
             for (ExpressionNode key: this.map.keySet()) {
                 result.put(key.eval(ctx), this.map.get(key).eval(ctx));
             }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2014, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -31,50 +31,51 @@
 package org.vortikal.text.tl;
 
 import java.io.Writer;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.vortikal.text.tl.Parser.Directive;
 import org.vortikal.text.tl.expr.Expression;
 import org.vortikal.text.tl.expr.Function;
 
-public final class DefineNodeFactory implements DirectiveNodeFactory {
+public class DefineHandler implements DirectiveHandler {
 
     private Set<Function> functions = new HashSet<Function>();
 
-    public DefineNodeFactory() {
-    }
-    
-    public DefineNodeFactory(Set<Function> functions) {
-        setFunctions(functions);
-    }
-    
-    public void setFunctions(Set<Function> functions) {
-        if (functions != null) {
-            for (Function function: functions) {
-                this.functions.add(function);
-            }
-        }
+    public DefineHandler(Set<Function> functions) {
+        this.functions = Collections.unmodifiableSet(functions);
     }
 
-    public Node create(DirectiveParseContext ctx) throws Exception {
-        List<Token> args = ctx.getArguments();
+    public String[] tokens() {
+        return new String[] { "def" };
+    }
+    
+    @Override
+    public void directive(Directive directive, TemplateContext context) {
+        List<Token> args = directive.args();
         if (args.size() < 2) {
-            throw new RuntimeException("Too few arguments: " + ctx.getNodeText());
+            throw new RuntimeException("Too few arguments: " + directive);
         }
-        Token arg1 = args.remove(0);
+        Token arg1 = args.get(0);
         if (!(arg1 instanceof Symbol)) {
             throw new RuntimeException("Expected symbol: " + arg1.getRawValue());
         }
         final String variable = ((Symbol) arg1).getSymbol();
 
-        final Expression expression = new Expression(this.functions, args);
-        return new Node() {
+        final Expression expression = new Expression(this.functions, args.subList(1, args.size()));
+        context.add(new Node() {
+            @Override
             public boolean render(Context ctx, Writer out) throws Exception {
                 Object val = expression.evaluate(ctx);
                 ctx.define(variable, val, true);
                 return true;
             }
-        };
+            @Override
+            public String toString() {
+                return "[def " + variable + " " + expression + "]";
+            }
+        });
     }
 }

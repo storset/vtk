@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, University of Oslo, Norway
+/* Copyright (c) 2014, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,44 +28,37 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.text.tl;
+package org.vortikal.web.decorating;
 
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
-public class StripNodeFactory implements DirectiveNodeFactory {
+public class AggregatedComponentResolver implements ComponentResolver {
 
-    private static final Set<String> STRIP_TERM = new HashSet<String>(Arrays.asList("endstrip"));
-    
-    @Override
-    public Node create(DirectiveParseContext ctx) throws Exception {
-        
-        ParseResult block = ctx.getParser().parse(STRIP_TERM);
+    private List<ComponentResolver> resolvers;
 
-        DirectiveParseContext terminator = block.getTerminator();
-        if (terminator == null) {
-            throw new RuntimeException("Unterminated directive: " + ctx.getNodeText());
-        }
-        NodeList nodeList = block.getNodeList();
-        return new StripNode(nodeList);
+    public AggregatedComponentResolver(List<ComponentResolver> resolvers) {
+        this.resolvers = resolvers;
     }
     
-    private static class StripNode extends Node {
-        private NodeList nodeList;
-        
-        public StripNode(NodeList nodeList) {
-            this.nodeList = nodeList;
+    @Override
+    public DecoratorComponent resolveComponent(String namespace, String name) {
+        for (ComponentResolver resolver: resolvers) {
+            DecoratorComponent c = resolver.resolveComponent(namespace, name);
+            if (c != null) {
+                return c;
+            }
         }
-        
-        public boolean render(Context ctx, Writer out) throws Exception {
-            StringWriter buffer = new StringWriter();
-            this.nodeList.render(ctx, buffer);
-            out.write(buffer.getBuffer().toString().trim());
-            return true;
+        return null;
+    }
+
+    @Override
+    public List<DecoratorComponent> listComponents() {
+        List<DecoratorComponent> list = new ArrayList<DecoratorComponent>();
+        for (ComponentResolver resolver: resolvers) {
+            list.addAll(resolver.listComponents());
         }
+        return list;
     }
 
 }

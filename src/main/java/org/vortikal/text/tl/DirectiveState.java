@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2014, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,31 +30,19 @@
  */
 package org.vortikal.text.tl;
 
-import java.io.Writer;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
-public class CommentNodeFactory implements DirectiveNodeFactory {
-
-    private static final Set<String> TERM =
-        new HashSet<String>(Arrays.asList("endcomment"));
-
-    public Node create(DirectiveParseContext ctx) throws Exception {
-        
-        ParseResult nodes = ctx.getParser().parse(TERM);
-        if (nodes.getTerminator() == null) {
-            throw new RuntimeException("Unterminated directive: " + ctx.getNodeText());
-        }
-        return new CommentNode();
+public final class DirectiveState {
+    private Parser.Directive directive;
+    private NodeList nodeList;
+    
+    public DirectiveState(Parser.Directive directive) {
+        this.directive = directive;
+        nodeList = new NodeList();
     }
+    public Parser.Directive directive() { return directive; }
+    public NodeList nodes() { return nodeList; }
 
-    private static class CommentNode extends Node {
-        public boolean render(Context ctx, Writer out) throws Exception {
-            return true;
-        }
-        public String toString() {
-            return "[comment-node]";
-        }
+    @Override
+    public String toString() {
+        return directive.toString();
     }
 }

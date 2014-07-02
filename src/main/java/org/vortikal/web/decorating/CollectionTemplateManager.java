@@ -44,6 +44,8 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
+import org.vortikal.util.io.InputSource;
+import org.vortikal.util.repository.RepositoryInputSource;
 
 
 /**
@@ -159,8 +161,8 @@ public class CollectionTemplateManager implements TemplateManager, InitializingB
 
         for (Resource resource: templatesResources) {
 
-            TemplateSource templateSource =
-                new RepositoryTemplateSource(resource.getURI(), this.repository, null);
+            InputSource templateSource =
+                new RepositoryInputSource(resource.getURI(), this.repository, null);
 
             try {
                 String identifier = resource.getURI().toString().substring(this.collectionName.length() + 1);

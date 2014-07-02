@@ -35,6 +35,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -46,22 +47,24 @@ import org.vortikal.resourcemanagement.view.tl.ComponentInvokerNodeFactory;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.text.tl.Context;
-import org.vortikal.text.tl.DirectiveNodeFactory;
+import org.vortikal.text.tl.DirectiveHandler;
 import org.vortikal.text.tl.Node;
 import org.vortikal.text.tl.NodeList;
-import org.vortikal.text.tl.ParseResult;
-import org.vortikal.text.tl.Parser;
+import org.vortikal.text.tl.Parser.Directive;
+import org.vortikal.text.tl.TemplateContext;
+import org.vortikal.text.tl.TemplateHandler;
+import org.vortikal.text.tl.TemplateParser;
+import org.vortikal.util.io.InputSource;
 
 
 public class DynamicDecoratorTemplate implements Template {
     private static Log logger = LogFactory.getLog(DynamicDecoratorTemplate.class);
     
-    private Parser parser;
-    private ParseResult compiledTemplate;
+    private NodeList compiledTemplate;
     private ComponentResolver componentResolver;
-    private TemplateSource templateSource;
+    private InputSource templateSource;
     private long lastModified = -1;
-    private Map<String, DirectiveNodeFactory> directiveHandlers;
+    private List<DirectiveHandler> directiveHandlers;
     private HtmlPageParser htmlParser;
     
     private static final String CR_REQ_ATTR = "__component_resolver__";
@@ -82,9 +85,9 @@ public class DynamicDecoratorTemplate implements Template {
         
     }
     
-    public DynamicDecoratorTemplate(TemplateSource templateSource,
+    public DynamicDecoratorTemplate(InputSource templateSource,
                                      ComponentResolver componentResolver,
-                                     Map<String, DirectiveNodeFactory> directiveHandlers, 
+                                     List<DirectiveHandler> directiveHandlers, 
                                      HtmlPageParser htmlParser) throws InvalidTemplateException {
         if (templateSource == null) {
             throw new IllegalArgumentException("Argument 'templateSource' is NULL");
@@ -120,12 +123,12 @@ public class DynamicDecoratorTemplate implements Template {
     
     public class Execution implements TemplateExecution {
         private HtmlPageContent content;
-        private ParseResult compiledTemplate;
+        private NodeList compiledTemplate;
         private ComponentResolver componentResolver;
         private HttpServletRequest request;
         private Map<String, Object> templateParameters;
 
-        public Execution(HtmlPageContent content, ParseResult compiledTemplate, 
+        public Execution(HtmlPageContent content, NodeList compiledTemplate, 
                 ComponentResolver componentResolver, HttpServletRequest request,
                 Map<String, Object> templateParameters) {
             this.content = content;
@@ -160,8 +163,8 @@ public class DynamicDecoratorTemplate implements Template {
             context.define(HTML_REQ_ATTR, html, true);
             this.request.setAttribute(PARAMS_REQ_ATTR, this.templateParameters);
             StringWriter writer = new StringWriter();
-            NodeList nodeList = this.compiledTemplate.getNodeList();
-            nodeList.render(context, writer);
+
+            this.compiledTemplate.render(context, writer);
             
             if (htmlParser == null) {
                 return new ContentImpl(writer.toString(), this.content.getOriginalCharacterEncoding());
@@ -194,35 +197,59 @@ public class DynamicDecoratorTemplate implements Template {
                 this.templateSource.getInputStream(), 
                 this.templateSource.getCharacterEncoding());
 
-        this.parser = new Parser(reader, this.directiveHandlers);
-        try {
-            this.compiledTemplate = this.parser.parse();
-            if (logger.isDebugEnabled()) {
-                logger.debug("Successfully compiled template " + this);
+        DirectiveHandler unknownHandler = new DirectiveHandler() {
+            @Override
+            public String[] tokens() {
+                return new String[0];
             }
-        } catch (Throwable t) {
-            logger.warn("Failed to compile template " + this, t);
-            this.compiledTemplate = getErrorTemplate(t);
-        } finally {
-            reader.close();
-        }
-        this.lastModified = templateSource.getLastModified();
+            @Override
+            public void directive(final Directive directive, TemplateContext context) {
+                // XXX: should write error message to page:
+//                context.add(new Node() {
+//                    @Override
+//                    public boolean render(Context ctx, Writer out)
+//                            throws Exception {
+//                        out.write("Unknown directive: " + directive);
+//                        return true;
+//                    }});
+                logger.debug("Unknown directive: " + directive);
+            }
+        };
+        
+        TemplateParser parser = new TemplateParser(reader, directiveHandlers, 
+                unknownHandler, null, new TemplateHandler() {
+
+            @Override
+            public void success(NodeList nodeList) {
+                logger.debug("Successfully compiled template " + templateSource);
+                compiledTemplate = nodeList;
+                try { lastModified = templateSource.getLastModified(); } catch (Exception e) {}
+            }
+
+            @Override
+            public void error(String message, int line) {
+                message = "Failed to compile template " + templateSource 
+                        + ": error at line " + line + ": " + message;
+                logger.warn(message);
+                compiledTemplate = getErrorTemplate(message);
+                try { lastModified = templateSource.getLastModified(); } catch (Exception e) {}
+            }
+        });
+        parser.parse();
     }
     
     public String toString() {
         return this.getClass().getName() + ": " + this.templateSource;
     }
     
-    private ParseResult getErrorTemplate(final Throwable t) {
-        final String message = t.getMessage();
-        final TemplateSource template = this.templateSource;
+    private NodeList getErrorTemplate(final String message) {
         NodeList nodeList = new NodeList();
         nodeList.add(new Node() {
             public boolean render(Context ctx, Writer out) throws Exception {
-                out.write("Error compiling template " + template.getID() + ": " + message);
+                out.write(message);
                 return true;
             }
         });
-        return new ParseResult(nodeList);
+        return nodeList;
     }
 }

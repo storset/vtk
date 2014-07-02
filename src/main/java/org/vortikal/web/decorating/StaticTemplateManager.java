@@ -31,6 +31,8 @@
 package org.vortikal.web.decorating;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.util.io.InputSource;
+import org.vortikal.util.io.URLInputSource;
 
 public class StaticTemplateManager extends AbstractCachingTemplateManager {
 
@@ -45,9 +47,9 @@ public class StaticTemplateManager extends AbstractCachingTemplateManager {
         this.characterEncoding = characterEncoding;
     }
 
-    protected TemplateSource resolve(String name) {
+    protected InputSource resolve(String name) {
         String uri = this.uriPrefix + "/" + name;
-        return new URLTemplateSource(uri, this.characterEncoding);
+        return new URLInputSource(uri, this.characterEncoding);
     }
 
 }

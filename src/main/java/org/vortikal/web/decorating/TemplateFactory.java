@@ -30,7 +30,9 @@
  */
 package org.vortikal.web.decorating;
 
+import org.vortikal.util.io.InputSource;
+
 public interface TemplateFactory {
 
-    public Template newTemplate(TemplateSource templateSource) throws InvalidTemplateException;
+    public Template newTemplate(InputSource templateSource) throws InvalidTemplateException;
 }

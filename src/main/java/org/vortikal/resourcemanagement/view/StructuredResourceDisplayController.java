@@ -58,7 +58,7 @@ import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.text.tl.Context;
-import org.vortikal.text.tl.DirectiveNodeFactory;
+import org.vortikal.text.tl.DirectiveHandler;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.ComponentResolver;
 import org.vortikal.web.decorating.HtmlPageContent;
@@ -82,7 +82,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
     private String resourceModelKey;
     private List<ReferenceDataProvider> configProviders;
 
-    private Map<String, DirectiveNodeFactory> directiveHandlers;
+    private List<DirectiveHandler> directiveHandlers;
 
     private List<HtmlPageFilter> postFilters;
 
@@ -272,7 +272,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
     }
     
     @Required
-    public void setDirectiveHandlers(Map<String, DirectiveNodeFactory> directiveHandlers) {
+    public void setDirectiveHandlers(List<DirectiveHandler> directiveHandlers) {
         this.directiveHandlers = directiveHandlers;
     }
     

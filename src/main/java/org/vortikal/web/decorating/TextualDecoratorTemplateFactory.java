@@ -31,6 +31,7 @@
 package org.vortikal.web.decorating;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.util.io.InputSource;
 
 public class TextualDecoratorTemplateFactory implements TemplateFactory {
 
@@ -38,7 +39,7 @@ public class TextualDecoratorTemplateFactory implements TemplateFactory {
     private ComponentResolver componentResolver;
 
 
-    public Template newTemplate(TemplateSource templateSource) throws InvalidTemplateException {
+    public Template newTemplate(InputSource templateSource) throws InvalidTemplateException {
         return new TextualDecoratorTemplate(this.parser, templateSource, this.componentResolver);
     }
 

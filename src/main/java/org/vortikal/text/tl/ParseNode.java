@@ -32,12 +32,12 @@ package org.vortikal.text.tl;
 
 import java.util.List;
 
-
 public class ParseNode {
     public enum Type {Text, Directive, Comment, Raw};
     public Type type;
     public String name;
     public String text;
+    public int line;
     public List<Token> arguments;
     
     public ParseNode(String text, Type type) {

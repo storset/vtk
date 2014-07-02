@@ -38,13 +38,14 @@ import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.util.io.InputSource;
 
 
 public class DelegatingTemplateFactory implements TemplateFactory {
     private static Log logger = LogFactory.getLog(DelegatingTemplateFactory.class);
     private Map<Pattern, TemplateFactory> templateFactoryMap;
     
-    public Template newTemplate(TemplateSource templateSource)
+    public Template newTemplate(InputSource templateSource)
             throws InvalidTemplateException {
         for (Pattern p: this.templateFactoryMap.keySet()) {
             Matcher m = p.matcher(templateSource.getID());

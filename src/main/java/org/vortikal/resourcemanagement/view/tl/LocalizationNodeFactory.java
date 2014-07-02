@@ -40,29 +40,37 @@ import javax.servlet.http.HttpServletRequest;
 import org.vortikal.resourcemanagement.StructuredResource;
 import org.vortikal.resourcemanagement.view.StructuredResourceDisplayController;
 import org.vortikal.text.tl.Context;
-import org.vortikal.text.tl.DirectiveNodeFactory;
-import org.vortikal.text.tl.DirectiveParseContext;
+import org.vortikal.text.tl.DirectiveHandler;
 import org.vortikal.text.tl.Node;
+import org.vortikal.text.tl.Parser.Directive;
+import org.vortikal.text.tl.TemplateContext;
 import org.vortikal.text.tl.Token;
 import org.vortikal.web.decorating.DynamicDecoratorTemplate;
 
-public class LocalizationNodeFactory implements DirectiveNodeFactory {
+public class LocalizationNodeFactory implements DirectiveHandler {
 
     private String resourceModelKey;
     
     public LocalizationNodeFactory(String resourceModelKey) {
         this.resourceModelKey = resourceModelKey;
     }
+    
+    @Override
+    public String[] tokens() {
+        return new String[] { "localized" };
+    }
 
-    public Node create(DirectiveParseContext ctx) throws Exception {
-        List<Token> args = ctx.getArguments();
+    @Override
+    public void directive(Directive directive, TemplateContext context) {
+        List<Token> args = directive.args();
         if (args.size() == 0) {
-            throw new RuntimeException("Missing arguments: " + ctx.getNodeText());
+            context.error("At least one argument required");
+            return;
         }
-        final Token code = args.remove(0);
-        final List<Token> rest = new ArrayList<Token>(args);
+        final Token code = args.get(0);
+        final List<Token> rest = new ArrayList<Token>(args.subList(1, args.size()));
 
-        return new Node() {
+        context.add(new Node() {
             public boolean render(Context ctx, Writer out) throws Exception {
                 String key = code.getValue(ctx).toString();
                 //RequestContext requestContext = RequestContext.getRequestContext();
@@ -89,6 +97,7 @@ public class LocalizationNodeFactory implements DirectiveNodeFactory {
                 out.write(ctx.htmlEscape(localizedMsg));
                 return true;
             }
-        };
+        });
     }
+
 }

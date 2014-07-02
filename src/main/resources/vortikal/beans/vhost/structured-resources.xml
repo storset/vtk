@@ -168,27 +168,26 @@
     <property name="htmlParser" ref="decorating.htmlParser" />
   </bean>
 
-  <bean id="structuredResources.directives" class="org.springframework.beans.factory.config.MapFactoryBean">
-    <property name="sourceMap">
-      <map>
-        <entry key="if" value-ref="structuredResources.ifDirective" />
-        <entry key="val" value-ref="structuredResources.valDirective" />
-        <entry key="list" value-ref="structuredResources.listDirective" />
-        <entry key="def" value-ref="structuredResources.defDirective" />
-        <entry key="capture" value-ref="structuredResources.captureDirective" />
-        <entry key="resource-props" value-ref="structuredResources.resourcePropsDirective" />
-        <entry key="localized" value-ref="structuredResources.localizedDirective" />
-        <entry key="call" value-ref="structuredResources.callDirective" />
-      </map>
+  <bean id="structuredResources.directives" class="org.springframework.beans.factory.config.ListFactoryBean">
+    <property name="sourceList">
+      <list>
+        <ref bean="structuredResources.ifDirective" />
+        <ref bean="structuredResources.valDirective" />
+        <ref bean="structuredResources.listDirective" />
+        <ref bean="structuredResources.defDirective" />
+        <ref bean="structuredResources.captureDirective" />
+        <ref bean="structuredResources.resourcePropsDirective" />
+        <ref bean="structuredResources.localizedDirective" />
+        <ref bean="structuredResources.callDirective" />
+      </list>
     </property>
   </bean>
 
-  <bean id="structuredResources.ifDirective" class="org.vortikal.text.tl.IfNodeFactory">
-    <property name="functions" ref="structuredResources.tlFunctions" />
+  <bean id="structuredResources.ifDirective" class="org.vortikal.text.tl.IfHandler">
+    <constructor-arg ref="structuredResources.tlFunctions" />
   </bean>
 
-  <bean id="structuredResources.valDirective" class="org.vortikal.text.tl.ValNodeFactory">
-    <property name="functions" ref="structuredResources.tlFunctions" />
+  <bean id="structuredResources.valDirective" class="org.vortikal.text.tl.ValHandler">
     <constructor-arg>
       <map>
         <entry>
@@ -219,31 +218,33 @@
         </entry>
       </map>
     </constructor-arg>
+    <constructor-arg ref="structuredResources.tlFunctions" />
   </bean>
 
-  <bean id="structuredResources.listDirective" class="org.vortikal.text.tl.ListNodeFactory">
-    <property name="functions" ref="structuredResources.tlFunctions" />
+  <bean id="structuredResources.listDirective" class="org.vortikal.text.tl.ListHandler">
+    <constructor-arg ref="structuredResources.tlFunctions" />
   </bean>
 
-  <bean id="structuredResources.defDirective" class="org.vortikal.text.tl.DefineNodeFactory">
-    <property name="functions" ref="structuredResources.tlFunctions" />
+  <bean id="structuredResources.defDirective" class="org.vortikal.text.tl.DefineHandler">
+    <constructor-arg ref="structuredResources.tlFunctions" />
   </bean>
 
-  <bean id="structuredResources.captureDirective" class="org.vortikal.text.tl.CaptureNodeFactory" />
+  <bean id="structuredResources.captureDirective" class="org.vortikal.text.tl.CaptureHandler" />
 
-  <bean id="structuredResources.resourcePropsDirective" class="org.vortikal.resourcemanagement.view.tl.ResourcePropsNodeFactory" />
+  <bean id="structuredResources.resourcePropsDirective" class="org.vortikal.resourcemanagement.view.tl.ResourcePropsNodeFactory">
+    <constructor-arg value="resource-props" />
+  </bean>
 
   <bean id="structuredResources.localizedDirective" class="org.vortikal.resourcemanagement.view.tl.LocalizationNodeFactory">
     <constructor-arg value="structured-resource" />
   </bean>
 
   <bean id="structuredResources.callDirective" class="org.vortikal.resourcemanagement.view.tl.ComponentInvokerNodeFactory">
+    <constructor-arg value="call" />
     <constructor-arg>
       <bean class="org.vortikal.resourcemanagement.view.StructuredResourceDisplayController$ComponentSupport" />
     </constructor-arg>
-    <constructor-arg>
-      <ref bean="structuredResources.tlFunctions" />
-    </constructor-arg>
+    <constructor-arg ref="structuredResources.tlFunctions" />
   </bean>
 
 

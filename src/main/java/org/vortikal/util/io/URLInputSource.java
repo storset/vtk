@@ -28,9 +28,10 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.decorating;
+package org.vortikal.util.io;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
@@ -38,14 +39,14 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.vortikal.util.web.LinkTypesPrefixes;
 
-public class URLTemplateSource implements TemplateSource {
+public class URLInputSource implements InputSource {
 
     private String url;
     private String characterEncoding;
 
-    public URLTemplateSource() {}
+    public URLInputSource() {}
     
-    public URLTemplateSource(String url, String characterEncoding) {
+    public URLInputSource(String url, String characterEncoding) {
         this.url = url;
         this.characterEncoding = characterEncoding;
     }
@@ -53,23 +54,26 @@ public class URLTemplateSource implements TemplateSource {
     public String getID() {
         return this.url;
     }
-    
-    public long getLastModified() throws Exception {
+
+    @Override
+    public long getLastModified() throws IOException {
         if (this.url.startsWith(LinkTypesPrefixes.FILE + "//")) {
             URL fileURL = new URL(this.url);
             File file = new File(fileURL.getFile());
             return file.lastModified();
         }
-        return -1;
+        return -1L;
     }
     
+    @Override
     public String getCharacterEncoding() {
         String encoding = (this.characterEncoding != null) ?
                 this.characterEncoding : System.getProperty("file.encoding");
         return encoding;
     }
     
-    public InputStream getInputStream() throws Exception {
+    @Override
+    public InputStream getInputStream() throws IOException {
         InputStream is = null;
         if (this.url.startsWith("classpath://")) {
             String actualPath = url.substring("classpath://".length());
@@ -81,11 +85,9 @@ public class URLTemplateSource implements TemplateSource {
         return is;
     }
     
+    @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(this.getClass().getName());
-        sb.append(": [").append(this.url).append("]");
-        return sb.toString();
+        return getID();
     }
 
 }

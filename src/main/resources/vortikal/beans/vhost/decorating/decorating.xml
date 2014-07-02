@@ -170,10 +170,68 @@
     </property>
   </bean>
 
-  <bean name="decorating.defaultComponentResolver"
+  <bean name="decorating.beanContextComponentResolver"
         class="org.vortikal.web.decorating.BeanContextComponentResolver">
     <property name="availableComponentNamespaces"
               ref="decorating.defaultComponentNamespaces" />
+  </bean>
+
+  <bean name="decorating.defaultComponentResolver"
+        class="org.vortikal.web.decorating.AggregatedComponentResolver">
+    <constructor-arg>
+      <list>
+        <ref bean="decorating.beanContextComponentResolver" />
+        <ref bean="decorating.userDefinedComponentResolver" />
+      </list>
+    </constructor-arg>
+  </bean>
+
+  
+  <bean id="decorating.userDefinedComponentResolver"
+        class="org.vortikal.web.decorating.DynamicComponentResolver">
+    <constructor-arg ref="decorating.userDefinedComponentLibrary" />
+  </bean>
+
+  <bean id="decorating.userDefinedComponentLibrary.directives"
+        class="org.springframework.beans.factory.config.ListFactoryBean">
+    <property name="sourceList">
+      <list>
+        <ref bean="structuredResources.ifDirective" />
+        <ref bean="structuredResources.valDirective" />
+        <ref bean="structuredResources.listDirective" />
+        <ref bean="structuredResources.defDirective" />
+        <ref bean="structuredResources.captureDirective" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="decorating.userDefinedComponentLibrary" class="org.vortikal.web.decorating.DynamicComponentLibrary">
+    <constructor-arg value="lib" />
+    <constructor-arg ref="decorating.userDefinedComponentLibrary.directives" />
+    <constructor-arg ref="decorating.userDefinedComponentLibrary.inputSource" />
+  </bean>
+
+  <bean id="decorating.userDefinedComponentLibrary.refreshTrigger"
+        class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger">
+    <property name="repository" ref="repository" />
+    <property name="uri" value="${decorating.userDefinedComponentLibrary}" />
+    <property name="targetObject" ref="decorating.userDefinedComponentLibrary" />
+    <property name="method" value="compile" />
+  </bean>
+
+  <bean id="decorating.userDefinedComponentLibrary.inputSource.uri"
+        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod" value="org.vortikal.repository.Path.fromString" />
+    <property name="arguments">
+      <value>${decorating.userDefinedComponentLibrary}</value>
+    </property>
+  </bean>
+
+  <bean id="decorating.userDefinedComponentLibrary.inputSource"
+        class="org.vortikal.util.repository.RepositoryInputSource">
+    <constructor-arg ref="decorating.userDefinedComponentLibrary.inputSource.uri" />
+    <constructor-arg ref="repository" />
+    <constructor-arg ref="trustedToken" />
   </bean>
 
   <bean id="decorating.defaultComponentNamespaces"
@@ -191,6 +249,23 @@
     </property>
   </bean>
 
+  <bean id="decorating.userDefinedComponentLibrary.listComponentsService"
+        class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="previewService" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestURIRegexpAssertion">
+          <property name="pattern" value="${decorating.userDefinedComponentLibrary}" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="decorating.userDefinedComponentLibrary.debugController" />
+  </bean>
+
+  <bean id="decorating.userDefinedComponentLibrary.debugController"
+        class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    <property name="viewName" value="decorating.userDefinedComponents" />
+  </bean>
 
 
   <bean name="decorating.documentComponentResolver"
@@ -358,6 +433,15 @@
     <property name="viewName" value="listDocumentDecoratorComponents" />
   </bean>
   
+
+  <bean id="decorating.userDefinedComponents.viewResolver" parent="adminViewResolver">
+    <property name="views">
+      <map>
+        <entry key="decorating.userDefinedComponents" value-ref="decorating.userDefinedComponents.listView" />
+      </map>
+    </property>
+  </bean>
+
   <bean id="listDecoratorComponentsViewResolver"
         class="org.vortikal.web.decorating.MappingViewResolver">
     <property name="views">
@@ -367,6 +451,16 @@
       </map>
     </property>
   </bean>
+
+  <bean id="decorating.userDefinedComponents.listView" parent="freemarkerView">
+    <property name="url" value="pages/list-user-defined-components.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="componentLib" value-ref="decorating.userDefinedComponentLibrary" />
+      </map>
+    </property>
+  </bean>
+
 
   <bean id="listDecoratorComponentsView" parent="freemarkerView">
     <property name="url" value="pages/list-decorator-components.ftl" />

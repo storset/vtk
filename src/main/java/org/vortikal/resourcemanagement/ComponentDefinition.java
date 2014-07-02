@@ -81,6 +81,6 @@ public class ComponentDefinition {
     }
 
     public String toString() {
-        return this.getClass().getName() + ":" + this.name;
+        return this.name;
     }
 }

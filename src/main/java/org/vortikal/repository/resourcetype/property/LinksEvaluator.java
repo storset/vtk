@@ -53,6 +53,7 @@ import org.vortikal.repository.PropertyEvaluationContext.Type;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.LatePropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.resourcemanagement.StructuredResource;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.StructuredResourceManager;
@@ -72,7 +73,6 @@ public class LinksEvaluator implements LatePropertyEvaluator {
     @Override
     public boolean evaluate(Property property, PropertyEvaluationContext ctx)
             throws PropertyEvaluationException {
-        
         final LinkCollector collector = new LinkCollector();
         boolean evaluateContent = true;
         try {
@@ -110,13 +110,20 @@ public class LinksEvaluator implements LatePropertyEvaluator {
             Resource resource = ctx.getNewResource();
             for (Property p: resource) {
                 if (p.getType() == PropertyType.Type.IMAGE_REF) {
-                    Link link = new Link(p.getStringValue(), LinkType.PROPERTY, LinkSource.PROPERTIES);
-                    if (!collector.link(link)) {
-                        break;
+                    String[] values = propertyValues(p);
+                    for (String value: values) {
+                        Link link = new Link(value, LinkType.PROPERTY, LinkSource.PROPERTIES);
+                        if (!collector.link(link)) {
+                            break;
+                        }
+                        
                     }
                 } else if (p.getType() == PropertyType.Type.HTML) {
-                    InputStream is = new ByteArrayInputStream(p.getStringValue().getBytes());
-                    extractFromHtml(is, collector, LinkSource.PROPERTIES);
+                    String[] values = propertyValues(p);
+                    for (String value: values) {
+                        InputStream is = new ByteArrayInputStream(value.getBytes());
+                        extractFromHtml(is, collector, LinkSource.PROPERTIES);
+                    }
                 }
             }
 
@@ -160,6 +167,17 @@ public class LinksEvaluator implements LatePropertyEvaluator {
         }
     }
 
+    private String[] propertyValues(Property p) {
+        if (p.getDefinition().isMultiple()) {
+            Value[] values = p.getValues();
+            String[] result = new String[values.length];
+            for (int i = 0; i < values.length; i++)
+                result[i] = values[i].getStringValue();
+            return result;
+        }
+        return new String[]{p.getValue().getStringValue()};
+    }
+    
     private enum LinkSource {
         PROPERTIES,
         CONTENT

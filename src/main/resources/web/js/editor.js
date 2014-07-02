@@ -1158,7 +1158,7 @@ function courseSchedule() {
   }
   url = baseUrl + "?action=course-schedule&mode=edit&t=" + (+new Date());
   // Debug: Local development
-  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+//url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   // Hide shortcut for saving working copy
   $("#vrtx-save-as-working-copy-shortcut, #saveWorkingCopyAction, #buttons-or-text").hide();
@@ -2745,10 +2745,18 @@ VrtxEditor.prototype.htmlFacade = {
       }
 
       // Changes in Vortex properties
-      if(val && val.length && editorDetectChangeFunc(sessionId, val, rawOrig[name], name === "vrtxResourcesText")) {
-        // And differs from TP/UIOWS-data
-        if(editorDetectChangeFunc(sessionId, val, rawOrig[name.split("vrtx")[1].toLowerCase()], name === "vrtxResourcesText")) {
+      if(val && val.length) {
+        // If changes in Vortex properties and differs from TP/UIOWS-data
+        if(editorDetectChangeFunc(sessionId, val, rawOrig[name], name === "vrtxResourcesText") && editorDetectChangeFunc(sessionId, val, rawOrig[name.split("vrtx")[1].toLowerCase()], name === "vrtxResourcesText")) {
+          // console.log("ADD " + name);
           rawPtr[name] = val;
+          hasChanges = true;
+        }
+      } else {
+        // If removed in Vortex properties
+        if(rawOrig[name]) {
+          // console.log("DEL " + name);
+          delete rawPtr[name];
           hasChanges = true;
         }
       }

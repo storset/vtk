@@ -39,6 +39,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.json.JSONObject;
+
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
@@ -48,8 +50,6 @@ import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.repository.resourcetype.ValueSeparator;
 import org.vortikal.security.Principal;
-
-import net.sf.json.JSONObject;
 
 
 /**
@@ -229,6 +229,9 @@ public class PropertyImpl implements Cloneable, Property {
 
     @Override
     public String getStringValue() throws IllegalOperationException {
+        if (this.propertyTypeDefinition.isMultiple()) {
+            throw new IllegalOperationException("Property " + this + " is multi-valued");
+        }
         if (this.value == null) {
             throw new IllegalOperationException("Property " + this + " has a null value");
         }
@@ -247,7 +250,7 @@ public class PropertyImpl implements Cloneable, Property {
             throw new IllegalOperationException("Property " + this + " not a string type");
         }
     }
-
+    
     @Override
     public void setStringValue(String stringValue) throws ValueFormatException {
         Value v = new Value(stringValue, PropertyType.Type.STRING);

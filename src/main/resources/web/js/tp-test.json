@@ -125,6 +125,14 @@
           "weekNr": 35,
           "status": "active",
           "title": "Forelesning II",
+          "vrtxStaff": [
+            { "id": "rezam" },
+            { "id": "oyvihatl2" }
+          ],
+          "staff": [
+            { "id": "rezam" },
+            { "id": "oyvihatl" }
+          ],
           "rooms": [{
             "buildingId": "BL27",
             "buildingName": "Georg Sverdrups hus",

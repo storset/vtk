@@ -1712,10 +1712,8 @@ function courseSchedule() {
     var rawOrig = sessionLookup.rawOrig;
     var rawPtr = sessionLookup.rawPtr;
     var descsPtr = sessionLookup.descsPtr;
-    
-    vrtxEditor.htmlFacade.htmlToJson(sessionElms, descsPtr, rawOrig, rawPtr);
 
-    sessionLookup.hasChanges = editorDetectChange(rawPtr, rawOrig);
+    sessionLookup.hasChanges = vrtxEditor.htmlFacade.htmlToJson(sessionElms, sessionId, descsPtr, rawOrig, rawPtr);
   };
   this.saved = function(isSaveView) {
     for(var type in this.sessionsLookup) {
@@ -2028,12 +2026,12 @@ function courseSchedule() {
   });
 }
 
-function editorDetectChange(o1, o2) {
+function editorDetectChange(sessionId, o1, o2, isCK) { // TODO: use description to check for CK (if textarea)
   if(typeof o1 === "object" && typeof o2 === "object") {
     if(o1.length) { // Array
       if(o1.length !== o2.length) return true;
       for(var i = 0, len = o1.length; i < len; i++) {
-        if(editorDetectChange(o1[i], o2[i])) return true;
+        if(editorDetectChange(sessionId, o1[i], o2[i])) return true;
       }
     } else {
       var propCount2 = 0;
@@ -2042,13 +2040,21 @@ function editorDetectChange(o1, o2) {
       }
       var propCount1 = 0;
       for(prop1 in o1) {
-        if(editorDetectChange(o1[prop1], o2[prop1])) return true;
+        if(editorDetectChange(sessionId, o1[prop1], o2[prop1], prop1 === "vrtxResourcesText")) return true;
         propCount1++;
       }
       if(propCount1 !== propCount2) return true;
     }
   } else if(typeof o1 === "string" && typeof o2 === "string") {
-    if(o1 !== o2) return true;
+    if(typeof isCK === "boolean" && isCK) {
+      var rteFacade = vrtxEditor.richtextEditorFacade;
+      var ckInstance = rteFacade.getInstance("vrtxResourcesText-" + sessionId);
+      if (ckInstance && rteFacade.isChanged(ckInstance) && rteFacade.getValue(ckInstance) !== "") {
+        return true;
+      }
+    } else {
+      if(o1 !== o2) return true;
+    }
   } else if(typeof o1 === "number" && typeof o2 === "number") {
     if(o1 !== o2) return true;
   } else if(typeof o1 !== typeof o2) {
@@ -2689,8 +2695,9 @@ VrtxEditor.prototype.htmlFacade = {
  /* 
   * Turn a block of HTML/DOM into JSON
   */
-  htmlToJson: function (sessionElms, descs, rawOrig, rawPtr) {
+  htmlToJson: function (sessionElms, sessionId, descs, rawOrig, rawPtr) {
     var vrtxEdit = vrtxEditor;
+    var hasChanges = false;
     var editorDetectChangeFunc = editorDetectChange;
     for(var name in descs) {
       var desc = descs[name],
@@ -2736,12 +2743,17 @@ VrtxEditor.prototype.htmlFacade = {
           val = arrProps;
         }
       }
-      if(val && val.length && editorDetectChangeFunc(val, rawOrig[name.split("vrtx")[1].toLowerCase()])) {
-        rawPtr[name] = val;
-      } else {
-        delete rawPtr[name];
+
+      // Changes in Vortex properties
+      if(val && val.length && editorDetectChangeFunc(sessionId, val, rawOrig[name], name === "vrtxResourcesText")) {
+        // And differs from TP/UIOWS-data
+        if(editorDetectChangeFunc(sessionId, val, rawOrig[name.split("vrtx")[1].toLowerCase()], name === "vrtxResourcesText")) {
+          rawPtr[name] = val;
+          hasChanges = true;
+        }
       }
     }
+    return hasChanges;
   },
   /* 
    * Interaction

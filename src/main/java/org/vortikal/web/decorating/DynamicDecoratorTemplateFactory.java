@@ -30,8 +30,10 @@
  */
 package org.vortikal.web.decorating;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -48,16 +50,17 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.resourcemanagement.view.tl.ComponentInvokerNodeFactory;
-import org.vortikal.text.tl.CaptureNodeFactory;
+import org.vortikal.text.tl.CaptureHandler;
 import org.vortikal.text.tl.Context;
-import org.vortikal.text.tl.DefineNodeFactory;
-import org.vortikal.text.tl.DirectiveNodeFactory;
-import org.vortikal.text.tl.IfNodeFactory;
-import org.vortikal.text.tl.ListNodeFactory;
-import org.vortikal.text.tl.StripNodeFactory;
+import org.vortikal.text.tl.DefineHandler;
+import org.vortikal.text.tl.DirectiveHandler;
+import org.vortikal.text.tl.IfHandler;
+import org.vortikal.text.tl.ListHandler;
+import org.vortikal.text.tl.StripHandler;
 import org.vortikal.text.tl.Symbol;
-import org.vortikal.text.tl.ValNodeFactory;
+import org.vortikal.text.tl.ValHandler;
 import org.vortikal.text.tl.expr.Function;
+import org.vortikal.util.io.InputSource;
 import org.vortikal.util.repository.PropertyAspectDescription;
 import org.vortikal.util.repository.PropertyAspectResolver;
 import org.vortikal.web.RequestContext;
@@ -70,11 +73,11 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
     PropertyAspectDescription fieldConfig;
     private String token;
     
-    private Map<String, DirectiveNodeFactory> directiveHandlers;
+    private List<DirectiveHandler> directiveHandlers;
     private Set<Function> functions = new HashSet<Function>();
     private ComponentResolver componentResolver;
 
-    public Template newTemplate(TemplateSource templateSource) throws InvalidTemplateException {
+    public Template newTemplate(InputSource templateSource) throws InvalidTemplateException {
         return new DynamicDecoratorTemplate(templateSource, this.componentResolver, this.directiveHandlers, null);
     }
 
@@ -111,27 +114,17 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
         functions.add(new ResourceAspectFunction(new Symbol("resource-aspect"), this.aspectsPropdef, this.fieldConfig, this.token));
         functions.add(new ResourcePropHandler(new Symbol("resource-prop")));
         this.functions = functions;
-        
-        Map<String, DirectiveNodeFactory> directiveHandlers = new HashMap<String, DirectiveNodeFactory>();
-        IfNodeFactory ifNodeFactory = new IfNodeFactory();
-        ifNodeFactory.setFunctions(this.functions);
-        directiveHandlers.put("if", ifNodeFactory);
-        directiveHandlers.put("strip", new StripNodeFactory());
 
-        ValNodeFactory val = new ValNodeFactory();
-        val.setFunctions(this.functions);
-        directiveHandlers.put("val", val);
-
-        ListNodeFactory list = new ListNodeFactory();
-        list.setFunctions(this.functions);
-        directiveHandlers.put("list", list);
-
-        DefineNodeFactory def = new DefineNodeFactory(this.functions);
-        directiveHandlers.put("def", def);
-        directiveHandlers.put("capture", new CaptureNodeFactory());
-        directiveHandlers.put("call", new ComponentInvokerNodeFactory(
-                new DynamicDecoratorTemplate.ComponentSupport(), this.functions));
-        this.directiveHandlers = directiveHandlers;
+        this.directiveHandlers = Arrays.asList(new DirectiveHandler[] {
+                new IfHandler(functions),
+                new StripHandler(),
+                new ValHandler(null, functions),
+                new ListHandler(functions),
+                new DefineHandler(functions),
+                new CaptureHandler(),
+                new ComponentInvokerNodeFactory("call",
+                        new DynamicDecoratorTemplate.ComponentSupport(), this.functions)
+        });
     }
     
     public void setFunctions(Set<Function> functions) {

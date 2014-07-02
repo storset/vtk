@@ -87,7 +87,7 @@ void recompile() {
                 displayTemplate = desc.getDisplayTemplate();
                 if (displayTemplate != null) {
                     if (!content.equals(displayTemplate.getTemplate())) {
-                        print("Updating display template: " + displayTemplate);
+                        print("Updating display template: " + desc.getName());
                         displayTemplate.setContent(content);
                     }
                 }
@@ -97,7 +97,8 @@ void recompile() {
                 
                     if (compDef.getName().equals(identifier)) {
                         if (!old.equals(content)) {
-                            print("Updating component definition: " + compDef);
+                            print("Updating component "
+                                  + desc.getName()  + ":" + compDef);
                             compDef.setDefinition(content);
                         }
                     }

@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.text.html.HtmlPage;
+import org.vortikal.util.io.InputSource;
 
 
 public class TextualDecoratorTemplate implements Template {
@@ -52,12 +53,12 @@ public class TextualDecoratorTemplate implements Template {
     private TextualComponentParser parser;
     private ComponentInvocation[] fragments;
     private ComponentResolver componentResolver;
-    private TemplateSource templateSource;
+    private InputSource templateSource;
     private long lastModified = -1;
     
 
     public TextualDecoratorTemplate(TextualComponentParser parser,
-                                     TemplateSource templateSource,
+                                     InputSource templateSource,
                                      ComponentResolver componentResolver) throws InvalidTemplateException {
         if (parser == null) {
             throw new IllegalArgumentException("Argument 'parser' is NULL");

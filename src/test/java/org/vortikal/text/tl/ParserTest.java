@@ -30,11 +30,14 @@
  */
 package org.vortikal.text.tl;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -42,62 +45,51 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
-
+import org.vortikal.text.tl.Parser.Directive;
+import org.vortikal.text.tl.Parser.Handler;
 import org.vortikal.text.tl.expr.Concat;
 import org.vortikal.text.tl.expr.Function;
 
 public class ParserTest {
 
-    private Map<String, DirectiveNodeFactory> directiveHandlers;
+    private List<DirectiveHandler> directiveHandlers;
     
     @Before
     public void setUp() throws Exception {
         Set<Function> functions = new HashSet<Function>();
         functions.add(new Concat(new Symbol("concat")));
         
-        Map<String, DirectiveNodeFactory> directiveHandlers = new HashMap<String, DirectiveNodeFactory>();
-        IfNodeFactory ifDirective = new IfNodeFactory();
-        ifDirective.setFunctions(functions);
-        directiveHandlers.put("if", ifDirective);
-        
-        ValNodeFactory valDirective = new ValNodeFactory();
-        valDirective.setFunctions(functions);
-        directiveHandlers.put("val", valDirective);
-        
-        ListNodeFactory listDirective = new ListNodeFactory();
-        listDirective.setFunctions(functions);
-        directiveHandlers.put("list", listDirective);
-        
-        DefineNodeFactory defDirective = new DefineNodeFactory(functions);
-        directiveHandlers.put("def", defDirective);
-        
-        directiveHandlers.put("abc", new DirectiveNodeFactory() {
-            @Override
-            public Node create(DirectiveParseContext ctx) throws Exception {
-                ParseResult result = ctx.getParser().parse(new String[]{"/abc"});
-                DirectiveParseContext info = result.getTerminator();
-                if (info == null) {
-                    throw new IllegalStateException("Unterminated directive: " + ctx.getName());
-                }
-                if (!"/abc".equals(info.getName())) {
-                    throw new IllegalStateException("Unterminated directive: " + ctx.getName());
-                }
-                final NodeList content = result.getNodeList();
-                return new Node() {
+        directiveHandlers = Arrays.asList(new DirectiveHandler[] {
+                new IfHandler(functions),
+                new ValHandler(null, functions),
+                new ListHandler(functions),
+                new DefineHandler(functions),
+                new DirectiveHandler() {
                     @Override
-                    public boolean render(Context ctx, Writer out)
-                            throws Exception {
-                        return content.render(ctx, out);
+                    public String[] tokens() {
+                        return new String[] { "abc", "/abc" };
                     }
-                    
-                };
-            }
+                    @Override
+                    public void directive(Directive directive,
+                            TemplateContext context) {
+                        if ("abc".equals(directive.name())) {
+                            context.push(new DirectiveState(directive));
+                        } else {
+                            final DirectiveState state = context.pop();
+                            context.add(new Node() {
+                                @Override
+                                public boolean render(Context ctx, Writer out)
+                                        throws Exception {
+                                    return state.nodes().render(ctx, out);
+                                }
+                            });
+                            
+                        }
+                    }
+                }
         });
-        
-        this.directiveHandlers = directiveHandlers;
     }
 
     @Test
@@ -228,6 +220,20 @@ public class ParserTest {
     }
     
     @Test
+    public void testOpenClose() throws Exception {
+        Context ctx = new Context(Locale.getDefault());
+        String result = parseAndRender("[abc]foo[/abc]", ctx);
+        assertEquals("foo", result);
+    }
+    
+    @Test
+    public void valNode() throws Exception {
+        Context ctx = new Context(Locale.getDefault());
+        String result = parseAndRender("[val concat('a', 'b')]", ctx);
+        assertEquals("ab", result);
+    }
+    
+    @Test
     public void ifElse() throws Exception {
         Context ctx = new Context(Locale.getDefault());
         String result = parseAndRender("[if true]yes[else]no[endif]", ctx);
@@ -264,21 +270,17 @@ public class ParserTest {
         ctx.define("map", map, true);
         result = parseAndRender("[if map.a = 22]yes[else]no[endif]", ctx);
         assertEquals("yes", result);
+
     }
-    
-    // TODO rename test method to something sensible
+
     @Test
-    public void someThingXXX() throws Exception {
+    public void list() throws Exception {
         Context ctx = new Context(Locale.getDefault());
-        String result = parseAndRender("[abc]foo[/abc]", ctx);
-        assertEquals("foo", result);
-    }
-    
-    @Test
-    public void valNode() throws Exception {
-        Context ctx = new Context(Locale.getDefault());
-        String result = parseAndRender("[val concat('a', 'b')]", ctx);
-        assertEquals("ab", result);
+        ctx.define("lst", Arrays.asList(new Integer[] {2, 2}), true);
+        String result = parseAndRender("[def sum 0][list lst elem][def sum sum + elem][endlist][val sum]", ctx);
+        assertEquals("4", result);
+        assertEquals(4, ctx.get("sum"));
+        
     }
     
     private String parseAndRender(String template, Context ctx) throws Exception {
@@ -290,46 +292,50 @@ public class ParserTest {
     
     private NodeList parse(String template) throws RuntimeException {
         Reader reader = new StringReader(template);
-        Parser parser = new Parser(reader, this.directiveHandlers);
-        try {
-            ParseResult result = parser.parse();
-            return result.getNodeList();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        final NodeList result = new NodeList();
+        TemplateParser parser = new TemplateParser(reader, directiveHandlers, new TemplateHandler() {
+            @Override
+            public void success(NodeList nodeList) {
+                for (Node node: nodeList) result.add(node);
+            }
+            @Override
+            public void error(String message, int line) {
+                throw new RuntimeException("Error at line " + line + ": " + message);
+            }
+        });
+        parser.parse();
+        return result;
     }
 
     private List<Token> parseDirective(String template) {
-        Map<String, DirectiveNodeFactory> directives = new HashMap<String, DirectiveNodeFactory>();
-        List<Token> tokens = new ArrayList<Token>();
-        
-        TestNodeFactory nf = new TestNodeFactory(tokens);
-        directives.put("*", nf);
         Reader reader = new StringReader(template);
-        Parser parser = new Parser(reader, directives);
-        try {
-            parser.parse();
-            return tokens;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private class TestNodeFactory implements DirectiveNodeFactory {
-        private List<Token> tokenOutput;
-        public TestNodeFactory(List<Token> tokenOutput) {
-            this.tokenOutput = tokenOutput;
-        }
-        @Override
-        public Node create(DirectiveParseContext ctx) throws Exception {
-            this.tokenOutput.addAll(ctx.getArguments());
-            return new Node() {
-                @Override
-                public boolean render(Context ctx, Writer out) throws Exception {
-                    return true;
-                }
-            };
-        }
+        final List<Token> tokens = new ArrayList<Token>();
+        
+        new Parser(reader, new Handler() {
+            @Override
+            public void start() {
+            }
+            @Override
+            public void directive(Directive directive) {
+                tokens.addAll(directive.args());
+            }
+            @Override
+            public void text(String text) {
+            }
+            @Override
+            public void raw(String text) {
+            }
+            @Override
+            public void comment(String text) {
+            }
+            @Override
+            public void error(String message, int line) {
+            }
+            @Override
+            public void end() {
+            }
+        }).parse();
+        return tokens;
     }
 
 }

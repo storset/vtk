@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.util.io.InputSource;
 
 public abstract class AbstractCachingTemplateManager implements TemplateManager {
     private TemplateFactory templateFactory;
@@ -51,11 +52,11 @@ public abstract class AbstractCachingTemplateManager implements TemplateManager 
             return this.templatesMap.get(name);
         }
 
-        TemplateSource templateSource = resolve(name);
+        InputSource templateSource = resolve(name);
         Template template = this.templateFactory.newTemplate(templateSource);
         this.templatesMap.put(name, template);
         return template;
     }
     
-    protected abstract TemplateSource resolve(String name);
+    protected abstract InputSource resolve(String name);
 }

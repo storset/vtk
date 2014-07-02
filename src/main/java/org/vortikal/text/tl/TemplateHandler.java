@@ -1,4 +1,4 @@
-/* Copyright (c) 2011, University of Oslo, Norway
+/* Copyright (c) 2014, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,14 +30,9 @@
  */
 package org.vortikal.text.tl;
 
-public interface TextNodeFactory {
+public interface TemplateHandler {
 
-    public Node create(ParseNode parseNode);
+    public void success(NodeList nodeList);
     
-    public static final TextNodeFactory DEFAULT = new TextNodeFactory() {
-        @Override
-        public Node create(ParseNode parseNode) {
-            return new TextNode(parseNode.text);
-        }
-    };
+    public void error(String message, int line);
 }

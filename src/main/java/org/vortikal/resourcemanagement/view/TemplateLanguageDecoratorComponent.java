@@ -35,7 +35,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -46,16 +45,18 @@ import org.vortikal.text.html.HtmlContent;
 import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.text.tl.Context;
-import org.vortikal.text.tl.DirectiveNodeFactory;
+import org.vortikal.text.tl.DirectiveHandler;
+import org.vortikal.text.tl.Node;
 import org.vortikal.text.tl.NodeList;
-import org.vortikal.text.tl.ParseResult;
-import org.vortikal.text.tl.Parser;
+import org.vortikal.text.tl.TemplateHandler;
+import org.vortikal.text.tl.TemplateParser;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
 import org.vortikal.web.decorating.DynamicDecoratorTemplate;
 import org.vortikal.web.decorating.HtmlDecoratorComponent;
 import org.vortikal.web.decorating.components.AbstractDecoratorComponent;
 import org.vortikal.web.decorating.components.DecoratorComponentException;
+
 
 public class TemplateLanguageDecoratorComponent extends AbstractDecoratorComponent
 implements HtmlDecoratorComponent {
@@ -65,14 +66,14 @@ implements HtmlDecoratorComponent {
     private String modelKey;
     private NodeList nodeList;
     private HtmlPageParser htmlParser;
-    private Map<String, DirectiveNodeFactory> directiveHandlers;
+    private List<DirectiveHandler> directiveHandlers;
     private static Log logger = LogFactory.getLog(TemplateLanguageDecoratorComponent.class); 
 
     private Date compileTime;
 
     public TemplateLanguageDecoratorComponent(String namespace, 
             ComponentDefinition definition, 
-            String modelKey, Map<String, DirectiveNodeFactory> directiveHandlers, 
+            String modelKey, List<DirectiveHandler> directiveHandlers, 
             HtmlPageParser htmlParser) throws Exception {
         this.namespace = namespace;
         this.definition = definition;
@@ -85,13 +86,31 @@ implements HtmlDecoratorComponent {
     private void compile() throws Exception {
         if (this.compileTime == null || 
                 this.compileTime.getTime() < this.definition.getLastModified().getTime()) {
-            Parser parser = new Parser(
+            new TemplateParser(
                     new StringReader(definition.getDefinition()), 
-                    this.directiveHandlers);
-            ParseResult result = parser.parse(new HashSet<String>());
-            this.nodeList = result.getNodeList();
-
-            this.compileTime = new Date();
+                    directiveHandlers, 
+                    new TemplateHandler() {
+                        @Override
+                        public void success(NodeList result) {
+                            nodeList = result;
+                            compileTime = new Date();
+                        }
+                        @Override
+                        public void error(final String message, final int line) {
+                            NodeList err = new NodeList();
+                            err.add(new Node() {
+                                @Override
+                                public boolean render(Context ctx, Writer out)
+                                        throws Exception {
+                                    out.write("Error compiling component " + getName() 
+                                            + ": line " + line + ": " + message);
+                                    return true;
+                                }
+                            });
+                            nodeList = err;
+                            compileTime = new Date();
+                        }
+                    }).parse();;
         }
     }
 

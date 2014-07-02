@@ -45,23 +45,36 @@ import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.resourcemanagement.view.StructuredResourceDisplayController;
 import org.vortikal.text.tl.Context;
-import org.vortikal.text.tl.DirectiveNodeFactory;
-import org.vortikal.text.tl.DirectiveParseContext;
+import org.vortikal.text.tl.DirectiveHandler;
 import org.vortikal.text.tl.Node;
+import org.vortikal.text.tl.Parser.Directive;
+import org.vortikal.text.tl.TemplateContext;
 import org.vortikal.text.tl.Token;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DynamicDecoratorTemplate;
 
-public class ResourcePropsNodeFactory implements DirectiveNodeFactory {
+public class ResourcePropsNodeFactory implements DirectiveHandler {
+    private String name;
+    
+    public ResourcePropsNodeFactory(String name) {
+        this.name = name;
+    }
+    
+    @Override
+    public String[] tokens() {
+        return new String[] { name };
+    }
 
-    public Node create(DirectiveParseContext ctx) throws Exception {
-        List<Token> tokens = ctx.getArguments();
+    @Override
+    public void directive(Directive directive, TemplateContext context) {
+        List<Token> tokens = directive.args();
         if (tokens.size() != 1) {
-            throw new Exception("Wrong number of arguments");
+            context.error("Wrong number of arguments");
+            return;
         }
         final Token arg1 = tokens.get(0);
 
-        return new Node() {
+        context.add(new Node() {
             public boolean render(Context ctx, Writer out) throws Exception {
                 Resource resource;
                 RequestContext requestContext = RequestContext.getRequestContext();
@@ -107,7 +120,6 @@ public class ResourcePropsNodeFactory implements DirectiveNodeFactory {
                 }
                 return true;
             }
-        };
+        });
     }
-
 }

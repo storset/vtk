@@ -31,19 +31,20 @@
 package org.vortikal.resourcemanagement.view;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.vortikal.resourcemanagement.DisplayTemplate;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.StructuredResourceManager;
+import org.vortikal.util.io.InputSource;
 import org.vortikal.web.decorating.AbstractCachingTemplateManager;
-import org.vortikal.web.decorating.TemplateSource;
 
 public class DecoratorTemplateManager extends AbstractCachingTemplateManager {
 
     private StructuredResourceManager resourceManager;
     
-    protected TemplateSource resolve(final String name) {
+    protected InputSource resolve(final String name) {
         StructuredResourceDescription description = this.resourceManager.get(name);
         DisplayTemplate displayTemplate = description.getDisplayTemplate();
         while (displayTemplate == null) {
@@ -55,19 +56,19 @@ public class DecoratorTemplateManager extends AbstractCachingTemplateManager {
             displayTemplate = description.getDisplayTemplate();
         }
         final DisplayTemplate result = displayTemplate;
-        return new TemplateSource() {
-            public String getCharacterEncoding() throws Exception {
+        return new InputSource() {
+            public String getCharacterEncoding() throws IOException {
                 return "utf-8";
             }
             public String getID() {
                 return name;
             }
 
-            public InputStream getInputStream() throws Exception {
+            public InputStream getInputStream() throws IOException {
                 return new ByteArrayInputStream(result.getTemplate().getBytes("utf-8"));
             }
 
-            public long getLastModified() throws Exception {
+            public long getLastModified() throws IOException {
                 return result.getLastModified().getTime();
             }
         };

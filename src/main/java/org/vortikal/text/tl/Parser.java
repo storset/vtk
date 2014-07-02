@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2014, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -34,12 +34,9 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -50,7 +47,7 @@ import java.util.Set;
  *  [this is a directive node]
  * </pre>
  * 
- * <p>The resulting template is a {@link ParseResult}, which is basically 
+ * <p>The resulting template is a {@link OLD_ParseResult}, which is basically 
  * a wrapper around {@link NodeList} (a list of {@link Node}), which can later
  * be rendered as text.</p> 
  * 
@@ -58,7 +55,7 @@ import java.util.Set;
  * as the text they were parsed from.</p>
  * 
  * <p>Directive nodes are created based on 
- * their first internal token (name) using a {@link DirectiveNodeFactory}. 
+ * their first internal token (name) using a {@link OLD_DirectiveNodeFactory}. 
  * It is up to the node factory to create the {@link Node node}, it is the 
  * node's responsibility to to render itself. 
  * Directives with an unknown name are ignored.</p>
@@ -66,158 +63,94 @@ import java.util.Set;
  */
 public class Parser {
     
-    private PeekableReader reader;
-    private TextNodeFactory textNodeFactory;
-    private Map<String, DirectiveNodeFactory> directives = new HashMap<String, DirectiveNodeFactory>();
-    private Map<String, Object> attributes = new HashMap<String, Object>();
+    public static class Directive {
+        private String name;
+        private List<Token> args;
+        private int line;
 
-    /**
-     * Creates a parser with a given reader and a set of 
-     * named {@link DirectiveNodeFactory node factories}.
-     * @param reader the template source
-     * @param directives the set of node factories
-     */
-    public Parser(Reader reader, Map<String, DirectiveNodeFactory> directives) {
-        this(reader, directives, TextNodeFactory.DEFAULT);
+        public Directive(String name, List<Token> args, int line) {
+            this.name = name;
+            this.args = Collections.unmodifiableList(args);
+            this.line = line;
+        }
+        public String name() { return name; }
+        public List<Token> args() { return args; }
+        public int line() { return line; }
+
+        public String toString() { return "[" + name() + " " + args() + "]"; }
     }
     
-    /**
-     * Creates a parser with a given reader, a set of 
-     * named {@link DirectiveNodeFactory node factories}
-     * and a {@link TextNodeFactory} text node factory.
-     * @param reader the template source
-     * @param directives the set of node factories
-     * @param textNodeFactory the text node factory
-     */
-    public Parser(Reader reader, Map<String, DirectiveNodeFactory> directives, 
-            TextNodeFactory textNodeFactory) {
+    public static interface Handler {
+        public void start();
+        public void directive(Directive directive);
+        public void text(String text);
+        public void raw(String text);
+        public void comment(String text);
+        public void error(String message, int line);
+        public void end();
+    }
+    
+    private PeekableReader reader;
+    private Handler handler;
+    private boolean stop = false;
+
+    public Parser(Reader reader, Handler handler) {
         if (reader == null) {
             throw new IllegalArgumentException("Reader is NULL");
         }
-        if (directives == null) {
-            throw new IllegalArgumentException("Directive handlers is NULL");
-        }
-        if (textNodeFactory == null) {
-            throw new IllegalArgumentException("Text node factory is NULL");
+        if (handler == null) {
+            throw new IllegalArgumentException("Handler is NULL");
         }
         this.reader = new PeekableReader(reader);
-        this.directives = directives;
-        this.textNodeFactory = textNodeFactory;
+        this.handler = handler;
     }
     
-    /**
-     * Parse input until EOF.
-     * @return the parse result
-     */
-    public ParseResult parse() throws Exception {
-        return parse(Collections.<String>emptySet());
-    }
-
-    /**
-     * Parse input until one of the supplied terminators are encountered.
-     * @param terminators the set of terminators
-     * @return the parse result
-     */
-    public ParseResult parse(String... terminators) throws Exception {
-        Set<String> set = new HashSet<String>(Arrays.asList(terminators));
-        return parse(set);
+    public void stop() {
+        stop = true;
     }
     
-    /**
-     * Parse input until one of the supplied terminators are encountered.
-     * @param terminators the set of terminators
-     * @return the parse result
-     */
-    public ParseResult parse(Set<String> terminators) throws Exception {
-        try {
-            return parseNodes(terminators);
-        } catch (ParseException e) {
-            throw e;
-        } catch (Throwable t) {
-            throw new ParseException("Parse error at line " + getLineNumber(), 
-                    t, getLineNumber());
-        }
+    public boolean isStopped() {
+        return stop;
     }
     
-    /**
-     * Generates a parse exception with a given message, augmented 
-     * with internal parser state (such as the current line number).
-     * 
-     * This method is useful when there is a need to signal a parsing 
-     * error in code that is external from the parser itself 
-     * (i.e. in {@link DirectiveNodeFactory node factories}) 
-     * 
-     * @param msg the error message
-     */
-    public ParseException parseError(String msg) {
-        return new ParseException("Parse error at line " + getLineNumber() + 
-                ": " + msg, getLineNumber());
-    }
-    
-    /**
-     * Sets a user-defined attribute in the parser.
-     * @param name the name of the attribute
-     * @param attribute the attribute value
-     */
-    public void setAttribute(String name, Object attribute) {
-        this.attributes.put(name, attribute);
-    }
-    
-    /**
-     * Gets a user-defined attribute from the parser.
-     * @param name the name of the attribute
-     * @return the attribute (if defined, otherwise <code>null</code>)
-     */
-    public Object getAttribute(String name) {
-        return this.attributes.get(name);
-    }
-        
-    private ParseResult parseNodes(Set<String> terminators) throws Exception {
-        NodeList list = new NodeList();
+    public void parse() {
+        handler.start();
         while (true) {
-            ParseNode parseNode = nextNode();
+            if (stop) break;
+            
+            ParseNode parseNode;
+            try {
+                parseNode = nextNode();
+            } catch (Exception e) {
+                handler.error(e.getMessage(), getLineNumber());
+                break;
+            }
             if (parseNode == null) {
+                handler.end();
                 break;
             }
             switch (parseNode.type) {
             case Text:
-                list.add(this.textNodeFactory.create(parseNode));
+                handler.text(parseNode.text);
                 break;
             case Comment:
-                list.add(new CommentNode(parseNode.text));
+                handler.comment(parseNode.text);
                 break;
             case Raw:
-                list.add(new RawNode(parseNode.text));
+                handler.raw(parseNode.text);
                 break;
             case Directive:
                 String name = parseNode.name;
                 List<Token> args = parseNode.arguments;
-                DirectiveParseContext info = new DirectiveParseContext(name, this, args, parseNode.text);
-
-                if (this.directives.containsKey(name)) {
-                    DirectiveNodeFactory nf = this.directives.get(name);
-                    Node node = nf.create(info);
-                    list.add(node);
-                } else if (this.directives.containsKey("*")) {
-                    DirectiveNodeFactory nf = this.directives.get("*");
-                    Node node = nf.create(info);
-                    list.add(node);
-                }
-                if (terminators.contains(name)) {
-                    return new ParseResult(list, info);
-                }
+                handler.directive(new Directive(name, args, getLineNumber()));
             }
         }
-        return new ParseResult(list);
     }
+    
+    
     
     public int getLineNumber() {
         return this.reader.getLineNumber() + 1;
-    }
-
-    private void error(String msg) {
-        throw new ParseException("Parse error at line " + getLineNumber() + 
-                ": " + msg, getLineNumber());
     }
 
     private ParseNode nextNode() throws Exception {
@@ -225,7 +158,9 @@ public class Parser {
         if (c == -1) {
             return null;
         }
-        if (isComment()) {
+        if (reader.lookingAt("\\[")) {
+            return parseText();
+        } else if (isComment()) {
             return parseComment();
             
         } else if (isDirective()) {
@@ -263,6 +198,9 @@ public class Parser {
             int c = this.reader.read();
             if (c == -1) {
                 break;
+            } else if (c == '\\' && 
+                    (reader.lookingAt("[") || reader.lookingAt("]"))) {
+                c = reader.read();
             } else if (isComment()) {
                 buf.append((char) c);
                 break;
@@ -288,7 +226,8 @@ public class Parser {
         while (true) {
             int c = this.reader.read();
             if (c == -1) {
-                error("Unterminated directive: [#--" + buf.toString());
+                handler.error("Unterminated directive: [#--" + buf.toString(), getLineNumber());
+                return null;
             }
             if (c == '-' && this.reader.lookingAt("-]")) {
                 this.reader.skip("-]".length());
@@ -331,7 +270,8 @@ public class Parser {
         while (true) {
             int i = this.reader.read();
             if (i == -1) {
-                error("Unterminated directive: [" + nodeText);
+                handler.error("Unterminated directive: [" + nodeText, getLineNumber());
+                return null;
             }
             char c = (char) i;
             nodeText.append(c);
@@ -342,8 +282,9 @@ public class Parser {
                 }
             }
             if (escape) {
-                if (c != '"' && c != '\'' && c != '\\') {
-                    error("Illegal escape sequence: '\\" + c + "'");
+                if (c != '"' && c != '\'' && c != '\\' && c != '[' && c != ']') {
+                    handler.error("Illegal escape sequence: '\\" + c + "'", getLineNumber());
+                    return null;
                 }
             }
             if (c == ' ' || c == '\t' || c == '\n') {
@@ -386,7 +327,10 @@ public class Parser {
             } else if (c == '\\') {
                 escape = false;
                 curToken.append(c);
-                
+            } else if ((c == '[' || c == ']') && escape) {
+                System.out.println("__esc: " + c);
+                escape = false;
+                //curToken.append(c);
             } else if (c == ']' && !dquote && !squote) {
                 if (curToken.length() > 0) {
                     tokens.add(curToken.toString());
@@ -399,7 +343,8 @@ public class Parser {
             }
         }
         if (tokens.isEmpty()) {
-            error("Empty directive");
+            handler.error("Empty directive", getLineNumber());
+            return null;
         }        
         String name = tokens.remove(0);
         List<Token> args = parseArguments(tokens);

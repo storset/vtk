@@ -35,9 +35,9 @@ import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.repository.resourcetype.ValueFormatterRegistry;
 import org.vortikal.text.tl.Context;
-import org.vortikal.text.tl.ValNodeFactory;
+import org.vortikal.text.tl.ValHandler;
 
-public class PropertyValueFormatHandler implements ValNodeFactory.ValueFormatHandler {
+public class PropertyValueFormatHandler implements ValHandler.ValueFormatHandler {
 
     private ValueFormatterRegistry valueFormatterRegistry;
     

@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2014, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,20 +28,10 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.decorating;
+package org.vortikal.text.tl;
 
-import java.io.InputStream;
+import org.vortikal.text.tl.Parser.Directive;
 
-public interface TemplateSource {
-    
-    public String getID();
-
-    public long getLastModified() throws Exception;
-
-    public String getCharacterEncoding() throws Exception;
-    
-    public InputStream getInputStream() throws Exception;
-    
+public interface DirectiveValidator {
+    public void validate(Directive directive, TemplateContext context);
 }
-
-

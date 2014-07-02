@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,56 +28,69 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.text.tl;
+package org.vortikal.util.repository;
 
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.io.IOException;
+import java.io.InputStream;
 
-public final class NodeList implements Iterable<Node> {
-    
-    private List<Node> nodes = new ArrayList<Node>();
-    
-    public NodeList() {
-        
-    }
-    
-    public NodeList(Node... nodes) {
-        for (Node node: nodes) add(node);
-    }
+import org.vortikal.repository.Path;
+import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
+import org.vortikal.util.io.InputSource;
 
-    public void add(Node node) {
-        this.nodes.add(node);
-    }
+
+public class RepositoryInputSource implements InputSource {
+
+    private Repository repository;
+    private String token;
+    private Path uri; 
     
-    public Iterator<Node> iterator() {
-        return Collections.unmodifiableList(this.nodes).iterator();
-    }
-    
-    public List<Node> getNodes() {
-        return Collections.unmodifiableList(this.nodes);
+    public RepositoryInputSource(Path uri, Repository repository, String token) throws Exception {
+        this.repository = repository;
+        this.token = token;
+        this.uri = uri;
     }
 
-    /**
-     * Renders the node list.
-     * @param ctx the execution state (variables)
-     * @param out output writer
-     * @return <code>true</code> if the execution continued across 
-     * all nodes, <code>false</code> if one of the nodes aborted execution
-     * @throws Exception
-     */
-    public boolean render(Context ctx, Writer out) throws Exception {
-        for (Node node: this.nodes) {
-            if (!node.render(ctx, out)) {
-                return false;
-            }
+    @Override
+    public String getID() {
+        return uri.toString();
+    }
+    
+    @Override
+    public long getLastModified() throws IOException {
+        try {
+            Resource resource = repository.retrieve(
+                    token, this.uri, true);
+            return resource.getLastModified().getTime();
+        } catch (Exception e) {
+            throw new IOException(e);
         }
-        return true;
     }
 
-    public String toString() {
-        return this.nodes.toString();
+    @Override
+    public String getCharacterEncoding() throws IOException {
+        try {
+            Resource resource = repository.retrieve(
+                    token, uri, true);
+            return resource.getCharacterEncoding();
+        } catch (Exception e) {
+            throw new IOException(e);
+        }
     }
+
+    @Override
+    public InputStream getInputStream() throws IOException {
+        try {
+            return repository.getInputStream(token, uri, true);
+        } catch (Exception e) {
+            throw new IOException(e);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return getID();
+    }
+
 }
+

@@ -47,7 +47,7 @@ public class CommentNode extends Node {
 
     @Override
     public String toString() {
-        return "commentnode#" + this.text + "#";
+        return "[!--" + this.text + "--]";
     }
     
 }

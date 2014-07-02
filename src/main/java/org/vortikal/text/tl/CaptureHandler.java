@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, University of Oslo, Norway
+/* Copyright (c) 2014, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -32,51 +32,54 @@ package org.vortikal.text.tl;
 
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-public class CaptureNodeFactory implements DirectiveNodeFactory {
+import org.vortikal.text.tl.Parser.Directive;
 
-    private static final Set<String> CAPTURE_TERM = new HashSet<String>(Arrays.asList("endcapture"));
+public class CaptureHandler implements DirectiveHandler {
+
+    public String[] tokens() {
+        return new String[] { "capture", "endcapture" };
+    }
     
     @Override
-    public Node create(DirectiveParseContext ctx) throws Exception {
-        List<Token> args = ctx.getArguments();
-
-        if (args.size() != 1) {
-            throw new RuntimeException("Capture directive takes one argument: " + ctx.getNodeText());
-        }
-        Token arg1 = args.remove(0);
-        if (!(arg1 instanceof Symbol)) {
-            throw new RuntimeException("Expected symbol: " + arg1.getRawValue());
-        }
-        String variable = ((Symbol) arg1).getSymbol();
-
-        ParseResult block = ctx.getParser().parse(CAPTURE_TERM);
-        DirectiveParseContext terminator = block.getTerminator();
-        if (terminator == null) {
-            throw new RuntimeException("Unterminated directive: " + ctx.getNodeText());
-        }
-        NodeList nodeList = block.getNodeList();
-        return new CaptureNode(nodeList, variable);
-    }
-
-    private static class CaptureNode extends Node {
-        private NodeList nodeList;
-        private String variable;
+    public void directive(Directive directive, TemplateContext context) {
+        String name = directive.name();
         
-        public CaptureNode(NodeList nodeList, String variable) {
-            this.nodeList = nodeList;
-            this.variable = variable;
+        if ("capture".equals(name)) {
+            context.push(new DirectiveState(directive));
+            return;
         }
-        
-        public boolean render(Context ctx, Writer out) throws Exception {
-            StringWriter buffer = new StringWriter();
-            this.nodeList.render(ctx, buffer);
-            ctx.define(this.variable, buffer.getBuffer().toString(), true);
-            return true;
+        if ("endcapture".equals(name)) {
+            DirectiveState state = context.pop();
+            if (state == null || !"capture".equals(state.directive().name())) {
+                context.error("Misplaced directive: endcapture");
+                return;
+            }
+            List<Token> args = state.directive().args();
+
+            if (args.size() != 1) {
+                context.error("Capture directive takes one argument");
+                return;
+            }
+            Token arg1 = args.get(0);
+            if (!(arg1 instanceof Symbol)) {
+                context.error("Expected symbol: " + arg1.getRawValue());
+                return;
+            }
+            final String variable = ((Symbol) arg1).getSymbol();
+            final NodeList nodeList = state.nodes();
+            
+            context.add(new Node() {
+                @Override
+                public boolean render(Context ctx, Writer out) throws Exception {
+                    StringWriter buffer = new StringWriter();
+                    nodeList.render(ctx, buffer);
+                    ctx.define(variable, buffer.getBuffer().toString(), true);
+                    return true;
+                }
+            });
+
         }
     }
 }

@@ -43,9 +43,10 @@ import javax.servlet.http.HttpServletRequest;
 import org.vortikal.resourcemanagement.view.StructuredResourceDisplayController;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.tl.Context;
-import org.vortikal.text.tl.DirectiveNodeFactory;
-import org.vortikal.text.tl.DirectiveParseContext;
+import org.vortikal.text.tl.DirectiveHandler;
 import org.vortikal.text.tl.Node;
+import org.vortikal.text.tl.Parser.Directive;
+import org.vortikal.text.tl.TemplateContext;
 import org.vortikal.text.tl.Token;
 import org.vortikal.text.tl.expr.Expression;
 import org.vortikal.text.tl.expr.Function;
@@ -56,22 +57,28 @@ import org.vortikal.web.decorating.DecoratorRequestImpl;
 import org.vortikal.web.decorating.DecoratorResponseImpl;
 import org.vortikal.web.decorating.DynamicDecoratorTemplate;
 
-public class ComponentInvokerNodeFactory implements DirectiveNodeFactory {
+public class ComponentInvokerNodeFactory implements DirectiveHandler {
 
     private static final String COMPONENT_STACK_REQ_ATTR = 
         ComponentInvokerNodeFactory.class.getName() + ".ComponentStack";
     
     private ComponentSupport componentSupport;
     private Set<Function> functions;
+    private String name;
     
-    public ComponentInvokerNodeFactory(ComponentSupport componentSupport, Set<Function> functions) {
+    public ComponentInvokerNodeFactory(String name, ComponentSupport componentSupport, Set<Function> functions) {
         if (componentSupport == null) {
             throw new IllegalArgumentException("Constructor argument is NULL");
         }
         this.componentSupport = componentSupport;
         this.functions = functions;
+        this.name = name;
     }
     
+    @Override
+    public String[] tokens() {
+        return new String[] { this.name };
+    }
 
     public interface ComponentSupport {
         public ComponentResolver getComponentResolver(Context context);
@@ -80,7 +87,7 @@ public class ComponentInvokerNodeFactory implements DirectiveNodeFactory {
     
     protected DecoratorComponent resolveComponent(Context context, String namespace, String name) {
         ComponentResolver componentResolver = this.componentSupport.getComponentResolver(context);
-        
+        if (componentResolver == null) return null;
         DecoratorComponent component = componentResolver.resolveComponent(namespace, name);
         return component;
     }
@@ -89,19 +96,23 @@ public class ComponentInvokerNodeFactory implements DirectiveNodeFactory {
         return this.componentSupport.getHtmlPage(context);
     }
     
-    public Node create(DirectiveParseContext ctx) throws Exception {
-        List<Token> args = ctx.getArguments();
+    @Override
+    public void directive(Directive directive, TemplateContext context) {
+        final List<Token> args = directive.args();
         
         if (args.size() == 0) {
-            throw new RuntimeException(
-                    "Wrong number of arguments:" + ctx.getNodeText() 
-                    + ": expected <component-reference> <params>");
+            context.error("Wrong number of arguments: expected <component-reference> <params>");
+            return;
         }
-        
-        final Token arg1 = args.remove(0);
-        final Expression expression = args.size() > 0 ? new Expression(this.functions, args) : null;
+        final Token arg1 = args.get(0);
+        List<Token> rest = args.subList(1, args.size());
+        final Expression expression = rest.size() > 0 ? new Expression(this.functions, rest) : null;
 
-        return new Node() {
+        context.add(new Node() {
+            @Override
+            public String toString() {
+                return "[" + name + args + "]";  
+            }
             @SuppressWarnings("unchecked")
             public boolean render(Context ctx, Writer out) throws Exception {
                 Object componentRef = arg1.getValue(ctx);
@@ -124,9 +135,6 @@ public class ComponentInvokerNodeFactory implements DirectiveNodeFactory {
                     return true;
                 }
                 for (Map.Entry<?, ?> entry : ((Map<?, ?>) parameterMap).entrySet()) {
-//                    if (entry.getKey() == null || entry.getValue() == null) {
-//                        throw new RuntimeException("NULL values not allowed in parameter map: " + entry.getKey() + " = " + entry.getValue());
-//                    }
                     if (!(entry.getKey() instanceof String)) {
                         out.write(componentRef + ": parameter name must be string: " + entry.getKey());
                     }
@@ -138,13 +146,11 @@ public class ComponentInvokerNodeFactory implements DirectiveNodeFactory {
                     namespace = name.substring(0, name.indexOf(":"));
                     name = name.substring(namespace.length() + 1);
                 }
-
                 DecoratorComponent component = resolveComponent(ctx, namespace, name);
                 if (component == null) {
                     out.write("Unable to resolve component '" + namespace + ":" + name + "'");
                     return true;
                 }
-                
                 //RequestContext requestContext = RequestContext.getRequestContext();
                 //HttpServletRequest servletRequest = requestContext.getServletRequest();
 
@@ -184,6 +190,7 @@ public class ComponentInvokerNodeFactory implements DirectiveNodeFactory {
                 }
                 return true;
             }
-        };
+        });
     }
+
 }    

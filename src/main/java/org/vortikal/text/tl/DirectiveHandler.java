@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2014, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,52 +28,9 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.decorating;
+package org.vortikal.text.tl;
 
-import java.io.InputStream;
-
-import org.vortikal.repository.Path;
-import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
-
-
-public class RepositoryTemplateSource implements TemplateSource {
-
-    private Repository repository;
-    private String token;
-    private Path uri; 
-    
-    public RepositoryTemplateSource(Path uri, Repository repository, String token) throws Exception {
-        this.repository = repository;
-        this.token = token;
-        this.uri = uri;
-    }
-
-    public String getID() {
-        return this.uri.toString();
-    }
-    
-    public long getLastModified() throws Exception {
-        Resource resource = this.repository.retrieve(
-                this.token, this.uri, true);
-        return resource.getLastModified().getTime();
-    }
-
-    public String getCharacterEncoding() throws Exception {
-        Resource resource = this.repository.retrieve(
-                this.token, this.uri, true);
-        return resource.getCharacterEncoding();
-    }
-
-    public InputStream getInputStream() throws Exception {
-        return this.repository.getInputStream(this.token, this.uri, true);
-    }
-
-    public String toString() {
-        StringBuilder sb = new StringBuilder(this.getClass().getName());
-        sb.append(":").append(this.uri);
-        return sb.toString();
-    }
-
+public interface DirectiveHandler {
+    public String[] tokens();
+    public void directive(Parser.Directive directive, TemplateContext context);
 }
-

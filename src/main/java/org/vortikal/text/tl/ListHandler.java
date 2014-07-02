@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2014, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -32,34 +32,25 @@ package org.vortikal.text.tl;
 
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.vortikal.text.tl.Parser.Directive;
 import org.vortikal.text.tl.expr.Expression;
 import org.vortikal.text.tl.expr.Function;
 
-public class ListNodeFactory implements DirectiveNodeFactory {
+public class ListHandler implements DirectiveHandler {
 
-    private static final Set<String> LIST_TERM = new HashSet<String>(Arrays.asList("endlist"));
-
-    private Set<Function> functions = new HashSet<Function>();
-
-    public ListNodeFactory() {
-    }
+    private Set<Function> functions = null;
     
-    public ListNodeFactory(Set<Function> functions) {
-        setFunctions(functions);
+    public ListHandler(Set<Function> functions) {
+        this.functions = functions;
     }
-    
-    public void setFunctions(Set<Function> functions) {
-        if (functions != null) {
-            for (Function function: functions) {
-                this.functions.add(function);
-            }
-        }
+
+    public String[] tokens() {
+        return new String[] { "list", "endlist" };
     }
     
     /**
@@ -72,26 +63,34 @@ public class ListNodeFactory implements DirectiveNodeFactory {
      * [endlist]
      * 
      */
-    public Node create(DirectiveParseContext ctx) throws Exception {
-        List<Token> args = ctx.getArguments();
-        if (args.size() < 2) {
-            throw new RuntimeException("List directive: " + ctx.getNodeText() 
-                        + ": wrong number of arguments");
+    @Override
+    public void directive(Directive directive, TemplateContext context) {
+        String name = directive.name();
+        
+        if ("list".equals(name)) {
+            context.push(new DirectiveState(directive));
+            return;
         }
-        Token last = args.remove(args.size() - 1);
-        if (!(last instanceof Symbol)) {
-            throw new RuntimeException("Expected symbol: " + last.getRawValue());
-        }
+        if ("endlist".equals(name)) {
+            DirectiveState state = context.pop();
+            if (state == null || !"list".equals(state.directive().name())) {
+                context.error("Misplaced directive: endlist");
+                return;
+            }
+            List<Token> args = state.directive().args();
+            if (args.size() < 2) {
+                context.error("List directive: too few arguments"); 
+                return;
+            }
+            Token last = args.get(args.size() - 1);
+            if (!(last instanceof Symbol)) {
+                context.error("List directive: expected symbol: " + last.getRawValue());
+                return;
+            }
 
-        Expression expression = new Expression(this.functions, args);
-        ParseResult listBlock = ctx.getParser().parse(LIST_TERM);
-
-        DirectiveParseContext terminator = listBlock.getTerminator();
-        if (terminator == null) {
-            throw new RuntimeException("Unterminated directive: " + ctx.getNodeText());
+            Expression expression = new Expression(this.functions, args.subList(0, args.size() - 1));
+            context.add(new ListNode(expression, (Symbol) last, state.nodes()));
         }
-        NodeList nodeList = listBlock.getNodeList();
-        return new ListNode(expression, (Symbol) last, nodeList);
     }
 
     private static class ListNode extends Node {
@@ -109,34 +108,39 @@ public class ListNodeFactory implements DirectiveNodeFactory {
             Object evaluated = this.expression.evaluate(ctx);
             List<Object> elements = new ArrayList<Object>();
             if (evaluated instanceof Iterable<?>) {
-            	Iterable<?> iterable = (Iterable<?>) evaluated;
-            	for (Object o : iterable) {
-            		elements.add(o);
-            	}
+                Iterable<?> iterable = (Iterable<?>) evaluated;
+                for (Object o : iterable) {
+                    elements.add(o);
+                }
             } else if (evaluated instanceof Iterator<?>) {
-            	Iterator<?> iter = (Iterator<?>) evaluated;
-            	while (iter.hasNext()) {
-            		elements.add(iter.next());
-            	}
+                Iterator<?> iter = (Iterator<?>) evaluated;
+                while (iter.hasNext()) {
+                    elements.add(iter.next());
+                }
             } else if (evaluated instanceof Object[]) {
                 for (Object o : (Object[]) evaluated) {
-            		elements.add(o);
+                    elements.add(o);
+                }
+            } else if (evaluated instanceof Map<?,?>) {
+                Map<?,?> map = (Map<?,?>) evaluated;
+                for (Map.Entry<?, ?> entry: map.entrySet()) {
+                    elements.add(new Object[] { entry.getKey(), entry.getValue() });
                 }
             } else {
                 throw new RuntimeException(
-                		"List: Cannot iterate expression: " 
-                		+ this.expression + ": result is not a list: " 
-                		+ evaluated);
+                        "List: Cannot iterate expression: " 
+                                + this.expression + ": result is not a list: " 
+                                + evaluated);
             }
             execute(elements, ctx, out);
             return true;
         }
-        
-        private void execute(List<Object> elements, Context ctx, Writer out) throws Exception {
-        	int size = elements.size();
 
-        	for (int i = 0; i < size; i++) {
-				Object object = elements.get(i);
+        private void execute(List<Object> elements, Context ctx, Writer out) throws Exception {
+            int size = elements.size();
+
+            for (int i = 0; i < size; i++) {
+                Object object = elements.get(i);
                 ctx.push();
                 ctx.define(this.defVar.getSymbol(), object, false);
                 ctx.define("_size", size, false);
@@ -145,11 +149,7 @@ public class ListNodeFactory implements DirectiveNodeFactory {
                 ctx.define("_last", (i == size - 1), false);
                 this.nodeList.render(ctx, out);
                 ctx.pop();
-			}
-        }
-        
-        public String toString() {
-            return "[list]";
+            }
         }
     }
 }

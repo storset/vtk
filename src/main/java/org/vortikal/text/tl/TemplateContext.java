@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2014, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,29 +30,17 @@
  */
 package org.vortikal.text.tl;
 
-public class ParseResult {
-
-    private NodeList nodeList;
-    private DirectiveParseContext terminator;
-
-    public ParseResult(NodeList nodeList) {
-        this(nodeList, null);
-    }
-
-    public ParseResult(NodeList nodeList, DirectiveParseContext terminator) {
-        this.nodeList = nodeList;
-        this.terminator = terminator;
-    }
-
-    public NodeList getNodeList() {
-        return this.nodeList;
-    }
-
-    public DirectiveParseContext getTerminator() {
-        return this.terminator;
-    }
-
-    public String toString() {
-        return "parseresult#" + this.nodeList + ",terminator=" + this.terminator;
-    }
+public interface TemplateContext {
+    
+    public void push(DirectiveState state);
+    
+    public DirectiveState top();
+    
+    public DirectiveState pop();
+    
+    public int level();
+    
+    public void add(Node node);
+    
+    public void error(String message);
 }

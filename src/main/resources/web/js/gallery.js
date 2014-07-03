@@ -194,7 +194,8 @@
       }
       var id = genId(src);
       if(wrp.find("a#" + id).length) return;
-      var description = "<div id='" + id + "-description' class='" + container.substring(1) + "-description" + (!images[src].desc ? " empty-description" : "") + "' style='display: none; width: " + (images[src].width - 30) + "px'>" + images[src].desc + "<a href='javascript:void(0);' class='toggle-fullscreen minimized'>" + (isResponsive ? settings.i18n.showFullscreenResponsive : settings.i18n.showFullscreen) + "</a></div>";
+      var description = "<div id='" + id + "-description' class='" + container.substring(1) + "-description" + (!images[src].desc ? " empty-description" : "") + "' style='display: none; width: " + (images[src].width - 30) + "px'>" + 
+                        images[src].desc + "<div class='toggle-fullscreen-container'><a href='javascript:void(0);' class='toggle-fullscreen minimized'>" + (isResponsive ? settings.i18n.showFullscreenResponsive : settings.i18n.showFullscreen) + "</a></div></div>";
       $($.parseHTML(description)).insertBefore(wrpThumbs);
       wrpContainer.append("<a id='" + id + "' style='display: none' href='" + src + "' class='" + container.substring(1) + "-link'>" +
                             "<img src='" + src + "' alt='" + images[src].alt + "' style='width: " + images[src][widthProp] + "px; height: " + images[src][heightProp] + "px;' />" +
@@ -376,8 +377,8 @@
     }
     
     function resizeContainers(activeSrc, active, activeDesc) {
-      var width = Math.max(images[activeSrc][widthProp], (isFullscreen ? 500 : 150)); // Min 150x100px containers
-      var height = Math.max(images[activeSrc][heightProp], 100);
+      var width = Math.max(images[activeSrc][widthProp], (isFullscreen ? 500 : 250)); // 250x188px and 500x375px (fullscreen) min. containers
+      var height = Math.max(images[activeSrc][heightProp], (isFullscreen ? 375 : 188));
       active.css("height", height + "px");
       wrpNavNextPrev.css("height", height + "px");
       wrpNavNextPrevSpans.css("height", height + "px");

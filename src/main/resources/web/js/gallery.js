@@ -440,6 +440,8 @@
     }
     
     function calculateImageDimensions(w, h, maxW, maxH) {
+      if(isNaN(w) || isNaN(h)) return [1, 1];
+    
       var gcdVal = gcd(w, h);
       var aspectRatio = (w/gcdVal) / (h/gcdVal);
       if(w > maxW || h > maxH) {

@@ -234,9 +234,8 @@
       current.wrap("<div class='over' />").fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, function () {
         $(this).unwrap().removeClass("active-full-image").hide();
       });
-      active.addClass("active-full-image").fadeTo(0, 0).fadeTo(settings.fadeInOutTime, 1, function () {
-        resizeContainers(activeSrc, active, activeDesc);
-      });
+      resizeContainers(activeSrc, active, activeDesc);
+      active.addClass("active-full-image").fadeTo(0, 0).fadeTo(settings.fadeInOutTime, 1);
     }
     
     function showImageToggle(current, active) {

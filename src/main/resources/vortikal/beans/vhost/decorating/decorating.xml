@@ -60,6 +60,7 @@
         <ref bean="decorating.cssNamespace" />
         <ref bean="decorating.includeNamespace" />
         <ref bean="decorating.resourceNamespace" />
+        <ref bean="decorating.userDefinedComponentLibrary.namespace" />
       </set>
     </property>
     <property name="contentComponentParser" ref="decorating.dollarSyntaxTemplateParser" />
@@ -170,25 +171,23 @@
     </property>
   </bean>
 
-  <bean name="decorating.beanContextComponentResolver"
-        class="org.vortikal.web.decorating.BeanContextComponentResolver">
-    <property name="availableComponentNamespaces"
-              ref="decorating.defaultComponentNamespaces" />
-  </bean>
 
   <bean name="decorating.defaultComponentResolver"
         class="org.vortikal.web.decorating.AggregatedComponentResolver">
     <constructor-arg>
       <list>
-        <ref bean="decorating.beanContextComponentResolver" />
+        <!-- components defined in bean context with certain namespaces: -->
+        <bean class="org.vortikal.web.decorating.BeanContextComponentResolver">
+          <property name="availableComponentNamespaces"
+                    ref="decorating.defaultComponentNamespaces" />
+        </bean>
+        <!-- user-defined components in repository: -->
         <ref bean="decorating.userDefinedComponentResolver" />
       </list>
     </constructor-arg>
   </bean>
 
-  
-  <bean id="decorating.userDefinedComponentResolver"
-        class="org.vortikal.web.decorating.DynamicComponentResolver">
+  <bean id="decorating.userDefinedComponentResolver" class="org.vortikal.web.decorating.DynamicComponentResolver">
     <constructor-arg ref="decorating.userDefinedComponentLibrary" />
   </bean>
 
@@ -205,8 +204,12 @@
     </property>
   </bean>
 
+  <bean id="decorating.userDefinedComponentLibrary.namespace" class="java.lang.String">
+    <constructor-arg type="java.lang.String" value="lib" />
+  </bean>
+
   <bean id="decorating.userDefinedComponentLibrary" class="org.vortikal.web.decorating.DynamicComponentLibrary">
-    <constructor-arg value="lib" />
+    <constructor-arg ref="decorating.userDefinedComponentLibrary.namespace" />
     <constructor-arg ref="decorating.userDefinedComponentLibrary.directives" />
     <constructor-arg ref="decorating.userDefinedComponentLibrary.inputSource" />
   </bean>
@@ -245,6 +248,7 @@
         <ref bean="article.componentNamespace" />
         <ref bean="event.componentNamespace" />
         <ref bean="structuredResources.componentNamespace" />
+        <ref bean="decorating.userDefinedComponentLibrary.namespace" />
       </set>
     </property>
   </bean>
@@ -268,11 +272,22 @@
   </bean>
 
 
+
   <bean name="decorating.documentComponentResolver"
-        class="org.vortikal.web.decorating.BeanContextComponentResolver">
-    <property name="availableComponentNamespaces"
-              ref="decorating.documentComponentNamespaces" />
+        class="org.vortikal.web.decorating.AggregatedComponentResolver">
+    <constructor-arg>
+      <list>
+        <!-- components defined in bean context with certain namespaces: -->
+        <bean class="org.vortikal.web.decorating.BeanContextComponentResolver">
+          <property name="availableComponentNamespaces"
+                    ref="decorating.documentComponentNamespaces" />
+        </bean>
+        <!-- user-defined components in repository: -->
+        <ref bean="decorating.userDefinedComponentResolver" />
+      </list>
+    </constructor-arg>
   </bean>
+
 
   <bean id="decorating.documentComponentNamespaces"
         class="org.springframework.beans.factory.config.SetFactoryBean">
@@ -281,6 +296,7 @@
         <ref bean="decorating.resourceNamespace" />
         <ref bean="decorating.includeNamespace" />
         <ref bean="decorating.cssNamespace" />
+        <ref bean="decorating.userDefinedComponentLibrary.namespace" />
       </set>
     </property>
   </bean>

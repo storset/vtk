@@ -58,13 +58,23 @@ public class IfHandler implements DirectiveHandler {
         String prev = context.top() == null ? null
                 : context.top().directive().name();
         if ("if".equals(name)) {
+            if (directive.args().isEmpty()) {
+                context.error("[if]: missing expression");
+                return;
+                
+            }
             context.push(new DirectiveState(directive));
         }
         else if ("elseif".equals(name)) {
+            if (directive.args().isEmpty()) {
+                context.error("[elseif]: missing expression");
+                return;
+                
+            }
             if ("if".equals(prev) || "elseif".equals(prev))
                 context.push(new DirectiveState(directive));
             else {
-                context.error("elseif must follow if or elseif");
+                context.error("[elseif] must follow [if] or [elseif], was: [" + prev + "]");
                 return;
             }
         }
@@ -72,13 +82,13 @@ public class IfHandler implements DirectiveHandler {
             if ("if".equals(prev) || "elseif".equals(prev))
                 context.push(new DirectiveState(directive));
             else {
-                context.error("else must follow if or elseif");
+                context.error("[else] must follow [if] or [elseif], was: [" + prev + "]");
                 return;
             }
         }
         else if ("endif".equals(directive.name())) {
             if (!"if".equals(prev) && !"elseif".equals(prev) && !"else".equals(prev)) {
-                context.error("endif must follow if, elseif or else");
+                context.error("[endif] must follow [if], [elseif] or [else], was: [" + prev + "]");
                 return;
             }
             List<Branch> branches = new ArrayList<Branch>();
@@ -89,12 +99,6 @@ public class IfHandler implements DirectiveHandler {
                     return;
                 }
                 Directive prevDir = state.directive();
-                if ("if".equals(prevDir.name()) || "elseif".equals(prevDir.name())) {
-                    if (prevDir.args().isEmpty()) {
-                        context.error("Expected arguments for directive: " + prevDir);
-                        return;
-                    }
-                }
                 List<Token> args = new ArrayList<Token>(prevDir.args());
                 if (args.isEmpty()) args.add(new Literal("true"));
 
@@ -119,7 +123,7 @@ public class IfHandler implements DirectiveHandler {
         }
         @Override
         public String toString() {
-            return directive + " " + expression + " " + nodeList;
+            return directive.toString();
         }
     }
     

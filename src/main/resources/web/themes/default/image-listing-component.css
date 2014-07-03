@@ -284,9 +284,8 @@ html.fullscreen-gallery .vrtx-image-listing-include > a.toggle-fullscreen {
 html.fullscreen-gallery .vrtx-image-listing-include-container-description {
   border: none;
   background: transparent !important;
-  margin: 0 !important;
+  margin: 0 auto !important;
   padding: 15px 55px 25px !important;
-  width: auto !important;
 }
 
 html.fullscreen-gallery .vrtx-image-listing-include-container-description.hidden-description,

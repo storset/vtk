@@ -51,26 +51,31 @@ public class HeaderAwareResponseWrapper extends StatusAwareResponseWrapper {
         super(response);
     }
 
+    @Override
     public void addDateHeader(String name, long value) {
         addHeaderInternal(name, new Date(value), false);
         super.addDateHeader(name, value);
     }
     
+    @Override
     public void addHeader(String name, String value) {
         addHeaderInternal(name, value, false);
         super.addHeader(name, value);
     }
     
+    @Override
     public void addIntHeader(String name, int value) {
         addHeaderInternal(name, new Integer(value), false);
         super.addIntHeader(name, value);
     }
     
+    @Override
     public void setDateHeader(String name, long value) {
         addHeaderInternal(name, new Date(value), true);
         super.setDateHeader(name, value);
     }
     
+    @Override
     public void setHeader(String name, String value) {
         addHeaderInternal(name, value, true);
         super.setHeader(name, value);
@@ -93,12 +98,14 @@ public class HeaderAwareResponseWrapper extends StatusAwareResponseWrapper {
         return this.headers.get(name);
     }
 
+    @Override
     public void setContentLength(int length) {
         addHeaderInternal("Content-Length", String.valueOf(length), true);
         super.setHeader("Content-Length", String.valueOf(length));
         super.setContentLength(length);
     }
     
+    @Override
     public void setContentType(String contentType) {
         addHeaderInternal("Content-Type", contentType, true);
         super.setHeader("Content-Type", contentType);

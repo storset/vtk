@@ -244,8 +244,10 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
             if (DROPPED_HEADERS.contains(name)) {
                 return;
             }
-            if ("Content-Type".equals(name) && contentTypeMatch(value)) {
-                this.response.setHeader("Vary", "Cookie");
+            if ("Content-Type".equals(name)) {
+                this.response.setContentType(value);
+                if (contentTypeMatch(value))
+                    this.response.setHeader("Vary", "Cookie");
             }
             this.response.setHeader(name, value);
             super.setHeader(name, value);

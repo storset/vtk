@@ -47,6 +47,7 @@ function VrtxAdmin() {
   this.isIETridentInComp = this.isIE7 && /trident/.test(this.ua);
   this.isIPhone = /iphone/.test(this.ua);
   this.isIPad = /ipad/.test(this.ua);
+  this.isNotIos6 = (this.isIPhone || this.isIPad) && this.ua.match(/os (2|3|4|5)_/) != null;
   this.isAndroid = /android/.test(this.ua); // http://www.gtrifonov.com/2011/04/15/google-android-user-agent-strings-2/
   this.isMobileWebkitDevice = (this.isIPhone || this.isIPad || this.isAndroid);
   this.isWin = ((this.ua.indexOf("win") != -1) || (this.ua.indexOf("16bit") != -1));
@@ -636,7 +637,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
               }
             });
           } else {
-            if (vrtxAdm.isIPhone || vrtxAdm.isIPad) { // TODO: feature detection
+            if (vrtxAdm.isNotIos6) { // TODO: feature detection
               _$("ul#tabMenuRight li." + tabMenuServices[i]).remove();
             } else {
               vrtxAdm.getFormAsync({

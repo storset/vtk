@@ -430,7 +430,7 @@ resourcetype person {
     projectUrl : (en : "Web address", no : "Webadresse", nn :"Webadresse"),
     groupUrl : (en : "Web address", no : "Webadresse", nn :"Webadresse"),
     related-content : (en : "Related content (right column)", no : "Relatert innhold (vises i høyre kolonne)", nn : "Relatert innhald (visast i høgre kolonne)"),
-    rssFeeds : (en : "Show content from RSS-streams (from blog, Twitter or alike)", no : "Vis innhold fra RSS-strømmer (fra blogg, Twitter e.l.)", nn :"Vis innhald frå RSS-straumar (frå blogg, Twitter e.l.)"),
+    rssFeeds : (en : "Show content from RSS-streams (from blog or alike)", no : "Vis innhold fra RSS-strømmer (fra blogg)", nn :"Vis innhald frå RSS-straumar (frå blogg)"),
     rssTitle : (en : "Title",no : "Tittel", nn : "Tittel"),
     rssUrl : (en : "Web address", no : "Webadresse", nn :"Webadresse"),
     pressPhoto : (en : "Press photo", no : "Pressebilde", nn : "Pressebilete"),

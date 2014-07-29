@@ -40,8 +40,6 @@ import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 
 import org.jmock.Expectations;
-import static org.jmock.Expectations.any;
-import static org.jmock.Expectations.returnValue;
 import org.jmock.integration.junit4.JUnitRuleMockery;
 import org.junit.Before;
 import org.junit.Rule;
@@ -54,7 +52,7 @@ public class LinkCheckerTest {
 
     @Rule
     public final JUnitRuleMockery context = new JUnitRuleMockery();
-    
+
     private LinkChecker linkChecker = new LinkChecker();
     private Ehcache mockCache;
 
@@ -72,12 +70,17 @@ public class LinkCheckerTest {
         String expectedMessage = null;
 
         List<TestLinkCheckObject> testOkLinks = new ArrayList<TestLinkCheckObject>();
-        
-        // http://httpstat.us is down as of Jan. 21. Remove while considering alternatives
-//        testOkLinks.add(new TestLinkCheckObject("http://httpstat.us/200", base, expectedStatus, expectedMessage));
-//        testOkLinks.add(new TestLinkCheckObject("http://httpstat.us/301", base, expectedStatus, expectedMessage));
-//        testOkLinks.add(new TestLinkCheckObject("http://httpstat.us/302", base, expectedStatus, expectedMessage));
-//        testOkLinks.add(new TestLinkCheckObject("http://httpstat.us/303", base, expectedStatus, expectedMessage));
+
+        // http://httpstat.us is down as of Jan. 21. Remove while considering
+        // alternatives
+        // testOkLinks.add(new TestLinkCheckObject("http://httpstat.us/200",
+        // base, expectedStatus, expectedMessage));
+        // testOkLinks.add(new TestLinkCheckObject("http://httpstat.us/301",
+        // base, expectedStatus, expectedMessage));
+        // testOkLinks.add(new TestLinkCheckObject("http://httpstat.us/302",
+        // base, expectedStatus, expectedMessage));
+        // testOkLinks.add(new TestLinkCheckObject("http://httpstat.us/303",
+        // base, expectedStatus, expectedMessage));
 
         testOkLinks.add(new TestLinkCheckObject("https://www.uio.no/om/index.html", base, expectedStatus,
                 expectedMessage));
@@ -88,47 +91,49 @@ public class LinkCheckerTest {
     @Test
     public void testValidateStatusOkWhenRedirected() {
         List<TestLinkCheckObject> testRedirectLinks = new ArrayList<TestLinkCheckObject>();
-        testRedirectLinks.add(new TestLinkCheckObject("/vrtx", URL.parse("http://www.uio.no/index.html"), Status.OK, null));
+        testRedirectLinks.add(new TestLinkCheckObject("/vrtx", URL.parse("http://www.uio.no/index.html"), Status.OK,
+                null));
         testValidation(testRedirectLinks);
     }
-    
+
     @Test
     public void testLinksWithSpaces() {
-        
+
         final String unencodedAbsolute = "http://www.uio.no/a thing with spaces.pdf";
         final String alreadyEncodedAbsolute = "http://www.uio.no/a%20thing%20with%20spaces.pdf";
         final String unencodedHostRelative = "/a thing with spaces.pdf";
         final String encodedHostRelative = "/a%20thing%20with%20spaces.pdf";
-        
+
         final String expectedEncodedUrl = "http://www.uio.no/a%20thing%20with%20spaces.pdf";
-        
+
         context.checking(new Expectations() {
             {
                 exactly(4).of(mockCache).get(expectedEncodedUrl);
                 // Pretend the link was in cache to avoid hitting network
-                will(onConsecutiveCalls(
-                   returnValue(new Element(expectedEncodedUrl, new LinkCheckResult(unencodedAbsolute, Status.NOT_FOUND))),
-                   returnValue(new Element(expectedEncodedUrl, new LinkCheckResult(alreadyEncodedAbsolute, Status.NOT_FOUND))),
-                   returnValue(new Element(expectedEncodedUrl, new LinkCheckResult(unencodedHostRelative, Status.NOT_FOUND))),
-                   returnValue(new Element(expectedEncodedUrl, new LinkCheckResult(encodedHostRelative, Status.NOT_FOUND)))));
+                will(onConsecutiveCalls(returnValue(new Element(expectedEncodedUrl, new LinkCheckResult(
+                        unencodedAbsolute, Status.NOT_FOUND))), returnValue(new Element(expectedEncodedUrl,
+                        new LinkCheckResult(alreadyEncodedAbsolute, Status.NOT_FOUND))), returnValue(new Element(
+                        expectedEncodedUrl, new LinkCheckResult(unencodedHostRelative, Status.NOT_FOUND))),
+                        returnValue(new Element(expectedEncodedUrl, new LinkCheckResult(encodedHostRelative,
+                                Status.NOT_FOUND)))));
             }
         });
-        
+
         URL base = URL.parse("http://www.uio.no/index.html");
 
         // Test unencoded absolute link
         linkChecker.validate(unencodedAbsolute, base);
-        
+
         // Test already encoded absolute link
         linkChecker.validate(alreadyEncodedAbsolute, base);
-        
+
         // Test unencoded host relative link
         linkChecker.validate(unencodedHostRelative, base);
-        
+
         // Test already encoded host relative link
         linkChecker.validate(encodedHostRelative, base);
     }
-    
+
     @Test
     public void testValidateStatusNotFound() {
 
@@ -137,10 +142,9 @@ public class LinkCheckerTest {
         String expectedMessage = null;
 
         List<TestLinkCheckObject> testNotFoundLinks = new ArrayList<TestLinkCheckObject>();
-        
-        // http://httpstat.us is down as of Jan. 21. Remove while considering alternatives
-//        testNotFoundLinks.add(new TestLinkCheckObject("http://httpstat.us/404", base, expectedStatus, expectedMessage));
-//        testNotFoundLinks.add(new TestLinkCheckObject("http://httpstat.us/410", base, expectedStatus, expectedMessage));
+
+        testNotFoundLinks.add(new TestLinkCheckObject("http://httpstat.us/404", base, expectedStatus, expectedMessage));
+        testNotFoundLinks.add(new TestLinkCheckObject("http://httpstat.us/410", base, expectedStatus, expectedMessage));
 
         testNotFoundLinks.add(new TestLinkCheckObject("https://www.usit.uio.no/not-found.html", base, expectedStatus,
                 expectedMessage));
@@ -149,8 +153,8 @@ public class LinkCheckerTest {
 
     @Test
     public void testValidateStatusMalformed() {
-        testValidation(new TestLinkCheckObject("http://foo.com:NaN", 
-                URL.parse("http://foo.com/bar"), Status.MALFORMED_URL, null));
+        testValidation(new TestLinkCheckObject("http://foo.com:NaN", URL.parse("http://foo.com/bar"),
+                Status.MALFORMED_URL, null));
     }
 
     @Test
@@ -162,15 +166,15 @@ public class LinkCheckerTest {
 
                 oneOf(mockCache).get("http://plain-ascii.com/foo/bar");
                 will(returnValue(null));
-                
+
                 exactly(2).of(mockCache).put(with(any(Element.class)));
             }
         });
-        
+
         linkChecker.validate("http://www.øl.com/#/BedsteBryggeprocess", URL.parse("http://www.uio.no/index.html"));
         linkChecker.validate("http://plain-ascii.com/foo/bar", URL.parse("http://www.uio.no/index.html"));
     }
-    
+
     @Test
     public void testNonAscii() throws java.net.MalformedURLException {
         context.checking(new Expectations() {
@@ -182,14 +186,14 @@ public class LinkCheckerTest {
         });
 
         linkChecker.validate("http://www.example.com/a–b", // "a" <ndash> "b"
-                             URL.parse("http://www.uio.no/"));
+                URL.parse("http://www.uio.no/"));
     }
-    
+
     @Test
     public void testValidateStatusHeadNotFoundButGetOK() {
-    	// Test case taken from real issue VTK-3434
+        // Test case taken from real issue VTK-3434
         URL base = URL.parse("http://www.usit.uio.no/index.html");
-    	String url = "http://www.washingtonpost.com/world/national-security/nsa-collects-millions-of-e-mail-address-books-globally/2013/10/14/8e58b5be-34f9-11e3-80c6-7e6dd8d22d8f_story.html";
+        String url = "http://www.washingtonpost.com/world/national-security/nsa-collects-millions-of-e-mail-address-books-globally/2013/10/14/8e58b5be-34f9-11e3-80c6-7e6dd8d22d8f_story.html";
         testValidation(new TestLinkCheckObject(url, base, Status.OK, null));
     }
 
@@ -212,7 +216,7 @@ public class LinkCheckerTest {
                 {
                     oneOf(mockCache).get(with(any(String.class)));
                     will(returnValue(null));
-                    
+
                     oneOf(mockCache).put(with(any(Element.class)));
                 }
             });
@@ -224,7 +228,7 @@ public class LinkCheckerTest {
                 actual.getStatus());
 
     }
-    
+
     private class TestLinkCheckObject {
 
         String testHref;

@@ -276,9 +276,9 @@ VrtxEditor.prototype.richtextEditorFacade = {
       config.filebrowserImageBrowseUrl = opts.imageBrowseUrl;
       config.filebrowserFlashBrowseUrl = opts.flashBrowseUrl;
       if(opts.requiresStudyRefPlugin) {
-        config.extraPlugins = 'mediaembed,studyreferencecomponent,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal';
+        config.extraPlugins = 'mediaembed,studyreferencecomponent,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal,lineutils,widget,image2';
       } else {
-        config.extraPlugins = 'mediaembed,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal';
+        config.extraPlugins = 'mediaembed,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal,lineutils,widget,image2';
       }
       config.stylesSet = this.divContainerStylesSet;
       if (opts.isSimple) { // XHTML

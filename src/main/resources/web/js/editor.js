@@ -1018,7 +1018,7 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
   
   if(vrtxEdit.editorForm.hasClass("vrtx-course-schedule")) {
     editorCourseSchedule = new courseSchedule();
-    config.allowedContent = default;
+    config.allowedContent = null;
   } else if (vrtxEdit.editorForm.hasClass("vrtx-hvordan-soke")) {
     vrtxEdit.accordionGroupedInit();
   } else if (vrtxEdit.editorForm.hasClass("vrtx-course-description")) {

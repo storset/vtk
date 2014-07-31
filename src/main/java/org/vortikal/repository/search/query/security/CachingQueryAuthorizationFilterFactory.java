@@ -30,10 +30,11 @@
  */
 package org.vortikal.repository.search.query.security;
 
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.CachingWrapperFilter;
 import org.apache.lucene.search.Filter;
+import org.apache.lucene.search.IndexSearcher;
 import org.vortikal.context.BaseContext;
+import org.vortikal.repository.search.query.filter.FilterFactory;
 
 /**
  * A filter-factory which does caching of filters.
@@ -52,11 +53,11 @@ public class CachingQueryAuthorizationFilterFactory extends SimpleQueryAuthoriza
     private static final String CACHED_FILTER_THREADLOCAL_ATTRIBUTE_NAME =
             CachingQueryAuthorizationFilterFactory.class.getName() + ".CACHED_ACL_FILTER";
 
-    private Filter cachingAclReadForAllFilter = new CachingWrapperFilter(
-            SimpleQueryAuthorizationFilterFactory.ACL_READ_FOR_ALL_FILTER);
-
+    private final Filter cachingAclReadForAllFilter = 
+            FilterFactory.cacheWrapper(SimpleQueryAuthorizationFilterFactory.ACL_READ_FOR_ALL_FILTER);
+            
     @Override
-    public Filter authorizationQueryFilter(String token, IndexReader reader) {
+    public Filter authorizationQueryFilter(String token, IndexSearcher searcher) {
 
         if (token == null) {
             return this.cachingAclReadForAllFilter;
@@ -66,7 +67,7 @@ public class CachingQueryAuthorizationFilterFactory extends SimpleQueryAuthoriza
                 // Don't try this if there is no base context setup for current thread.
                 // (And we don't bother setting up our own thread local storage,
                 // since this caching mostly helps for web request threads.)
-                return super.authorizationQueryFilter(token, reader);
+                return super.authorizationQueryFilter(token, searcher);
             }
 
             BaseContext baseContext = BaseContext.getContext();
@@ -77,14 +78,14 @@ public class CachingQueryAuthorizationFilterFactory extends SimpleQueryAuthoriza
             }
 
             // Need to build ACL filter, it will be null for principals with read-all role
-            aclFilter = super.authorizationQueryFilter(token, reader);
+            aclFilter = super.authorizationQueryFilter(token, searcher);
 
             if (aclFilter != null) {
                 // CachingWrapperFilter necessary here, because we might get a
                 // new index reader instance during execution of thread (for
                 // different queries) and the CachingWrapperFilter will automatically
                 // refresh the filter from the source if that happens.
-                aclFilter = new CachingWrapperFilter(aclFilter);
+                aclFilter = FilterFactory.cacheWrapper(aclFilter);
                 baseContext.setAttribute(CACHED_FILTER_THREADLOCAL_ATTRIBUTE_NAME, aclFilter);
             }
 
@@ -93,7 +94,7 @@ public class CachingQueryAuthorizationFilterFactory extends SimpleQueryAuthoriza
     }
 
     @Override
-    public Filter readForAllFilter(IndexReader reader) {
+    public Filter readForAllFilter(IndexSearcher searcher) {
         return this.cachingAclReadForAllFilter;
     }
     

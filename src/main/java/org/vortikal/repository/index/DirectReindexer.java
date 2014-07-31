@@ -87,7 +87,7 @@ public class DirectReindexer implements PropertySetIndexReindexer {
         try {
 
             logger.info("Clearing index contents ..");
-            targetIndex.clearContents();
+            targetIndex.clear();
 
             logger.info("Starting re-indexing ..");
             AddAllPropertySetHandler handler = 

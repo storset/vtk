@@ -42,23 +42,11 @@ import org.vortikal.repository.search.Sorting;
 import org.vortikal.repository.search.TypedSortField;
 
 /**
+ * Build Lucene {@link org.apache.lucene.search.Sort} specifications from {@link Sorting}.
  * 
- * @author oyviste
  * 
  */
 public class SortBuilderImpl implements SortBuilder {
-
-//    private SortComparatorSource sortComparatorSource = null; 
-    
-//    public SortBuilderImpl() throws SortBuilderException {
-//        try {
-//            sortComparatorSource = new CustomSortComparatorSource();
-//        } catch (IOException e) {
-//            throw new SortBuilderException("Couldn't create custom sort comparator source", e);
-//        } catch (ParseException e) {
-//            throw new SortBuilderException("Couldn't create custom sort comparator source", e);
-//        }
-//    }
 
     @Override
     public org.apache.lucene.search.Sort buildSort(Sorting sort)
@@ -90,7 +78,7 @@ public class SortBuilderImpl implements SortBuilder {
                 // Special fields, do standard non-locale-specific lexicographic sorting (uri, name or type)
                 luceneSortFields[j] =
                         new org.apache.lucene.search.SortField(fieldName,
-                                                               org.apache.lucene.search.SortField.STRING,
+                                                               org.apache.lucene.search.SortField.Type.STRING,
                                                                reverse);
 
             } else if (sortField instanceof PropertySortField) {
@@ -119,13 +107,17 @@ public class SortBuilderImpl implements SortBuilder {
                     // These types are all encoded as lexicographically sortable strings,
                     // and there is no need to do locale-sensitive sorting on any of them.
                     luceneSortFields[j] = new org.apache.lucene.search.SortField(
-                            fieldName, org.apache.lucene.search.SortField.STRING, reverse);
+                            fieldName, org.apache.lucene.search.SortField.Type.STRING, reverse);
                     break;
 
                 default:
+                    // TODO implement locale-based sorting support using CollationKeyFilter
                     // Sort field according to locale, typically STRING properties (slower)
+//                    luceneSortFields[j] = new org.apache.lucene.search.SortField(
+//                            fieldName, sortField.getLocale(), reverse);
                     luceneSortFields[j] = new org.apache.lucene.search.SortField(
-                            fieldName, sortField.getLocale(), reverse);
+                            fieldName, org.apache.lucene.search.SortField.Type.STRING, reverse);
+                    
                 }
             } else {
                 throw new SortBuilderException("Unknown sorting type " + sortField.getClass().getName());

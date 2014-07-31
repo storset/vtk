@@ -30,16 +30,17 @@
  */
 package org.vortikal.repository.search.query.security;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermDocs;
-import org.apache.lucene.search.DocIdSet;
+import org.apache.lucene.queries.TermFilter;
+import org.apache.lucene.queries.TermsFilter;
 import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.TermsFilter;
-import org.apache.lucene.util.OpenBitSet;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.util.BytesRef;
 import org.vortikal.repository.index.mapping.FieldNames;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
@@ -51,18 +52,14 @@ import org.vortikal.security.PrincipalFactory;
 public class SimpleQueryAuthorizationFilterFactory extends
         AbstractQueryAuthorizationFilterFactory {
 
-    protected final static Term READ_FOR_ALL_TERM = 
-            new Term(FieldNames.ACL_READ_PRINCIPALS_FIELD_NAME, 
-                        PrincipalFactory.NAME_ALL);
-    
-    protected final static Filter ACL_READ_FOR_ALL_FILTER = 
-            new ACLReadForAllFilter();
+    protected static final Filter ACL_READ_FOR_ALL_FILTER = 
+            new TermFilter(new Term(FieldNames.ACL_READ_PRINCIPALS_FIELD_NAME, PrincipalFactory.NAME_ALL));
     
     @Override
-    public Filter authorizationQueryFilter(String token, IndexReader reader) {
+    public Filter authorizationQueryFilter(String token, IndexSearcher searcher) {
 
         if (token == null) {
-            // Generate a filter which only allows read-for-all documents
+            // Use a filter which only allows read-for-all documents
             return ACL_READ_FOR_ALL_FILTER;
         }
 
@@ -85,50 +82,44 @@ public class SimpleQueryAuthorizationFilterFactory extends
     }
 
     @Override
-    public Filter readForAllFilter(IndexReader reader) {
+    public Filter readForAllFilter(IndexSearcher searcher) {
         return ACL_READ_FOR_ALL_FILTER;
     }
     
     private Filter buildACLReadFilter(Principal principal, Set<Principal> memberGroups) {
     
-        TermsFilter termsFilter = new TermsFilter();
+        List<BytesRef> termValues = new ArrayList<BytesRef>(memberGroups.size()+2);
         for (Principal group: memberGroups) {
-            termsFilter.addTerm(new Term(FieldNames.ACL_READ_PRINCIPALS_FIELD_NAME, 
-                                                    group.getQualifiedName()));
+            termValues.add(new BytesRef(group.getQualifiedName()));
         }
 
         // Add ALL principal
-        termsFilter.addTerm(new Term(FieldNames.ACL_READ_PRINCIPALS_FIELD_NAME, PrincipalFactory.ALL.getQualifiedName()));
+        termValues.add(new BytesRef(PrincipalFactory.ALL.getQualifiedName()));
         
         // Add principal executing the query
-        termsFilter.addTerm(new Term(FieldNames.ACL_READ_PRINCIPALS_FIELD_NAME, principal.getQualifiedName()));
+        termValues.add(new BytesRef(principal.getQualifiedName()));
         
-        return termsFilter;
+        return new TermsFilter(FieldNames.ACL_READ_PRINCIPALS_FIELD_NAME, termValues);
     }
     
-    /**
-     * Just a quick and easy term filter for the common case of anonymous queries,
-     * which require that the document is read-for-all.
-     * This should be a lot faster than wrapping
-     * a TermQuery with <code>QueryWrapperFilter</code>.
-     */
-    private static class ACLReadForAllFilter extends Filter {
+// Old Lucene3-impl:        
+//        @Override
+//        public DocIdSet getDocIdSet(IndexReader reader) throws IOException {
+//         
+//            
+//            
+//            OpenBitSet docIdSet = new OpenBitSet(reader.maxDoc());
+//            TermDocs tdocs = reader.termDocs(READ_FOR_ALL_TERM);
+//            try {
+//                while (tdocs.next()) {
+//                    docIdSet.fastSet(tdocs.doc());
+//                }
+//            } finally {
+//                tdocs.close();
+//            }
+//            
+//            return docIdSet;
+//        }
+//    }    
         
-        @Override
-        public DocIdSet getDocIdSet(IndexReader reader) throws IOException {
-         
-            OpenBitSet docIdSet = new OpenBitSet(reader.maxDoc());
-            TermDocs tdocs = reader.termDocs(READ_FOR_ALL_TERM);
-            try {
-                while (tdocs.next()) {
-                    docIdSet.fastSet(tdocs.doc());
-                }
-            } finally {
-                tdocs.close();
-            }
-            
-            return docIdSet;
-        }
-    }
-    
 }

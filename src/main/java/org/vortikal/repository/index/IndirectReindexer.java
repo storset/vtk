@@ -92,7 +92,7 @@ public class IndirectReindexer implements PropertySetIndexReindexer {
                 new DirectReindexer(this.temporaryIndex, this.indexDao).runWithExternalLocking();
             
             LOG.info("Clearing contents of target index '" + this.targetIndex.getId() + "' now");
-            this.targetIndex.clearContents();
+            this.targetIndex.clear();
             
             LOG.info("Adding contents of temporary index to target index now");
             this.targetIndex.addIndexContents(this.temporaryIndex);

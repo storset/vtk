@@ -31,6 +31,8 @@
 package org.vortikal.repository.search.query;
 
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.search.Filter;
+import org.apache.lucene.search.IndexSearcher;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Sorting;
 
@@ -50,16 +52,22 @@ public interface LuceneQueryBuilder {
      * @return
      * @throws QueryBuilderException
      */
-    public org.apache.lucene.search.Query buildQuery(Query query, IndexReader reader) 
+    public org.apache.lucene.search.Query buildQuery(Query query, IndexSearcher reader) 
         throws QueryBuilderException;
     
     /**
-     * Build a {@link org.apache.lucene.search.Filter} that should be applied for the given
-     * search and query.
-     * 
-     * May return <code>null</code> if no filter should be applied for the given search.  
+     * Build a {@link org.apache.lucene.search.Filter} that should be applied
+     * for the given search and query.
+     *
+     * May return <code>null</code> if no filter should be applied for the given
+     * search.
+     *
+     * @param token security token used for search
+     * @param search search object
+     * @param searcher index searcher
+     * @return a {@link Filter} instance for the search
      */
-    public org.apache.lucene.search.Filter buildSearchFilter(String token, Search search, IndexReader reader)
+    public org.apache.lucene.search.Filter buildSearchFilter(String token, Search search, IndexSearcher searcher)
         throws QueryBuilderException;
     
     /**
@@ -69,7 +77,7 @@ public interface LuceneQueryBuilder {
      * @param reader
      * @return 
      */
-    public org.apache.lucene.search.Filter buildIterationFilter(String token, Search search, IndexReader reader);
+    public org.apache.lucene.search.Filter buildIterationFilter(String token, Search search, IndexSearcher searcher);
 
 
     /**

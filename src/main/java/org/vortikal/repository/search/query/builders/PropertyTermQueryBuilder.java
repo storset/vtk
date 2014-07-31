@@ -31,85 +31,76 @@
 package org.vortikal.repository.search.query.builders;
 
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queries.TermFilter;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TermRangeFilter;
+import org.apache.lucene.util.BytesRef;
+import org.vortikal.repository.index.mapping.Field4ValueMapper;
+import org.vortikal.repository.index.mapping.FieldNames;
+import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.search.query.PropertyTermQuery;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
 import org.vortikal.repository.search.query.TermOperator;
-import org.vortikal.repository.search.query.filter.InversionFilter;
+import org.vortikal.repository.search.query.filter.FilterFactory;
 
 /**
+ * Builds property value term queries.
  * 
- * @author oyviste
- *
+ * <p>Supports the following term operators:
+ * 
+ * <ul>
+ *   <li>{@link TermOperator#EQ}
+ *   <li>{@link TermOperator#EQ_IGNORECASE}
+ *   <li>{@link TermOperator#NE}
+ *   <li>{@link TermOperator#NE_IGNORECASE}
+ * </ul>
+ * 
  */
 public class PropertyTermQueryBuilder implements QueryBuilder {
 
-    private TermOperator op;
-    private String fieldName;
-    private String fieldValue;
-    private Filter deletedDocsFilter;
+    private final PropertyTermQuery ptq;
+    private Field4ValueMapper fvm;
     
-    public PropertyTermQueryBuilder(TermOperator op, String fieldName, String fieldValue) {
-        this.op = op;
-        this.fieldName = fieldName;
-        this.fieldValue = fieldValue;
-    }
-
-    public PropertyTermQueryBuilder(TermOperator op, String fieldName, String fieldValue, Filter deletedDocs) {
-        this(op, fieldName, fieldValue);
-        this.deletedDocsFilter = deletedDocs;
+    public PropertyTermQueryBuilder(PropertyTermQuery ptq, Field4ValueMapper fvm) {
+        this.ptq = ptq;
+        this.fvm = fvm;
     }
 
     @Override
     public Query buildQuery() throws QueryBuilderException {
+
+        final PropertyTypeDefinition propDef = ptq.getPropertyDefinition();
+        final TermOperator op = ptq.getOperator();
+        final boolean lowercase = (op == TermOperator.EQ_IGNORECASE || op == TermOperator.NE_IGNORECASE);
+        final String cva = ptq.getComplexValueAttributeSpecifier();
+        final String fieldValue = ptq.getTerm();
         
-        // XXX: LuceneQueryBuilderImpl does the necessary downcasing and field name selection
-        //      if ignore case has been enabled. Kinda inconsistent.
+        final PropertyType.Type valueType;
+        final String fieldName;
+        if (cva != null) {
+            valueType = Field4ValueMapper.getJsonFieldDataType(propDef, cva);
+            fieldName = FieldNames.getJsonSearchFieldName(propDef, cva, lowercase);
+        } else {
+            valueType = propDef.getType();
+            fieldName = FieldNames.getSearchFieldName(propDef, lowercase);
+        }
         
         if (op == TermOperator.EQ || op == TermOperator.EQ_IGNORECASE) {
-            return new TermQuery(new Term(this.fieldName, this.fieldValue));
-        }
-        
-        if (op == TermOperator.NE || op == TermOperator.NE_IGNORECASE) {
-            TermQuery tq = new TermQuery(new Term(this.fieldName, this.fieldValue));
-            return new ConstantScoreQuery(new InversionFilter(new QueryWrapperFilter(tq), this.deletedDocsFilter));
-        }
-
-        boolean includeLower = false;
-        boolean includeUpper = false;
-        String upperTerm = null;
-        String lowerTerm = null;
-        
-        if (op == TermOperator.GE) {
-            lowerTerm = fieldValue;
-            includeLower = true;
-            includeUpper = true;
-        } else if (op == TermOperator.GT) {
-            lowerTerm = fieldValue;
-            includeUpper = true;
-        } else if (op == TermOperator.LE) {
-            upperTerm = fieldValue;
-            includeUpper = true;
-            includeLower = true;
-        } else if (op == TermOperator.LT) {
-            upperTerm = fieldValue;
-            includeLower = true;
+            return new TermQuery(fvm.queryTerm(fieldName, fieldValue, valueType, lowercase));
+        } else if (op == TermOperator.NE || op == TermOperator.NE_IGNORECASE) {
+            TermFilter tf = new TermFilter(fvm.queryTerm(fieldName, fieldValue, valueType, lowercase));
+            Filter f = FilterFactory.inversionFilter(tf);
+            return new ConstantScoreQuery(f);
         } else {
-            throw new QueryBuilderException("Unknown term operator"); 
+            throw new QueryBuilderException("Term operator " + op + " not supported by this builder.");
         }
-
-        TermRangeFilter trFilter = new TermRangeFilter(fieldName, lowerTerm, upperTerm,
-                includeLower, includeUpper);
-
-        return new ConstantScoreQuery(trFilter);
         
-//        return new ConstantScoreRangeQuery(fieldName, lowerTerm, upperTerm,
-//                                                    includeLower, includeUpper);
     }
 
 }

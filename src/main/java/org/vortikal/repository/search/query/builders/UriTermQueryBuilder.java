@@ -31,16 +31,16 @@
 package org.vortikal.repository.search.query.builders;
 
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queries.TermFilter;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
 import org.vortikal.repository.index.mapping.FieldNames;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.UriTermQuery;
-import org.vortikal.repository.search.query.filter.InversionFilter;
+import org.vortikal.repository.search.query.filter.FilterFactory;
 
 /**
  * 
@@ -50,17 +50,11 @@ import org.vortikal.repository.search.query.filter.InversionFilter;
 public class UriTermQueryBuilder implements QueryBuilder {
 
     private UriTermQuery query;
-    private Filter deletedDocsFilter;
 
     public UriTermQueryBuilder(UriTermQuery query) {
         this.query = query;
     }
     
-    public UriTermQueryBuilder(UriTermQuery query, Filter deletedDocs) {
-        this(query);
-        this.deletedDocsFilter = deletedDocs;
-    }
-
     @Override
     public org.apache.lucene.search.Query buildQuery() throws QueryBuilderException {
         String uri = this.query.getUri();
@@ -74,9 +68,9 @@ public class UriTermQueryBuilder implements QueryBuilder {
 
         if (TermOperator.NE.equals(operator)) {
             // URI NOT equal
-            TermQuery tq = 
-                new TermQuery(new Term(FieldNames.URI_FIELD_NAME, uri));
-            return new ConstantScoreQuery(new InversionFilter(new QueryWrapperFilter(tq), this.deletedDocsFilter));
+            Term t = new Term(FieldNames.URI_FIELD_NAME, uri);
+            Filter f = FilterFactory.inversionFilter(new TermFilter(t));
+            return new ConstantScoreQuery(f);
         }
         
         throw new QueryBuilderException("Operator '" + operator + "' not legal for UriTermQuery.");

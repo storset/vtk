@@ -39,8 +39,8 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
 /**
+ * Handles naming of all Lucene fields.
  * 
- * @author oyviste
  */
 public final class FieldNames {
 
@@ -61,14 +61,14 @@ public final class FieldNames {
     public static final String ACL_INHERITED_FROM_FIELD_NAME = "ACL_INHERITED_FROM";
     public static final String ACL_READ_PRINCIPALS_FIELD_NAME = "ACL_READ_PRINCIPALS";
     
-    public static final String STORED_ACL_READ_PRINCIPALS_FIELD_NAME = 
-        STORED_BINARY_FIELD_PREFIX + ACL_READ_PRINCIPALS_FIELD_NAME;
+//    public static final String STORED_ACL_READ_PRINCIPALS_FIELD_NAME = 
+//        STORED_BINARY_FIELD_PREFIX + ACL_READ_PRINCIPALS_FIELD_NAME;
     
-    public static final String STORED_ID_FIELD_NAME = 
-        STORED_BINARY_FIELD_PREFIX + ID_FIELD_NAME;
+//    public static final String STORED_ID_FIELD_NAME = 
+//        STORED_BINARY_FIELD_PREFIX + ID_FIELD_NAME;
     
-    public static final String STORED_ACL_INHERITED_FROM_FIELD_NAME = 
-        STORED_BINARY_FIELD_PREFIX + "ACL_INHERITED_FROM";
+//    public static final String STORED_ACL_INHERITED_FROM_FIELD_NAME = 
+//        STORED_BINARY_FIELD_PREFIX + "ACL_INHERITED_FROM";
     
     private static final Set<String> RESERVED_FIELD_NAMES = new HashSet<String>();
     static {
@@ -78,10 +78,11 @@ public final class FieldNames {
         RESERVED_FIELD_NAMES.add(URI_DEPTH_FIELD_NAME);
         RESERVED_FIELD_NAMES.add(RESOURCETYPE_FIELD_NAME);
         RESERVED_FIELD_NAMES.add(ID_FIELD_NAME);
-        RESERVED_FIELD_NAMES.add(STORED_ID_FIELD_NAME);
+//        RESERVED_FIELD_NAMES.add(STORED_ID_FIELD_NAME);
         RESERVED_FIELD_NAMES.add(ACL_READ_PRINCIPALS_FIELD_NAME);
-        RESERVED_FIELD_NAMES.add(STORED_ACL_READ_PRINCIPALS_FIELD_NAME);
-        RESERVED_FIELD_NAMES.add(STORED_ACL_INHERITED_FROM_FIELD_NAME);
+        RESERVED_FIELD_NAMES.add(ACL_INHERITED_FROM_FIELD_NAME);
+//        RESERVED_FIELD_NAMES.add(STORED_ACL_READ_PRINCIPALS_FIELD_NAME);
+//        RESERVED_FIELD_NAMES.add(STORED_ACL_INHERITED_FROM_FIELD_NAME);
     }
     
     public static boolean isReservedField(String fieldName) {

@@ -41,8 +41,7 @@ import org.vortikal.repository.search.query.PropertyWildcardQuery;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
 import org.vortikal.repository.search.query.TermOperator;
-import org.vortikal.repository.search.query.filter.InversionFilter;
-import org.vortikal.repository.search.query.filter.WildcardTermFilter;
+import org.vortikal.repository.search.query.filter.FilterFactory;
 
 /**
  * 
@@ -52,15 +51,9 @@ import org.vortikal.repository.search.query.filter.WildcardTermFilter;
 public class PropertyWildcardQueryBuilder implements QueryBuilder {
 
     private PropertyWildcardQuery query;
-    private Filter deletedDocsFilter;
     
     public PropertyWildcardQueryBuilder(PropertyWildcardQuery query) {
         this.query = query;
-    }
-
-    public PropertyWildcardQueryBuilder(PropertyWildcardQuery query, Filter deletedDocs) {
-        this(query);
-        this.deletedDocsFilter = deletedDocs;
     }
 
     @Override
@@ -91,9 +84,9 @@ public class PropertyWildcardQueryBuilder implements QueryBuilder {
 
         Term wTerm = new Term(fieldName, (ignorecase ? wildcard.toLowerCase() : wildcard));
 
-        Filter filter = new WildcardTermFilter(wTerm);
+        Filter filter = FilterFactory.wildcardFilter(wTerm);
         if (invert) {
-            filter = new InversionFilter(filter, this.deletedDocsFilter);
+            filter = FilterFactory.inversionFilter(filter);
         }
         
         return new ConstantScoreQuery(filter);

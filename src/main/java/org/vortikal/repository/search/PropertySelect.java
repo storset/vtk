@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.search;
 
+import java.util.Set;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
 public interface PropertySelect {
@@ -62,7 +63,10 @@ public interface PropertySelect {
         }
     };
     
-    public boolean isIncludedProperty(PropertyTypeDefinition propertyDefinition);
+    /**
+     * @return <code>true</code> if the given property should be selected.
+     */
+    public boolean isIncludedProperty(PropertyTypeDefinition def);
 
 }
 

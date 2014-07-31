@@ -32,14 +32,13 @@ package org.vortikal.repository.search.query.builders;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.ConstantScoreQuery;
-import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
 import org.vortikal.repository.index.mapping.FieldNames;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
-import org.vortikal.repository.search.query.filter.InversionFilter;
+import org.vortikal.repository.search.query.filter.FilterFactory;
 
 /**
  * Used both for building ACLExistsQuery and ACLInheritedFromQuery.
@@ -48,7 +47,6 @@ public class ACLInheritedFromQueryBuilder implements QueryBuilder {
 
     private int resourceId;
     private boolean invert = false;
-    private Filter deletedDocsFilter;
     
     public ACLInheritedFromQueryBuilder(int resourceId) {
         this.resourceId = resourceId;
@@ -57,11 +55,6 @@ public class ACLInheritedFromQueryBuilder implements QueryBuilder {
     public ACLInheritedFromQueryBuilder(int resourceId, boolean invert) {
         this(resourceId);
         this.invert = invert;
-    }
-
-    public ACLInheritedFromQueryBuilder(int resourceId, boolean invert, Filter deletedDocs) {
-        this(resourceId, invert);
-        this.deletedDocsFilter = deletedDocs;
     }
 
     @Override
@@ -74,9 +67,7 @@ public class ACLInheritedFromQueryBuilder implements QueryBuilder {
         Query query = new TermQuery(aclInheritedFromTerm);
         
         if (this.invert) {
-            query = new ConstantScoreQuery(
-                      new InversionFilter(
-                        new QueryWrapperFilter(query), this.deletedDocsFilter));
+            query = new ConstantScoreQuery(FilterFactory.inversionFilter(new QueryWrapperFilter(query)));
         }
 
         return query;

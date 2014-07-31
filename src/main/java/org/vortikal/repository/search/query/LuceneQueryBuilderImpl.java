@@ -34,25 +34,28 @@ import static org.vortikal.repository.search.query.TermOperator.EQ;
 import static org.vortikal.repository.search.query.TermOperator.NE;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.lucene.document.FieldSelector;
-import org.apache.lucene.document.FieldSelectorResult;
-import org.apache.lucene.document.Fieldable;
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermDocs;
+import org.apache.lucene.queries.BooleanFilter;
+import org.apache.lucene.queries.FilterClause;
+import org.apache.lucene.queries.TermsFilter;
 import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanClause.Occur;
-import org.apache.lucene.search.BooleanFilter;
-import org.apache.lucene.search.CachingWrapperFilter;
 import org.apache.lucene.search.FieldValueFilter;
 import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.FilterClause;
+import org.apache.lucene.search.IndexSearcher;
+
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.QueryWrapperFilter;
-import org.apache.lucene.search.TermsFilter;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TopDocs;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.HierarchicalVocabulary;
@@ -60,8 +63,9 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.Vocabulary;
+import org.vortikal.repository.index.mapping.Field4ValueMapper;
 import org.vortikal.repository.index.mapping.FieldNames;
-import org.vortikal.repository.index.mapping.FieldValueMapper;
+
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -70,7 +74,6 @@ import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Sorting;
 import org.vortikal.repository.search.query.builders.ACLInheritedFromQueryBuilder;
 import org.vortikal.repository.search.query.builders.ACLReadForAllQueryBuilder;
-import org.vortikal.repository.search.query.builders.HierarchicalTermQueryBuilder;
 import org.vortikal.repository.search.query.builders.NamePrefixQueryBuilder;
 import org.vortikal.repository.search.query.builders.NameRangeQueryBuilder;
 import org.vortikal.repository.search.query.builders.NameTermQueryBuilder;
@@ -81,12 +84,13 @@ import org.vortikal.repository.search.query.builders.PropertyRangeQueryBuilder;
 import org.vortikal.repository.search.query.builders.PropertyTermQueryBuilder;
 import org.vortikal.repository.search.query.builders.PropertyWildcardQueryBuilder;
 import org.vortikal.repository.search.query.builders.QueryTreeBuilder;
+import org.vortikal.repository.search.query.builders.TermsQueryBuilder;
 import org.vortikal.repository.search.query.builders.TypeTermQueryBuilder;
 import org.vortikal.repository.search.query.builders.UriDepthQueryBuilder;
 import org.vortikal.repository.search.query.builders.UriPrefixQueryBuilder;
 import org.vortikal.repository.search.query.builders.UriSetQueryBuilder;
 import org.vortikal.repository.search.query.builders.UriTermQueryBuilder;
-import org.vortikal.repository.search.query.filter.DeletedDocsFilter;
+import org.vortikal.repository.search.query.filter.FilterFactory;
 import org.vortikal.repository.search.query.security.QueryAuthorizationFilterFactory;
 
 /**
@@ -100,28 +104,18 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
     Log logger = LogFactory.getLog(LuceneQueryBuilderImpl.class);
 
     private ResourceTypeTree resourceTypeTree;
-    private FieldValueMapper fieldValueMapper;
+    private Field4ValueMapper fieldValueMapper;
     private QueryAuthorizationFilterFactory queryAuthorizationFilterFactory;
     private PropertyTypeDefinition publishedPropDef;
     private PropertyTypeDefinition unpublishedCollectionPropDef;
     private Filter cachedOnlyPublishedFilter;
-    private Filter cachedDeletedDocsFilter;
 
     @Override
     public void afterPropertiesSet() {
-
         // Setup cached filter for published resources
-        TermsFilter tf = new TermsFilter();
-        String searchFieldName = FieldNames.getSearchFieldName(this.publishedPropDef, false);
-        String searchFieldValue = this.fieldValueMapper.encodeIndexFieldValue("true", Type.BOOLEAN, false);
-        Term publishedTrueTerm = new Term(searchFieldName, searchFieldValue);
-        tf.addTerm(publishedTrueTerm);
-        this.cachedOnlyPublishedFilter = new CachingWrapperFilter(tf);
-
-        // Setup cached deleted docs filter
-        this.cachedDeletedDocsFilter = new CachingWrapperFilter(new DeletedDocsFilter(),
-                CachingWrapperFilter.DeletesMode.RECACHE);
-
+        Term publishedTerm = fieldValueMapper.queryTerm(FieldNames.getSearchFieldName(publishedPropDef, false), "true", Type.BOOLEAN, false);
+        TermsFilter tf = new TermsFilter(publishedTerm);
+        this.cachedOnlyPublishedFilter = FilterFactory.cacheWrapper(tf);
     }
 
     /*
@@ -133,12 +127,12 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
      * org.apache.lucene.index.IndexReader)
      */
     @Override
-    public org.apache.lucene.search.Query buildQuery(Query query, IndexReader reader) throws QueryBuilderException {
+    public org.apache.lucene.search.Query buildQuery(Query query, IndexSearcher searcher) throws QueryBuilderException {
 
         QueryBuilder builder = null;
 
         if (query instanceof AbstractMultipleQuery) {
-            builder = new QueryTreeBuilder(this, reader, (AbstractMultipleQuery) query);
+            builder = new QueryTreeBuilder(this, searcher, (AbstractMultipleQuery) query);
         }
 
         else if (query instanceof AbstractPropertyQuery) {
@@ -146,12 +140,12 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         }
 
         else if (query instanceof UriTermQuery) {
-            builder = new UriTermQueryBuilder((UriTermQuery) query, this.cachedDeletedDocsFilter);
+            builder = new UriTermQueryBuilder((UriTermQuery) query);
         }
 
         else if (query instanceof UriPrefixQuery) {
             UriPrefixQuery uriPrefixQuery = (UriPrefixQuery) query;
-            builder = new UriPrefixQueryBuilder(uriPrefixQuery, this.cachedDeletedDocsFilter);
+            builder = new UriPrefixQueryBuilder(uriPrefixQuery);
         }
 
         else if (query instanceof UriDepthQuery) {
@@ -163,7 +157,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         }
 
         else if (query instanceof NameTermQuery) {
-            builder = new NameTermQueryBuilder((NameTermQuery) query, this.cachedDeletedDocsFilter);
+            builder = new NameTermQueryBuilder((NameTermQuery) query);
         }
 
         else if (query instanceof NameRangeQuery) {
@@ -171,26 +165,32 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         }
 
         else if (query instanceof NamePrefixQuery) {
-            builder = new NamePrefixQueryBuilder((NamePrefixQuery) query, this.cachedDeletedDocsFilter);
+            builder = new NamePrefixQueryBuilder((NamePrefixQuery) query);
         }
 
         else if (query instanceof NameWildcardQuery) {
-            builder = new NameWildcardQueryBuilder((NameWildcardQuery) query, this.cachedDeletedDocsFilter);
+            builder = new NameWildcardQueryBuilder((NameWildcardQuery) query);
         }
 
         else if (query instanceof TypeTermQuery) {
             TypeTermQuery ttq = (TypeTermQuery) query;
 
             if (EQ == ttq.getOperator() || NE == ttq.getOperator()) {
-                builder = new TypeTermQueryBuilder(ttq.getTerm(), ttq.getOperator(), this.cachedDeletedDocsFilter);
+                builder = new TypeTermQueryBuilder(ttq.getTerm(), ttq.getOperator());
             } else {
-                builder = new HierarchicalTermQueryBuilder<String>(this.resourceTypeTree, ttq.getOperator(),
-                        FieldNames.RESOURCETYPE_FIELD_NAME, ttq.getTerm(), this.cachedDeletedDocsFilter);
+                List<String> values = new ArrayList<String>();
+                values.add(ttq.getTerm());
+                values.addAll(this.resourceTypeTree.getDescendants(ttq.getTerm()));
+                builder = new TermsQueryBuilder(FieldNames.RESOURCETYPE_FIELD_NAME, values, 
+                        Type.STRING, ttq.getOperator(), fieldValueMapper);
+                
+//                builder = new HierarchicalTermQueryBuilder<String>(this.resourceTypeTree, ttq.getOperator(),
+//                        FieldNames.RESOURCETYPE_FIELD_NAME, ttq.getTerm());
             }
         }
 
         else if (query instanceof ACLQuery) {
-            builder = getACLQueryBuilder(query, reader);
+            builder = getACLQueryBuilder(query, searcher);
         }
 
         else if (query instanceof MatchAllQuery) {
@@ -204,24 +204,23 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         return builder.buildQuery();
     }
 
-    private QueryBuilder getACLQueryBuilder(Query query, IndexReader reader) {
+    private QueryBuilder getACLQueryBuilder(Query query, IndexSearcher searcher) {
         if (query instanceof ACLExistsQuery) {
             ACLExistsQuery aclExistsQuery = (ACLExistsQuery) query;
 
-            return new ACLInheritedFromQueryBuilder(PropertySetImpl.NULL_RESOURCE_ID, aclExistsQuery.isInverted(),
-                    this.cachedDeletedDocsFilter);
+            return new ACLInheritedFromQueryBuilder(PropertySetImpl.NULL_RESOURCE_ID, aclExistsQuery.isInverted());
         }
 
         if (query instanceof ACLInheritedFromQuery) {
             ACLInheritedFromQuery aclIHFQuery = (ACLInheritedFromQuery) query;
 
-            return new ACLInheritedFromQueryBuilder(getResourceIdFromIndex(aclIHFQuery.getUri(), reader),
-                    aclIHFQuery.isInverted(), this.cachedDeletedDocsFilter);
+            return new ACLInheritedFromQueryBuilder(getResourceIdFromIndex(aclIHFQuery.getUri(), searcher),
+                    aclIHFQuery.isInverted());
         }
 
         if (query instanceof ACLReadForAllQuery) {
             return new ACLReadForAllQueryBuilder(((ACLReadForAllQuery) query).isInverted(),
-                    this.queryAuthorizationFilterFactory, reader, this.cachedDeletedDocsFilter);
+                    this.queryAuthorizationFilterFactory, searcher);
         }
 
         return null;
@@ -240,101 +239,126 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         if (query instanceof PropertyTermQuery) {
             PropertyTermQuery ptq = (PropertyTermQuery) query;
             PropertyTypeDefinition propDef = ptq.getPropertyDefinition();
+            TermOperator op = ptq.getOperator();
 
-            if (ptq.getOperator() == TermOperator.IN || ptq.getOperator() == TermOperator.NI) {
-                if (type == Type.JSON) {
-                    throw new QueryBuilderException("Operators IN or NI not supported for properties of type JSON");
+            if (op == TermOperator.IN || op == TermOperator.NI) {
+                if (type != Type.STRING) {
+                    throw new QueryBuilderException("Operators IN or NI only supported for properties of type STRING");
                 }
+                
+                // XXX not entirely sure this code path is in use.
+                // (Only in theory do we have propdefs with a hierarchical value vocab)
 
                 Vocabulary<Value> vocabulary = propDef.getVocabulary();
-                if (vocabulary == null || !(vocabulary instanceof HierarchicalVocabulary<?>)) {
+                if (!(vocabulary instanceof HierarchicalVocabulary<?>)) {
                     throw new QueryBuilderException("Property type doesn't have a hierachical vocabulary: " + propDef);
                 }
                 HierarchicalVocabulary<Value> hv = (HierarchicalVocabulary<Value>) vocabulary;
-
                 String fieldName = FieldNames.getSearchFieldName(propDef, false);
-                String fieldValue = this.fieldValueMapper
-                        .encodeIndexFieldValue(ptq.getTerm(), propDef.getType(), false);
-                return new HierarchicalTermQueryBuilder<Value>(hv, ptq.getOperator(), fieldName, new Value(fieldValue,
-                        PropertyType.Type.STRING), this.cachedDeletedDocsFilter);
+                List<String> values = new ArrayList<String>();
+                values.add(ptq.getTerm());
+                for (Value v: hv.getDescendants(new Value(ptq.getTerm(), PropertyType.Type.STRING))) {
+                    values.add(v.getStringValue());
+                }
+
+                return new TermsQueryBuilder(fieldName, values, Type.STRING, 
+                        ptq.getOperator(), fieldValueMapper);
+            } else if (op == TermOperator.GE || op == TermOperator.GT) {
+                // Convert to PropertyRangeQuery
+                PropertyRangeQuery prq = new PropertyRangeQuery(ptq.getPropertyDefinition(), 
+                        ptq.getTerm(), null, op == TermOperator.GE);
+                prq.setComplexValueAttributeSpecifier(ptq.getComplexValueAttributeSpecifier());
+                
+                return new PropertyRangeQueryBuilder(prq, fieldValueMapper);
+            } else if (op == TermOperator.LE || op == TermOperator.LT) {
+                // Convert to PropertyRangeQuery
+                PropertyRangeQuery prq = new PropertyRangeQuery(ptq.getPropertyDefinition(), 
+                        null, ptq.getTerm(), op == TermOperator.LE);
+                prq.setComplexValueAttributeSpecifier(ptq.getComplexValueAttributeSpecifier());
+                return new PropertyRangeQueryBuilder(prq, fieldValueMapper);
+                
+            } else {
+                return new PropertyTermQueryBuilder(ptq, fieldValueMapper);
             }
 
-            TermOperator op = ptq.getOperator();
-            boolean lowercase = (op == TermOperator.EQ_IGNORECASE || op == TermOperator.NE_IGNORECASE);
-            if (cva != null) {
-                Type dataType = FieldValueMapper.getJsonFieldDataType(propDef, cva);
-                String fieldName = FieldNames.getJsonSearchFieldName(propDef, cva, lowercase);
-                String fieldValue = this.fieldValueMapper.encodeIndexFieldValue(ptq.getTerm(), dataType, lowercase);
-                return new PropertyTermQueryBuilder(op, fieldName, fieldValue, this.cachedDeletedDocsFilter);
-            } else {
-                String fieldName = FieldNames.getSearchFieldName(propDef, lowercase);
-                String fieldValue = this.fieldValueMapper.encodeIndexFieldValue(ptq.getTerm(), propDef.getType(),
-                        lowercase);
-                return new PropertyTermQueryBuilder(op, fieldName, fieldValue, this.cachedDeletedDocsFilter);
-            }
+//            TermOperator op = ptq.getOperator();
+//            boolean lowercase = (op == TermOperator.EQ_IGNORECASE || op == TermOperator.NE_IGNORECASE);
+//            if (cva != null) {
+//                Type dataType = Field4ValueMapper.getJsonFieldDataType(propDef, cva);
+//                String fieldName = FieldNames.getJsonSearchFieldName(propDef, cva, lowercase);
+//                String fieldValue = fieldValueMapper.queryTerm(fieldName, ptq.getTerm(), dataType, lowercase);
+//                return new PropertyTermQueryBuilder(op, fieldName, fieldValue);
+//            } else {
+//                String fieldName = FieldNames.getSearchFieldName(propDef, lowercase);
+//                String fieldValue = fieldValueMapper.encodeIndexFieldValue(ptq.getTerm(), propDef.getType(),
+//                        lowercase);
+//                return new PropertyTermQueryBuilder(op, fieldName, fieldValue);
+//            }
         }
 
         if (query instanceof PropertyPrefixQuery) {
-            return new PropertyPrefixQueryBuilder((PropertyPrefixQuery) query, this.cachedDeletedDocsFilter);
+            return new PropertyPrefixQueryBuilder((PropertyPrefixQuery) query);
         }
 
         if (query instanceof PropertyRangeQuery) {
-            return new PropertyRangeQueryBuilder((PropertyRangeQuery) query, this.fieldValueMapper);
+            return new PropertyRangeQueryBuilder((PropertyRangeQuery) query, fieldValueMapper);
         }
 
         if (query instanceof PropertyWildcardQuery) {
-            return new PropertyWildcardQueryBuilder((PropertyWildcardQuery) query, this.cachedDeletedDocsFilter);
+            return new PropertyWildcardQueryBuilder((PropertyWildcardQuery) query);
         }
 
         if (query instanceof PropertyExistsQuery) {
-
             PropertyExistsQuery peq = (PropertyExistsQuery) query;
-
             return new PropertyExistsQueryBuilder(peq);
         }
 
         throw new QueryBuilderException("Unsupported property query type: " + query.getClass().getName());
     }
 
-    // Lucene FieldSelector for only loading ID field
-    private static final FieldSelector ID_FIELD_SELECTOR = new FieldSelector() {
-        private static final long serialVersionUID = 3456052507152239972L;
-
-        @Override
-        public FieldSelectorResult accept(String fieldName) {
-            if (FieldNames.STORED_ID_FIELD_NAME == fieldName) { // Interned
-                                                                // string
-                                                                // comparison OK
-                return FieldSelectorResult.LOAD_AND_BREAK;
-            }
-
-            return FieldSelectorResult.NO_LOAD;
-        }
-    };
-
-    private int getResourceIdFromIndex(Path uri, IndexReader reader) throws QueryBuilderException {
-
-        TermDocs td = null;
+    private int getResourceIdFromIndex(Path uri, IndexSearcher searcher) throws QueryBuilderException {
+        
+        TermQuery tq = new TermQuery(new Term(FieldNames.URI_FIELD_NAME, uri.toString()));
         try {
-            td = reader.termDocs(new Term(FieldNames.URI_FIELD_NAME, uri.toString()));
-
-            if (td.next()) {
-                Fieldable field = reader.document(td.doc(), ID_FIELD_SELECTOR).getFieldable(
-                        FieldNames.STORED_ID_FIELD_NAME);
-
-                return this.fieldValueMapper.getIntegerFromStoredBinaryField(field);
+            TopDocs docs = searcher.search(tq, 1);
+            if (docs.scoreDocs.length == 1) {
+                Set<String> fields = new HashSet<String>(2);
+                fields.add(FieldNames.ID_FIELD_NAME);
+                Document doc = searcher.doc(docs.scoreDocs[0].doc, fields);
+                String id = doc.get(FieldNames.ID_FIELD_NAME);
+                if (id != null) {
+                    return Integer.parseInt(id);
+                }
             }
-
-            return PropertySetImpl.NULL_RESOURCE_ID; // URI not found in index
+            
+            return PropertySetImpl.NULL_RESOURCE_ID;
+            
         } catch (IOException io) {
             throw new QueryBuilderException("IOException while building query: " + io.getMessage());
-        } finally {
-            try {
-                if (td != null)
-                    td.close();
-            } catch (IOException io) {
-            }
         }
+
+// Old Lucene3 impl:        
+//        TermDocs td = null;
+//        try {
+//            td = reader.termDocs(new Term(FieldNames.URI_FIELD_NAME, uri.toString()));
+//
+//            if (td.next()) {
+//                Fieldable field = reader.document(td.doc(), ID_FIELD_SELECTOR).getFieldable(
+//                        FieldNames.STORED_ID_FIELD_NAME);
+//
+//                return this.fieldValueMapper.getIntegerFromStoredBinaryField(field);
+//            }
+//
+//            return PropertySetImpl.NULL_RESOURCE_ID; // URI not found in index
+//        } catch (IOException io) {
+//            throw new QueryBuilderException("IOException while building query: " + io.getMessage());
+//        } finally {
+//            try {
+//                if (td != null)
+//                    td.close();
+//            } catch (IOException io) {
+//            }
+//        }
     }
 
     /*
@@ -346,10 +370,10 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
      * org.apache.lucene.index.IndexReader)
      */
     @Override
-    public Filter buildSearchFilter(String token, Search search, IndexReader reader) throws QueryBuilderException {
+    public Filter buildSearchFilter(String token, Search search, IndexSearcher searcher) throws QueryBuilderException {
 
         // Set filter to ACL filter initially. May be null.
-        Filter filter = this.queryAuthorizationFilterFactory.authorizationQueryFilter(token, reader);
+        Filter filter = this.queryAuthorizationFilterFactory.authorizationQueryFilter(token, searcher);
         if (logger.isDebugEnabled()) {
             if (filter == null) {
                 logger.debug("ACL filter null for token: " + token);
@@ -357,10 +381,10 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
                 logger.debug("ACL filter: " + filter + " for token " + token);
             }
         }
-        BooleanFilter bf = null;
+        
         // Add filters for removing default excludes if requested
         if (search.hasFilterFlag(Search.FilterFlag.UNPUBLISHED)) {
-            bf = buildUnpublishedFilter();
+            BooleanFilter bf = buildUnpublishedFilter();
 
             // Include ACL-filter if non-null:
             if (filter != null) {
@@ -391,7 +415,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         BooleanFilter bf = new BooleanFilter();
 
         if (filter != null) {
-            bf.add(filter, Occur.MUST);
+            bf.add(filter, BooleanClause.Occur.MUST);
         }
 
         // Filter to exclude unpublishedCollection resources:
@@ -405,14 +429,14 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
     }
 
     @Override
-    public Filter buildIterationFilter(String token, Search search, IndexReader reader) {
+    public Filter buildIterationFilter(String token, Search search, IndexSearcher searcher) {
         Query query = search.getQuery();
         Filter filter = null;
         if (query != null && !(query instanceof MatchAllQuery)) {
-            filter = new QueryWrapperFilter(buildQuery(query, reader));
+            filter = new QueryWrapperFilter(buildQuery(query, searcher));
         }
 
-        Filter searchFilter = buildSearchFilter(token, search, reader);
+        Filter searchFilter = buildSearchFilter(token, search, searcher);
         if (searchFilter != null) {
             if (filter == null) {
                 filter = searchFilter;
@@ -448,7 +472,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
     }
 
     @Required
-    public void setFieldValueMapper(FieldValueMapper fieldValueMapper) {
+    public void setFieldValueMapper(Field4ValueMapper fieldValueMapper) {
         this.fieldValueMapper = fieldValueMapper;
     }
 

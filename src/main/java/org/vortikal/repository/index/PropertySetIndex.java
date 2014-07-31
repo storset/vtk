@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006,2014 University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -56,7 +56,7 @@ import org.vortikal.security.Principal;
  * 
  * <p>
  * The {@link #lock()}, {@link #unlock()} and {@link #commit()} methods
- * should provide the possibility of executing a set
+ * should provide the possibility of executing a set of
  * operations that cannot be mixed with other write operations from other threads
  * at the same time. Any modifying operation will not be visible by
  * other index users/readers before {@link commit()} has been called, as long
@@ -87,6 +87,8 @@ public interface PropertySetIndex {
      * 
      * This method will always erase any existing property sets at the same URI for
      * the property set to update.
+     * @param propertySet
+     * @param aclReadPrincipals
      */
     public void updatePropertySet(PropertySet propertySet,
                                   Set<Principal> aclReadPrincipals) throws IndexException;
@@ -108,9 +110,7 @@ public interface PropertySetIndex {
      * if there are any.
      * 
      * @param rootUri
-     * @return The number of deleted instances. If it's not 0 or 1, 
-     *         then something is very wrong with the implementation.
-     *         
+
      * @throws IndexException
      */
     public void deletePropertySetTree(Path rootUri) throws IndexException;
@@ -140,52 +140,10 @@ public interface PropertySetIndex {
     public Iterator<Object> orderedUriIterator() throws IndexException;
     
     /**
-     * Get an un-ordered <code>Iterator</code> over all <code>PropertySet</code> instances
-     * in index. Any URI-duplicates are included.
-     * 
-     * Note that calling this method will implicitly commit all changes made earlier
-     * using any of the methods for deleting, updating or adding property sets.
-     * 
-     * @return
-     * @throws IndexException
-     */
-    public Iterator<Object> propertySetIterator() throws IndexException;
-    
-    /**
-     * Get an {@link java.util.Iterator} over all <code>PropertySet</code> instances
-     * in index.
-     * 
-     * The iteration is ordered by URI lexicographically. Any URI-duplicates are included, 
-     * and should <em>directly</em> follow each other because of the sorting.
-     * 
-     * Note that calling this method will implicitly commit all changes made earlier
-     * using any of the methods for deleting, updating or adding property sets.
-     * 
-     * @return
-     * @throws IndexException
-     */
-    public Iterator<Object> orderedPropertySetIterator() throws IndexException;
-    
-    /**
-     * Get an {@link java.util.Iterator} over all <code>PropertySet</code> instances
-     * in the sub-tree given by the root URI.
-     * 
-     * The iteration is ordered by URI lexicographically. Any duplicates are included
-     * and should <em>directly</em> follow each other because of the sorting.
-     * 
-     * Note that calling this method will implicitly commit all changes made earlier
-     * using any of the methods for deleting, updating or adding property sets.
-     * 
-     * @param rootUri
-     * @return
-     * @throws IndexException
-     */
-    public Iterator<Object> orderedSubtreePropertySetIterator(Path rootUri) throws IndexException;
-
-    /**
      * Count all property set instances currently in index. This number includes any multiples
      * for a single URI.
      *  
+     * // XXX this is no longer the case:
      * Note that calling this method will implicitly commit all changes made earlier
      * using any of the methods for deleting, updating or adding property sets.
      * 
@@ -203,11 +161,11 @@ public interface PropertySetIndex {
     public void close(Iterator<Object> iterator) throws IndexException;
     
     /**
-     * Clear all contents of index.
+     * Clear all contents of index (create a new and empty index).
      * 
      * @throws IndexException
      */
-    public void clearContents() throws IndexException;
+    public void clear() throws IndexException;
     
     /**
      * Close down an index to free associated resources. 
@@ -219,6 +177,7 @@ public interface PropertySetIndex {
     
     /**
      * Determine if underlying index is closed for access or not. 
+     * @return <code>true</code> if underlying index is closed.
      */
     public boolean isClosed();
     
@@ -298,6 +257,7 @@ public interface PropertySetIndex {
     
     /**
      * Return a runtime ID for the index instance.
+     * @return id as a string
      */
     public String getId();
     

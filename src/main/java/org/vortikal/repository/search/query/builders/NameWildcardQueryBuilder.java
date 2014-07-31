@@ -31,15 +31,18 @@
 package org.vortikal.repository.search.query.builders;
 
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queries.BooleanFilter;
+import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.WildcardTermEnum;
+import org.apache.lucene.search.WildcardQuery;
+
 import org.vortikal.repository.index.mapping.FieldNames;
 import org.vortikal.repository.search.query.NameWildcardQuery;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
-import org.vortikal.repository.search.query.filter.InversionFilter;
+import org.vortikal.repository.search.query.filter.FilterFactory;
 import org.vortikal.repository.search.query.filter.WildcardTermFilter;
 
 /**
@@ -50,15 +53,9 @@ import org.vortikal.repository.search.query.filter.WildcardTermFilter;
 public class NameWildcardQueryBuilder implements QueryBuilder {
 
     private NameWildcardQuery nwq;
-    private Filter deletedDocsFilter;
 
     public NameWildcardQueryBuilder(NameWildcardQuery nwq) {
         this.nwq = nwq;
-    }
-
-    public NameWildcardQueryBuilder(NameWildcardQuery nwq, Filter deletedDocs) {
-        this.nwq = nwq;
-        this.deletedDocsFilter = deletedDocs;
     }
 
     @Override
@@ -66,18 +63,18 @@ public class NameWildcardQueryBuilder implements QueryBuilder {
         
         String wildcard = this.nwq.getTerm();
         
-        if (wildcard.indexOf(WildcardTermEnum.WILDCARD_CHAR) == -1
-                && wildcard.indexOf(WildcardTermEnum.WILDCARD_STRING) == -1) {
+        if (wildcard.indexOf(WildcardQuery.WILDCARD_CHAR) == -1
+                && wildcard.indexOf(WildcardQuery.WILDCARD_STRING) == -1) {
             throw new QueryBuilderException("The search term '" 
                     + wildcard + "' does not have any wildcard characters (?,*) !");
         }
         
         Term wTerm = new Term(FieldNames.NAME_FIELD_NAME, wildcard);
         
-        Filter filter = new WildcardTermFilter(wTerm);
+        Filter filter = FilterFactory.wildcardFilter(wTerm);
 
         if (this.nwq.isInverted()) {
-            filter = new InversionFilter(filter, this.deletedDocsFilter);
+            filter = FilterFactory.inversionFilter(filter);
         }
         
         return new ConstantScoreQuery(filter);

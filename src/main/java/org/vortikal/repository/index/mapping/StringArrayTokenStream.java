@@ -33,7 +33,8 @@ package org.vortikal.repository.index.mapping;
 import java.io.IOException;
 
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.tokenattributes.TermAttribute;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+
 
 /**
  * Simple {@link TokenStream} implementation with a <code>String</code> array
@@ -41,22 +42,19 @@ import org.apache.lucene.analysis.tokenattributes.TermAttribute;
  *
  * TODO Does not support token offset attributes, but that can be easily added if
  * necessary.
- * TODO fix deprecation of <code>TermAttribute</code> after upgrade to Lucene 3.5.
  * 
- * @author oyviste
- *
  */
 public final class StringArrayTokenStream extends TokenStream {
 
-    private String[] values;
+    private final String[] values;
     private int currentValueIndex;
-    private final TermAttribute termAttr;
+    private final CharTermAttribute termAttr;
     
     public StringArrayTokenStream(String[] values) {
         super();
         this.values = values;
         this.currentValueIndex = 0;
-        this.termAttr = addAttribute(TermAttribute.class);
+        this.termAttr = addAttribute(CharTermAttribute.class);
     }
 
     @Override
@@ -71,8 +69,9 @@ public final class StringArrayTokenStream extends TokenStream {
         }
 
         clearAttributes();
-
-        this.termAttr.setTermBuffer(this.values[this.currentValueIndex++]);
+        
+        this.termAttr.setEmpty();
+        this.termAttr.append(this.values[this.currentValueIndex++]);
 
         return true;
     }

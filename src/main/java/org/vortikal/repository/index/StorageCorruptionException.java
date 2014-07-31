@@ -35,13 +35,15 @@ package org.vortikal.repository.index;
  * Exception thrown in cases where low-level index storage corruption is 
  * detected.
  * 
- * @author oyviste
- *
  */
 public class StorageCorruptionException extends IndexException {
 
     private static final long serialVersionUID = 5569711410752524276L;
 
+    public StorageCorruptionException(String message) {
+        super(message);
+    }
+    
     public StorageCorruptionException(String message, Throwable cause) {
         super(message, cause);
     }

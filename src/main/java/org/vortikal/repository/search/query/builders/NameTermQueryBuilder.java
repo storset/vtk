@@ -31,17 +31,17 @@
 package org.vortikal.repository.search.query.builders;
 
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queries.TermFilter;
 import org.apache.lucene.search.ConstantScoreQuery;
-import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TermRangeFilter;
+import org.apache.lucene.util.BytesRef;
 import org.vortikal.repository.index.mapping.FieldNames;
 import org.vortikal.repository.search.query.NameTermQuery;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
 import org.vortikal.repository.search.query.TermOperator;
-import org.vortikal.repository.search.query.filter.InversionFilter;
+import org.vortikal.repository.search.query.filter.FilterFactory;
 
 /**
  * 
@@ -51,39 +51,33 @@ import org.vortikal.repository.search.query.filter.InversionFilter;
 public class NameTermQueryBuilder implements QueryBuilder {
 
     private NameTermQuery ntq;
-    private Filter deletedDocsFilter;
     
     public NameTermQueryBuilder(NameTermQuery q) {
         this.ntq = q;
     }
     
-    public NameTermQueryBuilder(NameTermQuery q, Filter deletedDocs) {
-        this(q);
-        this.deletedDocsFilter = deletedDocs;
-    }
-
     @Override
     public org.apache.lucene.search.Query buildQuery() {
         String term = this.ntq.getTerm();
         TermOperator op = this.ntq.getOperator();
 
         if (op == TermOperator.EQ || op == TermOperator.NE) {
-            TermQuery tq = new TermQuery(new Term(FieldNames.NAME_FIELD_NAME, term));
+            Term t = new Term(FieldNames.NAME_FIELD_NAME, term);
                 
             if (op == TermOperator.EQ){
-                return tq;
+                return new TermQuery(t);
             } else {
-                return new ConstantScoreQuery(new InversionFilter(new QueryWrapperFilter(tq), this.deletedDocsFilter));
+                return new ConstantScoreQuery(FilterFactory.inversionFilter(new TermFilter(t)));
             }
         }
 
         if (op == TermOperator.EQ_IGNORECASE || op == TermOperator.NE_IGNORECASE) {
-            TermQuery tq = new TermQuery(new Term(FieldNames.NAME_LC_FIELD_NAME, term.toLowerCase()));
+            Term t = new Term(FieldNames.NAME_LC_FIELD_NAME, term.toLowerCase());
             
             if (op == TermOperator.EQ_IGNORECASE) {
-                return tq;
+                return new TermQuery(t);
             } else {
-                return new ConstantScoreQuery(new InversionFilter(new QueryWrapperFilter(tq), this.deletedDocsFilter));
+                return new ConstantScoreQuery(FilterFactory.inversionFilter(new TermFilter(t)));
             }
         }
 
@@ -109,20 +103,14 @@ public class NameTermQueryBuilder implements QueryBuilder {
         } else {
             throw new QueryBuilderException("Unknown term operator"); 
         }
-
+        
         TermRangeFilter trFilter = new TermRangeFilter(FieldNames.NAME_FIELD_NAME,
-                                        lowerTerm,
-                                        upperTerm,
+                                        new BytesRef(lowerTerm),
+                                        new BytesRef(upperTerm),
                                         includeLower,
                                         includeUpper);
 
         return new ConstantScoreQuery(trFilter);
-        
-//        return new ConstantScoreRangeQuery(FieldNames.NAME_FIELD_NAME,
-//                                                                    lowerTerm,
-//                                                                    upperTerm,
-//                                                                    includeLower,
-//                                                                    includeUpper);
     }
 
 }

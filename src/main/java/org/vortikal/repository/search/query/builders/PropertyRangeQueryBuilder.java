@@ -30,12 +30,13 @@
  */
 package org.vortikal.repository.search.query.builders;
 
-import org.apache.lucene.search.ConstantScoreQuery;
+import org.apache.lucene.search.NumericRangeQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermRangeFilter;
+import org.apache.lucene.search.TermRangeQuery;
+import org.vortikal.repository.index.mapping.Field4ValueMapper;
 import org.vortikal.repository.index.mapping.FieldNames;
-import org.vortikal.repository.index.mapping.FieldValueMapper;
-import org.vortikal.repository.resourcetype.PropertyType.Type;
+
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.query.PropertyRangeQuery;
 import org.vortikal.repository.search.query.QueryBuilder;
@@ -48,36 +49,80 @@ import org.vortikal.repository.search.query.QueryBuilderException;
 public class PropertyRangeQueryBuilder implements QueryBuilder {
 
     private PropertyRangeQuery prq;
-    private FieldValueMapper fieldValueMapper;
+    private Field4ValueMapper fvm;
     
-    public PropertyRangeQueryBuilder(PropertyRangeQuery prq, FieldValueMapper mapper) {
+    public PropertyRangeQueryBuilder(PropertyRangeQuery prq, Field4ValueMapper fvm) {
         this.prq = prq;
-        this.fieldValueMapper = mapper;
+        this.fvm = fvm;
     }
 
     @Override
     public Query buildQuery() throws QueryBuilderException {
-        
-        String from = this.prq.getFromTerm();
-        String to = this.prq.getToTerm();
-        PropertyTypeDefinition def = this.prq.getPropertyDefinition();
 
-        String fromEncoded, toEncoded, fieldName, cva = prq.getComplexValueAttributeSpecifier();
-        if (cva == null) {
-            fieldName = FieldNames.getSearchFieldName(def, false);
-            fromEncoded = this.fieldValueMapper.encodeIndexFieldValue(from, def.getType(), false);
-            toEncoded = this.fieldValueMapper.encodeIndexFieldValue(to, def.getType(), false);
+        final String fromValue = prq.getFromTerm();
+        final String toValue = prq.getToTerm();
+        if (fromValue == null && toValue == null) {
+            throw new QueryBuilderException("At least one value has to be set for either upper or lower bound");
+        }
+        final PropertyTypeDefinition propDef = prq.getPropertyDefinition();
+        final String cva = prq.getComplexValueAttributeSpecifier();
+        final boolean inclusive = prq.isInclusive();
+        
+        final String fieldName;
+        final PropertyType.Type valueType;
+        if (cva != null) {
+            valueType = Field4ValueMapper.getJsonFieldDataType(propDef, cva);
+            fieldName = FieldNames.getJsonSearchFieldName(propDef, cva, false);
         } else {
-            Type dataType = FieldValueMapper.getJsonFieldDataType(prq.getPropertyDefinition(), cva);
-            fieldName = FieldNames.getJsonSearchFieldName(def, cva, false);
-            fromEncoded = this.fieldValueMapper.encodeIndexFieldValue(from, dataType, false);
-            toEncoded = this.fieldValueMapper.encodeIndexFieldValue(to, dataType, false);
+            valueType = propDef.getType();
+            fieldName = FieldNames.getSearchFieldName(propDef, false);
+        }
+        
+        switch (valueType) {
+        case STRING:
+        case HTML:
+        case JSON:
+        case IMAGE_REF:
+        case BOOLEAN:
+        case PRINCIPAL:
+            return stringRangeQuery(fieldName, fromValue, toValue, inclusive);
+            
+        case DATE:
+        case TIMESTAMP:
+            return dateRangeQuery(fieldName, fromValue, toValue, inclusive);
+            
+        case INT:
+            return intRangeQuery(fieldName, fromValue, toValue, inclusive);
+            
+        case LONG:
+            return longRangeQuery(fieldName, fromValue, toValue, inclusive);
+            
+        default:
+            throw new QueryBuilderException("Unknown or unsupported value type " + valueType);
+            
         }
 
-        TermRangeFilter trFilter = new TermRangeFilter(fieldName, fromEncoded,
-                toEncoded, this.prq.isInclusive(), this.prq.isInclusive());
+    }
+    
+    private Query stringRangeQuery(String fieldName, String fromValue, String toValue, boolean inclusive) {
+        return TermRangeQuery.newStringRange(fieldName, fromValue, toValue, inclusive, inclusive);
+    }
+    
+    private Query dateRangeQuery(String fieldName, String fromValue, String toValue, boolean inclusive) {
+        Long fromLong = fromValue != null ? fvm.parseDate(fromValue) : null;
+        Long toLong = toValue != null ? fvm.parseDate(toValue) : null;
+        return NumericRangeQuery.newLongRange(fieldName, fromLong, toLong, inclusive, inclusive);
+    }
+    
+    private Query intRangeQuery(String fieldName, String fromValue, String toValue, boolean inclusive) {
+        Integer fromInt = fromValue != null ? Integer.parseInt(fromValue) : null;
+        Integer toInt = toValue != null ? Integer.parseInt(toValue) : null;
+        return NumericRangeQuery.newIntRange(fieldName, fromInt, toInt, inclusive, inclusive);
+    }
 
-        return new ConstantScoreQuery(trFilter);
-
+    private Query longRangeQuery(String fieldName, String fromValue, String toValue, boolean inclusive) {
+        Long fromLong = fromValue != null ? Long.parseLong(fromValue) : null;
+        Long toLong = toValue != null ? Long.parseLong(toValue) : null;
+        return NumericRangeQuery.newLongRange(fieldName, fromLong, toLong, inclusive, inclusive);
     }
 }

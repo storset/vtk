@@ -57,26 +57,26 @@
   </bean>
 
   <!-- Index field value mapper -->  
-  <bean id="fieldValueMapper" class="org.vortikal.repository.index.mapping.FieldValueMapper">
+  <bean id="fieldValueMapper" class="org.vortikal.repository.index.mapping.Field4ValueMapper">
     <property name="valueFactory" ref="valueFactory"/>
+  </bean>
+  
+  <bean id="searcherFactory" class="org.vortikal.repository.index.WarmupSearcherFactory">
+    <property name="hiddenPropDef" ref="hiddenPropDef" />
+    <property name="lastModifiedPropDef" ref="lastModifiedPropDef" />
+    <property name="luceneQueryBuilder" ref="queryBuilder" />
   </bean>
 
   <!-- Primary Lucene index accessor instance. Manages low-level access. -->
-  <bean id="systemIndexAccessor" class="org.vortikal.repository.index.LuceneIndexManager">
+  <bean id="systemIndexAccessor" class="org.vortikal.repository.index.Lucene4IndexManager">
     <property name="storageRootPath" value="${indexStorageRootPath}"/>
     <property name="storageId" value="property_index"/>
     <property name="forceUnlock" value="true"/>
     <property name="maxLockAcquireTimeOnShutdown" value="20"/>
-    <property name="maxReadOnlyReaders" value="${indexMaxReadOnlyReaders}" />
+<!--    <property name="maxReadOnlyReaders" value="${indexMaxReadOnlyReaders}" />
     <property name="maxAgingReadOnlyReaders" value="${indexMaxAgingReadOnlyReaders}" />
-    <property name="agingReadOnlyReaderThreshold" value="${indexAgingReadOnlyReaderThreshold}" />
-    <property name="indexReaderWarmup">
-      <bean class="org.vortikal.repository.index.IndexReaderWarmupImpl">
-        <property name="lastModifiedPropDef" ref="lastModifiedPropDef" />
-        <property name="hiddenPropDef" ref="hiddenPropDef" />
-        <property name="luceneQueryBuilder" ref="queryBuilder" />
-      </bean>
-    </property>
+    <property name="agingReadOnlyReaderThreshold" value="${indexAgingReadOnlyReaderThreshold}" />-->
+    <property name="searcherFactory" ref="searcherFactory" />
   </bean>
 
   <!-- Property set index based on primary Lucene index accessor instance.  -->
@@ -86,13 +86,13 @@
   </bean>
 
   <!-- A Lucene index accessor (secondary instance, batch indexing tuned) -->
-  <bean id="secondarySystemIndexAccessor" class="org.vortikal.repository.index.LuceneIndexManager">
+  <bean id="secondarySystemIndexAccessor" class="org.vortikal.repository.index.Lucene4IndexManager">
     <property name="storageRootPath" value="${indexStorageRootPath}"/>
     <property name="storageId" value="property_index.secondary"/>
     <property name="batchIndexingMode" value="true"/>
     <property name="forceUnlock" value="true"/>
     <property name="maxLockAcquireTimeOnShutdown" value="20"/>
-    <property name="closeAfterInitialization" value="true"/>
+    <property name="closeAfterInit" value="true"/>
   </bean>
 
   <!-- Secondary property set index instance -->

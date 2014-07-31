@@ -34,23 +34,21 @@ import static org.vortikal.repository.search.query.TermOperator.EQ;
 import static org.vortikal.repository.search.query.TermOperator.NE;
 
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queries.TermFilter;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
 import org.vortikal.repository.index.mapping.FieldNames;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
 import org.vortikal.repository.search.query.TermOperator;
-import org.vortikal.repository.search.query.filter.InversionFilter;
+import org.vortikal.repository.search.query.filter.FilterFactory;
 
 public class TypeTermQueryBuilder implements QueryBuilder {
 
     private Object term;
     private TermOperator op;
-    private Filter deletedDocsFilter;
-
     
     public TypeTermQueryBuilder(Object term, TermOperator op) {
         this.term = term;
@@ -62,22 +60,16 @@ public class TypeTermQueryBuilder implements QueryBuilder {
         this.op = op;
     }
 
-    public TypeTermQueryBuilder(Object term, TermOperator op, Filter deletedDocs) {
-        this(term, op);
-        this.deletedDocsFilter = deletedDocs;
-    }
-
     @Override
     public Query buildQuery() throws QueryBuilderException {
-        TermQuery tq = new TermQuery(new Term(FieldNames.RESOURCETYPE_FIELD_NAME, this.term.toString()));
-
+        Term t = new Term(FieldNames.RESOURCETYPE_FIELD_NAME, this.term.toString());
+        
         if (op == TermOperator.NE) {
-            return new ConstantScoreQuery(
-                     new InversionFilter(
-                       new QueryWrapperFilter(tq), this.deletedDocsFilter));
+            Filter filter = FilterFactory.inversionFilter(new TermFilter(t));
+            return new ConstantScoreQuery(filter);
         } 
 
-        return tq;
+        return new TermQuery(t);
     }
 
 }

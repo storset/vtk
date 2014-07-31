@@ -1,21 +1,21 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2014, University of Oslo, Norway
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  *  * Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
- * 
+ *
  *  * Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 
+ *
  *  * Neither the name of the University of Oslo nor the names of its
  *    contributors may be used to endorse or promote products derived from
  *    this software without specific prior written permission.
- *      
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
  * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
  * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -28,73 +28,62 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package org.vortikal.repository.search.query.builders;
 
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.lucene.document.DateTools;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.IntField;
+import org.apache.lucene.document.LongField;
+import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queries.TermsFilter;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.PrefixFilter;
 import org.apache.lucene.search.Query;
-import org.vortikal.repository.index.mapping.FieldNames;
-import org.vortikal.repository.resourcetype.PropertyType.Type;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.search.query.PropertyPrefixQuery;
+import org.vortikal.repository.index.mapping.Field4ValueMapper;
+import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.filter.FilterFactory;
 
 /**
- * 
- * @author oyviste
- *
+ * Build query on set of terms with optional inversion.
  */
-public class PropertyPrefixQueryBuilder implements QueryBuilder {
+public class TermsQueryBuilder implements QueryBuilder {
 
-    private PropertyPrefixQuery ppq;
-
-    public PropertyPrefixQueryBuilder(PropertyPrefixQuery ppq) {
-        this.ppq = ppq;
+    private final String field;
+    private final List<?> terms;
+    private final PropertyType.Type valueType;
+    private final boolean invert;
+    private final Field4ValueMapper fvm;
+    
+    public TermsQueryBuilder(String field, List<?> terms, PropertyType.Type valueType, 
+            TermOperator op, Field4ValueMapper fvm) {
+        this.field = field;
+        this.terms = terms;
+        this.valueType = valueType;
+        this.invert = op == TermOperator.NI;
+        this.fvm = fvm;
     }
-
+    
     @Override
     public Query buildQuery() throws QueryBuilderException {
-        
-        PropertyTypeDefinition def = this.ppq.getPropertyDefinition();
-        String term = this.ppq.getTerm();
-        
-        if (!(def.getType() == Type.PRINCIPAL ||
-                def.getType() == Type.STRING ||
-                def.getType() == Type.HTML ||
-                def.getType() == Type.JSON)) {
-            throw new QueryBuilderException("Prefix queries are only supported for "
-                    + "property types PRINCIPAL, STRING, HTML and JSON w/attribute specifier."
-                    + "Use range queries for dates and numbers.");
-        }
-
-        TermOperator op = ppq.getOperator();
-
-        boolean inverted = (op == TermOperator.NE || op == TermOperator.NE_IGNORECASE);
-        boolean ignorecase = (op == TermOperator.NE_IGNORECASE || op == TermOperator.EQ_IGNORECASE);
-
-        if (ignorecase) {
-            term = term.toLowerCase();
-        }
-
-        String fieldName = FieldNames.getSearchFieldName(def, ignorecase);
-        if (def.getType() == Type.JSON && this.ppq.getComplexValueAttributeSpecifier() != null) {
-            fieldName = FieldNames.getJsonSearchFieldName(
-                    def, ppq.getComplexValueAttributeSpecifier(), ignorecase);
-        }
-
-        Filter filter = new PrefixFilter(new Term(fieldName, term));
-
-        if (inverted) {
-            filter = FilterFactory.inversionFilter(filter);
+        List<Term> indexTerms = new ArrayList<Term>(terms.size());
+        for (Object termValue: terms) {
+            indexTerms.add(fvm.queryTerm(field, termValue, valueType, false));
         }
         
-        return new ConstantScoreQuery(filter);
+        Filter searchFilter = new TermsFilter(indexTerms);
+        if (invert) {
+            searchFilter = FilterFactory.inversionFilter(searchFilter);
+        }
         
+        return new ConstantScoreQuery(searchFilter);
     }
-
+    
 }

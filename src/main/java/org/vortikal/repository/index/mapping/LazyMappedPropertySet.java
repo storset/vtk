@@ -35,7 +35,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.index.IndexableField;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
@@ -51,11 +51,11 @@ class LazyMappedPropertySet implements PropertySet {
 
     private Path uri;
     private String resourceType;
-    private List<Fieldable> propFields;
+    private List<IndexableField> propFields;
     private DocumentMapper mapper;
 
     LazyMappedPropertySet(Document doc, DocumentMapper mapper) throws DocumentMappingException {
-        for (Fieldable f : doc.getFields()) {
+        for (IndexableField f : doc) {
             if (FieldNames.URI_FIELD_NAME.equals(f.name())) {
                 uri = Path.fromString(f.stringValue());
                 continue;
@@ -71,7 +71,7 @@ class LazyMappedPropertySet implements PropertySet {
             }
 
             if (propFields == null) {
-                propFields = new ArrayList<Fieldable>();
+                propFields = new ArrayList<IndexableField>();
             }
 
             propFields.add(f);
@@ -112,10 +112,10 @@ class LazyMappedPropertySet implements PropertySet {
         // Lucene guarantees stored field order to be same as when document was indexed
         final List<Property> props = new ArrayList<Property>(propFields.size());
         for (int i = 0; i < propFields.size(); i++) {
-            Fieldable f = propFields.get(i);
-            List<Fieldable> values = new ArrayList<Fieldable>();
+            IndexableField f = propFields.get(i);
+            List<IndexableField> values = new ArrayList<IndexableField>();
             values.add(f);
-            while (i < propFields.size() - 1 && f.name() == propFields.get(i + 1).name()) { // Interned string comparison OK
+            while (i < propFields.size() - 1 && f.name().equals(propFields.get(i + 1).name())) {
                 values.add(propFields.get(++i));
             }
             props.add(mapper.getPropertyFromStoredFieldValues(f.name(), values));
@@ -132,13 +132,13 @@ class LazyMappedPropertySet implements PropertySet {
         // Lucene guarantees stored field order to be same as when document was indexed
         final List<Property> props = new ArrayList<Property>();
         for (int i = 0; i < propFields.size(); i++) {
-            final Fieldable f = propFields.get(i);
-            List<Fieldable> values = null;
+            final IndexableField f = propFields.get(i);
+            List<IndexableField> values = null;
             if (FieldNames.isStoredFieldInNamespace(f.name(), namespace)) {
-                values = new ArrayList<Fieldable>();
+                values = new ArrayList<IndexableField>();
                 values.add(f);
             }
-            while (i < propFields.size() - 1 && f.name() == propFields.get(i + 1).name()) { // Interned string comparison OK
+            while (i < propFields.size() - 1 && f.name().equals(propFields.get(i + 1).name())) {
                 ++i;
                 if (values != null) {
                     values.add(propFields.get(i));
@@ -165,11 +165,11 @@ class LazyMappedPropertySet implements PropertySet {
 
         // Lucene guarantees stored field order to be same as when document was indexed
         final String fieldName = FieldNames.getStoredFieldName(namespace, name);
-        List<Fieldable> values = null;
-        for (Fieldable f : propFields) {
+        List<IndexableField> values = null;
+        for (IndexableField f : propFields) {
             if (fieldName.equals(f.name())) {
                 if (values == null) {
-                    values = new ArrayList<Fieldable>();
+                    values = new ArrayList<IndexableField>();
                 }
                 values.add(f);
             } else if (values != null) break; // All fields for property collected.
@@ -186,11 +186,11 @@ class LazyMappedPropertySet implements PropertySet {
 
         // Lucene guarantees stored field order to be same as when document was indexed
         final String fieldName = FieldNames.getStoredFieldName(prefix, name);
-        List<Fieldable> values = null;
-        for (Fieldable f : propFields) {
+        List<IndexableField> values = null;
+        for (IndexableField f : propFields) {
             if (fieldName.equals(f.name())) {
                 if (values == null) {
-                    values = new ArrayList<Fieldable>();
+                    values = new ArrayList<IndexableField>();
                 }
                 values.add(f);
             } else if (values != null) break; // All fields for property collected.

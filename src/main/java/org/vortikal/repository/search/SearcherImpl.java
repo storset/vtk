@@ -35,23 +35,23 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.FieldSelector;
+import org.apache.lucene.document.DocumentStoredFieldVisitor;
+import org.apache.lucene.index.AtomicReader;
+import org.apache.lucene.index.AtomicReaderContext;
+
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermDocs;
-import org.apache.lucene.index.TermEnum;
+
 import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.util.OpenBitSet;
-import org.apache.lucene.util.OpenBitSetDISI;
+import org.apache.lucene.util.Bits;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.index.LuceneIndexManager;
+import org.vortikal.repository.index.Lucene4IndexManager;
 import org.vortikal.repository.index.mapping.DocumentMapper;
 import org.vortikal.repository.search.query.DumpQueryTreeVisitor;
 import org.vortikal.repository.search.query.LuceneQueryBuilder;
@@ -64,7 +64,7 @@ public class SearcherImpl implements Searcher {
 
     private final Log logger = LogFactory.getLog(SearcherImpl.class);
 
-    private LuceneIndexManager indexAccessor;
+    private Lucene4IndexManager indexAccessor;
     private DocumentMapper documentMapper;
     private LuceneQueryBuilder queryBuilder;
 
@@ -98,29 +98,27 @@ public class SearcherImpl implements Searcher {
 
         IndexSearcher searcher = null;
         try {
-            if (token == null && this.unauthenticatedQueryMaxDirtyAge > 0) {
-                // Accept higher dirty age for speedier queries when token is null
-                searcher = this.indexAccessor.getIndexSearcher(this.unauthenticatedQueryMaxDirtyAge);
-            } else {
-                // Authenticated query, no dirty age acceptable.
-                searcher = this.indexAccessor.getIndexSearcher();
-            }
+//            if (token == null && this.unauthenticatedQueryMaxDirtyAge > 0) {
+//                // Accept higher dirty age for speedier queries when token is null
+//                searcher = this.indexAccessor.getIndexSearcher(this.unauthenticatedQueryMaxDirtyAge);
+//            } else {
+//                // Authenticated query, no dirty age acceptable.
+//                searcher = this.indexAccessor.getIndexSearcher();
+//            }
 
+            searcher = this.indexAccessor.getIndexSearcher();
+            
             // Build Lucene query
             org.apache.lucene.search.Query luceneQuery =
-                this.queryBuilder.buildQuery(query, searcher.getIndexReader());
+                this.queryBuilder.buildQuery(query, searcher);
 
             // Should include ACL filter combined with any other necessary filters ..
             org.apache.lucene.search.Filter luceneFilter =
-                this.queryBuilder.buildSearchFilter(token, search, searcher.getIndexReader());
+                this.queryBuilder.buildSearchFilter(token, search, searcher);
 
             // Build Lucene sorting
             org.apache.lucene.search.Sort luceneSort = 
                 this.queryBuilder.buildSort(sorting);
-
-            // Get Lucene document field selector
-            FieldSelector selector = selectedProperties != null ? 
-                  this.documentMapper.getDocumentFieldSelector(selectedProperties) : null;
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Built Lucene query '" + luceneQuery
@@ -158,8 +156,10 @@ public class SearcherImpl implements Searcher {
                 
                 startTime = System.currentTimeMillis();
                 for (int i=clientCursor; i < end; i++) {
-                    int scoreDocId = scoreDocs[i].doc;
-                    Document doc = searcher.doc(scoreDocId, selector);
+                    DocumentStoredFieldVisitor fieldVisitor = 
+                            documentMapper.newStoredFieldVisitor(selectedProperties);
+                    searcher.doc(scoreDocs[i].doc, fieldVisitor);
+                    Document doc = fieldVisitor.getDocument();
                     PropertySet propSet = this.documentMapper.getPropertySet(doc);
                     rs.addResult(propSet);
                 }
@@ -194,7 +194,7 @@ public class SearcherImpl implements Searcher {
             throw new QueryException("IOException while performing query on index", io);
         } finally {
             try {
-                this.indexAccessor.releaseIndexSearcher(searcher);                
+                this.indexAccessor.releaseIndexSearcher(searcher);
             } catch (IOException io) {
                 logger.warn("IOException while releasing index searcher", io);
             }
@@ -220,27 +220,24 @@ public class SearcherImpl implements Searcher {
 
         IndexSearcher searcher = null;
         try {
-            if (token == null && this.unauthenticatedQueryMaxDirtyAge > 0) {
-                // Accept higher dirty age for speedier queries when token is null
-                searcher = this.indexAccessor.getIndexSearcher(this.unauthenticatedQueryMaxDirtyAge);
-            } else {
-                // Authenticated query, no dirty age acceptable.
-                searcher = this.indexAccessor.getIndexSearcher();
-            }
+//            if (token == null && this.unauthenticatedQueryMaxDirtyAge > 0) {
+//                // Accept higher dirty age for speedier queries when token is null
+//                searcher = this.indexAccessor.getIndexSearcher(this.unauthenticatedQueryMaxDirtyAge);
+//            } else {
+//                // Authenticated query, no dirty age acceptable.
+//                searcher = this.indexAccessor.getIndexSearcher();
+//            }
 
+            searcher = this.indexAccessor.getIndexSearcher();
+            
             // Build iteration filter (may be null)
             Filter iterationFilter = this.queryBuilder.buildIterationFilter(
-                    token, search, searcher.getIndexReader());
+                    token, search, searcher);
 
             // Build Lucene sorting (may be null)
             org.apache.lucene.search.Sort luceneSort = 
                 this.queryBuilder.buildSort(search.getSorting());
 
-            // Get Lucene document field selector (may be null)
-            PropertySelect selectedProperties = search.getPropertySelect();
-            FieldSelector selector = selectedProperties != null ? 
-                  this.documentMapper.getDocumentFieldSelector(selectedProperties) : null;
-            
             String iterationField = null;
             if (luceneSort != null) {
                 org.apache.lucene.search.SortField[] sf = luceneSort.getSort();
@@ -258,11 +255,13 @@ public class SearcherImpl implements Searcher {
                 iterateOnField(iterationField,
                                iterationFilter,
                                searcher.getIndexReader(),
-                               selector, search.getCursor(), search.getLimit(), callback);
+                               search.getPropertySelect(), search.getCursor(), search.getLimit(), 
+                               callback);
             } else {
                 iterate(iterationFilter,
                         searcher.getIndexReader(),
-                        selector, search.getCursor(), search.getLimit(), callback);
+                        search.getPropertySelect(), search.getCursor(), search.getLimit(), 
+                        callback);
             }
         } catch (Exception e) {
             if (e instanceof RuntimeException) {
@@ -284,7 +283,7 @@ public class SearcherImpl implements Searcher {
      */
     private void iterate(org.apache.lucene.search.Filter iterationFilter,
                         IndexReader reader,
-                        FieldSelector luceneSelector,
+                        PropertySelect propertySelect,
                         int cursor,
                         int limit,
                         MatchCallback callback) throws Exception {
@@ -293,40 +292,83 @@ public class SearcherImpl implements Searcher {
 
         int matchDocCounter = 0;
         int callbackCounter = 0;
-            
-        if (iterationFilter == null) {
-            // Iteration without filter
-            final int maxDoc = reader.maxDoc();
-            for (int docID = 0; docID < maxDoc; docID++) {
-                if (!reader.isDeleted(docID)) {
+        for (AtomicReaderContext ar: reader.leaves()) {
+            final AtomicReader r = ar.reader();
+            final Bits liveDocs = r.getLiveDocs();
+            if (iterationFilter != null) {
+                DocIdSet matchedDocs = iterationFilter.getDocIdSet(ar, liveDocs);
+                if (matchedDocs != null) {
+                    DocIdSetIterator disi = matchedDocs.iterator();
+                    if (disi != null) {
+                        int docId;
+                        while ((docId = disi.nextDoc()) != DocIdSetIterator.NO_MORE_DOCS) {
+                            if (matchDocCounter++ < cursor) {
+                                continue;
+                            }
+
+                            DocumentStoredFieldVisitor visitor = documentMapper.newStoredFieldVisitor(propertySelect);
+                            r.document(docId, visitor);
+                            PropertySet ps = documentMapper.getPropertySet(visitor.getDocument());
+                            boolean continueIteration = callback.matching(ps);
+                            if (++callbackCounter == limit || !continueIteration) {
+                                return;
+                            }
+                        }
+                    }
+                }
+            } else { // No iteration filter
+                for (int i = 0; i < r.maxDoc(); i++) {
+                    if (liveDocs != null && !liveDocs.get(i)) {
+                        continue;
+                    }
                     if (matchDocCounter++ < cursor) {
                         continue;
                     }
-                    Document doc = reader.document(docID, luceneSelector);
-                    PropertySet ps = this.documentMapper.getPropertySet(doc);
+                    DocumentStoredFieldVisitor visitor = documentMapper.newStoredFieldVisitor(propertySelect);
+                    r.document(i, visitor);
+                    PropertySet ps = documentMapper.getPropertySet(visitor.getDocument());
                     boolean continueIteration = callback.matching(ps);
                     if (++callbackCounter == limit || !continueIteration) {
-                        break;
+                        return;
                     }
                 }
             }
-            return;
         }
         
-        // Iteration with filter
-        DocIdSet allowedDocs = iterationFilter.getDocIdSet(reader);
-        if (allowedDocs == null || allowedDocs == DocIdSet.EMPTY_DOCIDSET || limit <= 0) return;
-        
-        DocIdSetIterator iterator = allowedDocs.iterator();
-        int docID;
-        while ((docID = iterator.nextDoc()) != DocIdSetIterator.NO_MORE_DOCS) {
-            if (matchDocCounter++ < cursor) continue;
-
-            Document doc = reader.document(docID, luceneSelector);
-            PropertySet ps = this.documentMapper.getPropertySet(doc);
-            boolean continueIteration = callback.matching(ps);
-            if (++callbackCounter == limit || !continueIteration) break;
-        }
+// Old Lucene3-code:
+//        if (iterationFilter == null) {
+//            // Iteration without filter
+//            final int maxDoc = reader.maxDoc();
+//            for (int docID = 0; docID < maxDoc; docID++) {
+//                if (!reader.isDeleted(docID)) {
+//                    if (matchDocCounter++ < cursor) {
+//                        continue;
+//                    }
+//                    Document doc = reader.document(docID, luceneSelector);
+//                    PropertySet ps = this.documentMapper.getPropertySet(doc);
+//                    boolean continueIteration = callback.matching(ps);
+//                    if (++callbackCounter == limit || !continueIteration) {
+//                        break;
+//                    }
+//                }
+//            }
+//            return;
+//        }
+//        
+//        // Iteration with filter
+//        DocIdSet allowedDocs = iterationFilter.getDocIdSet(reader);
+//        if (allowedDocs == null || allowedDocs == DocIdSet.EMPTY_DOCIDSET || limit <= 0) return;
+//        
+//        DocIdSetIterator iterator = allowedDocs.iterator();
+//        int docID;
+//        while ((docID = iterator.nextDoc()) != DocIdSetIterator.NO_MORE_DOCS) {
+//            if (matchDocCounter++ < cursor) continue;
+//
+//            Document doc = reader.document(docID, luceneSelector);
+//            PropertySet ps = this.documentMapper.getPropertySet(doc);
+//            boolean continueIteration = callback.matching(ps);
+//            if (++callbackCounter == limit || !continueIteration) break;
+//        }
     }
     
     /**
@@ -336,60 +378,63 @@ public class SearcherImpl implements Searcher {
     private void iterateOnField(final String luceneField,
                         org.apache.lucene.search.Filter iterationFilter,
                         IndexReader reader,
-                        FieldSelector luceneSelector,
+                        PropertySelect propertySelect,
                         int cursor,
                         int limit,
                         MatchCallback callback) throws Exception {
 
         if (limit <= 0) return;
-
-        OpenBitSet obs = null;
-        if (iterationFilter != null) {
-            DocIdSet allowedDocs = iterationFilter.getDocIdSet(reader);
-            if (allowedDocs == null || allowedDocs == DocIdSet.EMPTY_DOCIDSET) return;
-            
-            if (allowedDocs instanceof OpenBitSet) {
-                obs = (OpenBitSet) allowedDocs;
-            } else {
-                DocIdSetIterator iterator = allowedDocs.iterator();
-                obs = new OpenBitSetDISI(iterator, reader.maxDoc());
-            }
-        }
         
-        TermEnum te = null;
-        TermDocs td = null;
-        int matchDocCounter = 0;
-        int callbackCounter = 0;
-        try {
-            te = reader.terms(new Term(luceneField, ""));
-            if (! (te.term() != null && te.term().field() == luceneField)) { // Interned string comparison OK
-                return;
-            }
-            
-            td = reader.termDocs(new Term(luceneField, ""));
-            do {
-                td.seek(te);
-                while (td.next()) {
-                    int docID = td.doc();
-                    if (obs != null && !obs.fastGet(docID)) continue;
-                    
-                    if (matchDocCounter++ < cursor) continue;
+        // TODO implement
+        throw new UnsupportedOperationException("Implement iteration by field with Lucene4");
 
-                    Document doc = reader.document(docID, luceneSelector);
-                    PropertySet ps = this.documentMapper.getPropertySet(doc);
-                    boolean continueIteration = callback.matching(ps);
-
-                    if (++callbackCounter == limit || !continueIteration) return;
-                }
-            } while (te.next() && te.term().field() == luceneField); // Interned string comparison OK
-        } finally {
-            if (te != null) {
-                te.close();
-            }
-            if (td != null) {
-                td.close();
-            }
-        }
+//        OpenBitSet obs = null;
+//        if (iterationFilter != null) {
+//            DocIdSet allowedDocs = iterationFilter.getDocIdSet(reader);
+//            if (allowedDocs == null || allowedDocs == DocIdSet.EMPTY_DOCIDSET) return;
+//            
+//            if (allowedDocs instanceof OpenBitSet) {
+//                obs = (OpenBitSet) allowedDocs;
+//            } else {
+//                DocIdSetIterator iterator = allowedDocs.iterator();
+//                obs = new OpenBitSetDISI(iterator, reader.maxDoc());
+//            }
+//        }
+//        
+//        TermEnum te = null;
+//        TermDocs td = null;
+//        int matchDocCounter = 0;
+//        int callbackCounter = 0;
+//        try {
+//            te = reader.terms(new Term(luceneField, ""));
+//            if (! (te.term() != null && te.term().field() == luceneField)) { // Interned string comparison OK
+//                return;
+//            }
+//            
+//            td = reader.termDocs(new Term(luceneField, ""));
+//            do {
+//                td.seek(te);
+//                while (td.next()) {
+//                    int docID = td.doc();
+//                    if (obs != null && !obs.fastGet(docID)) continue;
+//                    
+//                    if (matchDocCounter++ < cursor) continue;
+//
+//                    Document doc = reader.document(docID, luceneSelector);
+//                    PropertySet ps = this.documentMapper.getPropertySet(doc);
+//                    boolean continueIteration = callback.matching(ps);
+//
+//                    if (++callbackCounter == limit || !continueIteration) return;
+//                }
+//            } while (te.next() && te.term().field() == luceneField); // Interned string comparison OK
+//        } finally {
+//            if (te != null) {
+//                te.close();
+//            }
+//            if (td != null) {
+//                td.close();
+//            }
+//        }
     }
     
     @Required
@@ -398,7 +443,7 @@ public class SearcherImpl implements Searcher {
     }
 
     @Required
-    public void setIndexAccessor(LuceneIndexManager indexAccessor) {
+    public void setIndexAccessor(Lucene4IndexManager indexAccessor) {
         this.indexAccessor = indexAccessor;
     }
 

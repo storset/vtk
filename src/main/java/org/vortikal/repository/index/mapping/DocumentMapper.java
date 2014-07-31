@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.index.mapping;
 
+import java.io.IOException;
 import static org.vortikal.repository.resourcetype.PropertyType.Type.BINARY;
 import static org.vortikal.repository.resourcetype.PropertyType.Type.JSON;
 
@@ -47,10 +48,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.FieldSelector;
-import org.apache.lucene.document.FieldSelectorResult;
-import org.apache.lucene.document.Fieldable;
-import org.apache.lucene.index.IndexReader;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Namespace;
@@ -70,6 +67,10 @@ import org.vortikal.security.PrincipalFactory;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.apache.lucene.document.DocumentStoredFieldVisitor;
+import org.apache.lucene.index.FieldInfo;
+import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.index.StoredFieldVisitor;
 import org.vortikal.repository.PropertyImpl;
 
 /**
@@ -82,7 +83,7 @@ public class DocumentMapper implements InitializingBean {
     private final Log logger = LogFactory.getLog(DocumentMapper.class);
 
     private ResourceTypeTree resourceTypeTree;
-    private FieldValueMapper fieldValueMapper;
+    private Field4ValueMapper fvm;
 
     // Fast lookup maps for flat list of resource type prop defs and
     // stored field-name to prop-def map
@@ -91,7 +92,7 @@ public class DocumentMapper implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        populateTypeInfoCacheMaps(this.storedFieldNamePropDefMap, this.resourceTypeTree.getRoot());
+        populateTypeInfoCacheMaps(storedFieldNamePropDefMap, resourceTypeTree.getRoot());
     }
 
     private void populateTypeInfoCacheMaps(Map<String, PropertyTypeDefinition> storedFieldPropDefMap, 
@@ -115,7 +116,7 @@ public class DocumentMapper implements InitializingBean {
 
     /**
      * Map <code>PropertySetImpl</code> to Lucene <code>Document</code>. Used
-     * when indexing.
+     * at indexing time.
      */
     public Document getDocument(PropertySetImpl propSet, Set<Principal> aclReadPrincipals)
             throws DocumentMappingException {
@@ -123,66 +124,54 @@ public class DocumentMapper implements InitializingBean {
 
         // Special fields
         // uri
-        Fieldable uriField = this.fieldValueMapper.getStoredKeywordField(
-                FieldNames.URI_FIELD_NAME, propSet.getURI().toString());
+        Field uriField = fvm.keywordField(FieldNames.URI_FIELD_NAME, 
+                                                propSet.getURI().toString(), true);
         doc.add(uriField);
 
-        // uriDepth (not stored, but indexed for use in searches)
+        // URI depth (not stored, but indexed for use in searches)
         int uriDepth = propSet.getURI().getDepth();
-        Fieldable uriDepthField = this.fieldValueMapper.getKeywordField(
-                FieldNames.URI_DEPTH_FIELD_NAME, uriDepth);
+        Field uriDepthField = fvm.keywordField(FieldNames.URI_DEPTH_FIELD_NAME, uriDepth, false);
         doc.add(uriDepthField);
         
         // Ancestor URIs (system field used for hierarchical queries)
-        Fieldable ancestorPaths = this.fieldValueMapper.getUnencodedMultiValueFieldFromStrings(
-                                          FieldNames.URI_ANCESTORS_FIELD_NAME, 
-                                          getPathAncestorStrings(propSet.getURI()));
-        doc.add(ancestorPaths);
+        Field[] ancestorPaths = fvm.keywordFields(FieldNames.URI_ANCESTORS_FIELD_NAME,
+                false, getPathAncestorStrings(propSet.getURI()));
+        addFieldsToDocument(doc, ancestorPaths);
 
         // name
-        Fieldable nameField = this.fieldValueMapper.getKeywordField(
-                FieldNames.NAME_FIELD_NAME, propSet.getName());
+        Field nameField = fvm.keywordField(FieldNames.NAME_FIELD_NAME, propSet.getName(), false);
         doc.add(nameField);
-        // name (lowercased, indexed, but not stored)
-        Fieldable nameFieldLc = this.fieldValueMapper.getKeywordField(
-                FieldNames.NAME_LC_FIELD_NAME, propSet.getName().toLowerCase());
+        
+        // name (lowercased)
+        Field nameFieldLc = fvm.keywordField(
+                FieldNames.NAME_LC_FIELD_NAME, propSet.getName().toLowerCase(), false);
         doc.add(nameFieldLc);
 
-        // resourceType
-        Fieldable resourceTypeField = this.fieldValueMapper.getStoredKeywordField(
-                FieldNames.RESOURCETYPE_FIELD_NAME, propSet.getResourceType());
+        // resourceType, stored and indexed
+        Field resourceTypeField = fvm.keywordField(
+                FieldNames.RESOURCETYPE_FIELD_NAME, propSet.getResourceType(), true);
         doc.add(resourceTypeField);
 
-        // ID (index system field)
-        Fieldable idField = this.fieldValueMapper.getKeywordField(FieldNames.ID_FIELD_NAME, propSet.getID());
+        // ID (system field, stored and indexed)
+        Field idField = fvm.keywordField(FieldNames.ID_FIELD_NAME, propSet.getID(), true);
         doc.add(idField);
-        Field storedIdField = this.fieldValueMapper.getStoredBinaryIntegerField(FieldNames.STORED_ID_FIELD_NAME,
-                propSet.getID());
-        doc.add(storedIdField);
+//        Field storedIdField = this.fieldValueMapper.getStoredBinaryIntegerField(FieldNames.STORED_ID_FIELD_NAME,
+//                propSet.getID());
+//        doc.add(storedIdField);
 
         // ACL_INHERITED_FROM (index system field)
-        Fieldable aclField = this.fieldValueMapper.getKeywordField(FieldNames.ACL_INHERITED_FROM_FIELD_NAME, propSet
-                .getAclInheritedFrom());
+        Field aclField = fvm.keywordField(FieldNames.ACL_INHERITED_FROM_FIELD_NAME,
+                propSet.getAclInheritedFrom(), true);
         doc.add(aclField);
-        Field storedAclField = this.fieldValueMapper.getStoredBinaryIntegerField(
-                FieldNames.STORED_ACL_INHERITED_FROM_FIELD_NAME, propSet.getAclInheritedFrom());
-        doc.add(storedAclField);
+//        Field storedAclField = this.fieldValueMapper.getStoredBinaryIntegerField(
+//                FieldNames.STORED_ACL_INHERITED_FROM_FIELD_NAME, propSet.getAclInheritedFrom());
+//        doc.add(storedAclField);
 
         // ACL_READ_PRINCIPALS (index system field)
         if (aclReadPrincipals != null) {
-            // XXX: should probably fail harder if missing ACL read field data,
-            // however, if missing
-            // the document will never be allowed in query results (so really
-            // not a problem).
             String[] qualifiedNames = getAclReadPrincipalsFieldValues(aclReadPrincipals);
-
-            Fieldable aclReadPrincipalsField = getAclReadPrincipalsField(qualifiedNames);
-            doc.add(aclReadPrincipalsField);
-
-            Fieldable[] storedAclReadPrincipalsFields = getStoredAclReadPrincipalsFields(qualifiedNames);
-            for (Fieldable f : storedAclReadPrincipalsFields) {
-                doc.add(f);
-            }
+            Field[] aclReadPrincipalFields = fvm.keywordFields(FieldNames.ACL_READ_PRINCIPALS_FIELD_NAME, true, qualifiedNames);
+            addFieldsToDocument(doc, aclReadPrincipalFields);
         }
 
         final ResourceTypeDefinition rtDef = 
@@ -209,6 +198,7 @@ public class DocumentMapper implements InitializingBean {
             }
 
             // Create indexed fields
+            Field[] fields;
             switch (property.getType()) {
             case BINARY:
                 break; // Don't index any binary property value types
@@ -216,7 +206,7 @@ public class DocumentMapper implements InitializingBean {
             case JSON:
                 // Add any indexable JSON value attributes (both as lowercase
                 // and regular)
-                for (Fieldable jsonAttrField : getIndexedFieldsFromJSONProperty(property)) {
+                for (Field jsonAttrField : getIndexedFieldsFromJSONProperty(property)) {
                     doc.add(jsonAttrField);
                 }
                 break;
@@ -225,20 +215,19 @@ public class DocumentMapper implements InitializingBean {
             case HTML:
                 // Add lowercase version of search field for STRING and HTML
                 // types
-                Fieldable lowercaseIndexedField = getIndexedFieldFromProperty(property, true);
-                doc.add(lowercaseIndexedField);
+                fields = getIndexedFieldFromProperty(property, true);
+                addFieldsToDocument(doc, fields);
 
             default:
                 // Create regular searchable index field of value(s)
-                Fieldable indexedField = getIndexedFieldFromProperty(property, false);
-                doc.add(indexedField);
+                fields = getIndexedFieldFromProperty(property, false);
+                addFieldsToDocument(doc, fields);
             }
 
             // Create stored field-value(s) for all types except raw BINARY
             if (property.getType() != BINARY) {
-                for (Fieldable storedField : getStoredFieldsFromProperty(property)) {
-                    doc.add(storedField);
-                }
+                fields = getStoredFieldsFromProperty(property);
+                addFieldsToDocument(doc, fields);
             }
         }
         
@@ -246,56 +235,59 @@ public class DocumentMapper implements InitializingBean {
     }
 
     /**
+     * Obtain a {@link StoredFieldVisitor} from a {@link PropertySelect}. Can
+     * be used for selective field loading.
      * 
-     * @param select
-     * @return 
+     * @param select a <code>PropertySelect</code> specifying the desired properties
+     * to load from index documents.
+     * 
+     * @return a <code>StoredFieldVisitor</code> to be used when loading documents
+     * from Lucene.
      */
-    public FieldSelector getDocumentFieldSelector(final PropertySelect select) {
-        if (select == PropertySelect.ALL) {
-            return new FieldSelector() {
-                private static final long serialVersionUID = 1L;
-                @Override
-                public FieldSelectorResult accept(String fieldName) {
-                    return FieldSelectorResult.LOAD;
-                }
-            };
+    public DocumentStoredFieldVisitor newStoredFieldVisitor(final PropertySelect select) {
+        if (select == PropertySelect.ALL || select == null) {
+            return new DocumentStoredFieldVisitor();
         } else if (select == PropertySelect.NONE) {
-            return new FieldSelector() {
-                private static final long serialVersionUID = 1L;
+            return new DocumentStoredFieldVisitor() {
+                boolean haveUri = false, haveResourceType = false;
                 @Override
-                public FieldSelectorResult accept(String fieldName) {
-                    if (FieldNames.URI_FIELD_NAME.equals(fieldName)) {
-                        return FieldSelectorResult.LOAD;
+                public StoredFieldVisitor.Status needsField(FieldInfo fieldInfo) throws IOException {
+                    if (FieldNames.URI_FIELD_NAME.equals(fieldInfo.name)) {
+                        haveUri = true;
+                        return StoredFieldVisitor.Status.YES;
                     }
-                    if (FieldNames.RESOURCETYPE_FIELD_NAME.equals(fieldName)) {
-                        return FieldSelectorResult.LOAD;
+                    if (FieldNames.RESOURCETYPE_FIELD_NAME.equals(fieldInfo.name)) {
+                        haveResourceType = true;
+                        return StoredFieldVisitor.Status.YES;
                     }
                     
-                    return FieldSelectorResult.NO_LOAD;
+                    if (haveResourceType && haveUri) {
+                        return StoredFieldVisitor.Status.STOP;
+                    }
+                    
+                    return StoredFieldVisitor.Status.NO;
                 }
             };
         } else {
-            return new FieldSelector() {
-                private static final long serialVersionUID = 1L;
+            return new DocumentStoredFieldVisitor() {
                 @Override
-                public FieldSelectorResult accept(String fieldName) {
-                    PropertyTypeDefinition def = storedFieldNamePropDefMap.get(fieldName);
+                public StoredFieldVisitor.Status needsField(FieldInfo fieldInfo) throws IOException {
+                    PropertyTypeDefinition def = storedFieldNamePropDefMap.get(fieldInfo.name);
                     if (def != null) {
                         if (select.isIncludedProperty(def)) {
-                            return FieldSelectorResult.LOAD;
+                            return StoredFieldVisitor.Status.YES;
                         } else {
-                            return FieldSelectorResult.NO_LOAD;
+                            return StoredFieldVisitor.Status.NO;
                         }
                     }
-                    
                     // Check for required reserved fields
-                    if (FieldNames.URI_FIELD_NAME.equals(fieldName)
-                            || FieldNames.RESOURCETYPE_FIELD_NAME.equals(fieldName)) {
-                        return FieldSelectorResult.LOAD;
+                    if (FieldNames.URI_FIELD_NAME.equals(fieldInfo.name)
+                            || FieldNames.RESOURCETYPE_FIELD_NAME.equals(fieldInfo.name)) {
+                        return StoredFieldVisitor.Status.YES;
                     }
                     
                     // Skip others
-                    return FieldSelectorResult.NO_LOAD;
+                    return StoredFieldVisitor.Status.NO;
                 }
             };
         }
@@ -324,8 +316,9 @@ public class DocumentMapper implements InitializingBean {
         return new LazyMappedPropertySet(doc, this);
     }
     
-    Property getPropertyFromStoredFieldValues(String fieldName, List<Fieldable> fieldValues)
-            throws FieldValueMappingException {
+    Property getPropertyFromStoredFieldValues(String fieldName, List<IndexableField> fieldValues)
+            throws DocumentMappingException {
+        
 
         PropertyTypeDefinition def = this.storedFieldNamePropDefMap.get(fieldName);
 
@@ -347,20 +340,16 @@ public class DocumentMapper implements InitializingBean {
         property.setDefinition(def);
         
         if (def.isMultiple()) {
-            Value[] values = this.fieldValueMapper.getValuesFromStoredBinaryFields(fieldValues, def.getType());
-            
+            Value[] values = fvm.valuesFromFields(def.getType(), fieldValues);
             property.setValues(values, false);
         } else {
             if (fieldValues.size() != 1) {
-                // Fail hard if multiple stored fields found for single
-                // value property
-                throw new FieldValueMappingException("Single value property '" + def.getNamespace().getPrefix()
+                logger.warn("Single value property '" + def.getNamespace().getPrefix()
                         + FieldNames.FIELD_NAMESPACEPREFIX_NAME_SEPARATOR + def.getName()
-                        + "' has an invalid number of stored values (" + fieldValues.size() + ") in index.");
+                        + "' has an invalid number of stored values (" + fieldValues.size() + ") in index");
             }
 
-            Value value = this.fieldValueMapper.getValueFromStoredBinaryField(fieldValues.get(0), def.getType());
-
+            Value value = fvm.valueFromField(def.getType(), fieldValues.get(0));
             property.setValue(value, false);
         }
 
@@ -371,7 +360,8 @@ public class DocumentMapper implements InitializingBean {
      * Creates an indexable <code>Field</code> from a <code>Property</code>.
      * 
      */
-    private Fieldable getIndexedFieldFromProperty(Property property, boolean lowercase) throws FieldValueMappingException {
+    private Field[] getIndexedFieldFromProperty(Property property, boolean lowercase) 
+            throws DocumentMappingException {
 
         PropertyTypeDefinition def = property.getDefinition();
         if (def == null) {
@@ -384,15 +374,15 @@ public class DocumentMapper implements InitializingBean {
                     "Property type definition has name which collides with reserved index field:" + fieldName);
         }
 
-        Fieldable field;
+        Field[] fields;
         if (def.isMultiple()) {
             Value[] values = property.getValues();
-            field = this.fieldValueMapper.getFieldFromValues(fieldName, values, lowercase);
+            fields = fvm.indexedFields(fieldName, lowercase, values);
         } else {
-            field = this.fieldValueMapper.getFieldFromValue(fieldName, property.getValue(), lowercase);
+            fields = fvm.indexedFields(fieldName, lowercase, property.getValue());
         }
 
-        return field;
+        return fields;
     }
 
     /**
@@ -402,7 +392,7 @@ public class DocumentMapper implements InitializingBean {
      * @return 
      */
     @SuppressWarnings("unchecked")
-    private List<Fieldable> getIndexedFieldsFromJSONProperty(Property prop) {
+    private List<Field> getIndexedFieldsFromJSONProperty(Property prop) {
 
         PropertyTypeDefinition def = prop.getDefinition();
         if (def == null || def.getType() != JSON) {
@@ -416,7 +406,7 @@ public class DocumentMapper implements InitializingBean {
             return Collections.EMPTY_LIST;
         }
         
-        final List<Fieldable> fields = new ArrayList<Fieldable>();
+        final List<Field> fields = new ArrayList<Field>();
         Value[] jsonPropValues = null;
         if (def.isMultiple()) {
             jsonPropValues = prop.getValues();
@@ -450,20 +440,23 @@ public class DocumentMapper implements InitializingBean {
                         indexFieldValues.add(value);
                     }
                     // Set up type for searchable JSON field
-                    Type dataType = FieldValueMapper.getJsonFieldDataType(def, jsonAttribute);
+                    Type dataType = Field4ValueMapper.getJsonFieldDataType(def, jsonAttribute);
                     
                     // Create regular searchable field for all values
                     String fieldName = FieldNames.getJsonSearchFieldName(def, jsonAttribute, false);
-                    Fieldable field = this.fieldValueMapper.getEncodedMultiValueFieldFromObjects(
-                            fieldName, indexFieldValues.toArray(), dataType, false);
-                    fields.add(field);
+                    Field[] indexedFields = fvm.indexedFields(fieldName, false, dataType, indexFieldValues.toArray());
+                    for (Field f: indexedFields) {
+                        fields.add(f);
+                    }
                     
                     // Lowercased searchable field for all values with type hint STRING or HTML
                     if (dataType == Type.STRING || dataType == Type.HTML) {
                         fieldName = FieldNames.getJsonSearchFieldName(def, jsonAttribute, true);
-                        field = this.fieldValueMapper.getEncodedMultiValueFieldFromObjects(
-                                fieldName, indexFieldValues.toArray(), dataType, true);
-                        fields.add(field);
+                        indexedFields = fvm.indexedFields(
+                                fieldName, true, dataType, indexFieldValues.toArray());
+                        for (Field f: indexedFields) {
+                            fields.add(f);
+                        }
                     }
                 }
             }
@@ -482,8 +475,8 @@ public class DocumentMapper implements InitializingBean {
      * Creates a stored (binary) <code>Field</code> array from a
      * <code>Property</code>.
      */
-    private Fieldable[] getStoredFieldsFromProperty(Property property) throws FieldValueMappingException {
-
+    private Field[] getStoredFieldsFromProperty(Property property) 
+            throws DocumentMappingException {
         PropertyTypeDefinition def = property.getDefinition();
         if (def == null) {
             throw new DocumentMappingException("Cannot create stored field for a property with null definition");
@@ -492,12 +485,10 @@ public class DocumentMapper implements InitializingBean {
         String fieldName = FieldNames.getStoredFieldName(def);
 
         if (def.isMultiple()) {
-            Value[] values = property.getValues();
-            return this.fieldValueMapper.getStoredBinaryFieldsFromValues(fieldName, values);
+            return fvm.storedFields(fieldName, property.getValues());
+        } else {
+            return fvm.storedFields(fieldName, property.getValue());
         }
-        Fieldable[] singleField = new Fieldable[1];
-        singleField[0] = this.fieldValueMapper.getStoredBinaryFieldFromValue(fieldName, property.getValue());
-        return singleField;
     }
     
     private String[] getPathAncestorStrings(Path path) {
@@ -511,33 +502,40 @@ public class DocumentMapper implements InitializingBean {
 
     public Set<String> getACLReadPrincipalNames(Document doc) throws DocumentMappingException {
 
-        Fieldable[] fields = doc.getFieldables(FieldNames.STORED_ACL_READ_PRINCIPALS_FIELD_NAME);
-
-        if (fields.length == 0) {
-            throw new DocumentMappingException("The field " + FieldNames.STORED_ACL_READ_PRINCIPALS_FIELD_NAME
+        String[] values = doc.getValues(FieldNames.ACL_READ_PRINCIPALS_FIELD_NAME);
+        if (values.length == 0) {
+            throw new DocumentMappingException("The field " + FieldNames.ACL_READ_PRINCIPALS_FIELD_NAME
                     + " does not exist or is not loaded for document: " + doc);
         }
 
-        Set<String> retval = new HashSet<String>(
-                  Arrays.asList(this.fieldValueMapper.getStringsFromStoredBinaryFields(fields)));
-
-        return retval;
+        return new HashSet<String>(Arrays.asList(values));
     }
     
     public int getResourceId(Document doc) throws DocumentMappingException {
-        Fieldable field = doc.getFieldable(FieldNames.STORED_ID_FIELD_NAME);
-        if (field == null) {
-            throw new DocumentMappingException("Document is missing field " + FieldNames.STORED_ID_FIELD_NAME);
+        String id = doc.get(FieldNames.ID_FIELD_NAME);
+        if (id == null) {
+            throw new DocumentMappingException("Document is missing field " + FieldNames.ID_FIELD_NAME);
         }
-        return this.fieldValueMapper.getIntegerFromStoredBinaryField(field);
+        try {
+            return Integer.parseInt(id);
+        } catch (NumberFormatException nfe) {
+            throw new DocumentMappingException("Illegal stored value for field " + FieldNames.ID_FIELD_NAME);
+        }
     }
     
     public int getAclInheritedFrom(Document doc) throws DocumentMappingException {
-        Fieldable field = doc.getFieldable(FieldNames.STORED_ACL_INHERITED_FROM_FIELD_NAME);
-        if (field == null) {
-            throw new DocumentMappingException("Document is missing field " + FieldNames.STORED_ACL_INHERITED_FROM_FIELD_NAME);
+        
+        String id = doc.get(FieldNames.ACL_INHERITED_FROM_FIELD_NAME);
+        if (id == null) {
+            throw new DocumentMappingException("Document is missing field " 
+                    + FieldNames.ACL_INHERITED_FROM_FIELD_NAME);
         }
-        return this.fieldValueMapper.getIntegerFromStoredBinaryField(field);
+        try {
+            return Integer.parseInt(id);
+        } catch (NumberFormatException nfe) {
+            throw new DocumentMappingException("Illegal stored value for field "
+                    + FieldNames.ACL_INHERITED_FROM_FIELD_NAME);
+        }
     }
 
     private String[] getAclReadPrincipalsFieldValues(Set<Principal> aclReadPrincipals) {
@@ -557,14 +555,10 @@ public class DocumentMapper implements InitializingBean {
         return qualifiedNames;
     }
 
-    private Fieldable getAclReadPrincipalsField(String[] qualifiedNames) {
-        return this.fieldValueMapper.getUnencodedMultiValueFieldFromStrings(
-                FieldNames.ACL_READ_PRINCIPALS_FIELD_NAME, qualifiedNames);
-    }
-
-    private Fieldable[] getStoredAclReadPrincipalsFields(String[] qualifiedNames) {
-        return this.fieldValueMapper.getStoredBinaryFieldsFromStrings(
-                FieldNames.STORED_ACL_READ_PRINCIPALS_FIELD_NAME, qualifiedNames);
+    private void addFieldsToDocument(Document doc, Field... fields) {
+        for (Field f: fields) {
+            doc.add(f);
+        }
     }
 
     @Required
@@ -573,8 +567,8 @@ public class DocumentMapper implements InitializingBean {
     }
 
     @Required
-    public void setFieldValueMapper(FieldValueMapper fieldValueMapper) {
-        this.fieldValueMapper = fieldValueMapper;
+    public void setFieldValueMapper(Field4ValueMapper fieldValueMapper) {
+        this.fvm = fieldValueMapper;
     }
 
 }

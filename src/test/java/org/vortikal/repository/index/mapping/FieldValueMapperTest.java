@@ -30,11 +30,10 @@
  */
 package org.vortikal.repository.index.mapping;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.List;
+import org.apache.lucene.document.Field;
 
-import org.apache.lucene.document.Fieldable;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
@@ -51,32 +50,32 @@ import org.junit.Test;
 
 public class FieldValueMapperTest {
 
-    private final FieldValueMapper fieldValueMapper;
+    private final Field4ValueMapper fieldValueMapper;
     private final ValueFactory vf;
 
     public FieldValueMapperTest() {
-        this.fieldValueMapper = new FieldValueMapper();
+        this.fieldValueMapper = new Field4ValueMapper();
         ValueFactoryImpl vf = new ValueFactoryImpl();
         vf.setPrincipalFactory(new MockPrincipalFactory());
         this.vf = vf;
         this.fieldValueMapper.setValueFactory(new ValueFactoryImpl());
     }
-    
+
     @Test
     public void dateValueIndexFieldEncoding() {
 
-        String[] dateFormats = new String[] { "Long-format",
-                "yyyy-MM-dd HH:mm:ss Z", "yyyy-MM-dd HH:mm:ss",
-                "yyyy-MM-dd HH:mm", "yyyy-MM-dd HH", "yyyy-MM-dd" };
+        String[] dateFormats = new String[]{"Long-format",
+            "yyyy-MM-dd HH:mm:ss Z", "yyyy-MM-dd HH:mm:ss",
+            "yyyy-MM-dd HH:mm", "yyyy-MM-dd HH", "yyyy-MM-dd"};
 
         Date now = new Date();
-        String[] dateStrings = new String[] { Long.toString(now.getTime()),
-                "2005-10-10 14:22:00 +0100", "2005-10-10 14:22:00",
-                "2005-10-10 14:22", "2005-10-10 14", "2005-10-10" };
+        String[] dateStrings = new String[]{Long.toString(now.getTime()),
+            "2005-10-10 14:22:00 +0100", "2005-10-10 14:22:00",
+            "2005-10-10 14:22", "2005-10-10 14", "2005-10-10"};
 
         for (int i = 0; i < dateStrings.length; i++) {
             try {
-                this.fieldValueMapper.encodeIndexFieldValue(dateStrings[i],
+                this.fieldValueMapper.queryTerm("someDate", dateStrings[i],
                         PropertyType.Type.TIMESTAMP, false);
             } catch (Exception e) {
                 fail("Failed to encode index field value for date format '" + dateFormats[i]
@@ -85,70 +84,54 @@ public class FieldValueMapperTest {
             }
         }
     }
-    
+
     /**
-     * Tests FieldValueMapper.getValueFromStoredBinaryField(Field,Type)
-     * and   FieldValueMapper.getStoredBinaryFieldFromValue(String,Value)
+     * Tests FieldValueMapper.getValueFromStoredBinaryField(Field,Type) and
+     * FieldValueMapper.getStoredBinaryFieldFromValue(String,Value)
      */
     @Test
-    public void binaryMapping() {
-        
-        Fieldable stringField = this.fieldValueMapper.getStoredBinaryFieldFromValue("string", this.vf.createValue("bâr", Type.STRING));
-        Fieldable intField = this.fieldValueMapper.getStoredBinaryFieldFromValue("int", this.vf.createValue("1024", Type.INT));
-        Fieldable longField = this.fieldValueMapper.getStoredBinaryFieldFromValue("long", this.vf.createValue("1024", Type.LONG));
-        
+    public void storedFields() {
+
+        Field stringField = fieldValueMapper.storedFields("string", new Value("bâr", PropertyType.Type.STRING))[0];
+        Field intField = fieldValueMapper.storedFields("int", new Value(1024))[0];
+        Field longField = fieldValueMapper.storedFields("long", new Value(1024L))[0];
+
         assertEquals("string", stringField.name());
         assertEquals("int", intField.name());
         assertEquals("long", longField.name());
-        
-        try {
-            assertEquals("bâr".getBytes("utf-8").length, stringField.getBinaryLength());
-            assertEquals("bâr", new String(stringField.getBinaryValue(), stringField.getBinaryOffset(), stringField.getBinaryLength(), "utf-8"));
-        } catch (UnsupportedEncodingException ue) {}
-        
-        byte[] data = new byte[intField.getBinaryLength()];
-        System.arraycopy(intField.getBinaryValue(), intField.getBinaryOffset(), data, 0, intField.getBinaryLength());
-        
-        assertEquals(4, data.length);
-        assertEquals(0x0, data[3]);
-        assertEquals(0x0, data[2]);
-        assertEquals(0x4, data[1]);
-        assertEquals(0x0, data[0]);
 
-    
-        data = new byte[longField.getBinaryLength()];
-        System.arraycopy(longField.getBinaryValue(), longField.getBinaryOffset(), data, 0, longField.getBinaryLength());
-        
-        assertEquals(8, data.length);
-        assertEquals(0x0, data[7]);
-        assertEquals(0x0, data[6]);
-        assertEquals(0x0, data[5]);
-        assertEquals(0x0, data[4]);
-        assertEquals(0x0, data[3]);
-        assertEquals(0x0, data[2]);
-        assertEquals(0x4, data[1]);
-        assertEquals(0x0, data[0]);
-        
-        Value stringValue = this.fieldValueMapper.getValueFromStoredBinaryField(stringField, Type.STRING);
-        assertEquals(stringValue.getNativeStringRepresentation(), "bâr");
-        
-        Value intValue = this.fieldValueMapper.getValueFromStoredBinaryField(intField, Type.INT);
+        assertEquals("bâr", stringField.stringValue());
+        assertNull(stringField.binaryValue());
+        assertNull(stringField.numericValue());
+
+        assertEquals(1024, intField.numericValue().intValue());
+        assertEquals("1024", intField.stringValue());
+        assertNull(intField.binaryValue());
+
+        assertEquals(1024L, longField.numericValue().longValue());
+        assertEquals("1024", longField.stringValue());
+        assertNull(longField.binaryValue());
+
+        Value stringValue = this.fieldValueMapper.valueFromField(Type.STRING, stringField);
+        assertEquals("bâr", stringValue.getStringValue());
+
+        Value intValue = this.fieldValueMapper.valueFromField(Type.INT, intField);
         assertEquals(1024, intValue.getIntValue());
-        
-        Value longValue = this.fieldValueMapper.getValueFromStoredBinaryField(longField, Type.LONG);
+
+        Value longValue = this.fieldValueMapper.valueFromField(Type.LONG, longField);
         assertEquals(1024, longValue.getLongValue());
-}
-    
+    }
+
     @Test
     public void multithreadedDateValueIndexFieldEncoding() {
-        
+
         Thread[] threads = new Thread[10];
-        for (int i=0; i<threads.length; i++) {
+        for (int i = 0; i < threads.length; i++) {
             threads[i] = new Thread(new Runnable() {
-               @Override
-               public void run() {
-                   dateValueIndexFieldEncoding();
-               }
+                @Override
+                public void run() {
+                    dateValueIndexFieldEncoding();
+                }
             });
         }
         for (Thread thread : threads) {
@@ -157,12 +140,11 @@ public class FieldValueMapperTest {
         for (Thread thread : threads) {
             try {
                 thread.join();
-            }catch (InterruptedException ie) {
-                fail("Interrupted while waiting for test threads to finish.");}
+            } catch (InterruptedException ie) {
+                fail("Interrupted while waiting for test threads to finish.");
+            }
         }
-        
     }
-    
 }
 
 class MockPrincipalFactory extends PrincipalFactory {

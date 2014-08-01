@@ -1602,9 +1602,11 @@ function courseSchedule() {
         for(var j = 0, len = dt.sequences.length; j < len; j++) {
           var sequence = dt.sequences[j];
           var fixedResources = sequence.vrtxResourcesFixed;
-          if(fixedResources) {
-            sequences[sequence.id] = fixedResources;
-          }
+          
+          // XXX FIX! See VTK-3673
+//          if(fixedResources) {
+//            sequences[sequence.id] = fixedResources;
+//          }
           sessions = sessions.concat(sequence.sessions);
         }
         if(!skipTier || (dtShort != "for" || (dtShort === "for" && (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== dtShort)))) {

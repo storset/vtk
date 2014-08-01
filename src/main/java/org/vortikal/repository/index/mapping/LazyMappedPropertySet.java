@@ -66,7 +66,7 @@ class LazyMappedPropertySet implements PropertySet {
                 continue;
             }
 
-            if (FieldNames.isReservedField(f.name())) {
+            if (!FieldNames.isPropertyField(f.name())) {
                 continue;
             }
 
@@ -118,7 +118,7 @@ class LazyMappedPropertySet implements PropertySet {
             while (i < propFields.size() - 1 && f.name().equals(propFields.get(i + 1).name())) {
                 values.add(propFields.get(++i));
             }
-            props.add(mapper.getPropertyFromStoredFieldValues(f.name(), values));
+            props.add(mapper.getPropertyFromFieldValues(f.name(), values));
         }
         return props;
     }
@@ -134,7 +134,7 @@ class LazyMappedPropertySet implements PropertySet {
         for (int i = 0; i < propFields.size(); i++) {
             final IndexableField f = propFields.get(i);
             List<IndexableField> values = null;
-            if (FieldNames.isStoredFieldInNamespace(f.name(), namespace)) {
+            if (FieldNames.isPropertyFieldInNamespace(f.name(), namespace)) {
                 values = new ArrayList<IndexableField>();
                 values.add(f);
             }
@@ -145,7 +145,7 @@ class LazyMappedPropertySet implements PropertySet {
                 }
             }
             if (values != null) {
-                props.add(mapper.getPropertyFromStoredFieldValues(f.name(), values));
+                props.add(mapper.getPropertyFromFieldValues(f.name(), values));
             }
         }
 
@@ -158,13 +158,13 @@ class LazyMappedPropertySet implements PropertySet {
     }
 
     @Override
-    public Property getProperty(Namespace namespace, String name) {
+    public Property getProperty(Namespace ns, String name) {
         if (propFields == null) {
             return null;
         }
 
         // Lucene guarantees stored field order to be same as when document was indexed
-        final String fieldName = FieldNames.getStoredFieldName(namespace, name);
+        final String fieldName = FieldNames.propertyFieldName(name, ns.getPrefix(), false);
         List<IndexableField> values = null;
         for (IndexableField f : propFields) {
             if (fieldName.equals(f.name())) {
@@ -175,7 +175,7 @@ class LazyMappedPropertySet implements PropertySet {
             } else if (values != null) break; // All fields for property collected.
         }
 
-        return values != null ? mapper.getPropertyFromStoredFieldValues(fieldName, values) : null;
+        return values != null ? mapper.getPropertyFromFieldValues(fieldName, values) : null;
     }
 
     @Override
@@ -185,7 +185,7 @@ class LazyMappedPropertySet implements PropertySet {
         }
 
         // Lucene guarantees stored field order to be same as when document was indexed
-        final String fieldName = FieldNames.getStoredFieldName(prefix, name);
+        final String fieldName = FieldNames.propertyFieldName(name, prefix, false);
         List<IndexableField> values = null;
         for (IndexableField f : propFields) {
             if (fieldName.equals(f.name())) {
@@ -196,7 +196,7 @@ class LazyMappedPropertySet implements PropertySet {
             } else if (values != null) break; // All fields for property collected.
         }
 
-        return values != null ? mapper.getPropertyFromStoredFieldValues(fieldName, values) : null;
+        return values != null ? mapper.getPropertyFromFieldValues(fieldName, values) : null;
     }
 
     @Override

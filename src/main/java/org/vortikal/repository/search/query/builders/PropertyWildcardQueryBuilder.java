@@ -76,9 +76,9 @@ public class PropertyWildcardQueryBuilder implements QueryBuilder {
         boolean ignorecase = (op == TermOperator.EQ_IGNORECASE || op == TermOperator.NE_IGNORECASE);
         boolean invert = (op == TermOperator.NE || op == TermOperator.NE_IGNORECASE);
         
-        String fieldName = FieldNames.getSearchFieldName(def, ignorecase);
+        String fieldName = FieldNames.propertyFieldName(def, ignorecase);
         if (def.getType() == Type.JSON && query.getComplexValueAttributeSpecifier() != null) {
-            fieldName = FieldNames.getJsonSearchFieldName(def,
+            fieldName = FieldNames.jsonFieldName(def,
                     query.getComplexValueAttributeSpecifier(), ignorecase);
         }
 

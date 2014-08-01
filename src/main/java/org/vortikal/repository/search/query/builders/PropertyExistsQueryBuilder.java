@@ -59,9 +59,9 @@ public class PropertyExistsQueryBuilder implements QueryBuilder {
         
         PropertyTypeDefinition def = this.query.getPropertyDefinition();
 
-        String fieldName = FieldNames.getSearchFieldName(def, false);
+        String fieldName = FieldNames.propertyFieldName(def, false);
         if (def.getType() == Type.JSON && query.getComplexValueAttributeSpecifier() != null) {
-            fieldName = FieldNames.getJsonSearchFieldName(def, query.getComplexValueAttributeSpecifier(), false);
+            fieldName = FieldNames.jsonFieldName(def, query.getComplexValueAttributeSpecifier(), false);
         }
         
         return new ConstantScoreQuery(new FieldValueFilter(fieldName, query.isInverted()));

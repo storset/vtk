@@ -67,47 +67,65 @@ public class FieldNamesTest {
         propDef.afterPropertiesSet();
         return propDef.createProperty();
     }
+    
+    @Test
+    public void isLowercaseField() {
+        assertFalse(FieldNames.isLowercaseField("P_foo"));
+        assertFalse(FieldNames.isLowercaseField("P_bar:foo"));
+        assertTrue(FieldNames.isLowercaseField("P_l_bar:foo"));
+        assertFalse(FieldNames.isLowercaseField(FieldNames.NAME_FIELD_NAME));
+        assertTrue(FieldNames.isLowercaseField(FieldNames.NAME_LC_FIELD_NAME));
+        assertFalse(FieldNames.isLowercaseField("what:ever"));
+    }
+    
+    @Test
+    public void isPropertyField() {
+        assertTrue(FieldNames.isPropertyField("P_foo"));
+        assertTrue(FieldNames.isPropertyField("P_bar:foo"));
+        assertTrue(FieldNames.isPropertyField("P_l_bar:foo"));
+        assertFalse(FieldNames.isPropertyField(FieldNames.NAME_FIELD_NAME));
+        assertFalse(FieldNames.isPropertyField(FieldNames.NAME_LC_FIELD_NAME));
+        assertFalse(FieldNames.isPropertyField("what:ever"));
+    }
 
     @Test
     public void getSearchFieldNameProperty() {
         
         Property prop = getUndefinedProperty(Namespace.getNamespaceFromPrefix("bar"), "foo");
         
-        assertEquals("bar:foo", FieldNames.getSearchFieldName(prop, false));
-        assertEquals(FieldNames.LOWERCASE_FIELD_PREFIX + "bar:foo", 
-                               FieldNames.getSearchFieldName(prop, true));
+        assertEquals("P_bar:foo", FieldNames.propertyFieldName(prop, false));
+        assertEquals("P_l_bar:foo", FieldNames.propertyFieldName(prop, true));
         
         prop = getUndefinedProperty(Namespace.DEFAULT_NAMESPACE, "lastModified");
         
-        assertEquals("lastModified", FieldNames.getSearchFieldName(prop, false));
+        assertEquals("P_lastModified", FieldNames.propertyFieldName(prop, false));
         
-        assertEquals(FieldNames.LOWERCASE_FIELD_PREFIX + 
-                "lastModified", FieldNames.getSearchFieldName(prop, true));
+        assertEquals("P_l_lastModified", FieldNames.propertyFieldName(prop, true));
         
     }
     
     @Test
     public void getJsonSearchFieldName() {
         Property prop = getUndefinedProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, "complex");
-        assertEquals("resource:complex@attr1", FieldNames.getJsonSearchFieldName(prop.getDefinition(), "attr1", false));
-        assertEquals("l_resource:complex@attr1", FieldNames.getJsonSearchFieldName(prop.getDefinition(), "attr1", true));
+        assertEquals("P_resource:complex@attr1", FieldNames.jsonFieldName(prop.getDefinition(), "attr1", false));
+        assertEquals("P_l_resource:complex@attr1", FieldNames.jsonFieldName(prop.getDefinition(), "attr1", true));
         
         prop = getUndefinedProperty(Namespace.DEFAULT_NAMESPACE, "system-job-status");
-        assertEquals("system-job-status@attr1", FieldNames.getJsonSearchFieldName(prop.getDefinition(), "attr1", false));
-        assertEquals("l_system-job-status@attr1", FieldNames.getJsonSearchFieldName(prop.getDefinition(), "attr1", true));
+        assertEquals("P_system-job-status@attr1", FieldNames.jsonFieldName(prop.getDefinition(), "attr1", false));
+        assertEquals("P_l_system-job-status@attr1", FieldNames.jsonFieldName(prop.getDefinition(), "attr1", true));
     }
     
     @Test
     public void isStoredFieldInNamespace() {
-        assertTrue(FieldNames.isStoredFieldInNamespace("b_title", Namespace.DEFAULT_NAMESPACE));
-        assertTrue(FieldNames.isStoredFieldInNamespace("b_owner", Namespace.DEFAULT_NAMESPACE));
-        assertFalse(FieldNames.isStoredFieldInNamespace("b_resource:author", Namespace.DEFAULT_NAMESPACE));
+        assertTrue(FieldNames.isPropertyFieldInNamespace("P_title", Namespace.DEFAULT_NAMESPACE));
+        assertTrue(FieldNames.isPropertyFieldInNamespace("P_owner", Namespace.DEFAULT_NAMESPACE));
+        assertFalse(FieldNames.isPropertyFieldInNamespace("P_resource:author", Namespace.DEFAULT_NAMESPACE));
         
-        assertTrue(FieldNames.isStoredFieldInNamespace("b_resource:author", Namespace.STRUCTURED_RESOURCE_NAMESPACE));
-        assertFalse(FieldNames.isStoredFieldInNamespace("b_resource:author", Namespace.DEFAULT_NAMESPACE));
+        assertTrue(FieldNames.isPropertyFieldInNamespace("P_resource:author", Namespace.STRUCTURED_RESOURCE_NAMESPACE));
+        assertFalse(FieldNames.isPropertyFieldInNamespace("P_resource:author", Namespace.DEFAULT_NAMESPACE));
 
-        assertFalse(FieldNames.isStoredFieldInNamespace("b_content:keywords", Namespace.STRUCTURED_RESOURCE_NAMESPACE));
-        assertFalse(FieldNames.isStoredFieldInNamespace("b_content:keywords", Namespace.DEFAULT_NAMESPACE));
+        assertFalse(FieldNames.isPropertyFieldInNamespace("P_content:keywords", Namespace.STRUCTURED_RESOURCE_NAMESPACE));
+        assertFalse(FieldNames.isPropertyFieldInNamespace("P_content:keywords", Namespace.DEFAULT_NAMESPACE));
     }
 
     @Test
@@ -119,50 +137,32 @@ public class FieldNamesTest {
         def.setName("foo");
         def.setNamespace(Namespace.getNamespaceFromPrefix("bar"));
         
-        assertEquals("bar:foo", FieldNames.getSearchFieldName(def, false));
-        assertEquals(FieldNames.LOWERCASE_FIELD_PREFIX + 
-                "bar:foo", FieldNames.getSearchFieldName(def, true));
+        assertEquals("P_bar:foo", FieldNames.propertyFieldName(def, false));
+        assertEquals("P_l_bar:foo", FieldNames.propertyFieldName(def, true));
         
         def = new PropertyTypeDefinitionImpl();
         def.setName("lastModified");
         def.setNamespace(Namespace.DEFAULT_NAMESPACE);
         
-        assertEquals("lastModified", FieldNames.getSearchFieldName(def, false));
-        assertEquals(FieldNames.LOWERCASE_FIELD_PREFIX 
-                + "lastModified", FieldNames.getSearchFieldName(def, true));
+        assertEquals("P_lastModified", FieldNames.propertyFieldName(def, false));
+        assertEquals("P_l_lastModified", FieldNames.propertyFieldName(def, true));
         
     }
 
     @Test
     public void getSearchFieldNameStringString() {
         
-        String fieldName = FieldNames.getSearchFieldName("foo", null, false);
-        assertEquals("foo", fieldName);
+        String fieldName = FieldNames.propertyFieldName("foo", null, false);
+        assertEquals("P_foo", fieldName);
         
-        fieldName = FieldNames.getSearchFieldName("foo", null, true);
-        assertEquals(FieldNames.LOWERCASE_FIELD_PREFIX + "foo", fieldName);
+        fieldName = FieldNames.propertyFieldName("foo", null, true);
+        assertEquals("P_l_foo", fieldName);
         
-        fieldName = FieldNames.getSearchFieldName("bar", "foo", false);
-        assertEquals("foo:bar", fieldName);
+        fieldName = FieldNames.propertyFieldName("bar", "foo", false);
+        assertEquals("P_foo:bar", fieldName);
         
-        fieldName = FieldNames.getSearchFieldName("bar", "foo", true);
-        assertEquals(FieldNames.LOWERCASE_FIELD_PREFIX + "foo:bar", fieldName);
-    }
-
-    @Test
-    public void getStoredFieldNameProperty() {
-        
-        Property prop = getUndefinedProperty(Namespace.getNamespaceFromPrefix("bar"), "foo");
-        
-        String fieldName = FieldNames.getStoredFieldName(prop);
-        
-        assertEquals("b_bar:foo", fieldName);
-        
-        prop = getUndefinedProperty(Namespace.DEFAULT_NAMESPACE, "lastModified");
-        
-        fieldName = FieldNames.getStoredFieldName(prop);
-        assertEquals("b_lastModified", fieldName);
-        
+        fieldName = FieldNames.propertyFieldName("bar", "foo", true);
+        assertEquals("P_l_foo:bar", fieldName);
     }
 
     @Test
@@ -173,47 +173,47 @@ public class FieldNamesTest {
         def.setName("foo");
         def.setNamespace(Namespace.getNamespaceFromPrefix("bar"));
         
-        String fieldName = FieldNames.getStoredFieldName(def);
+        String fieldName = FieldNames.propertyFieldName(def);
         
-        assertEquals("b_bar:foo", fieldName);
+        assertEquals("P_bar:foo", fieldName);
         
         def = new PropertyTypeDefinitionImpl();
         def.setName("lastModified");
         def.setNamespace(Namespace.DEFAULT_NAMESPACE);
         
-        fieldName = FieldNames.getStoredFieldName(def);
+        fieldName = FieldNames.propertyFieldName(def);
         
-        assertEquals("b_lastModified", fieldName);
+        assertEquals("P_lastModified", fieldName);
         
     }
 
     @Test
     public void getPropertyNamespacePrefixFromStoredFieldName() {
         
-        String fieldName = "foo";
+        String fieldName = "P_foo";
         
-        String nsPrefix = FieldNames.getPropertyNamespacePrefixFromStoredFieldName(fieldName);
+        String nsPrefix = FieldNames.propertyNamespace(fieldName);
         
         assertNull(nsPrefix);
         
-        fieldName = "b_bar:foo";
+        fieldName = "P_bar:foo";
         
-        nsPrefix = FieldNames.getPropertyNamespacePrefixFromStoredFieldName(fieldName);
+        nsPrefix = FieldNames.propertyNamespace(fieldName);
         
         assertEquals("bar", nsPrefix);
     }
 
     @Test
     public void getPropertyNameFromStoredFieldName() {
-        String fieldName = "b_foo";
+        String fieldName = "P_foo";
         
-        String name = FieldNames.getPropertyNameFromStoredFieldName(fieldName);
+        String name = FieldNames.propertyName(fieldName);
         
         assertEquals("foo", name);
         
-        fieldName = "b_bar:foo";
+        fieldName = "P_bar:foo";
         
-        name = FieldNames.getPropertyNameFromStoredFieldName(fieldName);
+        name = FieldNames.propertyName(fieldName);
         
         assertEquals("foo", name);
         

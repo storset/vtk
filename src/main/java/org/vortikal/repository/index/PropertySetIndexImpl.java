@@ -81,14 +81,12 @@ public class PropertySetIndexImpl implements PropertySetIndex {
         // together operations without interruption.
         try {
             Document doc = this.documentMapper.getDocument((PropertySetImpl) propertySet, aclReadPrincipals);
-
             if (logger.isDebugEnabled()) {
-                logger.debug("Adding new property set at URI '" + propertySet.getURI() + "'");
-                logger.debug("Document mapper created the following document: ");
-
+                StringBuilder docFields = new StringBuilder("Document mapper created the following document for " + propertySet.getURI() + ":\n");
                 for (IndexableField field: doc) {
-                    logger.debug("Field: " + field);
+                    docFields.append(field.toString()).append('\n');
                 }
+                logger.debug(docFields.toString());
             }
 
             this.index.getIndexWriter().addDocument(doc);

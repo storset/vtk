@@ -113,7 +113,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
     @Override
     public void afterPropertiesSet() {
         // Setup cached filter for published resources
-        Term publishedTerm = fieldValueMapper.queryTerm(FieldNames.getSearchFieldName(publishedPropDef, false), "true", Type.BOOLEAN, false);
+        Term publishedTerm = fieldValueMapper.queryTerm(FieldNames.propertyFieldName(publishedPropDef, false), "true", Type.BOOLEAN, false);
         TermsFilter tf = new TermsFilter(publishedTerm);
         this.cachedOnlyPublishedFilter = FilterFactory.cacheWrapper(tf);
     }
@@ -149,7 +149,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         }
 
         else if (query instanceof UriDepthQuery) {
-            builder = new UriDepthQueryBuilder((UriDepthQuery) query);
+            builder = new UriDepthQueryBuilder((UriDepthQuery) query, fieldValueMapper);
         }
 
         else if (query instanceof UriSetQuery) {
@@ -254,7 +254,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
                     throw new QueryBuilderException("Property type doesn't have a hierachical vocabulary: " + propDef);
                 }
                 HierarchicalVocabulary<Value> hv = (HierarchicalVocabulary<Value>) vocabulary;
-                String fieldName = FieldNames.getSearchFieldName(propDef, false);
+                String fieldName = FieldNames.propertyFieldName(propDef, false);
                 List<String> values = new ArrayList<String>();
                 values.add(ptq.getTerm());
                 for (Value v: hv.getDescendants(new Value(ptq.getTerm(), PropertyType.Type.STRING))) {
@@ -422,7 +422,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         // Avoid using cache-wrapper for FieldValueFilter, since that can
         // lead to memory leaks in Lucene.
 
-        bf.add(new FieldValueFilter(FieldNames.getSearchFieldName(this.unpublishedCollectionPropDef, false), true),
+        bf.add(new FieldValueFilter(FieldNames.propertyFieldName(this.unpublishedCollectionPropDef, false), true),
                 BooleanClause.Occur.MUST);
 
         return bf;

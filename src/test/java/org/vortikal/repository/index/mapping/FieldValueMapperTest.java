@@ -32,6 +32,8 @@ package org.vortikal.repository.index.mapping;
 
 import java.util.Date;
 import java.util.List;
+
+import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Field;
 
 import org.vortikal.repository.RepositoryException;
@@ -47,18 +49,19 @@ import org.vortikal.security.PrincipalImpl;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
+import org.vortikal.repository.index.mapping.Field4ValueMapper.FieldSpec;
 
 public class FieldValueMapperTest {
 
-    private final Field4ValueMapper fieldValueMapper;
+    private final Field4ValueMapper fvm;
     private final ValueFactory vf;
 
     public FieldValueMapperTest() {
-        this.fieldValueMapper = new Field4ValueMapper();
+        this.fvm = new Field4ValueMapper();
         ValueFactoryImpl vf = new ValueFactoryImpl();
         vf.setPrincipalFactory(new MockPrincipalFactory());
         this.vf = vf;
-        this.fieldValueMapper.setValueFactory(new ValueFactoryImpl());
+        this.fvm.setValueFactory(new ValueFactoryImpl());
     }
 
     @Test
@@ -75,7 +78,7 @@ public class FieldValueMapperTest {
 
         for (int i = 0; i < dateStrings.length; i++) {
             try {
-                this.fieldValueMapper.queryTerm("someDate", dateStrings[i],
+                fvm.queryTerm("someDate", dateStrings[i],
                         PropertyType.Type.TIMESTAMP, false);
             } catch (Exception e) {
                 fail("Failed to encode index field value for date format '" + dateFormats[i]
@@ -92,9 +95,9 @@ public class FieldValueMapperTest {
     @Test
     public void storedFields() {
 
-        Field stringField = fieldValueMapper.storedFields("string", new Value("bâr", PropertyType.Type.STRING))[0];
-        Field intField = fieldValueMapper.storedFields("int", new Value(1024))[0];
-        Field longField = fieldValueMapper.storedFields("long", new Value(1024L))[0];
+        Field stringField = fvm.makeFields("string", FieldSpec.STORED, new Value("bâr", PropertyType.Type.STRING)).get(0);
+        Field intField = fvm.makeFields("int", FieldSpec.STORED, new Value(1024)).get(0);
+        Field longField = fvm.makeFields("long", FieldSpec.STORED, new Value(1024L)).get(0);
 
         assertEquals("string", stringField.name());
         assertEquals("int", intField.name());
@@ -112,14 +115,39 @@ public class FieldValueMapperTest {
         assertEquals("1024", longField.stringValue());
         assertNull(longField.binaryValue());
 
-        Value stringValue = this.fieldValueMapper.valueFromField(Type.STRING, stringField);
+        Value stringValue = fvm.valueFromField(Type.STRING, stringField);
         assertEquals("bâr", stringValue.getStringValue());
 
-        Value intValue = this.fieldValueMapper.valueFromField(Type.INT, intField);
+        Value intValue = fvm.valueFromField(Type.INT, intField);
         assertEquals(1024, intValue.getIntValue());
 
-        Value longValue = this.fieldValueMapper.valueFromField(Type.LONG, longField);
+        Value longValue = fvm.valueFromField(Type.LONG, longField);
         assertEquals(1024, longValue.getLongValue());
+    }
+    
+    @Test
+    public void dateFields() {
+        final long now = new Date().getTime();
+        List<Field> fields = fvm.makeFields("date", FieldSpec.INDEXED_STORED, Type.DATE, now);
+        
+        assertEquals(2, fields.size());
+        boolean haveStored = false;
+        boolean haveIndexed = false;
+        for (Field f : fields) {
+            if (f.fieldType().stored()) {
+                long fieldValue = f.numericValue().longValue();
+                assertEquals(now, fieldValue);
+                haveStored = true;
+            }
+            if (!f.fieldType().stored()) {
+                long fieldValue = f.numericValue().longValue();
+                assertEquals(DateTools.round(now, DateTools.Resolution.SECOND), fieldValue);
+                haveIndexed = true;
+            }
+        }
+        if (! (haveIndexed && haveStored)) {
+            fail("Expected one indexed and one stored field");
+        }
     }
 
     @Test

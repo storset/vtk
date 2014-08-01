@@ -85,10 +85,10 @@ public class PropertyTermQueryBuilder implements QueryBuilder {
         final String fieldName;
         if (cva != null) {
             valueType = Field4ValueMapper.getJsonFieldDataType(propDef, cva);
-            fieldName = FieldNames.getJsonSearchFieldName(propDef, cva, lowercase);
+            fieldName = FieldNames.jsonFieldName(propDef, cva, lowercase);
         } else {
             valueType = propDef.getType();
-            fieldName = FieldNames.getSearchFieldName(propDef, lowercase);
+            fieldName = FieldNames.propertyFieldName(propDef, lowercase);
         }
         
         if (op == TermOperator.EQ || op == TermOperator.EQ_IGNORECASE) {

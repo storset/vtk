@@ -40,17 +40,14 @@ import java.util.Set;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.AtomicReader;
 import org.apache.lucene.index.AtomicReaderContext;
-import org.apache.lucene.index.Fields;
-
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.Terms;
-import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.queries.TermFilter;
 import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.util.Bits;
+import org.apache.lucene.util.BytesRef;
+import org.apache.lucene.util.NumericUtils;
 
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
@@ -58,16 +55,10 @@ import org.vortikal.repository.index.mapping.DocumentMapper;
 import org.vortikal.repository.index.mapping.FieldNames;
 
 /**
- * Random accessor for property set index.
- * Caches internal <code>TermDocs</code> instances.
- * 
- * @author oyviste
- *
+ * Random access (lookup by id) implementation for property set index.
  */
 class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRandomAccessor {
 
-//    private TermDocs uriTermDocs;
-//    private TermDocs uuidTermDocs;
     private final DocumentMapper mapper;
     private final Lucene4IndexManager index;
     private final IndexSearcher searcher;
@@ -77,9 +68,6 @@ class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRandomAccess
         this.mapper = mapper;
         this.index = index;
         this.searcher = index.getIndexSearcher();
-//        this.uriTermDocs = reader.termDocs(new Term(FieldNames.URI_FIELD_NAME, ""));
-//        this.uuidTermDocs = reader.termDocs(new Term(FieldNames.ID_FIELD_NAME, ""));
-  
     }
     
     @Override
@@ -92,16 +80,6 @@ class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRandomAccess
         } catch (IOException io) {
             throw new IndexException(io);
         }
-
-// Old Lucene3-impl:        
-//        try {
-//            this.uriTermDocs.seek(new Term(FieldNames.URI_FIELD_NAME, uri.toString()));
-//            while (this.uriTermDocs.next()) {
-//                ++count;
-//            }
-//        } catch (IOException io) {
-//            throw new IndexException(io);
-//        }
     }
     
     @Override
@@ -114,13 +92,6 @@ class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRandomAccess
                 Document doc = docs.get(0); // Just pick first in case of duplicates
                 propSet = mapper.getPropertySet(doc);
             }
-
-// Old Lucene3-impl:            
-//            this.uriTermDocs.seek(new Term(FieldNames.URI_FIELD_NAME, uri.toString()));
-//            if (this.uriTermDocs.next()) {
-//                propSet = this.mapper.getPropertySet(
-//                        this.reader.document(this.uriTermDocs.doc()));
-//            }
         } catch (IOException io) {
             throw new IndexException(io);
         }
@@ -137,13 +108,6 @@ class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRandomAccess
                 Document doc = docs.get(0); // Just pick first in case of duplicates
                 propSet = mapper.getPropertySet(doc);
             }
-            
-// Old Lucene3-impl:            
-//            this.uuidTermDocs.seek(new Term(FieldNames.ID_FIELD_NAME, uuid));
-//            if (this.uuidTermDocs.next()) {
-//                propSet = this.mapper.getPropertySet(
-//                        this.reader.document(this.uuidTermDocs.doc()));
-//            }
         } catch (IOException io) {
             throw new IndexException(io);
         }
@@ -201,64 +165,6 @@ class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRandomAccess
             throw new IndexException(io);
         }
         
-// Old Lucene3-impl:        
-//        try {
-//            this.uriTermDocs.seek(new Term(FieldNames.URI_FIELD_NAME, uri.toString()));
-//
-//            if (this.uriTermDocs.next()) {
-//                Document doc = this.reader.document(this.uriTermDocs.doc(), new FieldSelector() {
-//                    private static final long serialVersionUID = 1L;
-//                    @Override
-//                    public FieldSelectorResult accept(String fieldName) {
-//                        if (FieldNames.URI_FIELD_NAME == fieldName
-//                                || FieldNames.RESOURCETYPE_FIELD_NAME == fieldName
-//                                || FieldNames.STORED_ACL_READ_PRINCIPALS_FIELD_NAME == fieldName
-//                                || FieldNames.STORED_ACL_INHERITED_FROM_FIELD_NAME == fieldName
-//                                || FieldNames.STORED_ID_FIELD_NAME == fieldName) {
-//                            return FieldSelectorResult.LOAD;
-//                        }
-//
-//                        return FieldSelectorResult.NO_LOAD;
-//                    }
-//                });
-//                
-//                final String rt = doc.get(FieldNames.RESOURCETYPE_FIELD_NAME);
-//                final int id = this.mapper.getResourceId(doc);
-//                final int aclInheritedFrom = this.mapper.getAclInheritedFrom(doc);
-//                final Set<String> aclReadPrincipalNames = this.mapper.getACLReadPrincipalNames(doc);
-//                
-//                return new PropertySetInternalData() {
-//                    @Override
-//                    public Path getURI() {
-//                        return uri;
-//                    }
-//
-//                    @Override
-//                    public String getResourceType() {
-//                        return rt;
-//                    }
-//
-//                    @Override
-//                    public int getResourceId() {
-//                        return id;
-//                    }
-//
-//                    @Override
-//                    public int getAclInheritedFromId() {
-//                        return aclInheritedFrom;
-//                    }
-//                    
-//                    @Override
-//                    public Set<String> getAclReadPrincipalNames() {
-//                        return aclReadPrincipalNames;
-//                    }
-//                };
-//            }
-//            
-//            return null;
-//        } catch (IOException io) {
-//            throw new IndexException(io);
-//        }
     }
     
     private List<Document> lookupDocs(Term term, Set<String> loadFields) throws IOException {

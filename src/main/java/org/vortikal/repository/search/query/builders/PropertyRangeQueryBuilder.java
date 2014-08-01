@@ -72,10 +72,10 @@ public class PropertyRangeQueryBuilder implements QueryBuilder {
         final PropertyType.Type valueType;
         if (cva != null) {
             valueType = Field4ValueMapper.getJsonFieldDataType(propDef, cva);
-            fieldName = FieldNames.getJsonSearchFieldName(propDef, cva, false);
+            fieldName = FieldNames.jsonFieldName(propDef, cva, false);
         } else {
             valueType = propDef.getType();
-            fieldName = FieldNames.getSearchFieldName(propDef, false);
+            fieldName = FieldNames.propertyFieldName(propDef, false);
         }
         
         switch (valueType) {

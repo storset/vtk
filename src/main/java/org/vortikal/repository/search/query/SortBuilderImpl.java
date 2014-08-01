@@ -33,7 +33,9 @@ package org.vortikal.repository.search.query;
 import java.util.Iterator;
 
 import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.index.mapping.Field4ValueMapper;
 import org.vortikal.repository.index.mapping.FieldNames;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.SortField;
@@ -72,14 +74,10 @@ public class SortBuilderImpl implements SortBuilder {
                 } else {
                     throw new SortBuilderException("Unknown typed sort field type: " + tsf.getType());
                 }
-//                luceneSortFields[j] = new org.apache.lucene.search.SortField(
-//                                            fieldName, sortField.getLocale(), reverse);
                 
                 // Special fields, do standard non-locale-specific lexicographic sorting (uri, name or type)
-                luceneSortFields[j] =
-                        new org.apache.lucene.search.SortField(fieldName,
-                                                               org.apache.lucene.search.SortField.Type.STRING,
-                                                               reverse);
+                luceneSortFields[j] = new org.apache.lucene.search.SortField(
+                        fieldName, org.apache.lucene.search.SortField.Type.STRING, reverse);
 
             } else if (sortField instanceof PropertySortField) {
                 PropertySortField psf = (PropertySortField)sortField;
@@ -87,25 +85,36 @@ public class SortBuilderImpl implements SortBuilder {
                 if (def.isMultiple()) {
                     throw new SortBuilderException("Cannot sort on multi-value property: " + def);
                 }
-
-                fieldName = FieldNames.getSearchFieldName(def, false);
-
-                switch (def.getType()) {
-                case JSON:
+                
+                PropertyType.Type dataType = def.getType();
+                fieldName = FieldNames.propertyFieldName(def, false);
+                if (def.getType() == PropertyType.Type.JSON) {
                     String cva = psf.getComplexValueAttributeSpecifier();
                     if (cva != null) {
-                        fieldName = FieldNames.getJsonSearchFieldName(def, cva, false);
+                        fieldName = FieldNames.jsonFieldName(def, cva, false);
+                        dataType = Field4ValueMapper.getJsonFieldDataType(def, fieldName);
                     }
+                }
+                
+                switch (dataType) {
                 case DATE:
                 case TIMESTAMP:
-                case BOOLEAN:
-                case INT:
                 case LONG:
+                    luceneSortFields[j] = new org.apache.lucene.search.SortField(fieldName, 
+                    org.apache.lucene.search.SortField.Type.LONG, reverse);
+                    break;
+                    
+                case INT:
+                    luceneSortFields[j] = new org.apache.lucene.search.SortField(fieldName, 
+                    org.apache.lucene.search.SortField.Type.INT, reverse);
+                    break;
+                    
+                // These are all typed as strings in Lucene,
+                // and there is no need to do locale-sensitive sorting on any of them.
+                case JSON:
                 case PRINCIPAL:
                 case IMAGE_REF:
-
-                    // These types are all encoded as lexicographically sortable strings,
-                    // and there is no need to do locale-sensitive sorting on any of them.
+                case BOOLEAN:
                     luceneSortFields[j] = new org.apache.lucene.search.SortField(
                             fieldName, org.apache.lucene.search.SortField.Type.STRING, reverse);
                     break;
@@ -122,8 +131,6 @@ public class SortBuilderImpl implements SortBuilder {
             } else {
                 throw new SortBuilderException("Unknown sorting type " + sortField.getClass().getName());
             }
-
-            //luceneSortFields[j] = new org.apache.lucene.search.SortField(fieldName, sortComparatorSource, direction);
         }
 
         return new org.apache.lucene.search.Sort(luceneSortFields);

@@ -32,6 +32,7 @@
 package org.vortikal.repository.index.mapping;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +43,6 @@ import org.apache.lucene.document.IntField;
 import org.apache.lucene.document.LongField;
 import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
-import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.util.BytesRef;
@@ -60,6 +60,8 @@ import org.vortikal.util.cache.ReusableObjectCache;
 
 /**
  * Field value mapping from/to Lucene.
+ * 
+ * TODO missing JavaDoc for most methods
  */
 public class Field4ValueMapper {
     
@@ -86,79 +88,134 @@ public class Field4ValueMapper {
     private ValueFactory valueFactory;
     
     /**
-     * Return an indexed keyword string field with no encoding from an integer number.
+     * Specify indexing characteristics for field.
      * 
-     * @param name field name
-     * @param value integer field value (no special encoding is applied for indexing)
-     * @param store whether to make the field stored <em>as well as indexed</em>.
-     * 
-     * @return an instance of <code>StringField</code>.
+     * <p>Values:
+     * <ul>
+     *   <li>{@link #INDEXED} - Only indexed.
+     *   <li>{@link #INDEXED_STORED} - Both indexed and stored.
+     *   <li>{@link #INDEXED_LOWERCASE} - Lowercase-indexed, but not stored.
+     *   <li>{@link #STORED} - Only stored (not searchable, but retrievable from docs).
+     * </ul>
      */
-    public Field keywordField(String name, int value, boolean store) {
-        return new StringField(name, Integer.toString(value), store ? Field.Store.YES : Field.Store.NO);
+    public enum FieldSpec {
+        INDEXED,
+        INDEXED_STORED,
+        INDEXED_LOWERCASE,
+        STORED
     }
     
-    /**
-     * Return an indexed keyword string field from a string value.
-     * 
-     * @param name field name
-     * @param value string value (not tokenized)
-     * @param store whether to make the field stored <em>as well as indexed</em>.
-     * 
-     * @return an instance of <code>StringField</code>.
-     */
-    public Field keywordField(String name, String value, boolean store) {
-        return new StringField(name, value, store ? Field.Store.YES : Field.Store.NO);
-    }
-
-    /**
-     * Return an array of indexed keyword string fields from string values.
-     * 
-     * @param name the name
-     * @param values the values
-     * @param store whether to make the fields stored <em>as well as indexed</em>
-     * 
-     * @return an array of <code>Field</code> with the fields corresponding to
-     * the string values.
-     */
-    public Field[] keywordFields(String name, boolean store, String...values) {
-        Field[] fields = new Field[values.length];
-        for (int i=0; i<fields.length; i++) {
-            fields[i] = keywordField(name, values[i], store);
+    public List<Field> makeFields(String name, FieldSpec spec, Value... values) {
+        List<Field> fields = new ArrayList<Field>(values.length*2);
+        for (int i=0; i<values.length; i++) {
+            fields.addAll(makeFields(name, spec, values[i]));
         }
         return fields;
     }
     
-    public Field[] indexedFields(String name, boolean lowercase, Value... values) {
-        Field[] fields = new Field[values.length];
+    public List<Field> makeFields(String name, FieldSpec spec, Type type, Object... values) {
+        List<Field> fields = new ArrayList<Field>(values.length*2);
         for (int i=0; i<values.length; i++) {
-            fields[i] = indexedField(name, lowercase, values[i]);
-        }
-        return fields;
-    }
-    
-    public Field[] indexedFields(String name, boolean lowercase, Type type, Object... values) {
-        Field[] fields = new Field[values.length];
-        for (int i=0; i<values.length; i++) {
-            fields[i] = indexedField(name, lowercase, values[i], type);
+            fields.addAll(makeFields(name, spec, type, values[i]));
         }
         return fields;
     }
 
-    public Field[] storedFields(String name, Value... values) {
-        Field[] fields = new Field[values.length];
-        for (int i=0; i<values.length; i++) {
-            fields[i] = storedField(name, values[i]);
+    public List<Field> makeFields(String fieldName, FieldSpec spec, Value value) {
+        switch (value.getType()) {
+        case STRING:
+        case HTML:
+        case JSON:
+        case IMAGE_REF:
+        case BOOLEAN:
+        case PRINCIPAL:
+            String stringValue = value.getNativeStringRepresentation();
+            return makeFields(fieldName, spec, value.getType(), stringValue);
+
+        case LONG:
+        case DATE:
+        case TIMESTAMP:
+            long longValue;
+            if (value.getType() != Type.LONG) {
+                longValue = value.getDateValue().getTime();
+            } else {
+                longValue = value.getLongValue();
+            }
+            return makeFields(fieldName, spec, value.getType(), longValue);
+            
+        case INT:
+            Integer intValue = value.getIntValue();
+            return makeFields(fieldName, spec, value.getType(), intValue);
+            
+        default:
+            throw new IllegalArgumentException("Unsupported value type: " + value.getType());
         }
+    }
+    
+    public List<Field> makeFields(String fieldName, FieldSpec spec, Type type, Object value) {
+        List<Field> fields = new ArrayList<Field>(2);
+        switch (type) {
+        case STRING:
+        case HTML:
+        case JSON:
+        case IMAGE_REF:
+        case BOOLEAN:
+        case PRINCIPAL:
+            String stringValue = (String)value;
+            if (isIndex(spec)) {
+                if (isLowercase(spec)) {
+                    stringValue = stringValue.toLowerCase();
+                }
+                fields.add(new StringField(fieldName, stringValue, Field.Store.NO));
+            }
+            if (isStore(spec)) {
+                fields.add(new StoredField(fieldName, stringValue));
+            }
+            break;
+
+        case LONG:
+        case DATE:
+        case TIMESTAMP:
+            long longValue = (Long)value;
+            if (isIndex(spec)) {
+                long indexValue = type != Type.LONG ? 
+                        DateTools.round(longValue, DateTools.Resolution.SECOND) : longValue;
+                fields.add(new LongField(fieldName, indexValue, Field.Store.NO));
+            }
+            if (isStore(spec)) {
+                fields.add(new StoredField(fieldName, longValue));
+            }
+            break;
+            
+        case INT:
+            Integer intValue = (Integer)value;
+            if (isIndex(spec)) {
+                fields.add(new IntField(fieldName, intValue, Field.Store.NO));
+            }
+            if (isStore(spec)) {
+                fields.add(new StoredField(fieldName, intValue));
+            }
+            break;
+
+        default:
+            throw new IllegalArgumentException("Unsupported value type: " + type);
+        }
+        
         return fields;
     }
     
-    public Value[] valuesFromFields(Type type, List<IndexableField> fields) {
-        Value[] values = new Value[fields.size()];
-        for (int i=0; i<fields.size(); i++) {
-            values[i] = valueFromField(type, fields.get(i));
-        }
-        return values;
+    private boolean isIndex(FieldSpec spec) {
+        return spec == FieldSpec.INDEXED 
+                || spec == FieldSpec.INDEXED_LOWERCASE 
+                || spec == FieldSpec.INDEXED_STORED;
+    }
+    
+    private boolean isStore(FieldSpec spec) {
+        return spec == FieldSpec.STORED || spec == FieldSpec.INDEXED_STORED;
+    }
+    
+    private boolean isLowercase(FieldSpec spec) {
+        return spec == FieldSpec.INDEXED_LOWERCASE;
     }
     
     public Term queryTerm(String fieldName, Object value, Type type, boolean lowercase) {
@@ -292,6 +349,13 @@ public class Field4ValueMapper {
         return bytes;
     }
     
+    public Value[] valuesFromFields(Type type, List<IndexableField> fields) {
+        Value[] values = new Value[fields.size()];
+        for (int i=0; i<fields.size(); i++) {
+            values[i] = valueFromField(type, fields.get(i));
+        }
+        return values;
+    }
     public Value valueFromField(Type type, IndexableField f) {
         switch (type) {
         case STRING:
@@ -332,98 +396,6 @@ public class Field4ValueMapper {
         }
     }
     
-    private Field indexedField(String fieldName, boolean lowercase, Value value) {
-        switch (value.getType()) {
-        case STRING:
-        case HTML:
-        case JSON:
-        case IMAGE_REF:
-        case BOOLEAN:
-        case PRINCIPAL:
-            String stringValue = value.getNativeStringRepresentation();
-            if (lowercase) {
-                stringValue = stringValue.toLowerCase();
-            }
-            
-            return new StringField(fieldName, stringValue, Field.Store.NO);
-
-        case LONG:
-        case DATE:
-        case TIMESTAMP:
-            long longValue;
-            if (value.getType() != Type.LONG) {
-                longValue = DateTools.round(value.getDateValue().getTime(), DateTools.Resolution.SECOND);
-            } else {
-                longValue = value.getLongValue();
-            }
-            
-            return new LongField(fieldName, longValue, Field.Store.NO);
-
-        case INT:
-            return new IntField(fieldName, value.getIntValue(), Field.Store.NO);
-
-        default:
-            throw new IllegalArgumentException("Unsupported value type: " + value.getType());
-        }
-    }
-    
-    private Field indexedField(String fieldName, boolean lowercase, Object value, Type type) {
-        switch (type) {
-        case STRING:
-        case HTML:
-        case JSON:
-        case IMAGE_REF:
-        case BOOLEAN:
-        case PRINCIPAL:
-            String stringValue = (String)value;
-            if (lowercase) {
-                stringValue = stringValue.toLowerCase();
-            }
-            
-            return new StringField(fieldName, stringValue, Field.Store.NO);
-
-        case LONG:
-        case DATE:
-        case TIMESTAMP:
-            long longValue = (Long)value;
-            if (type != Type.LONG) {
-                longValue = DateTools.round(longValue, DateTools.Resolution.SECOND);
-            }
-            
-            return new LongField(fieldName, longValue, Field.Store.NO);
-
-        case INT:
-            return new IntField(fieldName, (Integer)value, Field.Store.NO);
-
-        default:
-            throw new IllegalArgumentException("Unsupported value type: " + type);
-        }
-    }
-    
-    private Field storedField(String fieldName, Value value) {
-        switch (value.getType()) {
-        case STRING:
-        case HTML:
-        case JSON:
-        case IMAGE_REF:
-        case BOOLEAN:
-        case PRINCIPAL:
-            return new StoredField(fieldName, value.getNativeStringRepresentation());
-
-        case LONG:
-        case DATE:
-        case TIMESTAMP:
-            final long longValue = value.getType() == Type.LONG ?
-                    value.getLongValue() : value.getDateValue().getTime();
-            return new StoredField(fieldName, longValue);
-
-        case INT:
-            return new StoredField(fieldName, value.getIntValue());
-
-        default:
-            throw new IllegalArgumentException("Unsupported value type: " + value.getType());
-        }
-    }
     
     /**
      * Get suitable data type for a JSON field. Only accepts property

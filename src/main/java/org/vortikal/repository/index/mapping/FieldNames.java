@@ -41,14 +41,15 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 /**
  * Handles naming of all Lucene fields.
  * 
+ * TODO javadoc
  */
 public final class FieldNames {
 
     /* Special field characters and prefixes */
-    public static final String FIELD_NAMESPACEPREFIX_NAME_SEPARATOR = ":";
+    public static final String NAMESPACEPREFIX_NAME_SEPARATOR = ":";
     public static final String JSON_ATTRIBUTE_SEPARATOR = "@";
     public static final String LOWERCASE_FIELD_PREFIX = "l_";
-    public static final String STORED_BINARY_FIELD_PREFIX = "b_";
+    public static final String PROPERTY_FIELD_PREFIX = "P_";
     
     /* Special, reserved fields */
     public static final String NAME_FIELD_NAME =         PropertySet.NAME_IDENTIFIER;
@@ -61,39 +62,45 @@ public final class FieldNames {
     public static final String ACL_INHERITED_FROM_FIELD_NAME = "ACL_INHERITED_FROM";
     public static final String ACL_READ_PRINCIPALS_FIELD_NAME = "ACL_READ_PRINCIPALS";
     
-//    public static final String STORED_ACL_READ_PRINCIPALS_FIELD_NAME = 
-//        STORED_BINARY_FIELD_PREFIX + ACL_READ_PRINCIPALS_FIELD_NAME;
-    
-//    public static final String STORED_ID_FIELD_NAME = 
-//        STORED_BINARY_FIELD_PREFIX + ID_FIELD_NAME;
-    
-//    public static final String STORED_ACL_INHERITED_FROM_FIELD_NAME = 
-//        STORED_BINARY_FIELD_PREFIX + "ACL_INHERITED_FROM";
-    
     private static final Set<String> RESERVED_FIELD_NAMES = new HashSet<String>();
     static {
         RESERVED_FIELD_NAMES.add(NAME_FIELD_NAME);
+        RESERVED_FIELD_NAMES.add(NAME_LC_FIELD_NAME);
         RESERVED_FIELD_NAMES.add(URI_FIELD_NAME);
         RESERVED_FIELD_NAMES.add(URI_ANCESTORS_FIELD_NAME);
         RESERVED_FIELD_NAMES.add(URI_DEPTH_FIELD_NAME);
         RESERVED_FIELD_NAMES.add(RESOURCETYPE_FIELD_NAME);
         RESERVED_FIELD_NAMES.add(ID_FIELD_NAME);
-//        RESERVED_FIELD_NAMES.add(STORED_ID_FIELD_NAME);
         RESERVED_FIELD_NAMES.add(ACL_READ_PRINCIPALS_FIELD_NAME);
         RESERVED_FIELD_NAMES.add(ACL_INHERITED_FROM_FIELD_NAME);
-//        RESERVED_FIELD_NAMES.add(STORED_ACL_READ_PRINCIPALS_FIELD_NAME);
-//        RESERVED_FIELD_NAMES.add(STORED_ACL_INHERITED_FROM_FIELD_NAME);
     }
     
     public static boolean isReservedField(String fieldName) {
         return RESERVED_FIELD_NAMES.contains(fieldName);
     }
     
-    public static String getSearchFieldName(Property prop, boolean lowercase) {
-        return getSearchFieldName(prop.getDefinition(), lowercase);
+    public static boolean isPropertyField(String fieldName) {
+        return fieldName.startsWith(PROPERTY_FIELD_PREFIX);
     }
     
-    public static String getSearchFieldName(PropertyTypeDefinition def, boolean lowercase) {
+    public static boolean isLowercaseField(String fieldName) {
+        int offset = isPropertyField(fieldName) ? PROPERTY_FIELD_PREFIX.length() : 0;
+        return fieldName.startsWith(LOWERCASE_FIELD_PREFIX, offset);
+    }
+    
+    public static String propertyFieldName(Property prop) {
+        return FieldNames.propertyFieldName(prop.getDefinition(), false);
+    }
+    
+    public static String propertyFieldName(Property prop, boolean lowercase) {
+        return FieldNames.propertyFieldName(prop.getDefinition(), lowercase);
+    }
+    
+    public static String propertyFieldName(PropertyTypeDefinition def) {
+        return FieldNames.propertyFieldName(def, false);
+    }
+    
+    public static String propertyFieldName(PropertyTypeDefinition def, boolean lowercase) {
         switch (def.getType()) {
         case STRING:
         case HTML:
@@ -104,49 +111,20 @@ public final class FieldNames {
             lowercase = false; // No lowercasing-support for type
         }
 
-        return getSearchFieldName(def.getName(), def.getNamespace().getPrefix(), lowercase);
+        return propertyFieldName(def.getName(), def.getNamespace().getPrefix(), lowercase);
     }
 
-    protected static String getSearchFieldName(String propName, String propPrefix, boolean lowercase) {
-        StringBuilder fieldName = new StringBuilder();
+    public static String propertyFieldName(String propName, String nsPrefix, boolean lowercase) {
+        StringBuilder fieldName = new StringBuilder(PROPERTY_FIELD_PREFIX);
         if (lowercase) {
             fieldName.append(LOWERCASE_FIELD_PREFIX);
         }
         
-        if (propPrefix != null) {
-            fieldName.append(propPrefix).append(FIELD_NAMESPACEPREFIX_NAME_SEPARATOR);
+        if (nsPrefix != null) {
+            fieldName.append(nsPrefix).append(NAMESPACEPREFIX_NAME_SEPARATOR);
         }
         
         fieldName.append(propName);
-        return fieldName.toString();
-    }
-
-    public static String getStoredFieldName(Property property) {
-        return getStoredFieldName(property.getDefinition().getNamespace(), property.getDefinition().getName());
-    }
-
-    /**
-     * Get stored field for property by namespace and name.
-     */
-    public static String getStoredFieldName(Namespace ns, String name) {
-        StringBuilder fieldName = new StringBuilder(STORED_BINARY_FIELD_PREFIX);
-        String nsPrefix = ns.getPrefix();
-        if (nsPrefix != null) {
-            fieldName.append(nsPrefix).append(FIELD_NAMESPACEPREFIX_NAME_SEPARATOR);
-        }
-        fieldName.append(name);
-        return fieldName.toString();
-    }
-
-    /**
-     * Get name of stored field for property by name and namespace prefix.
-     */
-    public static String getStoredFieldName(String nsPrefix, String name) {
-        StringBuilder fieldName = new StringBuilder(STORED_BINARY_FIELD_PREFIX);
-        if (nsPrefix != null) {
-            fieldName.append(nsPrefix).append(FIELD_NAMESPACEPREFIX_NAME_SEPARATOR);
-        }
-        fieldName.append(name);
         return fieldName.toString();
     }
 
@@ -157,50 +135,64 @@ public final class FieldNames {
      * @param ns
      * @return 
      */
-    public static boolean isStoredFieldInNamespace(String fieldName, Namespace ns) {
-        if (ns.getPrefix() == null) {
-            return !fieldName.contains(FIELD_NAMESPACEPREFIX_NAME_SEPARATOR);
+    public static boolean isPropertyFieldInNamespace(String fieldName, Namespace ns) {
+        if (!isPropertyField(fieldName)) {
+            return false;
         }
         
-        return fieldName.startsWith(STORED_BINARY_FIELD_PREFIX + ns.getPrefix() + FIELD_NAMESPACEPREFIX_NAME_SEPARATOR);
+        if (ns.getPrefix() == null) {
+            return !fieldName.contains(NAMESPACEPREFIX_NAME_SEPARATOR);
+        }
+        
+        int offset = PROPERTY_FIELD_PREFIX.length();
+        if (fieldName.startsWith(LOWERCASE_FIELD_PREFIX, offset)) {
+            offset += LOWERCASE_FIELD_PREFIX.length();
+        }
+        
+        return fieldName.startsWith(ns.getPrefix() + NAMESPACEPREFIX_NAME_SEPARATOR, offset);
     }
     
-    public static String getJsonSearchFieldName(PropertyTypeDefinition def, String jsonAttrKey, 
-                                                                             boolean lowercase) {
-        StringBuilder fieldName = new StringBuilder(getSearchFieldName(def, lowercase));
+    public static String jsonFieldName(PropertyTypeDefinition def, String jsonAttrKey, 
+                                                                          boolean lowercase) {
+        StringBuilder fieldName = new StringBuilder(FieldNames.propertyFieldName(def, lowercase));
         fieldName.append(JSON_ATTRIBUTE_SEPARATOR).append(jsonAttrKey);
         return fieldName.toString();
     }
     
-    public static String getStoredFieldName(PropertyTypeDefinition def) {
-        StringBuilder name = new StringBuilder(STORED_BINARY_FIELD_PREFIX);
-        String nsPrefix = def.getNamespace().getPrefix();
-        if (nsPrefix != null) {
-            name.append(nsPrefix);
-            name.append(FIELD_NAMESPACEPREFIX_NAME_SEPARATOR);
+    
+    public static String propertyNamespace(String fieldName) {
+        if (!isPropertyField(fieldName)) {
+            throw new IllegalArgumentException("Not a property field name: " + fieldName);
         }
-        name.append(def.getName());
         
-        return name.toString();
-    }
-
-    public static String getPropertyNamespacePrefixFromStoredFieldName(String fieldName) {
-        int sfpLength = STORED_BINARY_FIELD_PREFIX.length();
-        int pos = fieldName.indexOf(FIELD_NAMESPACEPREFIX_NAME_SEPARATOR, sfpLength);
+        int offset = PROPERTY_FIELD_PREFIX.length();
+        if (fieldName.startsWith(LOWERCASE_FIELD_PREFIX, offset)) {
+            offset += LOWERCASE_FIELD_PREFIX.length();
+        }
+        
+        int pos = fieldName.indexOf(NAMESPACEPREFIX_NAME_SEPARATOR, offset);
 
         if (pos == -1) {
             return null;
         } else {
-            return fieldName.substring(sfpLength, pos);
+            return fieldName.substring(offset, pos);
         }
     }
     
-    public static String getPropertyNameFromStoredFieldName(String fieldName){
-        int sfpLength = STORED_BINARY_FIELD_PREFIX.length();
-        int pos = fieldName.indexOf(FIELD_NAMESPACEPREFIX_NAME_SEPARATOR, sfpLength);
+    public static String propertyName(String fieldName){
+        if (! isPropertyField(fieldName)) {
+            throw new IllegalArgumentException("Not a property field name: " + fieldName);
+        }
+        
+        int offset = PROPERTY_FIELD_PREFIX.length();
+        if (fieldName.startsWith(LOWERCASE_FIELD_PREFIX, offset)) {
+            offset += LOWERCASE_FIELD_PREFIX.length();
+        }
+
+        int pos = fieldName.indexOf(NAMESPACEPREFIX_NAME_SEPARATOR, offset);
 
         if (pos == -1) {
-            return fieldName.substring(sfpLength);
+            return fieldName.substring(offset);
         } else {
             return fieldName.substring(pos + 1);
         }

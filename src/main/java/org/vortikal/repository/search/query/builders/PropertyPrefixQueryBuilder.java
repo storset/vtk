@@ -81,9 +81,9 @@ public class PropertyPrefixQueryBuilder implements QueryBuilder {
             term = term.toLowerCase();
         }
 
-        String fieldName = FieldNames.getSearchFieldName(def, ignorecase);
+        String fieldName = FieldNames.propertyFieldName(def, ignorecase);
         if (def.getType() == Type.JSON && this.ppq.getComplexValueAttributeSpecifier() != null) {
-            fieldName = FieldNames.getJsonSearchFieldName(
+            fieldName = FieldNames.jsonFieldName(
                     def, ppq.getComplexValueAttributeSpecifier(), ignorecase);
         }
 

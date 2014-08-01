@@ -106,7 +106,7 @@ public class WarmupSearcherFactory extends SearcherFactory {
 
     private Sort getWarmupSorting() {
         SortField[] fields = new SortField[2];
-        fields[0] = new SortField(FieldNames.getSearchFieldName(this.lastModifiedPropDef, false), SortField.Type.STRING, true);
+        fields[0] = new SortField(FieldNames.propertyFieldName(this.lastModifiedPropDef, false), SortField.Type.STRING, true);
         fields[1] = new SortField(FieldNames.URI_FIELD_NAME, SortField.Type.STRING);
         return new Sort(fields);
     }

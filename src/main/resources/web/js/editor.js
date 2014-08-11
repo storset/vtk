@@ -2651,16 +2651,7 @@ VrtxEditor.prototype.htmlFacade = {
             } else { // Admin
               var buttons = "<a class='vrtx-button admin-fixed-resources-folder' href='" + val.folderUrl + "?vrtx=admin&displaymsg=yes'>" + i18n[name + "UploadAdminFolder"] + "</a>";
               
-              if(typeof val === "object") {
-                var propsArr = val.resources;
-                var propsLen = propsArr.length;
-                var totPropsLen = propsLen;
-                for(var j = 0; j < propsLen; j++) {
-                  if(propsLen > 1) propsVal += "<li>";
-                  propsVal += "<a href='" + val.folderUrl + "/" + propsArr[j].name + "'>" + propsArr[j].title + "</a>";
-                  if(propsLen > 1) propsVal += "</li>";
-                }
-              } else {
+              if(typeof val === "array") {
                 var totPropsLen = 0;
                 for(var i = 0, len = val.length; i < len; i++) {
                   totPropsLen += val[i].resources.length;
@@ -2673,6 +2664,15 @@ VrtxEditor.prototype.htmlFacade = {
                     propsVal += "<a href='" + val[i].folderUrl + "/" + propsArr[j].name + "'>" + propsArr[j].title + "</a>";
                     if(totPropsLen > 1) propsVal += "</li>";
                    }
+                }
+              } else { // Object
+                var propsArr = val.resources;
+                var propsLen = propsArr.length;
+                var totPropsLen = propsLen;
+                for(var j = 0; j < propsLen; j++) {
+                  if(propsLen > 1) propsVal += "<li>";
+                  propsVal += "<a href='" + val.folderUrl + "/" + propsArr[j].name + "'>" + propsArr[j].title + "</a>";
+                  if(propsLen > 1) propsVal += "</li>";
                 }
               }
               

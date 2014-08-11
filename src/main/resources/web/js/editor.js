@@ -2765,14 +2765,14 @@ VrtxEditor.prototype.htmlFacade = {
       if(val && val.length) {
         // If changes in Vortex properties and differs from TP/UIOWS-data
         if(editorDetectChangeFunc(sessionId, val, rawOrig[name], name === "vrtxResourcesText") && editorDetectChangeFunc(sessionId, val, rawOrig[name.split("vrtx")[1].toLowerCase()], name === "vrtxResourcesText")) {
-          // console.log("ADD " + name);
+          vrtxAdmin.log({msg: "ADD / CHANGE " + name + (typeof val === "string" ? " " + val : "")});
           rawPtr[name] = val;
           hasChanges = true;
         }
       } else {
         // If removed in Vortex properties
         if(rawOrig[name]) {
-          // console.log("DEL " + name);
+          vrtxAdmin.log({msg: "DEL " + name});
           delete rawPtr[name];
           hasChanges = true;
         }

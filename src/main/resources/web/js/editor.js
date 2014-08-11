@@ -1161,7 +1161,7 @@ function courseSchedule() {
   }
   url = baseUrl + "?action=course-schedule&mode=edit&t=" + (+new Date());
   // Debug: Local development
-  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   // Hide shortcut for saving working copy
   $("#vrtx-save-as-working-copy-shortcut, #saveWorkingCopyAction, #buttons-or-text").hide();

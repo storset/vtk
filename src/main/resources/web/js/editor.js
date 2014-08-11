@@ -1161,7 +1161,7 @@ function courseSchedule() {
   }
   url = baseUrl + "?action=course-schedule&mode=edit&t=" + (+new Date());
   // Debug: Local development
-//url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
+  url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   // Hide shortcut for saving working copy
   $("#vrtx-save-as-working-copy-shortcut, #saveWorkingCopyAction, #buttons-or-text").hide();
@@ -1221,7 +1221,8 @@ function courseSchedule() {
       "vrtxResources-title": "Tittel",
       "vrtxResources-url": "Lenke",
       "vrtxResourcesText": "Pensum",
-      "vrtxResourcesFixed": "Faste ressurser",
+      "vrtxResourcesFixed": "Faste ressurser for medisinstudiet",
+      "vrtxResourcesFixedInfo": "Ressurser som følger med fra semester til semester. Lesetilgang for brukere tilknyttet medisinstudiet",
       "vrtxResourcesFixedUploadAdminFolder": "Last opp flere / administrer",
       "vrtxResourcesFixedCreateFolder": "Lag mappe",
       "vrtxStatus": "Avlys"
@@ -1280,7 +1281,8 @@ function courseSchedule() {
       "vrtxResources-title": "Tittel",
       "vrtxResources-url": "Lenkje",
       "vrtxResourcesText": "Pensum",
-      "vrtxResourcesFixed": "Faste ressursar",
+      "vrtxResourcesFixed": "Faste ressursar for medisinstudiet",
+      "vrtxResourcesFixedInfo": "Ressursar som følgjer med frå semester til semester. Lesetilgang for brukarar knytta til medisinstudiet",
       "vrtxResourcesFixedUploadAdminFolder": "Last opp fleire / administrer",
       "vrtxResourcesFixedCreateFolder": "Lag mappe",
       "vrtxStatus": "Avlys"
@@ -1339,7 +1341,8 @@ function courseSchedule() {
       "vrtxResources-title": "Title",
       "vrtxResources-url": "Link",
       "vrtxResourcesText": "Curriculum",
-      "vrtxResourcesFixed": "Fixed resources",
+      "vrtxResourcesFixed": "Fixed resources for the professional studies in medicine",
+      "vrtxResourcesFixedInfo": "Permanent resources linked to the same activity every semester",
       "vrtxResourcesFixedUploadAdminFolder": "Upload more / manage",
       "vrtxResourcesFixedCreateFolder": "Create folder",
       "vrtxStatus": "Cancel"
@@ -2644,7 +2647,7 @@ VrtxEditor.prototype.htmlFacade = {
           break;
         case "json-fixed":
           if(fixedResourcesUrl) {
-            html += "<div class='vrtx-simple-html'><label>" + i18n[name] + "</label>";
+            html += "<div class='vrtx-simple-html'><label>" + i18n[name] + "<abbr tabindex='0' class='tooltips label-tooltips' title='" + i18n.vrtxResourcesFixedInfo + "'></abbr></label>";
             if(!val) { // Create
               var buttons = "<a class='vrtx-button create-fixed-resources-folder' id='create-fixed-resources-folder-" + idForLookup + "SID" + sessionId + "' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a>";
               html += buttons;

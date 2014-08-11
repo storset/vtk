@@ -1937,11 +1937,12 @@ function courseSchedule() {
           csRef.lastElm = content;
           
           csRef.enhanceSession(id, sessionId, content);
-        } else { // Update session and accordion title on close
+        }
+        if(ui.oldHeader[0]) { // Update session and accordion title on close
           var sessionId = ui.oldHeader[0].id;
           var sessionElm = $(ui.oldHeader).closest("div");
           var content = sessionElm.find("> .accordion-content");
-        
+          
           csRef.saveSession(content, id, sessionId);
         }
       };  

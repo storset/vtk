@@ -2627,7 +2627,7 @@ VrtxEditor.prototype.htmlFacade = {
           }
         case "string":
           val = (propsVal != "") ? propsVal : val;
-          val = (desc.multiple && val.length != undefined) ? val.join(",") : val;
+          val = (desc.multiple && typeof val === "object" && val.length != undefined) ? val.join(",") : val;
           if(desc.multiple) {
             multiples.push({
               name: name,

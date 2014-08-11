@@ -289,7 +289,10 @@ VrtxEditor.prototype.richtextEditorFacade = {
     } else {
       config.removePlugins = 'elementspath';
     }
-  
+    if (vrtxEditor.editorForm.hasClass("vrtx-course-schedule")) {
+      config.allowedContent = null;
+    }
+    
     //  if (opts.isFrontpageBox) {
     //	config.format_tags = 'p;h3;h4;h5;h6;pre;div';
     //  }
@@ -1018,7 +1021,6 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
   
   if(vrtxEdit.editorForm.hasClass("vrtx-course-schedule")) {
     editorCourseSchedule = new courseSchedule();
-    config.allowedContent = null;
   } else if (vrtxEdit.editorForm.hasClass("vrtx-hvordan-soke")) {
     vrtxEdit.accordionGroupedInit();
   } else if (vrtxEdit.editorForm.hasClass("vrtx-course-description")) {
@@ -2649,40 +2651,37 @@ VrtxEditor.prototype.htmlFacade = {
             if(!val) { // Create
               var buttons = "<a class='vrtx-button create-fixed-resources-folder' id='create-fixed-resources-folder-" + id + "SID" + sessionId + "' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a>";
             } else { // Admin
-              var buttons = "<a class='vrtx-button admin-fixed-resources-folder' href='" + val.folderUrl + "?vrtx=admin&displaymsg=yes'>" + i18n[name + "UploadAdminFolder"] + "</a>";
-              
               if(val.length != undefined) {
-                var totPropsLen = 0;
-                for(var i = 0, len = val.length; i < len; i++) {
-                  totPropsLen += val[i].resources.length;
-                }
                 for(var i = 0, len = val.length; i < len; i++) {
                   var propsArr = val[i].resources;
                   var propsLen = propsArr.length;
                   for(var j = 0; j < propsLen; j++) {
-                    if(totPropsLen > 1) propsVal += "<li>";
+                    if(propsLen > 1) propsVal += "<li>";
                     propsVal += "<a href='" + val[i].folderUrl + "/" + propsArr[j].name + "'>" + propsArr[j].title + "</a>";
-                    if(totPropsLen > 1) propsVal += "</li>";
-                   }
+                    if(propsLen > 1) propsVal += "</li>";
+                  }
+                  if(propsLen > 1) {
+                    propsVal = "<ul>" + propsVal + "</ul>";
+                  }
+                  var buttons = "<a class='vrtx-button admin-fixed-resources-folder' href='" + val[i].folderUrl + "?vrtx=admin&displaymsg=yes'>" + i18n[name + "UploadAdminFolder"] + "</a>";
+                  html += "<div class='preview-html'>" + propsVal + "</div>" + buttons;
                 }
               } else { // Object
                 var propsArr = val.resources;
                 var propsLen = propsArr.length;
-                var totPropsLen = propsLen;
                 for(var j = 0; j < propsLen; j++) {
                   if(propsLen > 1) propsVal += "<li>";
                   propsVal += "<a href='" + val.folderUrl + "/" + propsArr[j].name + "'>" + propsArr[j].title + "</a>";
                   if(propsLen > 1) propsVal += "</li>";
                 }
+                if(propsLen > 1) {
+                  propsVal = "<ul>" + propsVal + "</ul>";
+                }
+                var buttons = "<a class='vrtx-button admin-fixed-resources-folder' href='" + val.folderUrl + "?vrtx=admin&displaymsg=yes'>" + i18n[name + "UploadAdminFolder"] + "</a>";
+                html += "<div class='preview-html'>" + propsVal + "</div>" + buttons;
               }
-              
-              if(totPropsLen > 1) {
-                propsVal = "<ul>" + propsVal + "</ul>";
-              }
-              
-              html += "<div class='preview-html'>" + propsVal + "</div>";
             }
-            html += buttons + "</div>";
+            html += "</div>";
           }
           break;
         case "html":

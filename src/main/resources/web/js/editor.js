@@ -2627,7 +2627,7 @@ VrtxEditor.prototype.htmlFacade = {
           }
         case "string":
           val = (propsVal != "") ? propsVal : val;
-          val = (desc.multiple && typeof val === "array") ? val.join(",") : val;
+          val = (desc.multiple && val.length != undefined) ? val.join(",") : val;
           if(desc.multiple) {
             multiples.push({
               name: name,
@@ -2651,7 +2651,7 @@ VrtxEditor.prototype.htmlFacade = {
             } else { // Admin
               var buttons = "<a class='vrtx-button admin-fixed-resources-folder' href='" + val.folderUrl + "?vrtx=admin&displaymsg=yes'>" + i18n[name + "UploadAdminFolder"] + "</a>";
               
-              if(typeof val === "array") {
+              if(val.length != undefined) {
                 var totPropsLen = 0;
                 for(var i = 0, len = val.length; i < len; i++) {
                   totPropsLen += val[i].resources.length;

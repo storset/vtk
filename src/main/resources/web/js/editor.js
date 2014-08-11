@@ -1602,11 +1602,9 @@ function courseSchedule() {
         for(var j = 0, len = dt.sequences.length; j < len; j++) {
           var sequence = dt.sequences[j];
           var fixedResources = sequence.vrtxResourcesFixed;
-          
-          // XXX FIX! See VTK-3673
-//          if(fixedResources) {
-//            sequences[sequence.id] = fixedResources;
-//          }
+          if(fixedResources) {           
+            sequences[sequence.id] = fixedResources;
+          }
           sessions = sessions.concat(sequence.sessions);
         }
         if(!skipTier || (dtShort != "for" || (dtShort === "for" && (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== dtShort)))) {
@@ -2653,15 +2651,35 @@ VrtxEditor.prototype.htmlFacade = {
             } else { // Admin
               var buttons = "<a class='vrtx-button admin-fixed-resources-folder' href='" + val.folderUrl + "?vrtx=admin&displaymsg=yes'>" + i18n[name + "UploadAdminFolder"] + "</a>";
               
-              var propsArr = val.resources;
-              var propsLen = propsArr.length;
-              if(propsLen > 1) propsVal += "<ul>";
-              for(var j = 0; j < propsLen; j++) {
-                if(propsLen > 1) propsVal += "<li>";
-                propsVal += "<a href='" + val.folderUrl + propsArr[j].name + "'>" + propsArr[j].title + "</a>";
-                if(propsLen > 1) propsVal += "</li>";
+              if(typeof val === "object") {
+                var propsArr = val.resources;
+                var propsLen = propsArr.length;
+                var totPropsLen = propsLen;
+                for(var j = 0; j < propsLen; j++) {
+                  if(propsLen > 1) propsVal += "<li>";
+                  propsVal += "<a href='" + val.folderUrl + "/" + propsArr[j].name + "'>" + propsArr[j].title + "</a>";
+                  if(propsLen > 1) propsVal += "</li>";
+                }
+              } else {
+                var totPropsLen = 0;
+                for(var i = 0, len = val.length; i < len; i++) {
+                  totPropsLen += val[i].resources.length;
+                }
+                for(var i = 0, len = val.length; i < len; i++) {
+                  var propsArr = val[i].resources;
+                  var propsLen = propsArr.length;
+                  for(var j = 0; j < propsLen; j++) {
+                    if(totPropsLen > 1) propsVal += "<li>";
+                    propsVal += "<a href='" + val[i].folderUrl + "/" + propsArr[j].name + "'>" + propsArr[j].title + "</a>";
+                    if(totPropsLen > 1) propsVal += "</li>";
+                   }
+                }
               }
-              if(propsLen > 1) propsVal += "</ul>";
+              
+              if(totPropsLen > 1) {
+                propsVal = "<ul>" + propsVal + "</ul>";
+              }
+              
               html += "<div class='preview-html'>" + propsVal + "</div>";
             }
             html += buttons + "</div>";

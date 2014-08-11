@@ -2650,6 +2650,7 @@ VrtxEditor.prototype.htmlFacade = {
             html += "<div class='vrtx-simple-html'><label>" + i18n[name] + "</label>";
             if(!val) { // Create
               var buttons = "<a class='vrtx-button create-fixed-resources-folder' id='create-fixed-resources-folder-" + id + "SID" + sessionId + "' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a>";
+              html += buttons;
             } else { // Admin
               if(val.length != undefined) {
                 for(var i = 0, len = val.length; i < len; i++) {

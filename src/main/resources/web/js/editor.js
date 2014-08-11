@@ -1942,10 +1942,6 @@ function courseSchedule() {
           var sessionElm = $(ui.oldHeader).closest("div");
           var content = sessionElm.find("> .accordion-content");
         
-          csRef.lastId = "";
-          csRef.lastSessionId = "";
-          csRef.lastElm = null;
-        
           csRef.saveSession(content, id, sessionId);
         }
       };  

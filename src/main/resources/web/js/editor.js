@@ -1153,6 +1153,7 @@ VrtxEditor.prototype.showHideSelect = function showHideSelect(select, init) {
 
 \*-------------------------------------------------------------------*/
 
+// TODO: move to own file.
 function courseSchedule() {
 
   var baseUrl = location.protocol + "//" + location.host + location.pathname;

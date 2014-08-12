@@ -276,9 +276,9 @@ VrtxEditor.prototype.richtextEditorFacade = {
       config.filebrowserImageBrowseUrl = opts.imageBrowseUrl;
       config.filebrowserFlashBrowseUrl = opts.flashBrowseUrl;
       if(opts.requiresStudyRefPlugin) {
-        config.extraPlugins = 'mediaembed,studyreferencecomponent,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal';
+        config.extraPlugins = 'mediaembed,studyreferencecomponent,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal,lineutils,widget,image2';
       } else {
-        config.extraPlugins = 'mediaembed,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal';
+        config.extraPlugins = 'mediaembed,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal,lineutils,widget,image2';
       }
       config.stylesSet = this.divContainerStylesSet;
       if (opts.isSimple) { // XHTML
@@ -289,7 +289,10 @@ VrtxEditor.prototype.richtextEditorFacade = {
     } else {
       config.removePlugins = 'elementspath';
     }
-  
+    if (vrtxEditor.editorForm.hasClass("vrtx-course-schedule")) {
+      config.allowedContent = null;
+    }
+    
     //  if (opts.isFrontpageBox) {
     //	config.format_tags = 'p;h3;h4;h5;h6;pre;div';
     //  }
@@ -1218,7 +1221,8 @@ function courseSchedule() {
       "vrtxResources-title": "Tittel",
       "vrtxResources-url": "Lenke",
       "vrtxResourcesText": "Pensum",
-      "vrtxResourcesFixed": "Faste ressurser",
+      "vrtxResourcesFixed": "Faste ressurser for medisinstudiet",
+      "vrtxResourcesFixedInfo": "Ressurser som følger med fra semester til semester. Lesetilgang for brukere tilknyttet medisinstudiet",
       "vrtxResourcesFixedUploadAdminFolder": "Last opp flere / administrer",
       "vrtxResourcesFixedCreateFolder": "Lag mappe",
       "vrtxStatus": "Avlys"
@@ -1277,7 +1281,8 @@ function courseSchedule() {
       "vrtxResources-title": "Tittel",
       "vrtxResources-url": "Lenkje",
       "vrtxResourcesText": "Pensum",
-      "vrtxResourcesFixed": "Faste ressursar",
+      "vrtxResourcesFixed": "Faste ressursar for medisinstudiet",
+      "vrtxResourcesFixedInfo": "Ressursar som følgjer med frå semester til semester. Lesetilgang for brukarar knytta til medisinstudiet",
       "vrtxResourcesFixedUploadAdminFolder": "Last opp fleire / administrer",
       "vrtxResourcesFixedCreateFolder": "Lag mappe",
       "vrtxStatus": "Avlys"
@@ -1336,7 +1341,8 @@ function courseSchedule() {
       "vrtxResources-title": "Title",
       "vrtxResources-url": "Link",
       "vrtxResourcesText": "Curriculum",
-      "vrtxResourcesFixed": "Fixed resources",
+      "vrtxResourcesFixed": "Fixed resources for the professional studies in medicine",
+      "vrtxResourcesFixedInfo": "Permanent resources linked to the same activity every semester",
       "vrtxResourcesFixedUploadAdminFolder": "Upload more / manage",
       "vrtxResourcesFixedCreateFolder": "Create folder",
       "vrtxStatus": "Cancel"
@@ -1511,7 +1517,7 @@ function courseSchedule() {
                        (prevId ? "<a class='prev' href='" + window.location.protocol + "//" + window.location.host + window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + prevId + "'>" + this.i18n.prev + "</a>" : "") +
                        (nextId ? "<a class='next' href='" + window.location.protocol + "//" + window.location.host + window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + nextId + "'>" + this.i18n.next + "</a>" : "") +
                        ((prevId || nextId) ? "</div>" : ""),
-        sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, session, this.retrievedScheduleData.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
+        sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, (skipTier ? (dtShort != "for" ? id : dtShort) : id), session, this.retrievedScheduleData.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
 
      this.sessionsLookup[skipTier ? (dtShort != "for" ? id : dtShort) : id][sessionId] = {
        rawPtr: session,
@@ -1601,7 +1607,7 @@ function courseSchedule() {
         for(var j = 0, len = dt.sequences.length; j < len; j++) {
           var sequence = dt.sequences[j];
           var fixedResources = sequence.vrtxResourcesFixed;
-          if(fixedResources) {
+          if(fixedResources) {           
             sequences[sequence.id] = fixedResources;
           }
           sessions = sessions.concat(sequence.sessions);
@@ -1712,10 +1718,8 @@ function courseSchedule() {
     var rawOrig = sessionLookup.rawOrig;
     var rawPtr = sessionLookup.rawPtr;
     var descsPtr = sessionLookup.descsPtr;
-    
-    vrtxEditor.htmlFacade.htmlToJson(sessionElms, descsPtr, rawOrig, rawPtr);
 
-    sessionLookup.hasChanges = editorDetectChange(rawPtr, rawOrig);
+    sessionLookup.hasChanges = vrtxEditor.htmlFacade.htmlToJson(sessionElms, sessionId, descsPtr, rawOrig, rawPtr);
   };
   this.saved = function(isSaveView) {
     for(var type in this.sessionsLookup) {
@@ -1936,15 +1940,12 @@ function courseSchedule() {
           csRef.lastElm = content;
           
           csRef.enhanceSession(id, sessionId, content);
-        } else { // Update session and accordion title on close
+        }
+        if(ui.oldHeader[0]) { // Update session and accordion title on close
           var sessionId = ui.oldHeader[0].id;
           var sessionElm = $(ui.oldHeader).closest("div");
           var content = sessionElm.find("> .accordion-content");
-        
-          csRef.lastId = "";
-          csRef.lastSessionId = "";
-          csRef.lastElm = null;
-        
+          
           csRef.saveSession(content, id, sessionId);
         }
       };  
@@ -2028,12 +2029,12 @@ function courseSchedule() {
   });
 }
 
-function editorDetectChange(o1, o2) {
+function editorDetectChange(sessionId, o1, o2, isCK) { // TODO: use description to check for CK (if textarea)
   if(typeof o1 === "object" && typeof o2 === "object") {
     if(o1.length) { // Array
       if(o1.length !== o2.length) return true;
       for(var i = 0, len = o1.length; i < len; i++) {
-        if(editorDetectChange(o1[i], o2[i])) return true;
+        if(editorDetectChange(sessionId, o1[i], o2[i])) return true;
       }
     } else {
       var propCount2 = 0;
@@ -2042,13 +2043,21 @@ function editorDetectChange(o1, o2) {
       }
       var propCount1 = 0;
       for(prop1 in o1) {
-        if(editorDetectChange(o1[prop1], o2[prop1])) return true;
+        if(editorDetectChange(sessionId, o1[prop1], o2[prop1], prop1 === "vrtxResourcesText")) return true;
         propCount1++;
       }
       if(propCount1 !== propCount2) return true;
     }
   } else if(typeof o1 === "string" && typeof o2 === "string") {
-    if(o1 !== o2) return true;
+    if(typeof isCK === "boolean" && isCK) {
+      var rteFacade = vrtxEditor.richtextEditorFacade;
+      var ckInstance = rteFacade.getInstance("vrtxResourcesText-" + sessionId);
+      if (ckInstance && rteFacade.isChanged(ckInstance) && rteFacade.getValue(ckInstance) !== "") {
+        return true;
+      }
+    } else {
+      if(o1 !== o2) return true;
+    }
   } else if(typeof o1 === "number" && typeof o2 === "number") {
     if(o1 !== o2) return true;
   } else if(typeof o1 !== typeof o2) {
@@ -2578,7 +2587,7 @@ VrtxEditor.prototype.htmlFacade = {
   /* 
    * Turn a block of JSON into HTML
    */
-  jsonToHtml: function(id, sessionId, session, fixedResourcesUrl, fixedResources, descs, i18n) {
+  jsonToHtml: function(id, sessionId, idForLookup, session, fixedResourcesUrl, fixedResources, descs, i18n) {
     var html = "";
     var multiples = [];
     var rtEditors = [];
@@ -2620,7 +2629,7 @@ VrtxEditor.prototype.htmlFacade = {
           }
         case "string":
           val = (propsVal != "") ? propsVal : val;
-          val = (desc.multiple && typeof val === "array") ? val.join(",") : val;
+          val = (desc.multiple && typeof val === "object" && val.length != undefined) ? val.join(",") : val;
           if(desc.multiple) {
             multiples.push({
               name: name,
@@ -2638,24 +2647,42 @@ VrtxEditor.prototype.htmlFacade = {
           break;
         case "json-fixed":
           if(fixedResourcesUrl) {
-            html += "<div class='vrtx-simple-html'><label>" + i18n[name] + "</label>";
+            html += "<div class='vrtx-simple-html'><label>" + i18n[name] + "<abbr tabindex='0' class='tooltips label-tooltips' title='" + i18n.vrtxResourcesFixedInfo + "'></abbr></label>";
             if(!val) { // Create
-              var buttons = "<a class='vrtx-button create-fixed-resources-folder' id='create-fixed-resources-folder-" + id + "SID" + sessionId + "' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a>";
+              var buttons = "<a class='vrtx-button create-fixed-resources-folder' id='create-fixed-resources-folder-" + idForLookup + "SID" + sessionId + "' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a>";
+              html += buttons;
             } else { // Admin
-              var buttons = "<a class='vrtx-button admin-fixed-resources-folder' href='" + val.folderUrl + "?vrtx=admin&displaymsg=yes'>" + i18n[name + "UploadAdminFolder"] + "</a>";
-              
-              var propsArr = val.resources;
-              var propsLen = propsArr.length;
-              if(propsLen > 1) propsVal += "<ul>";
-              for(var j = 0; j < propsLen; j++) {
-                if(propsLen > 1) propsVal += "<li>";
-                propsVal += "<a href='" + val.folderUrl + propsArr[j].name + "'>" + propsArr[j].title + "</a>";
-                if(propsLen > 1) propsVal += "</li>";
+              if(val.length != undefined) {
+                for(var i = 0, len = val.length; i < len; i++) {
+                  var propsArr = val[i].resources;
+                  var propsLen = propsArr.length;
+                  for(var j = 0; j < propsLen; j++) {
+                    if(propsLen > 1) propsVal += "<li>";
+                    propsVal += "<a href='" + val[i].folderUrl + "/" + propsArr[j].name + "'>" + propsArr[j].title + "</a>";
+                    if(propsLen > 1) propsVal += "</li>";
+                  }
+                  if(propsLen > 1) {
+                    propsVal = "<ul>" + propsVal + "</ul>";
+                  }
+                  var buttons = "<a class='vrtx-button admin-fixed-resources-folder' href='" + val[i].folderUrl + "?vrtx=admin&displaymsg=yes'>" + i18n[name + "UploadAdminFolder"] + "</a>";
+                  html += "<div class='preview-html'>" + propsVal + "</div>" + buttons;
+                }
+              } else { // Object
+                var propsArr = val.resources;
+                var propsLen = propsArr.length;
+                for(var j = 0; j < propsLen; j++) {
+                  if(propsLen > 1) propsVal += "<li>";
+                  propsVal += "<a href='" + val.folderUrl + "/" + propsArr[j].name + "'>" + propsArr[j].title + "</a>";
+                  if(propsLen > 1) propsVal += "</li>";
+                }
+                if(propsLen > 1) {
+                  propsVal = "<ul>" + propsVal + "</ul>";
+                }
+                var buttons = "<a class='vrtx-button admin-fixed-resources-folder' href='" + val.folderUrl + "?vrtx=admin&displaymsg=yes'>" + i18n[name + "UploadAdminFolder"] + "</a>";
+                html += "<div class='preview-html'>" + propsVal + "</div>" + buttons;
               }
-              if(propsLen > 1) propsVal += "</ul>";
-              html += "<div class='preview-html'>" + propsVal + "</div>";
             }
-            html += buttons + "</div>";
+            html += "</div>";
           }
           break;
         case "html":
@@ -2689,8 +2716,9 @@ VrtxEditor.prototype.htmlFacade = {
  /* 
   * Turn a block of HTML/DOM into JSON
   */
-  htmlToJson: function (sessionElms, descs, rawOrig, rawPtr) {
+  htmlToJson: function (sessionElms, sessionId, descs, rawOrig, rawPtr) {
     var vrtxEdit = vrtxEditor;
+    var hasChanges = false;
     var editorDetectChangeFunc = editorDetectChange;
     for(var name in descs) {
       var desc = descs[name],
@@ -2736,12 +2764,25 @@ VrtxEditor.prototype.htmlFacade = {
           val = arrProps;
         }
       }
-      if(val && val.length && editorDetectChangeFunc(val, rawOrig[name.split("vrtx")[1].toLowerCase()])) {
-        rawPtr[name] = val;
+
+      // Changes in Vortex properties
+      if(val && val.length) {
+        // If changes in Vortex properties and differs from TP/UIOWS-data
+        if(editorDetectChangeFunc(sessionId, val, rawOrig[name], name === "vrtxResourcesText") && editorDetectChangeFunc(sessionId, val, rawOrig[name.split("vrtx")[1].toLowerCase()], name === "vrtxResourcesText")) {
+          vrtxAdmin.log({msg: "ADD / CHANGE " + name + (typeof val === "string" ? " " + val : "")});
+          rawPtr[name] = val;
+          hasChanges = true;
+        }
       } else {
-        delete rawPtr[name];
+        // If removed in Vortex properties
+        if(rawOrig[name]) {
+          vrtxAdmin.log({msg: "DEL " + name});
+          delete rawPtr[name];
+          hasChanges = true;
+        }
       }
     }
+    return hasChanges;
   },
   /* 
    * Interaction

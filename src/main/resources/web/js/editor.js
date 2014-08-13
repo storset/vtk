@@ -1769,7 +1769,7 @@ function courseSchedule() {
     sessionId = sessionId.split("SID")[1];
     var session = cs.sessionsLookup[id][sessionId];
     
-    var sessionDisciplines = session.rawPtr.discipline;
+    var sessionDisciplines = session.rawPtr.disciplines;
     var sessionTitle = session.rawPtr.vrtxTitle || session.rawPtr.title;
     var sequenceId = session.sequenceId;
     

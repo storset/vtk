@@ -1665,7 +1665,7 @@ function scrollToElm(movedElm) {
  */
 VrtxEditor.prototype.htmlFacade = {
   /* 
-   * Turn a block of JSON into HTML
+   * Turn a block of JSON into HTML (Only working for Schedule per. 14.08.2014)
    */
   jsonToHtml: function(id, sessionId, idForLookup, session, fixedResourcesUrl, fixedResources, descs, i18n) {
     var html = "";
@@ -1794,7 +1794,7 @@ VrtxEditor.prototype.htmlFacade = {
     return { html: html, multiples: multiples, rtEditors: rtEditors };
   },
  /* 
-  * Turn a block of HTML/DOM into JSON
+  * Turn a block of HTML/DOM into JSON (Only working for Schedule per. 14.08.2014)
   */
   htmlToJson: function (sessionElms, sessionId, descs, rawOrig, rawPtr) {
     var vrtxEdit = vrtxEditor;

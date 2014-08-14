@@ -26,6 +26,7 @@ $(document).ready(function() {
       e.preventDefault();
     });
   }
+  
   // Show hidden more resources
   var resourcesMoreHideVisible = function() {
     var visible = $(".course-schedule-table-resources-after.visible");

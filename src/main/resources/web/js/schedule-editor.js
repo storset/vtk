@@ -66,7 +66,7 @@ function courseSchedule() {
       "cancel": "Avbryt",
 
       "vrtxTitle": "Tittel",
-      "vrtxStaff": "Forelesere",
+      "vrtxStaff": "Forelesere (fyll inn brukernavn)",
       "vrtxStaffExternal": "Eksterne forelesere",
       "vrtxStaffExternal-name": "Navn",
       "vrtxStaffExternal-url": "Lenke",
@@ -126,7 +126,7 @@ function courseSchedule() {
       "cancel": "Avbryt",
       
       "vrtxTitle": "Tittel",
-      "vrtxStaff": "Forelesere",
+      "vrtxStaff": "Forelesere (fyll inn brukernamn)",
       "vrtxStaffExternal": "Eksterne forelesere",
       "vrtxStaffExternal-name": "Namn",
       "vrtxStaffExternal-url": "Lenkje",
@@ -186,7 +186,7 @@ function courseSchedule() {
       "cancel": "Cancel",
       
       "vrtxTitle": "Title",
-      "vrtxStaff": "Staff",
+      "vrtxStaff": "Staff (enter username)",
       "vrtxStaffExternal": "External staff",
       "vrtxStaffExternal-name": "Name",
       "vrtxStaffExternal-url": "Link",

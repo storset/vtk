@@ -10,7 +10,6 @@
  *  5.  Validation and change detection
  *  6.  Image preview
  *  7.  Enhancements
- *  7.5 Course schedule editor
  *  8.  Multiple fields and boxes
  *  9.  Accordions
  *  10. Send to approval

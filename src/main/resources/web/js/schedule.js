@@ -7,24 +7,26 @@ $(document).ready(function() {
   var activitiesElm = $("#activities");
 
   // If user can write and is not locked
-  if(canEdit === "true") {
+  if(canEdit === "true" || canEditLocked === "true") {
     activitiesElm.addClass("can-edit");
     // Toggle display on focus of row
     activitiesElm.on("focusin focusout", "tbody tr", function(e) {
       $(this)[e.type === "focusin" ? "addClass" : "removeClass"]("visible");
     });
-    // Open edit window for session on click
-    activitiesElm.on("click", "a.course-schedule-table-edit-link", function(e) {
-      var row = $(this).closest("tr");
-      var idRow = row[0].id;
-      var editUrl = window.location.pathname;
-      if(/\/$/.test(editUrl)) {
-        editUrl += "index.html";
-      }
-      location.href = editUrl + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + encodeURIComponent(idRow);
-      e.stopPropagation();
-      e.preventDefault();
-    });
+    if(canEdit === "true") {
+      // Open edit window for session on click
+      activitiesElm.on("click", "a.course-schedule-table-edit-link", function(e) {
+        var row = $(this).closest("tr");
+        var idRow = row[0].id;
+        var editUrl = window.location.pathname;
+        if(/\/$/.test(editUrl)) {
+          editUrl += "index.html";
+        }
+        location.href = editUrl + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + encodeURIComponent(idRow);
+        e.stopPropagation();
+        e.preventDefault();
+      });
+    }
   }
   
   // Show hidden more resources

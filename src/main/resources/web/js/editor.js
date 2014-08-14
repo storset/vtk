@@ -276,9 +276,9 @@ VrtxEditor.prototype.richtextEditorFacade = {
       config.filebrowserImageBrowseUrl = opts.imageBrowseUrl;
       config.filebrowserFlashBrowseUrl = opts.flashBrowseUrl;
       if(opts.requiresStudyRefPlugin) {
-        config.extraPlugins = 'mediaembed,studyreferencecomponent,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal,lineutils,widget,image2';
+        config.extraPlugins = 'mediaembed,studyreferencecomponent,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal';
       } else {
-        config.extraPlugins = 'mediaembed,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal,lineutils,widget,image2';
+        config.extraPlugins = 'mediaembed,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal';
       }
       config.stylesSet = this.divContainerStylesSet;
       if (opts.isSimple) { // XHTML
@@ -289,9 +289,9 @@ VrtxEditor.prototype.richtextEditorFacade = {
     } else {
       config.removePlugins = 'elementspath';
     }
-    if (vrtxEditor.editorForm.hasClass("vrtx-course-schedule")) {
-      config.allowedContent = null;
-    }
+//    if (vrtxEditor.editorForm.hasClass("vrtx-course-schedule")) {
+//      config.allowedContent = null;
+//    }
     
     //  if (opts.isFrontpageBox) {
     //	config.format_tags = 'p;h3;h4;h5;h6;pre;div';

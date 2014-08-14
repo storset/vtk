@@ -10,6 +10,9 @@
 <head>
   <title>Edit structured resource</title>
   
+  <#if form.getResource().getType().getName()?exists && form.getResource().getType().getName() == "course-schedule">
+    <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/schedule-editor.js"></script> 
+  </#if>
   <@editor.addCkScripts />
   <@vrtxJSONJavascript.script />
   
@@ -96,7 +99,6 @@
   </#if>
 </head>
 <body id="vrtx-editor">
-
   <#assign locale = springMacroRequestContext.getLocale() />
   
   <#assign contentLocale = form.defaultLocale />

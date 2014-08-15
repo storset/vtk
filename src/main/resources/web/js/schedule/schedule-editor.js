@@ -476,7 +476,7 @@ function courseSchedule() {
           success: function (results, status, resp) {
             linkElm.hide();
             $("<a class='vrtx-button admin-fixed-resources-folder' href='" + collectionUrl + "?vrtx=admin&displaymsg=yes'>" + cs.i18n["vrtxResourcesFixedUploadAdminFolder"] + "</a>").insertAfter(linkElm);
-            var fixedResourcesWindow = openPopup(collectionUrl + "?vrtx=admin&displaymsg=yes", 1000, 600, "adminFixedResources");
+            var fixedResourcesWindow = openPopupScrollable(collectionUrl + "?vrtx=admin&displaymsg=yes", 1000, 600, "adminFixedResources");
           },
           error: function (xhr, textStatus, errMsg) {
             if(xhr.status === 500) { // XXX: assumption that already created, as it can take time before folder created is coming through
@@ -492,7 +492,7 @@ function courseSchedule() {
     e.stopPropagation();
   });
   contents.on("click", ".admin-fixed-resources-folder", function(e) {
-    var fixedResourcesWindow = openPopup(this.href, 1000, 600, "adminFixedResources");
+    var fixedResourcesWindow = openPopupScrollable(this.href, 1000, 600, "adminFixedResources");
     e.preventDefault();
     e.stopPropagation();
   });

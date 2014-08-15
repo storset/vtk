@@ -737,6 +737,44 @@ function unsavedChangesInEditorMessage() {
   }
 }
 
+/* Detect changes between JSON-objects (Only working for Schedule per. 15.08.2014) */
+function editorDetectChange(sessionId, o1, o2, isCK) {
+  if(typeof o1 === "object" && typeof o2 === "object") {
+    if(o1.length) { // Array
+      if(o1.length !== o2.length) return true;
+      for(var i = 0, len = o1.length; i < len; i++) {
+        if(editorDetectChange(sessionId, o1[i], o2[i])) return true;
+      }
+    } else {
+      var propCount2 = 0;
+      for(prop2 in o2) {
+        propCount2++;
+      }
+      var propCount1 = 0;
+      for(prop1 in o1) {
+        if(editorDetectChange(sessionId, o1[prop1], o2[prop1], prop1 === "vrtxResourcesText")) return true;
+        propCount1++;
+      }
+      if(propCount1 !== propCount2) return true;
+    }
+  } else if(typeof o1 === "string" && typeof o2 === "string") {
+    if(typeof isCK === "boolean" && isCK) { // TODO: use description to check for CK (if textarea)
+      var rteFacade = vrtxEditor.richtextEditorFacade;
+      var ckInstance = rteFacade.getInstance("vrtxResourcesText-" + sessionId);
+      if (ckInstance && rteFacade.isChanged(ckInstance) && rteFacade.getValue(ckInstance) !== "") {
+        return true;
+      }
+    } else {
+      if(o1 !== o2) return true;
+    }
+  } else if(typeof o1 === "number" && typeof o2 === "number") {
+    if(o1 !== o2) return true;
+  } else if(typeof o1 !== typeof o2) {
+    return true;
+  }
+  return false;
+}
+
 /* Validate length for 2048 bytes fields */
 
 function validTextLengthsInEditor(isOldEditor) {

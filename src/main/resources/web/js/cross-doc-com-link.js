@@ -10,19 +10,19 @@ function CrossDocComLink() {
   this.predefinedCommands = null;
 }
 
-/* POST BACK TO SOURCE */
+/* POST back to source */
 CrossDocComLink.prototype.postCmd = function postCmd(cmdParams, source) {
   if(this.hasPostMessage && source !== "") {
     source.postMessage(cmdParams, this.postOrigin);
   }
 };
-/* POST TO PARENT */
+/* POST to parent */
 CrossDocComLink.prototype.postCmdToParent = function postCmdToParent(cmdParams) {
   if(this.hasPostMessage && parent) {
     parent.postMessage(cmdParams, this.postOrigin);
   }
 };
-/* POST TO IFRAME */
+/* POST to iframe */
 CrossDocComLink.prototype.postCmdToIframe = function postCmdToParent(iframeElm, cmdParams) {
   if(this.hasPostMessage && iframeElm && iframeElm.contentWindow ) {
     iframeElm.contentWindow.postMessage(cmdParams, this.postOrigin);
@@ -36,7 +36,8 @@ CrossDocComLink.prototype.setUpReceiveDataHandler = function setUpReceiveDataHan
   $(window).on("message", function(e) {
     if(e.originalEvent) e = e.originalEvent;
     
-    /* TODO: Need to check that origin is same domain here - although we validate the data and don't do eval etc. */
+    /* TODO: Need to check that origin is same domain here:
+     * Although we validate the data (string and predefined commands) and don't do eval etc. */
  
     var receivedData = e.data;
     var source = e.source;

@@ -31,22 +31,30 @@
 
 package org.vortikal.repository.index.mapping;
 
+import com.ibm.icu.text.Collator;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import org.apache.lucene.collation.ICUCollationAttributeFactory;
 
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.IntField;
 import org.apache.lucene.document.LongField;
 import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
+
+
+import org.apache.lucene.index.FieldInfo;
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.NumericUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
@@ -63,7 +71,7 @@ import org.vortikal.util.cache.ReusableObjectCache;
  * 
  * TODO missing JavaDoc for most methods
  */
-public class Field4ValueMapper {
+public class Field4ValueMapper implements InitializingBean {
     
     // Note that order (complex towards simpler format) is important here.
     public static final String[] SUPPORTED_DATE_FORMATS = {
@@ -72,10 +80,18 @@ public class Field4ValueMapper {
                                                 "yyyy-MM-dd HH:mm",
                                                 "yyyy-MM-dd HH",
                                                 "yyyy-MM-dd" };
+    
+    private static final FieldType STRING_SORT_FIELDTYPE = new FieldType();
 
     private static final ReusableObjectCache<SimpleDateFormat>[] CACHED_DATE_FORMAT_PARSERS;
 
     static {
+        STRING_SORT_FIELDTYPE.setIndexed(true);
+        STRING_SORT_FIELDTYPE.setOmitNorms(true);
+        STRING_SORT_FIELDTYPE.setIndexOptions(FieldInfo.IndexOptions.DOCS_ONLY);
+        STRING_SORT_FIELDTYPE.setTokenized(true);
+        STRING_SORT_FIELDTYPE.freeze();
+
         // Create parser caches for each date format (maximum capacity of 3
         // instances per format)
         CACHED_DATE_FORMAT_PARSERS = new ReusableObjectCache[SUPPORTED_DATE_FORMATS.length];
@@ -84,9 +100,20 @@ public class Field4ValueMapper {
             CACHED_DATE_FORMAT_PARSERS[i] = new ReusableObjectArrayStackCache<SimpleDateFormat>(3);
         }
     }
-
-    private ValueFactory valueFactory;
     
+    private ValueFactory valueFactory;
+    private ICUCollationAttributeFactory caFactory;
+    private Locale locale;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        if (locale == null) {
+            locale = Locale.getDefault();
+        }
+        
+        caFactory = new ICUCollationAttributeFactory(Collator.getInstance(locale));
+    }
+            
     /**
      * Specify indexing characteristics for field.
      * 
@@ -105,6 +132,36 @@ public class Field4ValueMapper {
         STORED
     }
     
+    /**
+     * Create special field used only for sorting string values in a localized
+     * fashion. The field value will be encoded as a collation key using the
+     * configured default locale.
+     * 
+     * @param name the field name
+     * @param value the field value, a string.
+     * @return 
+     */
+    public Field makeSortField(String name, String value) {
+        if (caFactory != null) {
+            // Use a "token stream", even though we only have one value. This is due to
+            // Lucene API not allowing creation of raw binary indexable terms without going
+            // through this path.
+            StringArrayTokenStream ts = new StringArrayTokenStream(caFactory, value);
+            return new Field(name, ts, STRING_SORT_FIELDTYPE);
+        }
+        
+        // No configured locale
+        return new StringField(name, value, Field.Store.NO);
+    }
+
+    /**
+     * Create fields according to spec for a list of property values.
+     * 
+     * @param name
+     * @param spec
+     * @param values
+     * @return 
+     */
     public List<Field> makeFields(String name, FieldSpec spec, Value... values) {
         List<Field> fields = new ArrayList<Field>(values.length*2);
         for (int i=0; i<values.length; i++) {
@@ -113,6 +170,15 @@ public class Field4ValueMapper {
         return fields;
     }
     
+    /**
+     * Create fields according to spec for a list of value objects having the
+     * given value type.
+     * 
+     * @param name
+     * @param spec
+     * @param values
+     * @return 
+     */
     public List<Field> makeFields(String name, FieldSpec spec, Type type, Object... values) {
         List<Field> fields = new ArrayList<Field>(values.length*2);
         for (int i=0; i<values.length; i++) {
@@ -164,7 +230,7 @@ public class Field4ValueMapper {
             String stringValue = (String)value;
             if (isIndex(spec)) {
                 if (isLowercase(spec)) {
-                    stringValue = stringValue.toLowerCase();
+                    stringValue = lowercase(stringValue);
                 }
                 fields.add(new StringField(fieldName, stringValue, Field.Store.NO));
             }
@@ -218,6 +284,17 @@ public class Field4ValueMapper {
         return spec == FieldSpec.INDEXED_LOWERCASE;
     }
     
+    /**
+     * Create a (possibly encoded) query term for the given value object with the
+     * given value type, optionally lowercasing. (Lowercasing is only applicable
+     * to string value types.)
+     * 
+     * @param fieldName
+     * @param value
+     * @param type
+     * @param lowercase
+     * @return 
+     */
     public Term queryTerm(String fieldName, Object value, Type type, boolean lowercase) {
         switch (type) {
         case STRING:
@@ -227,7 +304,7 @@ public class Field4ValueMapper {
         case BOOLEAN:
         case PRINCIPAL:
             if (lowercase) {
-                return new Term(fieldName, value.toString().toLowerCase());
+                return new Term(fieldName, lowercase(value.toString()));
             }
             return new Term(fieldName, value.toString());
 
@@ -246,7 +323,7 @@ public class Field4ValueMapper {
         }
         
     }
-
+    
     /**
      * Parse object as date. If object is a <code>Long</code>, value is interpreted
      * as number of milliseconds since epoch, otherwise an attempt to parse 
@@ -349,6 +426,15 @@ public class Field4ValueMapper {
         return bytes;
     }
     
+    // Lower case using default locale
+    private String lowercase(String value) {
+        if (locale != null){
+            return value.toLowerCase(locale);
+        } 
+        
+        return value.toLowerCase();
+    }
+    
     public Value[] valuesFromFields(Type type, List<IndexableField> fields) {
         Value[] values = new Value[fields.size()];
         for (int i=0; i<fields.size(); i++) {
@@ -356,6 +442,7 @@ public class Field4ValueMapper {
         }
         return values;
     }
+    
     public Value valueFromField(Type type, IndexableField f) {
         switch (type) {
         case STRING:
@@ -423,5 +510,18 @@ public class Field4ValueMapper {
     @Required
     public void setValueFactory(ValueFactory valueFactory) {
         this.valueFactory = valueFactory;
+    }
+
+    /**
+     * Set locale to use for locale-specific sorting and lowercasing of
+     * string values as index terms. When set, specialized sorting fields will
+     * be encoded as collation keys at indexing time.
+     * 
+     * @param locale the locale instance to set.
+     * 
+     * Default value: <code>Locale.getDefault()</code>.
+     */
+    public void setLocale(Locale locale) {
+        this.locale = locale;
     }
 }

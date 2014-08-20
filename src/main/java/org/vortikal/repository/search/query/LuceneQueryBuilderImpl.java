@@ -422,7 +422,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         // Avoid using cache-wrapper for FieldValueFilter, since that can
         // lead to memory leaks in Lucene.
 
-        bf.add(new FieldValueFilter(FieldNames.propertyFieldName(this.unpublishedCollectionPropDef, false), true),
+        bf.add(new FieldValueFilter(FieldNames.propertyFieldName(this.unpublishedCollectionPropDef, false), true), 
                 BooleanClause.Occur.MUST);
 
         return bf;

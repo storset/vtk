@@ -164,7 +164,7 @@ class LazyMappedPropertySet implements PropertySet {
         }
 
         // Lucene guarantees stored field order to be same as when document was indexed
-        final String fieldName = FieldNames.propertyFieldName(name, ns.getPrefix(), false);
+        final String fieldName = FieldNames.propertyFieldName(name, ns.getPrefix(), false, false);
         List<IndexableField> values = null;
         for (IndexableField f : propFields) {
             if (fieldName.equals(f.name())) {
@@ -185,7 +185,7 @@ class LazyMappedPropertySet implements PropertySet {
         }
 
         // Lucene guarantees stored field order to be same as when document was indexed
-        final String fieldName = FieldNames.propertyFieldName(name, prefix, false);
+        final String fieldName = FieldNames.propertyFieldName(name, prefix, false, false);
         List<IndexableField> values = null;
         for (IndexableField f : propFields) {
             if (fieldName.equals(f.name())) {

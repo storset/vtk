@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2007, 2014 University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.vortikal.repository.Namespace;
-import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
@@ -49,24 +48,34 @@ public final class FieldNames {
     public static final String NAMESPACEPREFIX_NAME_SEPARATOR = ":";
     public static final String JSON_ATTRIBUTE_SEPARATOR = "@";
     public static final String LOWERCASE_FIELD_PREFIX = "l_";
-    public static final String PROPERTY_FIELD_PREFIX = "P_";
+    public static final String SORT_FIELD_PREFIX = "s_";
+    public static final String PROPERTY_FIELD_PREFIX = "p_";
     
     /* Special, reserved fields */
     public static final String NAME_FIELD_NAME =         PropertySet.NAME_IDENTIFIER;
     public static final String NAME_LC_FIELD_NAME =      LOWERCASE_FIELD_PREFIX + NAME_FIELD_NAME;
+    public static final String NAME_SORT_FIELD_NAME =    SORT_FIELD_PREFIX + NAME_FIELD_NAME;
+    
     public static final String URI_FIELD_NAME =          PropertySet.URI_IDENTIFIER;
+    public static final String URI_SORT_FIELD_NAME =     SORT_FIELD_PREFIX + URI_FIELD_NAME;
+
     public static final String URI_DEPTH_FIELD_NAME =    "uriDepth";
     public static final String URI_ANCESTORS_FIELD_NAME = "uriAncestors";
+    
     public static final String RESOURCETYPE_FIELD_NAME = "resourceType";
+    
     public static final String ID_FIELD_NAME =           "ID";
     public static final String ACL_INHERITED_FROM_FIELD_NAME = "ACL_INHERITED_FROM";
     public static final String ACL_READ_PRINCIPALS_FIELD_NAME = "ACL_READ_PRINCIPALS";
-    
+
+    /* Set of all reserved fields */
     private static final Set<String> RESERVED_FIELD_NAMES = new HashSet<String>();
     static {
         RESERVED_FIELD_NAMES.add(NAME_FIELD_NAME);
         RESERVED_FIELD_NAMES.add(NAME_LC_FIELD_NAME);
+        RESERVED_FIELD_NAMES.add(NAME_SORT_FIELD_NAME);
         RESERVED_FIELD_NAMES.add(URI_FIELD_NAME);
+        RESERVED_FIELD_NAMES.add(URI_SORT_FIELD_NAME);
         RESERVED_FIELD_NAMES.add(URI_ANCESTORS_FIELD_NAME);
         RESERVED_FIELD_NAMES.add(URI_DEPTH_FIELD_NAME);
         RESERVED_FIELD_NAMES.add(RESOURCETYPE_FIELD_NAME);
@@ -88,12 +97,9 @@ public final class FieldNames {
         return fieldName.startsWith(LOWERCASE_FIELD_PREFIX, offset);
     }
     
-    public static String propertyFieldName(Property prop) {
-        return FieldNames.propertyFieldName(prop.getDefinition(), false);
-    }
-    
-    public static String propertyFieldName(Property prop, boolean lowercase) {
-        return FieldNames.propertyFieldName(prop.getDefinition(), lowercase);
+    public static boolean isSortField(String fieldName) {
+        int offset = isPropertyField(fieldName) ? PROPERTY_FIELD_PREFIX.length() : 0;
+        return fieldName.startsWith(SORT_FIELD_PREFIX, offset);
     }
     
     public static String propertyFieldName(PropertyTypeDefinition def) {
@@ -111,13 +117,19 @@ public final class FieldNames {
             lowercase = false; // No lowercasing-support for type
         }
 
-        return propertyFieldName(def.getName(), def.getNamespace().getPrefix(), lowercase);
+        return propertyFieldName(def.getName(), def.getNamespace().getPrefix(), lowercase, false);
     }
 
-    public static String propertyFieldName(String propName, String nsPrefix, boolean lowercase) {
+    public static String propertyFieldName(String propName, String nsPrefix, boolean lowercase, boolean sort) {
+        if (sort && lowercase) {
+            throw new IllegalArgumentException("Field cannot be used both for lowercase and sorting");
+        }
+        
         StringBuilder fieldName = new StringBuilder(PROPERTY_FIELD_PREFIX);
         if (lowercase) {
             fieldName.append(LOWERCASE_FIELD_PREFIX);
+        } else if (sort) {
+            fieldName.append(SORT_FIELD_PREFIX);
         }
         
         if (nsPrefix != null) {
@@ -128,6 +140,13 @@ public final class FieldNames {
         return fieldName.toString();
     }
 
+    public static String jsonFieldName(PropertyTypeDefinition def, String jsonAttrKey, 
+                                                                          boolean lowercase) {
+        StringBuilder fieldName = new StringBuilder(FieldNames.propertyFieldName(def, lowercase));
+        fieldName.append(JSON_ATTRIBUTE_SEPARATOR).append(jsonAttrKey);
+        return fieldName.toString();
+    }
+    
     /**
      * Checks if the stored property field name has the given namespace.
      * 
@@ -147,18 +166,12 @@ public final class FieldNames {
         int offset = PROPERTY_FIELD_PREFIX.length();
         if (fieldName.startsWith(LOWERCASE_FIELD_PREFIX, offset)) {
             offset += LOWERCASE_FIELD_PREFIX.length();
+        } else if (fieldName.startsWith(SORT_FIELD_PREFIX, offset)) {
+            offset += SORT_FIELD_PREFIX.length();
         }
         
         return fieldName.startsWith(ns.getPrefix() + NAMESPACEPREFIX_NAME_SEPARATOR, offset);
     }
-    
-    public static String jsonFieldName(PropertyTypeDefinition def, String jsonAttrKey, 
-                                                                          boolean lowercase) {
-        StringBuilder fieldName = new StringBuilder(FieldNames.propertyFieldName(def, lowercase));
-        fieldName.append(JSON_ATTRIBUTE_SEPARATOR).append(jsonAttrKey);
-        return fieldName.toString();
-    }
-    
     
     public static String propertyNamespace(String fieldName) {
         if (!isPropertyField(fieldName)) {
@@ -179,7 +192,7 @@ public final class FieldNames {
         }
     }
     
-    public static String propertyName(String fieldName){
+    public static String propertyName(String fieldName) {
         if (! isPropertyField(fieldName)) {
             throw new IllegalArgumentException("Not a property field name: " + fieldName);
         }
@@ -197,4 +210,15 @@ public final class FieldNames {
             return fieldName.substring(pos + 1);
         }
     }
+    
+    public static String sortFieldName(PropertyTypeDefinition def) {
+        return propertyFieldName(def.getName(), def.getNamespace().getPrefix(), false, true);
+    }
+    
+    public static String jsonSortFieldName(PropertyTypeDefinition def, String jsonAttrKey) {
+        StringBuilder fieldName = new StringBuilder(propertyFieldName(def.getName(), def.getNamespace().getPrefix(), false, true));
+        fieldName.append(JSON_ATTRIBUTE_SEPARATOR).append(jsonAttrKey);
+        return fieldName.toString();
+    }
+    
 }

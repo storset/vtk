@@ -30,15 +30,11 @@
  */
 package org.vortikal.repository.search.query.builders;
 
-import org.apache.lucene.index.Term;
 import org.apache.lucene.queries.TermFilter;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TermRangeFilter;
-import org.apache.lucene.util.BytesRef;
 import org.vortikal.repository.index.mapping.Field4ValueMapper;
 import org.vortikal.repository.index.mapping.FieldNames;
 import org.vortikal.repository.resourcetype.PropertyType;

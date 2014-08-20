@@ -59,7 +59,7 @@ public class UriDepthQueryBuilder implements QueryBuilder {
     @Override
     public Query buildQuery() throws QueryBuilderException {
         
-        Term queryTerm = fvm.queryTerm(FieldNames.URI_FIELD_NAME, 
+        Term queryTerm = fvm.queryTerm(FieldNames.URI_DEPTH_FIELD_NAME, 
                 query.getDepth(), PropertyType.Type.INT, false);
         
         return new TermQuery(queryTerm);

@@ -1,14 +1,41 @@
 package org.vortikal.repository.index.mapping;
 
+
+import com.ibm.icu.text.CollationKey;
+import com.ibm.icu.text.Collator;
+import java.util.Locale;
 import static org.junit.Assert.*;
 
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.apache.lucene.analysis.tokenattributes.TermToBytesRefAttribute;
+import org.apache.lucene.collation.ICUCollationAttributeFactory;
+import org.apache.lucene.util.BytesRef;
 
 import org.junit.Test;
 
 public class StringArrayTokenStreamTest {
 
+    @Test
+    public void oneValueAsCollationKey() throws Exception {
+        String value = "1-value";
+        
+        Collator collator = Collator.getInstance(Locale.ENGLISH);
+        TokenStream stream = new StringArrayTokenStream(new ICUCollationAttributeFactory(collator), value);
+        
+        assertTrue(stream.incrementToken());
+        
+        TermToBytesRefAttribute ttb = stream.getAttribute(TermToBytesRefAttribute.class);
+        BytesRef indexTerm = ttb.getBytesRef();
+        ttb.fillBytesRef();
+        
+        System.out.println(indexTerm);
+        
+        CollationKey key = collator.getCollationKey(value);
+        BytesRef keyBytes = new BytesRef(key.toByteArray());
+        assertTrue("Unexpected collation key bytes", keyBytes.bytesEquals(indexTerm));
+    }
+    
     @Test
     public void multipleValues() throws Exception {
 

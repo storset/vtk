@@ -45,8 +45,6 @@ import org.vortikal.repository.search.TypedSortField;
 
 /**
  * Build Lucene {@link org.apache.lucene.search.Sort} specifications from {@link Sorting}.
- * 
- * 
  */
 public class SortBuilderImpl implements SortBuilder {
 
@@ -68,14 +66,13 @@ public class SortBuilderImpl implements SortBuilder {
                 if (PropertySet.TYPE_IDENTIFIER.equals(tsf.getType())) {
                     fieldName = FieldNames.RESOURCETYPE_FIELD_NAME;
                 } else if (PropertySet.URI_IDENTIFIER.equals(tsf.getType())) {
-                    fieldName = FieldNames.URI_FIELD_NAME;
+                    fieldName = FieldNames.URI_SORT_FIELD_NAME;
                 } else if (PropertySet.NAME_IDENTIFIER.equals(tsf.getType())) {
-                    fieldName = FieldNames.NAME_FIELD_NAME;
+                    fieldName = FieldNames.NAME_SORT_FIELD_NAME;
                 } else {
                     throw new SortBuilderException("Unknown typed sort field type: " + tsf.getType());
                 }
                 
-                // Special fields, do standard non-locale-specific lexicographic sorting (uri, name or type)
                 luceneSortFields[j] = new org.apache.lucene.search.SortField(
                         fieldName, org.apache.lucene.search.SortField.Type.STRING, reverse);
 
@@ -87,11 +84,11 @@ public class SortBuilderImpl implements SortBuilder {
                 }
                 
                 PropertyType.Type dataType = def.getType();
-                fieldName = FieldNames.propertyFieldName(def, false);
+                fieldName = FieldNames.sortFieldName(def);
                 if (def.getType() == PropertyType.Type.JSON) {
                     String cva = psf.getComplexValueAttributeSpecifier();
                     if (cva != null) {
-                        fieldName = FieldNames.jsonFieldName(def, cva, false);
+                        fieldName = FieldNames.jsonSortFieldName(def, cva);
                         dataType = Field4ValueMapper.getJsonFieldDataType(def, fieldName);
                     }
                 }
@@ -109,21 +106,8 @@ public class SortBuilderImpl implements SortBuilder {
                     org.apache.lucene.search.SortField.Type.INT, reverse);
                     break;
                     
-                // These are all typed as strings in Lucene,
-                // and there is no need to do locale-sensitive sorting on any of them.
-                case JSON:
-                case PRINCIPAL:
-                case IMAGE_REF:
-                case BOOLEAN:
-                    luceneSortFields[j] = new org.apache.lucene.search.SortField(
-                            fieldName, org.apache.lucene.search.SortField.Type.STRING, reverse);
-                    break;
-
                 default:
-                    // TODO implement locale-based sorting support using CollationKeyFilter
-                    // Sort field according to locale, typically STRING properties (slower)
-//                    luceneSortFields[j] = new org.apache.lucene.search.SortField(
-//                            fieldName, sortField.getLocale(), reverse);
+                    // o.a.l.s.SortField.Type.STRING works for all dedicated sorting fields and other string types
                     luceneSortFields[j] = new org.apache.lucene.search.SortField(
                             fieldName, org.apache.lucene.search.SortField.Type.STRING, reverse);
                     

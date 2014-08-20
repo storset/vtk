@@ -59,6 +59,7 @@
   <!-- Index field value mapper -->  
   <bean id="fieldValueMapper" class="org.vortikal.repository.index.mapping.Field4ValueMapper">
     <property name="valueFactory" ref="valueFactory"/>
+    <property name="locale" value="${view.defaultLocale}" />
   </bean>
   
   <bean id="searcherFactory" class="org.vortikal.repository.index.WarmupSearcherFactory">

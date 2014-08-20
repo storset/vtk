@@ -104,6 +104,8 @@ public class PropertyRangeQueryBuilder implements QueryBuilder {
 
     }
     
+    // TODO Considering using sort-field for string term range, for consistency with sorting order.
+    //      (Will then need to encode terms as collation keys.)
     private Query stringRangeQuery(String fieldName, String fromValue, String toValue, boolean inclusive) {
         return TermRangeQuery.newStringRange(fieldName, fromValue, toValue, inclusive, inclusive);
     }

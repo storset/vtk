@@ -33,6 +33,7 @@ package org.vortikal.repository.search;
 import java.util.LinkedList;
 import java.util.List;
 
+// TODO get rid of interface
 public class SortingImpl implements Sorting {
 
     private List<SortField> sortFields;

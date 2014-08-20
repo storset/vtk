@@ -38,8 +38,13 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.DocumentStoredFieldVisitor;
 import org.apache.lucene.index.AtomicReader;
 import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.DocsEnum;
+import org.apache.lucene.index.Fields;
 
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.MultiFields;
+import org.apache.lucene.index.Terms;
+import org.apache.lucene.index.TermsEnum;
 
 import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.DocIdSetIterator;
@@ -48,6 +53,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.util.Bits;
+import org.apache.lucene.util.FixedBitSet;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.PropertySet;
@@ -270,7 +276,7 @@ public class SearcherImpl implements Searcher {
             throw new QueryException("Exception while performing match iteration on index", e);
         } finally {
             try {
-                this.indexAccessor.releaseIndexSearcher(searcher);                
+                this.indexAccessor.releaseIndexSearcher(searcher);
             } catch (IOException io) {
                 logger.warn("IOException while releasing index searcher", io);
             }
@@ -278,8 +284,8 @@ public class SearcherImpl implements Searcher {
     }
 
     /**
-     * Iterator all docs matching filter in index order. Filter may be <code>null></code>
-     * , in which case all non-deleted docs are iterated.
+     * Iterator all docs matching filter in index order. Filter may be <code>null></code>,
+     * in which case all non-deleted docs are iterated.
      */
     private void iterate(org.apache.lucene.search.Filter iterationFilter,
                         IndexReader reader,
@@ -375,7 +381,7 @@ public class SearcherImpl implements Searcher {
      * Iteration all docs with given field in lexicographic order.
      * Filter may be null.
      */
-    private void iterateOnField(final String luceneField,
+    private void iterateOnField(final String field,
                         org.apache.lucene.search.Filter iterationFilter,
                         IndexReader reader,
                         PropertySelect propertySelect,
@@ -385,9 +391,42 @@ public class SearcherImpl implements Searcher {
 
         if (limit <= 0) return;
         
-        // TODO implement
-        throw new UnsupportedOperationException("Implement iteration by field with Lucene4");
+        // We'll need global ordering on the field values across all index segments ..
+        final Fields fields = MultiFields.getFields(reader);
+        if (fields == null) {
+            return;
+        }
+        
+        Terms terms = fields.terms(field);
+        if (terms == null) {
+            return;
+        }
 
+        final Bits acceptDocs = matchingLiveDocs(reader, iterationFilter);
+        
+        int matchDocCounter = 0;
+        int callbackCounter = 0;
+        DocsEnum de = null;
+        final TermsEnum te = terms.iterator(null);
+        while (te.next() != null) {
+            de = te.docs(acceptDocs, de, DocsEnum.FLAG_NONE);
+            int docId;
+            while ((docId = de.nextDoc()) != DocIdSetIterator.NO_MORE_DOCS) {
+                if (matchDocCounter++ < cursor) {
+                    continue;
+                }
+                DocumentStoredFieldVisitor visitor = documentMapper.newStoredFieldVisitor(propertySelect);
+                reader.document(docId, visitor);
+                PropertySet ps = documentMapper.getPropertySet(visitor.getDocument());
+                boolean continueIteration = callback.matching(ps);
+                if (++callbackCounter == limit || !continueIteration) {
+                    return;
+                }
+            }
+        }
+        
+
+// Old Lucene3-code:        
 //        OpenBitSet obs = null;
 //        if (iterationFilter != null) {
 //            DocIdSet allowedDocs = iterationFilter.getDocIdSet(reader);
@@ -435,6 +474,33 @@ public class SearcherImpl implements Searcher {
 //                td.close();
 //            }
 //        }
+    }
+    
+    // Get all docs matched by the filter (deleted docs are taken into account).
+    // If filter is null, then all non-deleted docs will be present in returned bits.
+    private Bits matchingLiveDocs(IndexReader reader, Filter filter) throws IOException {
+        if (filter == null) {
+            return MultiFields.getLiveDocs(reader);
+        }
+        
+        final FixedBitSet fbs = new FixedBitSet(reader.maxDoc());
+        
+        for (AtomicReaderContext segmentReaderContext : reader.leaves()) {
+            final AtomicReader segment = segmentReaderContext.reader();
+            final Bits liveDocs = segment.getLiveDocs();
+            final DocIdSet matchedDocs = filter.getDocIdSet(segmentReaderContext, liveDocs);
+            if (matchedDocs != null) {
+                DocIdSetIterator disi = matchedDocs.iterator();
+                if (disi != null) {
+                    int docId;
+                    while ((docId = disi.nextDoc()) != DocIdSetIterator.NO_MORE_DOCS) {
+                        fbs.set(docId + segmentReaderContext.docBase);
+                    }
+                }
+            }
+        }
+        
+        return fbs;
     }
     
     @Required

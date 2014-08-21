@@ -88,7 +88,7 @@ public class DocumentMapper implements InitializingBean {
     private final Log logger = LogFactory.getLog(DocumentMapper.class);
 
     private ResourceTypeTree resourceTypeTree;
-    private FieldValues fvm;
+    private FieldValues fieldValues;
 
     // Fast lookup maps for flat list of resource type prop defs and
     // stored field-name to prop-def map
@@ -136,40 +136,40 @@ public class DocumentMapper implements InitializingBean {
 
         // Special fields
         // uri
-        fields.addAll(fvm.makeFields(URI_FIELD_NAME, INDEXED_STORED, 
+        fields.addAll(fieldValues.makeFields(URI_FIELD_NAME, INDEXED_STORED, 
                 Type.STRING, propSet.getURI().toString()));
-        fields.add(fvm.makeSortField(URI_SORT_FIELD_NAME, propSet.getURI().toString()));
+        fields.add(fieldValues.makeSortField(URI_SORT_FIELD_NAME, propSet.getURI().toString()));
         
         // URI depth (not stored, but indexed for use in searches)
         int uriDepth = propSet.getURI().getDepth();
-        fields.addAll(fvm.makeFields(URI_DEPTH_FIELD_NAME, INDEXED, Type.INT, uriDepth));
+        fields.addAll(fieldValues.makeFields(URI_DEPTH_FIELD_NAME, INDEXED, Type.INT, uriDepth));
         
         // Ancestor URIs (system field used for hierarchical queries)
-        fields.addAll(fvm.makeFields(URI_ANCESTORS_FIELD_NAME,
+        fields.addAll(fieldValues.makeFields(URI_ANCESTORS_FIELD_NAME,
                 INDEXED, Type.STRING, (Object[])getPathAncestorStrings(propSet.getURI())));
         
         // URI name
-        fields.addAll(fvm.makeFields(NAME_FIELD_NAME, INDEXED, Type.STRING, propSet.getName()));
-        fields.addAll(fvm.makeFields(NAME_LC_FIELD_NAME, INDEXED_LOWERCASE, Type.STRING, propSet.getName()));
-        fields.add(fvm.makeSortField(NAME_SORT_FIELD_NAME, propSet.getName()));
+        fields.addAll(fieldValues.makeFields(NAME_FIELD_NAME, INDEXED, Type.STRING, propSet.getName()));
+        fields.addAll(fieldValues.makeFields(NAME_LC_FIELD_NAME, INDEXED_LOWERCASE, Type.STRING, propSet.getName()));
+        fields.add(fieldValues.makeSortField(NAME_SORT_FIELD_NAME, propSet.getName()));
 
         // resourceType, stored and indexed
-        fields.addAll(fvm.makeFields(RESOURCETYPE_FIELD_NAME, INDEXED_STORED, Type.STRING, 
+        fields.addAll(fieldValues.makeFields(RESOURCETYPE_FIELD_NAME, INDEXED_STORED, Type.STRING, 
                 propSet.getResourceType()));
 
         // ID (system field, stored and indexed, but only as a string type)
-        fields.addAll(fvm.makeFields(ID_FIELD_NAME, INDEXED_STORED, 
+        fields.addAll(fieldValues.makeFields(ID_FIELD_NAME, INDEXED_STORED, 
                 Type.STRING, Integer.toString(propSet.getID())));
         
         
         // ACL_INHERITED_FROM (index system field, stored and indexed, but only as a string)
-        fields.addAll(fvm.makeFields(ACL_INHERITED_FROM_FIELD_NAME, INDEXED_STORED, 
+        fields.addAll(fieldValues.makeFields(ACL_INHERITED_FROM_FIELD_NAME, INDEXED_STORED, 
                 Type.STRING, Integer.toString(propSet.getAclInheritedFrom())));
 
         // ACL_READ_PRINCIPALS (index system field)
         if (aclReadPrincipals != null) {
             String[] qualifiedNames = getAclReadPrincipalsFieldValues(aclReadPrincipals);
-            fields.addAll(fvm.makeFields(ACL_READ_PRINCIPALS_FIELD_NAME, INDEXED_STORED, 
+            fields.addAll(fieldValues.makeFields(ACL_READ_PRINCIPALS_FIELD_NAME, INDEXED_STORED, 
                     Type.STRING, (Object[])qualifiedNames));
         }
 
@@ -310,7 +310,7 @@ public class DocumentMapper implements InitializingBean {
         return new LazyMappedPropertySet(doc, this);
     }
     
-    Property getPropertyFromFieldValues(String fieldName, List<IndexableField> fieldValues)
+    Property getPropertyFromFieldValues(String fieldName, List<IndexableField> fields)
             throws DocumentMappingException {
         
         PropertyTypeDefinition def = this.fieldNamePropDefMap.get(fieldName);
@@ -331,16 +331,16 @@ public class DocumentMapper implements InitializingBean {
         property.setDefinition(def);
         
         if (def.isMultiple()) {
-            Value[] values = fvm.valuesFromFields(def.getType(), fieldValues);
+            Value[] values = fieldValues.valuesFromFields(def.getType(), fields);
             property.setValues(values, false);
         } else {
-            if (fieldValues.size() != 1) {
+            if (fields.size() != 1) {
                 logger.warn("Single value property '" + def.getNamespace().getPrefix()
                         + NAMESPACEPREFIX_NAME_SEPARATOR + def.getName()
-                        + "' has an invalid number of stored values (" + fieldValues.size() + ") in index");
+                        + "' has an invalid number of stored values (" + fields.size() + ") in index");
             }
 
-            Value value = fvm.valueFromField(def.getType(), fieldValues.get(0));
+            Value value = fieldValues.valueFromField(def.getType(), fields.get(0));
             property.setValue(value, false);
         }
 
@@ -355,7 +355,7 @@ public class DocumentMapper implements InitializingBean {
             throw new IllegalArgumentException("Sorting fields cannot be created for multi-value properties");
         }
         String fieldName = sortFieldName(property.getDefinition());
-        return fvm.makeSortField(fieldName, property.getStringValue());
+        return fieldValues.makeSortField(fieldName, property.getStringValue());
     }
     
     /**
@@ -376,9 +376,9 @@ public class DocumentMapper implements InitializingBean {
         FieldSpec spec = lowercase ? INDEXED_LOWERCASE : INDEXED_STORED;
         if (def.isMultiple()) {
             Value[] values = property.getValues();
-            return fvm.makeFields(fieldName, spec, values);
+            return fieldValues.makeFields(fieldName, spec, values);
         } else {
-            return fvm.makeFields(fieldName, spec, property.getValue());
+            return fieldValues.makeFields(fieldName, spec, property.getValue());
         }
     }
 
@@ -407,7 +407,7 @@ public class DocumentMapper implements InitializingBean {
         }
         
         // Create stored-only fields
-        fields.addAll(fvm.makeFields(propertyFieldName(def), STORED, jsonPropValues));
+        fields.addAll(fieldValues.makeFields(propertyFieldName(def), STORED, jsonPropValues));
 
         Map<String, Object> metadata = def.getMetadata();
         if (! metadata.containsKey(PropertyTypeDefinition.METADATA_INDEXABLE_JSON)) {
@@ -445,19 +445,19 @@ public class DocumentMapper implements InitializingBean {
                     
                     // Create regular searchable field for all values
                     String fieldName = jsonFieldName(def, jsonAttribute, false);
-                    fields.addAll(fvm.makeFields(fieldName, INDEXED, dataType, indexFieldValues.toArray()));
+                    fields.addAll(fieldValues.makeFields(fieldName, INDEXED, dataType, indexFieldValues.toArray()));
                     
                     // Lowercased searchable field for all values with type hint STRING or HTML
                     if (dataType == Type.STRING || dataType == Type.HTML) {
                         fieldName = jsonFieldName(def, jsonAttribute, true);
-                        fields.addAll(fvm.makeFields(
+                        fields.addAll(fieldValues.makeFields(
                                 fieldName, INDEXED_LOWERCASE, dataType, indexFieldValues.toArray()));
                     }
                     
                     // Sort field for all single-values with type STRING
                     if (dataType == Type.STRING && indexFieldValues.size() == 1) {
                         fieldName = jsonSortFieldName(def, jsonAttribute);
-                        fields.add(fvm.makeSortField(fieldName, indexFieldValues.get(0).toString()));
+                        fields.add(fieldValues.makeSortField(fieldName, indexFieldValues.get(0).toString()));
                     }
                 }
             }
@@ -540,8 +540,8 @@ public class DocumentMapper implements InitializingBean {
     }
 
     @Required
-    public void setFieldValueMapper(FieldValues fieldValueMapper) {
-        this.fvm = fieldValueMapper;
+    public void setFieldValues(FieldValues fv) {
+        this.fieldValues = fv;
     }
 
 }

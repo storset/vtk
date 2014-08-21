@@ -90,7 +90,7 @@ public class LuceneQueryBuilderImplTest {
         unpublishedCollectionPropDef.setName("unpublishedCollection");
         luceneQueryBuilder.setUnpublishedCollectionPropDef(unpublishedCollectionPropDef);
 
-        luceneQueryBuilder.setFieldValueMapper(new FieldValues());
+        luceneQueryBuilder.setFieldValues(new FieldValues());
 
         
         List<Term> terms = new ArrayList<Term>();

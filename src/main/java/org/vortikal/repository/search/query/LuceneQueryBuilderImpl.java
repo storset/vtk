@@ -104,7 +104,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
     Log logger = LogFactory.getLog(LuceneQueryBuilderImpl.class);
 
     private ResourceTypeTree resourceTypeTree;
-    private FieldValues fieldValueMapper;
+    private FieldValues fieldValues;
     private QueryAuthorizationFilterFactory queryAuthorizationFilterFactory;
     private PropertyTypeDefinition publishedPropDef;
     private PropertyTypeDefinition unpublishedCollectionPropDef;
@@ -113,7 +113,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
     @Override
     public void afterPropertiesSet() {
         // Setup cached filter for published resources
-        Term publishedTerm = fieldValueMapper.queryTerm(FieldNames.propertyFieldName(publishedPropDef, false), "true", Type.BOOLEAN, false);
+        Term publishedTerm = fieldValues.queryTerm(FieldNames.propertyFieldName(publishedPropDef, false), "true", Type.BOOLEAN, false);
         TermsFilter tf = new TermsFilter(publishedTerm);
         this.cachedOnlyPublishedFilter = FilterFactory.cacheWrapper(tf);
     }
@@ -149,7 +149,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         }
 
         else if (query instanceof UriDepthQuery) {
-            builder = new UriDepthQueryBuilder((UriDepthQuery) query, fieldValueMapper);
+            builder = new UriDepthQueryBuilder((UriDepthQuery) query, fieldValues);
         }
 
         else if (query instanceof UriSetQuery) {
@@ -182,7 +182,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
                 values.add(ttq.getTerm());
                 values.addAll(this.resourceTypeTree.getDescendants(ttq.getTerm()));
                 builder = new TermsQueryBuilder(FieldNames.RESOURCETYPE_FIELD_NAME, values, 
-                        Type.STRING, ttq.getOperator(), fieldValueMapper);
+                        Type.STRING, ttq.getOperator(), fieldValues);
                 
 //                builder = new HierarchicalTermQueryBuilder<String>(this.resourceTypeTree, ttq.getOperator(),
 //                        FieldNames.RESOURCETYPE_FIELD_NAME, ttq.getTerm());
@@ -262,23 +262,23 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
                 }
 
                 return new TermsQueryBuilder(fieldName, values, Type.STRING, 
-                        ptq.getOperator(), fieldValueMapper);
+                        ptq.getOperator(), fieldValues);
             } else if (op == TermOperator.GE || op == TermOperator.GT) {
                 // Convert to PropertyRangeQuery
                 PropertyRangeQuery prq = new PropertyRangeQuery(ptq.getPropertyDefinition(), 
                         ptq.getTerm(), null, op == TermOperator.GE);
                 prq.setComplexValueAttributeSpecifier(ptq.getComplexValueAttributeSpecifier());
                 
-                return new PropertyRangeQueryBuilder(prq, fieldValueMapper);
+                return new PropertyRangeQueryBuilder(prq, fieldValues);
             } else if (op == TermOperator.LE || op == TermOperator.LT) {
                 // Convert to PropertyRangeQuery
                 PropertyRangeQuery prq = new PropertyRangeQuery(ptq.getPropertyDefinition(), 
                         null, ptq.getTerm(), op == TermOperator.LE);
                 prq.setComplexValueAttributeSpecifier(ptq.getComplexValueAttributeSpecifier());
-                return new PropertyRangeQueryBuilder(prq, fieldValueMapper);
+                return new PropertyRangeQueryBuilder(prq, fieldValues);
                 
             } else {
-                return new PropertyTermQueryBuilder(ptq, fieldValueMapper);
+                return new PropertyTermQueryBuilder(ptq, fieldValues);
             }
 
 //            TermOperator op = ptq.getOperator();
@@ -301,7 +301,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         }
 
         if (query instanceof PropertyRangeQuery) {
-            return new PropertyRangeQueryBuilder((PropertyRangeQuery) query, fieldValueMapper);
+            return new PropertyRangeQueryBuilder((PropertyRangeQuery) query, fieldValues);
         }
 
         if (query instanceof PropertyWildcardQuery) {
@@ -472,8 +472,8 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
     }
 
     @Required
-    public void setFieldValueMapper(FieldValues fieldValueMapper) {
-        this.fieldValueMapper = fieldValueMapper;
+    public void setFieldValues(FieldValues fieldValues) {
+        this.fieldValues = fieldValues;
     }
 
     @Required

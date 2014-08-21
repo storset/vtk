@@ -88,10 +88,6 @@ public class FieldValuesTest {
         }
     }
 
-    /**
-     * Tests FieldValueMapper.getValueFromStoredBinaryField(Field,Type) and
-     * FieldValueMapper.getStoredBinaryFieldFromValue(String,Value)
-     */
     @Test
     public void storedFields() {
 

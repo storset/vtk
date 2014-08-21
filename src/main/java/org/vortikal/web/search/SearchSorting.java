@@ -41,8 +41,9 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.SortField;
+import org.vortikal.repository.search.PropertySortField;
+
 import org.vortikal.repository.search.SortFieldDirection;
 import org.vortikal.repository.search.TypedSortField;
 import org.vortikal.web.service.URL;

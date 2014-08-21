@@ -38,7 +38,7 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.SortFieldDirection;
-import org.vortikal.repository.search.SortingImpl;
+import org.vortikal.repository.search.Sorting;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.TermOperator;
@@ -70,7 +70,7 @@ public class WebpageReporter extends DocumentReporter {
         q.add(new UriPrefixQuery("/vrtx", true));
 
         Search search = new Search();
-        SortingImpl sorting = new SortingImpl();
+        Sorting sorting = new Sorting();
         sorting.addSortField(new PropertySortField(this.sortPropDef, this.sortOrder));
         search.setSorting(sorting);
         search.setQuery(q);

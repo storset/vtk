@@ -36,7 +36,7 @@ import org.vortikal.repository.PropertySet;
  * Typed sort fields are for special non-property repository types:
  * URI, name and resource type.
  */
-public class TypedSortField extends AbstractSortField {
+public class TypedSortField extends SortField {
 
     private String type;
     

@@ -30,7 +30,6 @@
  */
 package org.vortikal.repository.search.query;
 
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
 import org.vortikal.repository.search.Search;

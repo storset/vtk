@@ -91,6 +91,5 @@ public class ThrottlingSearcherWrapper implements Searcher, InitializingBean {
         } finally {
             this.searchPermits.release();
         }
-
     }
 }

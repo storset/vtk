@@ -34,7 +34,7 @@ import java.util.Locale;
 
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
-public class PropertySortField extends AbstractSortField {
+public class PropertySortField extends SortField {
 
     private PropertyTypeDefinition definition;
     private String complexValueAttributeSpecifier;

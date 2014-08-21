@@ -88,7 +88,7 @@ public final class Search {
     private EnumSet<FilterFlag> filterFlags;
 
     public Search() {
-        SortingImpl defaultSorting = new SortingImpl();
+        Sorting defaultSorting = new Sorting();
         defaultSorting.addSortField(new TypedSortField(PropertySet.URI_IDENTIFIER));
         this.sorting = defaultSorting;
         filterFlags = getAllFilterFlags();

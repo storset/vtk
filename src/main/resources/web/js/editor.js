@@ -291,9 +291,6 @@ VrtxEditor.prototype.richtextEditorFacade = {
     } else {
       config.removePlugins = 'elementspath';
     }
-    if (vrtxEditor.editorForm.hasClass("vrtx-course-schedule")) {
-      config.allowedContent = null;
-    }
     
     //  if (opts.isFrontpageBox) {
     //	config.format_tags = 'p;h3;h4;h5;h6;pre;div';
@@ -314,6 +311,11 @@ VrtxEditor.prototype.richtextEditorFacade = {
     config.disableObjectResizing = true;
     config.disableNativeSpellChecker = false;
     config.allowedContent = true;
+    
+    if (vrtxEditor.editorForm.hasClass("vrtx-course-schedule")) {
+      config.allowedContent = null;
+    }
+    
     config.linkShowTargetTab = false;
 
     // Key strokes

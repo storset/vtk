@@ -82,7 +82,6 @@ public class WarmupSearcherFactory extends SearcherFactory {
 
         // Implicitly warm up query builder internal filter caching for the new reader instance.
         // This should warm up:
-        // 0. Deleted docs filter cache
         // 1. Inverted hidden-prop existence query filter cache
         // 2. ACL filter cache for anonymous user
         // Enabling pre-building of all this caching should be very good for performance of new reader
@@ -106,8 +105,8 @@ public class WarmupSearcherFactory extends SearcherFactory {
 
     private Sort getWarmupSorting() {
         SortField[] fields = new SortField[2];
-        fields[0] = new SortField(FieldNames.propertyFieldName(this.lastModifiedPropDef, false), SortField.Type.STRING, true);
-        fields[1] = new SortField(FieldNames.URI_FIELD_NAME, SortField.Type.STRING);
+        fields[0] = new SortField(FieldNames.sortFieldName(this.lastModifiedPropDef), SortField.Type.STRING, true);
+        fields[1] = new SortField(FieldNames.URI_SORT_FIELD_NAME, SortField.Type.STRING);
         return new Sort(fields);
     }
 

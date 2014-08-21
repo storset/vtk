@@ -35,6 +35,7 @@ import java.util.Set;
 
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
 /**
@@ -210,13 +211,18 @@ public final class FieldNames {
             return fieldName.substring(pos + 1);
         }
     }
-    
+
     public static String sortFieldName(PropertyTypeDefinition def) {
-        return propertyFieldName(def.getName(), def.getNamespace().getPrefix(), false, true);
+        // For STRING data type, use dedicated sorting field
+        boolean useDedicatedSortField = def.getType() == PropertyType.Type.STRING;
+        return propertyFieldName(def.getName(), def.getNamespace().getPrefix(), false, useDedicatedSortField);
     }
     
     public static String jsonSortFieldName(PropertyTypeDefinition def, String jsonAttrKey) {
-        StringBuilder fieldName = new StringBuilder(propertyFieldName(def.getName(), def.getNamespace().getPrefix(), false, true));
+        PropertyType.Type dataType = FieldValues.getJsonFieldDataType(def, jsonAttrKey);
+        // For STRING data type, use dedicated sorting field
+        boolean useDedicatedSortField = dataType == PropertyType.Type.STRING;
+        StringBuilder fieldName = new StringBuilder(propertyFieldName(def.getName(), def.getNamespace().getPrefix(), false, useDedicatedSortField));
         fieldName.append(JSON_ATTRIBUTE_SEPARATOR).append(jsonAttrKey);
         return fieldName.toString();
     }

@@ -40,21 +40,23 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 
+import static org.vortikal.repository.resourcetype.PropertyType.Type;
+
 import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class FieldNamesTest {
 
-    private Property getUndefinedProperty(Namespace namespace, String name) {
+    private Property getTypedProperty(Namespace namespace, String name, final Type type) {
         PropertyTypeDefinitionImpl propDef = new PropertyTypeDefinitionImpl();
         propDef.setNamespace(namespace);
         propDef.setName(name);
+        propDef.setType(type);
         propDef.setValueFormatter(new ValueFormatter() {
-
             @Override
             public Value stringToValue(String string, String format,
                     Locale locale) {
-                return new Value(string, PropertyType.Type.STRING);
+                return new Value(string, type);
             }
 
             @Override
@@ -68,10 +70,22 @@ public class FieldNamesTest {
         return propDef.createProperty();
     }
     
+    private Property getStringProperty(Namespace namespace, String name) {
+        return getTypedProperty(namespace, name, Type.STRING);
+    }
+    
     @Test
-    public void sortField() {
-        Property prop = getUndefinedProperty(Namespace.getNamespaceFromPrefix("bar"), "foo");
+    public void sortFieldName() {
+        Property prop = getStringProperty(Namespace.getNamespaceFromPrefix("bar"), "foo");
         assertEquals("p_s_bar:foo", FieldNames.sortFieldName(prop.getDefinition()));
+        
+        prop = getTypedProperty(Namespace.DEFAULT_NAMESPACE, "integer", Type.INT);
+        assertEquals("p_integer", FieldNames.sortFieldName(prop.getDefinition()));
+    }
+    
+    @Test
+    public void jsonSortFieldName() {
+        Property prop = getTypedProperty(Namespace.getNamespaceFromPrefix("bar"), "foo", Type.JSON);
         assertEquals("p_s_bar:foo@baz", FieldNames.jsonSortFieldName(prop.getDefinition(), "baz"));
     }
     
@@ -103,12 +117,12 @@ public class FieldNamesTest {
     @Test
     public void getSearchFieldNameProperty() {
         
-        Property prop = getUndefinedProperty(Namespace.getNamespaceFromPrefix("bar"), "foo");
+        Property prop = getStringProperty(Namespace.getNamespaceFromPrefix("bar"), "foo");
         
         assertEquals("p_bar:foo", FieldNames.propertyFieldName(prop.getDefinition(), false));
         assertEquals("p_l_bar:foo", FieldNames.propertyFieldName(prop.getDefinition(), true));
         
-        prop = getUndefinedProperty(Namespace.DEFAULT_NAMESPACE, "lastModified");
+        prop = getStringProperty(Namespace.DEFAULT_NAMESPACE, "lastModified");
         
         assertEquals("p_lastModified", FieldNames.propertyFieldName(prop.getDefinition(), false));
         
@@ -118,11 +132,11 @@ public class FieldNamesTest {
     
     @Test
     public void getJsonSearchFieldName() {
-        Property prop = getUndefinedProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, "complex");
+        Property prop = getStringProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, "complex");
         assertEquals("p_resource:complex@attr1", FieldNames.jsonFieldName(prop.getDefinition(), "attr1", false));
         assertEquals("p_l_resource:complex@attr1", FieldNames.jsonFieldName(prop.getDefinition(), "attr1", true));
         
-        prop = getUndefinedProperty(Namespace.DEFAULT_NAMESPACE, "system-job-status");
+        prop = getStringProperty(Namespace.DEFAULT_NAMESPACE, "system-job-status");
         assertEquals("p_system-job-status@attr1", FieldNames.jsonFieldName(prop.getDefinition(), "attr1", false));
         assertEquals("p_l_system-job-status@attr1", FieldNames.jsonFieldName(prop.getDefinition(), "attr1", true));
     }

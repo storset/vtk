@@ -50,41 +50,46 @@ jQuery library and jQuery plugins
 JavaScript and plain JS plugins
 -------------------------------
 
-├── admin-enhancements.js
-├── audio-player.js
-├── autocomplete
-├── browse.js
-├── collectionlisting
-│   └── manually-approve.js
-├── cross-doc-com-link.js
-├── datepicker
-├── editor.js
-├── frameworks
-├── gallery.js
-├── iframe-admin.js
-├── iframe-view.js
-├── iframe-view-media.js
-├── image-editor
-│   ├── editor.js
-│   └── excanvas.compiled.js
-├── md5
-│   └── md5.js
-├── open-webdav.js
-├── plugins
-│   ├── mustache.js
-│   ├── tablesort-1.5.min.js
-│   └── tablesort-customsort.js
-├── reports
-├── templates
-│   ├── manually-approve.mustache
-│   ├── multiple-inputfields.mustache
-│   ├── README.txt
-│   └── templates.mustache
-├── toc.js
-├── toggle.js
-├── visualize-broken-links.js
-├── vrtx-accordions.js
-└── vrtx-simple-dialogs.js
+├── js
+│   ├── admin-enhancements.js
+│   ├── audio-player.js
+│   ├── autocomplete
+│   ├── browse.js
+│   ├── collectionlisting
+│   │   └── manually-approve.js
+│   ├── cross-doc-com-link.js
+│   ├── datepicker
+│   ├── editor.js
+│   ├── frameworks
+│   ├── gallery.js
+│   ├── iframe-admin.js
+│   ├── iframe-view.js
+│   ├── iframe-view-media.js
+│   ├── image-editor
+│   │   ├── editor.js
+│   │   └── excanvas.compiled.js
+│   ├── md5
+│   │   └── md5.js
+│   ├── open-webdav.js
+│   ├── plugins
+│   │   ├── mustache.js
+│   │   ├── tablesort-1.5.min.js
+│   │   └── tablesort-customsort.js
+│   ├── reports
+│   ├── schedule
+│   ├── templates
+│   │   ├── manually-approve.mustache
+│   │   ├── multiple-fields-boxes.mustache
+│   │   └── README.txt
+│   ├── toc.js
+│   ├── toggle.js
+│   ├── view-dropdown.js
+│   ├── visualize-broken-links.js
+│   ├── vrtx-accordions.js
+│   ├── vrtx-animations.js
+│   ├── vrtx-simple-dialogs.js
+│   ├── vrtx-sticky-bar.js
+│   └── vrtx-tree.js
 ..
 
 
@@ -95,6 +100,7 @@ CSS and icons
     └── default
         ├── default.css
         ├── default-ie7.css
+        ├── default-ie8.css
         ├── editor-common.css
         ├── editor.css
         ├── icons (TODO: this should be combined with images/)

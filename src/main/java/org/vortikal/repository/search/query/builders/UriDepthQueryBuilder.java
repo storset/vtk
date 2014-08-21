@@ -33,7 +33,7 @@ package org.vortikal.repository.search.query.builders;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
-import org.vortikal.repository.index.mapping.Field4ValueMapper;
+import org.vortikal.repository.index.mapping.FieldValues;
 import org.vortikal.repository.index.mapping.FieldNames;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.search.query.QueryBuilder;
@@ -49,9 +49,9 @@ import org.vortikal.repository.search.query.UriDepthQuery;
 public class UriDepthQueryBuilder implements QueryBuilder {
 
     private UriDepthQuery query;
-    private Field4ValueMapper fvm;
+    private FieldValues fvm;
     
-    public UriDepthQueryBuilder(UriDepthQuery query, Field4ValueMapper fvm) {
+    public UriDepthQueryBuilder(UriDepthQuery query, FieldValues fvm) {
         this.query = query;
         this.fvm = fvm;
     }

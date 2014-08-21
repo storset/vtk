@@ -68,7 +68,7 @@ public class PropertySetIndexImpl implements PropertySetIndex {
    
     Log logger = LogFactory.getLog(PropertySetIndexImpl.class);
 
-    private Lucene4IndexManager index; 
+    private IndexManager index; 
     private DocumentMapper documentMapper;
 
     @SuppressWarnings("unchecked")
@@ -242,7 +242,7 @@ public class PropertySetIndexImpl implements PropertySetIndex {
     @Override
     public Iterator orderedUriIterator() throws IndexException {
         try {
-            return new PropertySet4IndexUriIterator(index);
+            return new UriIterator(index);
         } catch (IOException io) {
             throw new IndexException(io);
         }
@@ -313,7 +313,7 @@ public class PropertySetIndexImpl implements PropertySetIndex {
 
         try {
             PropertySetIndexImpl indexImpl = (PropertySetIndexImpl) propSetIndex;
-            Lucene4IndexManager otherIndex = indexImpl.index;
+            IndexManager otherIndex = indexImpl.index;
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Adding all contents of index '" + indexImpl.getId() + "' to '"
@@ -393,7 +393,7 @@ public class PropertySetIndexImpl implements PropertySetIndex {
     }
 
     @Required
-    public void setIndexAccessor(Lucene4IndexManager index) {
+    public void setIndexAccessor(IndexManager index) {
         this.index = index;
     }
 

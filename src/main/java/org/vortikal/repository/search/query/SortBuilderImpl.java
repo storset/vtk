@@ -33,7 +33,7 @@ package org.vortikal.repository.search.query;
 import java.util.Iterator;
 
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.index.mapping.Field4ValueMapper;
+import org.vortikal.repository.index.mapping.FieldValues;
 import org.vortikal.repository.index.mapping.FieldNames;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -89,7 +89,7 @@ public class SortBuilderImpl implements SortBuilder {
                     String cva = psf.getComplexValueAttributeSpecifier();
                     if (cva != null) {
                         fieldName = FieldNames.jsonSortFieldName(def, cva);
-                        dataType = Field4ValueMapper.getJsonFieldDataType(def, fieldName);
+                        dataType = FieldValues.getJsonFieldDataType(def, fieldName);
                     }
                 }
                 

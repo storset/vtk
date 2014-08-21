@@ -62,10 +62,10 @@ import org.vortikal.repository.search.PropertySelect;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 
-import static org.vortikal.repository.index.mapping.Field4ValueMapper.FieldSpec.INDEXED;
-import static org.vortikal.repository.index.mapping.Field4ValueMapper.FieldSpec.STORED;
-import static org.vortikal.repository.index.mapping.Field4ValueMapper.FieldSpec.INDEXED_STORED;
-import static org.vortikal.repository.index.mapping.Field4ValueMapper.FieldSpec.INDEXED_LOWERCASE;
+import static org.vortikal.repository.index.mapping.FieldValues.FieldSpec.INDEXED;
+import static org.vortikal.repository.index.mapping.FieldValues.FieldSpec.STORED;
+import static org.vortikal.repository.index.mapping.FieldValues.FieldSpec.INDEXED_STORED;
+import static org.vortikal.repository.index.mapping.FieldValues.FieldSpec.INDEXED_LOWERCASE;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -74,7 +74,7 @@ import org.apache.lucene.index.FieldInfo;
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.StoredFieldVisitor;
 import org.vortikal.repository.PropertyImpl;
-import org.vortikal.repository.index.mapping.Field4ValueMapper.FieldSpec;
+import org.vortikal.repository.index.mapping.FieldValues.FieldSpec;
 
 import static org.vortikal.repository.index.mapping.FieldNames.*;
 
@@ -88,7 +88,7 @@ public class DocumentMapper implements InitializingBean {
     private final Log logger = LogFactory.getLog(DocumentMapper.class);
 
     private ResourceTypeTree resourceTypeTree;
-    private Field4ValueMapper fvm;
+    private FieldValues fvm;
 
     // Fast lookup maps for flat list of resource type prop defs and
     // stored field-name to prop-def map
@@ -441,7 +441,7 @@ public class DocumentMapper implements InitializingBean {
                         indexFieldValues.add(value);
                     }
                     // Set up type for searchable JSON field
-                    Type dataType = Field4ValueMapper.getJsonFieldDataType(def, jsonAttribute);
+                    Type dataType = FieldValues.getJsonFieldDataType(def, jsonAttribute);
                     
                     // Create regular searchable field for all values
                     String fieldName = jsonFieldName(def, jsonAttribute, false);
@@ -540,7 +540,7 @@ public class DocumentMapper implements InitializingBean {
     }
 
     @Required
-    public void setFieldValueMapper(Field4ValueMapper fieldValueMapper) {
+    public void setFieldValueMapper(FieldValues fieldValueMapper) {
         this.fvm = fieldValueMapper;
     }
 

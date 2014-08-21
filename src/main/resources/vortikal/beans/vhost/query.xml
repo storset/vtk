@@ -57,7 +57,7 @@
   </bean>
 
   <!-- Index field value mapper -->  
-  <bean id="fieldValueMapper" class="org.vortikal.repository.index.mapping.Field4ValueMapper">
+  <bean id="fieldValueMapper" class="org.vortikal.repository.index.mapping.FieldValues">
     <property name="valueFactory" ref="valueFactory"/>
     <property name="locale" value="${view.defaultLocale}" />
   </bean>
@@ -69,7 +69,7 @@
   </bean>
 
   <!-- Primary Lucene index accessor instance. Manages low-level access. -->
-  <bean id="systemIndexAccessor" class="org.vortikal.repository.index.Lucene4IndexManager">
+  <bean id="systemIndexAccessor" class="org.vortikal.repository.index.IndexManager">
     <property name="storageRootPath" value="${indexStorageRootPath}"/>
     <property name="storageId" value="property_index"/>
     <property name="forceUnlock" value="true"/>
@@ -87,7 +87,7 @@
   </bean>
 
   <!-- A Lucene index accessor (secondary instance, batch indexing tuned) -->
-  <bean id="secondarySystemIndexAccessor" class="org.vortikal.repository.index.Lucene4IndexManager">
+  <bean id="secondarySystemIndexAccessor" class="org.vortikal.repository.index.IndexManager">
     <property name="storageRootPath" value="${indexStorageRootPath}"/>
     <property name="storageId" value="property_index.secondary"/>
     <property name="batchIndexingMode" value="true"/>

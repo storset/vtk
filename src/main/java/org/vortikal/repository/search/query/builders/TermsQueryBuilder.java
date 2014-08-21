@@ -43,7 +43,7 @@ import org.apache.lucene.queries.TermsFilter;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
-import org.vortikal.repository.index.mapping.Field4ValueMapper;
+import org.vortikal.repository.index.mapping.FieldValues;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.search.query.QueryBuilder;
@@ -60,10 +60,10 @@ public class TermsQueryBuilder implements QueryBuilder {
     private final List<?> terms;
     private final PropertyType.Type valueType;
     private final boolean invert;
-    private final Field4ValueMapper fvm;
+    private final FieldValues fvm;
     
     public TermsQueryBuilder(String field, List<?> terms, PropertyType.Type valueType, 
-            TermOperator op, Field4ValueMapper fvm) {
+            TermOperator op, FieldValues fvm) {
         this.field = field;
         this.terms = terms;
         this.valueType = valueType;

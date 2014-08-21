@@ -57,7 +57,7 @@ import org.apache.lucene.util.FixedBitSet;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.index.Lucene4IndexManager;
+import org.vortikal.repository.index.IndexManager;
 import org.vortikal.repository.index.mapping.DocumentMapper;
 import org.vortikal.repository.search.query.DumpQueryTreeVisitor;
 import org.vortikal.repository.search.query.LuceneQueryBuilder;
@@ -70,7 +70,7 @@ public class SearcherImpl implements Searcher {
 
     private final Log logger = LogFactory.getLog(SearcherImpl.class);
 
-    private Lucene4IndexManager indexAccessor;
+    private IndexManager indexAccessor;
     private DocumentMapper documentMapper;
     private LuceneQueryBuilder queryBuilder;
 
@@ -509,7 +509,7 @@ public class SearcherImpl implements Searcher {
     }
 
     @Required
-    public void setIndexAccessor(Lucene4IndexManager indexAccessor) {
+    public void setIndexAccessor(IndexManager indexAccessor) {
         this.indexAccessor = indexAccessor;
     }
 

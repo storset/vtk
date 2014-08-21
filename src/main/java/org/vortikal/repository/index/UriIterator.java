@@ -32,35 +32,29 @@
 package org.vortikal.repository.index;
 
 import java.io.IOException;
-import java.util.List;
 import org.apache.lucene.index.AtomicReader;
-import org.apache.lucene.index.AtomicReaderContext;
-import org.apache.lucene.index.CompositeReader;
 import org.apache.lucene.index.DocsEnum;
-import org.apache.lucene.index.Fields;
-import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.index.SlowCompositeReaderWrapper;
 import org.apache.lucene.index.Terms;
 import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.search.DocIdSetIterator;
-import org.apache.lucene.search.FieldCache;
 import org.apache.lucene.search.IndexSearcher;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.index.mapping.FieldNames;
 
 /**
- *
+ * Ordered iteratinoall URIs of property sets present in index
  */
-public class PropertySet4IndexUriIterator implements CloseableIterator<Path> {
+public class UriIterator implements CloseableIterator<Path> {
 
-    private final Lucene4IndexManager index;
+    private final IndexManager index;
     private final IndexSearcher searcher;
     private final AtomicReader reader;
     private TermsEnum te;
     private DocsEnum de;
     private Path next;
     
-    public PropertySet4IndexUriIterator(Lucene4IndexManager index) throws IOException {
+    public UriIterator(IndexManager index) throws IOException {
         this.index = index;
         searcher = index.getIndexSearcher();
         // We need this to get global lexicographic term ordering across all index segments:

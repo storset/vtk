@@ -35,7 +35,7 @@ import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
-import org.vortikal.repository.index.mapping.Field4ValueMapper;
+import org.vortikal.repository.index.mapping.FieldValues;
 import org.vortikal.repository.index.mapping.FieldNames;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -61,9 +61,9 @@ import org.vortikal.repository.search.query.filter.FilterFactory;
 public class PropertyTermQueryBuilder implements QueryBuilder {
 
     private final PropertyTermQuery ptq;
-    private Field4ValueMapper fvm;
+    private FieldValues fvm;
     
-    public PropertyTermQueryBuilder(PropertyTermQuery ptq, Field4ValueMapper fvm) {
+    public PropertyTermQueryBuilder(PropertyTermQuery ptq, FieldValues fvm) {
         this.ptq = ptq;
         this.fvm = fvm;
     }
@@ -80,7 +80,7 @@ public class PropertyTermQueryBuilder implements QueryBuilder {
         final PropertyType.Type valueType;
         final String fieldName;
         if (cva != null) {
-            valueType = Field4ValueMapper.getJsonFieldDataType(propDef, cva);
+            valueType = FieldValues.getJsonFieldDataType(propDef, cva);
             fieldName = FieldNames.jsonFieldName(propDef, cva, lowercase);
         } else {
             valueType = propDef.getType();

@@ -46,8 +46,6 @@ import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.util.Bits;
-import org.apache.lucene.util.BytesRef;
-import org.apache.lucene.util.NumericUtils;
 
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
@@ -60,10 +58,10 @@ import org.vortikal.repository.index.mapping.FieldNames;
 class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRandomAccessor {
 
     private final DocumentMapper mapper;
-    private final Lucene4IndexManager index;
+    private final IndexManager index;
     private final IndexSearcher searcher;
     
-    public PropertySetIndexRandomAccessorImpl(Lucene4IndexManager index, DocumentMapper mapper) 
+    public PropertySetIndexRandomAccessorImpl(IndexManager index, DocumentMapper mapper) 
         throws IOException {
         this.mapper = mapper;
         this.index = index;

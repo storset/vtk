@@ -33,7 +33,7 @@ package org.vortikal.repository.search.query.builders;
 import org.apache.lucene.search.NumericRangeQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermRangeQuery;
-import org.vortikal.repository.index.mapping.Field4ValueMapper;
+import org.vortikal.repository.index.mapping.FieldValues;
 import org.vortikal.repository.index.mapping.FieldNames;
 
 import org.vortikal.repository.resourcetype.PropertyType;
@@ -49,9 +49,9 @@ import org.vortikal.repository.search.query.QueryBuilderException;
 public class PropertyRangeQueryBuilder implements QueryBuilder {
 
     private PropertyRangeQuery prq;
-    private Field4ValueMapper fvm;
+    private FieldValues fvm;
     
-    public PropertyRangeQueryBuilder(PropertyRangeQuery prq, Field4ValueMapper fvm) {
+    public PropertyRangeQueryBuilder(PropertyRangeQuery prq, FieldValues fvm) {
         this.prq = prq;
         this.fvm = fvm;
     }
@@ -71,7 +71,7 @@ public class PropertyRangeQueryBuilder implements QueryBuilder {
         final String fieldName;
         final PropertyType.Type valueType;
         if (cva != null) {
-            valueType = Field4ValueMapper.getJsonFieldDataType(propDef, cva);
+            valueType = FieldValues.getJsonFieldDataType(propDef, cva);
             fieldName = FieldNames.jsonFieldName(propDef, cva, false);
         } else {
             valueType = propDef.getType();

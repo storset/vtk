@@ -44,14 +44,15 @@ import org.vortikal.util.threads.Mutex;
  * <p>Configurable properties:
  * <ul>
  *   <li><code>indexPath</code> - absolute path to file system directory where index should be created.
+ *   <li>TODO complete me.
  * </ul>
  * 
  * TODO we should support a lazy reader with longer time between refreshes for efficient
  * anonymous queries which do not requre completely up-to-date results.
  */
-public class Lucene4IndexManager implements InitializingBean, DisposableBean {
+public class IndexManager implements InitializingBean, DisposableBean {
     
-    private final Log logger = LogFactory.getLog(Lucene4IndexManager.class.getName());
+    private final Log logger = LogFactory.getLog(IndexManager.class.getName());
     
     private File storageRootPath;
     private String storageId;

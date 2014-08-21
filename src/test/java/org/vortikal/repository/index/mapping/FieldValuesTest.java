@@ -49,15 +49,15 @@ import org.vortikal.security.PrincipalImpl;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-import org.vortikal.repository.index.mapping.Field4ValueMapper.FieldSpec;
+import org.vortikal.repository.index.mapping.FieldValues.FieldSpec;
 
-public class FieldValueMapperTest {
+public class FieldValuesTest {
 
-    private final Field4ValueMapper fvm;
+    private final FieldValues fvm;
     private final ValueFactory vf;
 
-    public FieldValueMapperTest() {
-        this.fvm = new Field4ValueMapper();
+    public FieldValuesTest() {
+        this.fvm = new FieldValues();
         ValueFactoryImpl vf = new ValueFactoryImpl();
         vf.setPrincipalFactory(new MockPrincipalFactory());
         this.vf = vf;

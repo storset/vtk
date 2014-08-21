@@ -63,7 +63,7 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.Vocabulary;
-import org.vortikal.repository.index.mapping.Field4ValueMapper;
+import org.vortikal.repository.index.mapping.FieldValues;
 import org.vortikal.repository.index.mapping.FieldNames;
 
 import org.vortikal.repository.resourcetype.PropertyType;
@@ -104,7 +104,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
     Log logger = LogFactory.getLog(LuceneQueryBuilderImpl.class);
 
     private ResourceTypeTree resourceTypeTree;
-    private Field4ValueMapper fieldValueMapper;
+    private FieldValues fieldValueMapper;
     private QueryAuthorizationFilterFactory queryAuthorizationFilterFactory;
     private PropertyTypeDefinition publishedPropDef;
     private PropertyTypeDefinition unpublishedCollectionPropDef;
@@ -472,7 +472,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
     }
 
     @Required
-    public void setFieldValueMapper(Field4ValueMapper fieldValueMapper) {
+    public void setFieldValueMapper(FieldValues fieldValueMapper) {
         this.fieldValueMapper = fieldValueMapper;
     }
 

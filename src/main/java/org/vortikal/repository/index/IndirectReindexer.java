@@ -51,9 +51,9 @@ import org.vortikal.repository.store.IndexDao;
  */
 public class IndirectReindexer implements PropertySetIndexReindexer {
 
-    private IndexDao indexDao;
-    private PropertySetIndex targetIndex;
-    private PropertySetIndex temporaryIndex;
+    private final IndexDao indexDao;
+    private final PropertySetIndex targetIndex;
+    private final PropertySetIndex temporaryIndex;
     private static final Log LOG = LogFactory.getLog(IndirectReindexer.class);
     
     public IndirectReindexer(PropertySetIndex targetIndex, 

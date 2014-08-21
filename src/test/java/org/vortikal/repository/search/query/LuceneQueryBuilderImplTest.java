@@ -52,7 +52,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.index.mapping.FieldNames;
-import org.vortikal.repository.index.mapping.Field4ValueMapper;
+import org.vortikal.repository.index.mapping.FieldValues;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.query.security.QueryAuthorizationFilterFactory;
@@ -90,7 +90,7 @@ public class LuceneQueryBuilderImplTest {
         unpublishedCollectionPropDef.setName("unpublishedCollection");
         luceneQueryBuilder.setUnpublishedCollectionPropDef(unpublishedCollectionPropDef);
 
-        luceneQueryBuilder.setFieldValueMapper(new Field4ValueMapper());
+        luceneQueryBuilder.setFieldValueMapper(new FieldValues());
 
         
         List<Term> terms = new ArrayList<Term>();

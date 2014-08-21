@@ -71,7 +71,7 @@ import org.vortikal.util.cache.ReusableObjectCache;
  * 
  * TODO missing JavaDoc for most methods
  */
-public class Field4ValueMapper implements InitializingBean {
+public class FieldValues implements InitializingBean {
     
     // Note that order (complex towards simpler format) is important here.
     public static final String[] SUPPORTED_DATE_FORMATS = {

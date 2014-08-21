@@ -39,7 +39,7 @@
    <#else>
     <h1><@vrtx.msg code="decorating.emailAFriendComponent.emaillink" /></h1>
     <h2>${resource.title}</h2>
-     <form id="email-a-friend-form" method="post" action="?vrtx=email-a-friend">
+     <form id="email-a-friend-form" method="post" action="${closeURI}?vrtx=email-a-friend">
        
        <label for="emailTo"><@vrtx.msg code="email.form.to" default="Send e-mail to" /></label>
        <div class="vrtx-textfield">

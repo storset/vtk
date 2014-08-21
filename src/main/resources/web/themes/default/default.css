@@ -1379,6 +1379,10 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   border: none;
 }
 
+.tooltips.label-tooltips {
+  margin: 0 0 -3px 5px;
+}
+
 #permissions-inheritance .tooltips,
 #title-container .tooltips {
   border-bottom: none;

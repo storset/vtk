@@ -3950,6 +3950,11 @@ function openRegular(url, width, height, winTitle) {
   return openGeneral(url, width, height, winTitle + now, sOptions);
 }
 
+function openPopupScrollable(url, width, height, winTitle) {
+  var sOptions = "toolbar=no,status=no,resizable=yes,scrollbars=yes"; // http://www.quirksmode.org/js/popup.html
+  return openGeneral(url, width, height, winTitle, sOptions); // title must be without spaces in IE
+}
+
 function openPopup(url, width, height, winTitle) {
   var sOptions = "toolbar=no,status=no,resizable=yes"; // http://www.quirksmode.org/js/popup.html
   return openGeneral(url, width, height, winTitle, sOptions); // title must be without spaces in IE

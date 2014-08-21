@@ -1,3 +1,8 @@
+/*
+ * WebDAV functionality
+ *
+ */
+
 if(typeof agentWebDav === "undefined") {
   $(function() {
     var ua = navigator.userAgent.toLowerCase();         

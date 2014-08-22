@@ -41,6 +41,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
@@ -50,6 +51,7 @@ import org.vortikal.repository.index.PropertySetIndex;
 import org.vortikal.repository.index.PropertySetIndexRandomAccessor;
 import org.vortikal.repository.index.PropertySetIndexRandomAccessor.PropertySetInternalData;
 import org.vortikal.repository.index.StorageCorruptionException;
+import org.vortikal.repository.index.mapping.AclFields;
 import org.vortikal.repository.index.mapping.DocumentMappingException;
 import org.vortikal.repository.store.IndexDao;
 import org.vortikal.repository.store.PropertySetHandler;
@@ -168,12 +170,14 @@ public class ConsistencyCheck {
             
             @Override
             public void handlePropertySet(PropertySet propertySet, 
-                                          Set<Principal> aclReadPrincipals) {
+                                          Acl acl) {
 
                 PropertySetImpl daoPropSet = (PropertySetImpl)propertySet;
                 Path currentUri = daoPropSet.getURI();
                 int indexInstances = 
                     randomIndexAccessor.countInstances(currentUri);
+                
+                final Set<Principal> aclReadPrincipals = AclFields.aggregatePrincipalsForRead(acl);
                 
                 if (indexInstances == 0) {
                     // Missing in index

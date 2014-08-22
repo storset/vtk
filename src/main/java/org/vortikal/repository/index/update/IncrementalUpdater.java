@@ -40,11 +40,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.ChangeLogEntry;
 import org.vortikal.repository.ChangeLogEntry.Operation;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.index.PropertySetIndex;
+import org.vortikal.repository.index.mapping.AclFields;
 import org.vortikal.repository.store.ChangeLogDAO;
 import org.vortikal.repository.store.IndexDao;
 import org.vortikal.repository.store.PropertySetHandler;
@@ -195,15 +197,16 @@ public class IncrementalUpdater {
                 class CountingPropertySetHandler implements PropertySetHandler {
                     int count = 0;
                     @Override
-                    public void handlePropertySet(PropertySet propertySet,
-                            Set<Principal> aclReadPrincipals) {
+                    public void handlePropertySet(PropertySet propertySet, Acl acl) {
   
                         if (logger.isDebugEnabled()) {
                             logger.debug("ADD " + propertySet.getURI());
                         }
+                        
+                        Set<Principal> readPrincipals = AclFields.aggregatePrincipalsForRead(acl);
 
                         // Add updated resource to index
-                        index.addPropertySet(propertySet, aclReadPrincipals);
+                        index.addPropertySet(propertySet, readPrincipals);
                         
                         if (++count % 10000 == 0) {
                             // Log some progress to update
@@ -211,6 +214,7 @@ public class IncrementalUpdater {
                                     + updateUris.size() + " total in current update batch.");
                         }
                     }
+
                 }
                 
                 CountingPropertySetHandler handler = new CountingPropertySetHandler();

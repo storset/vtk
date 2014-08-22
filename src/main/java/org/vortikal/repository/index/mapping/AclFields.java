@@ -1,21 +1,21 @@
-/* Copyright (c) 2011, University of Oslo, Norway
+/* Copyright (c) 2014, University of Oslo, Norway
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  *  * Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
- * 
+ *
  *  * Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 
+ *
  *  * Neither the name of the University of Oslo nor the names of its
  *    contributors may be used to endorse or promote products derived from
  *    this software without specific prior written permission.
- *      
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
  * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
  * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -28,28 +28,39 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.store;
 
+package org.vortikal.repository.index.mapping;
 
+import java.util.HashSet;
+import java.util.Set;
 import org.vortikal.repository.Acl;
-import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.AuthorizationManager;
+import org.vortikal.repository.Privilege;
+import org.vortikal.security.Principal;
 
 /**
- * Interface for callback-based <code>PropertySet</code> result fetching.
- * Used by {@link IndexDao}.
- * 
- * @author oyviste
  *
+ * Temporary and intermediate support util for ACL fields in index.
+ * 
  */
-public interface PropertySetHandler {
-
+public class AclFields {
+    
     /**
-     * Handles a <code>PropertySet</code> and the ACL object which applies to
-     * the resource backing the property set.
+     * Extract set of all principals in ACL which through suitable privileges
+     * are able to READ the resource.
      * 
-     * @param propertySet a property set
-     * @param acl the ACL for the property set
+     * @param acl the 
+     * @return a set of <code>Principal</code> which are in aggregate allowed to
+     * READ through one or more of the privileges present in the ACL.
      */
-    void handlePropertySet(PropertySet propertySet, Acl acl);
-
+    public static Set<Principal> aggregatePrincipalsForRead(Acl acl) {
+        
+        Set<Principal> readSet = new HashSet<Principal>();
+        for (Privilege p: AuthorizationManager.superPrivilegesOf(Privilege.READ_PROCESSED)) {
+            readSet.addAll(acl.getPrincipalSet(p));
+        }
+        
+        return readSet;
+    }
+        
 }

@@ -52,7 +52,11 @@ import org.vortikal.repository.store.PropertySetHandler;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 
+import static org.vortikal.repository.store.db.SqlMapDataAccessor.AclHolder;
+
 import com.ibatis.sqlmap.client.SqlMapExecutor;
+import java.util.ArrayList;
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 
@@ -174,6 +178,31 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
         parameterMap.put("uris", paths);
         
         return getSqlMapClientTemplate().queryForList(sqlMap, parameterMap);
+    }
+    
+    /**
+     * Load full ACL for a property set from database. Returned ACL may be <code>null</code>
+     * if it no longer exists.
+     * 
+     * @param resourceId the ID of the resource having the (non-inherited) ACL.
+     * @return an <code>Acl</code> instance, possibly {@link Acl#EMPTY_ACL} if the
+     * resource did not exist, but never <code>null</code>.
+     */
+    Acl loadAcl(Integer resourceId) {
+        List<Integer> resourceIds = new ArrayList<Integer>(1);
+        resourceIds.add(resourceId);
+        
+        Map<Integer, AclHolder> aclMap = 
+                new HashMap<Integer, AclHolder>(1);
+        
+        this.sqlMapDataAccessor.loadAclBatch(resourceIds, aclMap);
+        
+        AclHolder aclHolder = aclMap.get(resourceId);
+        if (aclHolder == null) {
+            return Acl.EMPTY_ACL;
+        }
+        
+        return new Acl(aclHolder);
     }
     
     /**

@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -67,13 +68,16 @@ public final class AuthorizationManager {
             new EnumMap<Privilege, List<Pattern>>(Privilege.class);
 
     /**
-     * Map of a single privilege P to the set of privileges A{P,..} in which
+     * Map of a single privilege P to the set of super privileges A{P,..} in which
      * all privileges shall imply permissions equal to or broader than P. The
      * set A always includes the privilege P itself.
      */
-    private static final Map<Privilege, Privilege[]> PRIVILEGE_HIERARCHY =
-                           new EnumMap<Privilege, Privilege[]>(Privilege.class);
+    private static final Map<Privilege, Privilege[]> PRIVILEGE_HIERARCHY; 
+                           
     static {
+        PRIVILEGE_HIERARCHY = 
+                new EnumMap<Privilege, Privilege[]>(Privilege.class);
+        
         PRIVILEGE_HIERARCHY.put(Privilege.READ_PROCESSED, new Privilege[] {
                 Privilege.READ_PROCESSED,
                 Privilege.READ,
@@ -107,6 +111,24 @@ public final class AuthorizationManager {
         });
     }
     
+    /**
+     * For a <code>Privilege</code> P, return the set of all super privileges
+     * that also give privilege P, according the security model. The set includes P itself.
+     * 
+     * <p>For instance, for
+     * {@link Privilege#READ}, the set would contain privileges that logically
+     * allow <code>Privilege.READ</code>. This includes, amongst others, <code>Privilege.READ</code> itself and
+     * and {@link Privilege#READ_WRITE}.
+     * 
+     * @param p the privilege
+     * @return a set of privileges which all imply privilege p, including
+     * p itself.
+     */
+    public static Set<Privilege> superPrivilegesOf(Privilege p) {
+        Set<Privilege> set = EnumSet.noneOf(Privilege.class);
+        set.addAll(Arrays.asList(PRIVILEGE_HIERARCHY.get(p)));
+        return set;
+    }
     
     /**
      * Authorizes a principal for a root role action. Should throw an

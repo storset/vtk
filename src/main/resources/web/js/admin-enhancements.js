@@ -23,7 +23,7 @@
     1. Config
 \*-------------------------------------------------------------------*/
 
-var startLoadTime = +new Date();
+var startLoadTime = getNowTime();
 
 /**
  * Creates an instance of VrtxAdmin
@@ -186,7 +186,7 @@ var VrtxAnimation = function(opts) {
 var isEmbedded = window.location.href.indexOf("&embed") !== -1;
 var onlySessionId = gup("sessionid", window.location.href);
 vrtxAdmin._$(document).ready(function () {
-  var startReadyTime = +new Date(), vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
+  var startReadyTime = getNowTime(), vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
   
   if(typeof datePickerLang === "string") {
      vrtxAdm.lang = datePickerLang;
@@ -238,7 +238,7 @@ vrtxAdmin._$(document).ready(function () {
     vrtxAdm.initDomains();
   }, 25);
 
-  vrtxAdm.log({ msg: "Document.ready() in " + (+new Date() - startReadyTime) + "ms." });
+  vrtxAdm.log({ msg: "Document.ready() in " + (getNowTime() - startReadyTime) + "ms." });
 });
 
 
@@ -250,7 +250,7 @@ vrtxAdmin._$(window).load(function () {
   var vrtxAdm = vrtxAdmin;
   if (vrtxAdm.runReadyLoad === false) return; // Return if should not run load() code
 
-  vrtxAdm.log({ msg: "Window.load() in " + (+new Date() - startLoadTime) + "ms." });
+  vrtxAdm.log({ msg: "Window.load() in " + (getNowTime() - startLoadTime) + "ms." });
 });
 
 
@@ -4193,6 +4193,24 @@ VrtxAdmin.prototype.zebraTables = function zebraTables(selector) {
     table.find("tbody tr:first-child").addClass("first");
   }
 };
+
+/**
+ * Get UNIX-time (more accurate if available)
+ *
+ * @param {boolean} useNsRes Use nanoseconds resolution if available (or just add three zeroes if not)
+ * @return {number} Unix-time
+ */
+function getNowTime(useNsRes) {
+  if(window.performance) {
+    var now = window.performance.now();
+  } else {
+    var now = +new Date();
+  }
+  if(typeof useNsRes === "boolean" && useNsRes) {
+    now *= 1000;
+  }
+  return Math.round(now); // performance.now() provides even higher resolution than ns
+}
 
 /* Get URL parameter
  *

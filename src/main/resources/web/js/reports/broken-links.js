@@ -37,7 +37,7 @@ vrtxAdmin._$(document).ready(function() {
        } 
      });
 
-     var pairs = location.search.split(/\&/),
+     var pairs = window.location.search.split(/\&/),
          includedFolders = "", excludedFolders = "", query = "", pair = "";
      for(var i = 0, pairsLen = pairs.length; i < pairsLen; i++) {
        if(pairs[i].match(/^include-path/g)) { // Add include folders
@@ -105,16 +105,16 @@ vrtxAdmin._$(document).ready(function() {
         }
       }
       // Update URL in address bar
-      var thehref = location.href;
+      var thehref = window.location.href;
       var indexOfIncludeFolder = thehref.indexOf("&include-path"),
           indexOfExcludeFolder = thehref.indexOf("&exclude-path"),
           indexOfIncludeORExcludeFolder = (indexOfIncludeFolder !== -1) ? (indexOfExcludeFolder !== -1) 
                                                                         ? Math.min(indexOfIncludeFolder, indexOfExcludeFolder)
                                                                         : indexOfIncludeFolder : indexOfExcludeFolder;
       if(indexOfIncludeORExcludeFolder !== -1) {
-        location.href = thehref.substring(0, indexOfIncludeORExcludeFolder) + includeQueryString + excludeQueryString;
+        window.location.href = thehref.substring(0, indexOfIncludeORExcludeFolder) + includeQueryString + excludeQueryString;
       } else {
-        location.href = thehref + includeQueryString + excludeQueryString;      
+        window.location.href = thehref + includeQueryString + excludeQueryString;      
       }
       e.stopPropagation();
       e.preventDefault();

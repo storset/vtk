@@ -22,7 +22,7 @@ $(document).ready(function() {
         if(/\/$/.test(editUrl)) {
           editUrl += "index.html";
         }
-        location.href = editUrl + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + encodeURIComponent(idRow) + "&t=" + (+ new Date()); // IE10 cache fix
+        window.location.href = editUrl + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + encodeURIComponent(idRow) + "&t=" + (+ new Date()); // IE10 cache fix
         e.stopPropagation();
         e.preventDefault();
       });

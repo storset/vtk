@@ -5,7 +5,7 @@
 
 if(typeof agentWebDav === "undefined") {
   $(function() {
-    var ua = navigator.userAgent.toLowerCase();         
+    var ua = window.navigator.userAgent.toLowerCase();         
     var isWinWebDav = ((ua.indexOf("win") != -1) || (ua.indexOf("16bit") != -1));
     if ($.browser.msie && $.browser.version >= 7 && isWinWebDav) {  
       $(".vrtx-resource-open-webdav").click(function(e) {

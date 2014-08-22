@@ -1585,7 +1585,7 @@ function addJsonField(btn) {
   
   // Box picture
   initPictureAddJsonField(btn.closest(".vrtx-json").find(".vrtx-json-element:last"));
-
+  // Count
   vrtxEditor.multipleFieldsBoxes[j.name].counter++;
 }
 

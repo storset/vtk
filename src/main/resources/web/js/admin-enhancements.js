@@ -36,7 +36,7 @@ function VrtxAdmin() {
   this._$ = $;
 
   // Browser info/capabilities: used for e.g. progressive enhancement and performance scaling based on knowledge of current JS-engine
-  this.ua = navigator.userAgent.toLowerCase();
+  this.ua = window.navigator.userAgent.toLowerCase();
   this.isIE = /(msie) ([\w.]+)/.test(this.ua);
   var ieVersion = /(msie) ([\w.]+)/.exec(this.ua);
   this.browserVersion = (ieVersion != null) ? ieVersion[2] : "0";
@@ -456,7 +456,7 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
             });
 
             dialog.on("click", ".tip a", function (e) { // Override jQuery UI prevention
-              location.href = this.href;
+              window.location.href = this.href;
             });
             
             var tree = new VrtxTree({
@@ -844,7 +844,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
           vrtxAdm.updateCollectionListingInteraction();
           deletingPermanentD.close();
           if(deletingPermanentEmptyFolder) { // Redirect on empty trash can
-            location.href = "./?vrtx=admin";
+            window.location.href = "./?vrtx=admin";
           }
         },
         fnError: function() {
@@ -886,9 +886,9 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
             if(vrtxAdm.editorSaveIsRedirectView) {
               var isCollection = _$("#resource-title.true").length;
               if(isCollection) {
-                location.href = "./?vrtx=admin&action=preview";
+                window.location.href = "./?vrtx=admin&action=preview";
               } else {
-                location.href = location.pathname + "?vrtx=admin";
+                window.location.href = window.location.pathname + "?vrtx=admin";
               }
             }
           }).fail(handleAjaxSaveErrors);
@@ -967,7 +967,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
           funcProceedCondition: checkStillAdmin,
           funcComplete: function () {
             if (vrtxAdm.reloadFromServer) {
-              location.reload(true);
+              window.location.reload(true);
             } else {
               vrtxAdm.globalAsyncComplete();
             }
@@ -1125,9 +1125,9 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
     case "vrtx-report-broken-links":
       vrtxAdm.cachedDoc.on("click", ".vrtx-report-alternative-view-switch input", function(e) {
         if(!$(this).is(":checked")) {
-          location.href = location.href.replace("&" + this.name, "");
+          window.location.href = window.location.href.replace("&" + this.name, "");
         } else {
-          location.href = location.href + "&" + this.name;
+          window.location.href = window.location.href + "&" + this.name;
         }
         e.stopPropagation();
         e.preventDefault();
@@ -1404,7 +1404,7 @@ VrtxAdmin.prototype.initScrollBreadcrumbs = function initScrollBreadcrumbs() {
 
   vrtxAdm.cachedDoc.on("keydown", ".vrtx-breadcrumb-level", function(e) {
     if((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
-      location.href = $(this).find("a").attr("href");
+      window.location.href = $(this).find("a").attr("href");
       e.stopPropagation();
     }  
   });
@@ -2719,7 +2719,7 @@ function isServerLastModifiedOlderThanClientLastModified(d) {
   var isOlder = true;
   vrtxAdmin._$.ajax({
     type: "GET",
-    url: location.pathname + "?vrtx=admin&mode=about" + (gup("service", location.search) === "view" ? "&service=view" : ""),
+    url: window.location.pathname + "?vrtx=admin&mode=about" + (gup("service", window.location.search) === "view" ? "&service=view" : ""),
     async: false,
     cache: false,
     success: function (results, status, resp) {
@@ -2768,7 +2768,7 @@ function ajaxSaveAsCopy() {
   var vrtxAdm = vrtxAdmin,
   _$ = vrtxAdm._$;
 
-  if(/\/$/i.test(location.pathname)) { // Folder
+  if(/\/$/i.test(window.location.pathname)) { // Folder
     var d = new VrtxMsgDialog({
       msg: vrtxAdm.serverFacade.errorMessages.cantBackupFolder,
       title: vrtxAdm.serverFacade.errorMessages.cantBackupFolderTitle,
@@ -2790,7 +2790,7 @@ function ajaxSaveAsCopy() {
     contentType: "application/x-www-form-urlencoded;charset=UTF-8",
     success: function (results, status, resp) {
       var copyUri = resp.getResponseHeader('Location');
-      var copyEditUri = copyUri + location.search;
+      var copyEditUri = copyUri + window.location.search;
       
       // GET editor for the copy to get token etc.
       _$.ajax({
@@ -2808,9 +2808,9 @@ function ajaxSaveAsCopy() {
           ajaxSave();
           _$.when(vrtxAdm.asyncEditorSavedDeferred).done(function () {
             if(!vrtxAdm.editorSaveIsRedirectView) {
-              location.href = copyEditUri;
+              window.location.href = copyEditUri;
             } else {
-              location.href = copyUri + "/?vrtx=admin";
+              window.location.href = copyUri + "/?vrtx=admin";
             }
           }).fail(handleAjaxSaveErrors);
         },
@@ -2881,7 +2881,7 @@ function retokenizeFormsOpenSaveDialog(d2, isEditorSave) {
   
   $.ajax({
     type: "GET",
-    url: location.href,
+    url: window.location.href,
     cache: true,
     dataType: "html",
     success: function (results, status, resp) {
@@ -3064,7 +3064,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(opts) {
     
     var link = _$(this),
         url = link.attr("href") || link.closest("form").attr("action"),
-        modeUrl = location.href,
+        modeUrl = window.location.href,
         fromModeToNotMode = false,
         existExpandedFormIsReplaced = false,
         expandedForm = $(".expandedForm"),
@@ -3354,7 +3354,7 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(opts)
   var vrtxAdm = vrtxAdmin,
        _$ = vrtxAdm._$,
       url = opts.form.attr("action"),
-      modeUrl = location.href,
+      modeUrl = window.location.href,
       dataString = opts.form.serialize() + "&" + opts.link.attr("name");
 
   vrtxAdmin.serverFacade.postHtml(url, dataString, {
@@ -3896,7 +3896,7 @@ VrtxAdmin.prototype.serverFacade = {
     var serverFacade = this, msg = "";
     vrtxAdmin._$.ajax({
       type: "GET",
-      url: location.href,
+      url: window.location.href,
       async: false,
       success: function (results, status, resp) { // Exists - Locked
         msg = useStatusCodeInMsg ? status + " - " + serverFacade.errorMessages.s423 : "LOCKED";
@@ -3987,7 +3987,7 @@ $(window).on("message", function(e) {
 function refreshParent() {
   window.opener.postMessage("displaymsg", "*");
 }
-if(gup("displaymsg", location.href) === "yes") {
+if(gup("displaymsg", window.location.href) === "yes") {
   window.onunload = refreshParent;    
 }
 

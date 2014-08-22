@@ -116,7 +116,7 @@
     var maxRuns = 0;
     $(window).resize($.throttle(250, function () {
       // IE and iPad only run resize event 2 times
-      if (maxRuns < 2 || (!$.browser.msie && !/iPad/.test(navigator.userAgent))) {
+      if (maxRuns < 2 || (!$.browser.msie && !/iPad/.test(window.navigator.userAgent))) {
         if(isFullscreen || isResponsive) {
           resizeFullscreen(true);
         }
@@ -190,7 +190,7 @@
     
     function loadImage(src) {      
       if(src.indexOf("//") === 0) {
-        src = location.protocol + src;
+        src = window.location.protocol + src;
       }
       var id = genId(src);
       if(wrp.find("a#" + id).length) return;

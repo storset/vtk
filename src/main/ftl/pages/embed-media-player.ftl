@@ -16,9 +16,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>${title}</title>
-  <style>
-    body {background-color: #000; height: 100%; width: 100%; margin: 0; padding: 0;}
-  </style>
+  <link rel="stylesheet" media="all" href="/vrtx/__vrtx/static-resources/themes/default/embed-media.css" />
 </head>
 <body>
 

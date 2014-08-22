@@ -3916,7 +3916,7 @@ VrtxAdmin.prototype.serverFacade = {
 
 
 /*-------------------------------------------------------------------*\
-    11. CK browse server integration
+    11. Popups and CK browse server integration
 \*-------------------------------------------------------------------*/
 
 // XXX: don't pollute global namespace

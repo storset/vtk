@@ -665,6 +665,13 @@ div#resource\.studentExchangeUniversityAgreementListing\.picture\.preview.no-pre
   width: 63px;
 }
 
+/* Make scrollbar visible with padding in textarea / CK-source */
+.cke_chrome .cke_source {
+  -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+  -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+  box-sizing: border-box;         /* Opera/IE 8+ */
+}
+
 /* Override CK for injected save/help */
 
 .cke_chrome .vrtx-button {

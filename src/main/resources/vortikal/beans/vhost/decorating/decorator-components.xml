@@ -572,11 +572,11 @@
     <property name="examples">
       <map>
         <entry key="url=[/news/?vrtx=feed]" value="" />
-        <entry key="item-picture=[true] item-description=[true]" value="Show item-picture and item-description (introduction-picture and introduction)" />
+        <entry key="url=[/news/?vrtx=feed] item-picture=[true] item-description=[true]" value="Show item-picture and item-description (introduction-picture and introduction)" />
         <entry key="url=[/news/?vrtx=feed] sort=[asc]" value="" />
         <entry key="url=[/news/?vrtx=feed] sort=[item-title desc]" value="" />
         <entry key="url=[/news/?vrtx=feed] sort=[published-date asc]" value="" />
-        <entry key="url=[/news/?vrtx=feed] element-order=[description,title,picture]" value="Element-order-example" />
+        <entry key="url=[/news/?vrtx=feed] element-order=[title,publishDate,picture,description]" value="Element-order-example" />
       </map>
     </property>
   </bean>

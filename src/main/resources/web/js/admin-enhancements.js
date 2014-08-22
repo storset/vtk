@@ -13,7 +13,7 @@
  *  8.  Permissions
  *  9.  Async functions
  *  10. Async helper functions and AJAX server façade
- *  11. CK browse server integration
+ *  11. Popups and CK browse server integration
  *  12. Utils
  *  13. Override JavaScript / jQuery
  *

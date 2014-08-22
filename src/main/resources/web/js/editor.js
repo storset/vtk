@@ -1336,8 +1336,8 @@ function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown
       }
     }
     
-    var addBtn = $("#vrtx-" + name + "-add");
-    $($.parseHTML(html, document, true)).insertBefore(addBtn);
+    var moreBtn = $("#vrtx-" + name + "-add");
+    $($.parseHTML(html, document, true)).insertBefore(moreBtn);
     
     fields = $("." + name + " div.vrtx-multipleinputfield");
     
@@ -1348,14 +1348,14 @@ function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown
     autocompleteUsername(".vrtx-autocomplete-username", idstr + i);
     autocompleteUsername(".vrtx-autocomplete-username", idstr + "id-" + i); // JSON name='id' fix
     
-    var focusable = addBtn.prev().find("input[type='text'], select")
+    var focusable = moreBtn.prev().find("input[type='text'], select")
     if(focusable.length) {
       focusable[0].focus();
     }
 
     // Hide add button if limit is reached
     if((len == (vrtxEditor.multipleFieldsBoxes[name].limit - 1))) {
-      $("<p class='vrtx-" + name + "-limit-reached'>" + vrtxAdmin.multipleFormGroupingMessages.limitReached + "</p>").insertBefore(addBtn);
+      $("<p class='vrtx-" + name + "-limit-reached'>" + vrtxAdmin.multipleFormGroupingMessages.limitReached + "</p>").insertBefore(moreBtn);
       moreBtn.hide();
     }
   } else {

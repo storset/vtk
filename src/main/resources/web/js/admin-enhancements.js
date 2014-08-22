@@ -1300,7 +1300,7 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
     var togglerWrp = list.find("li" + dropdownClickArea);
     togglerWrp.addClass("dropdown-init");
   
-    togglerWrp.on("click keyup", ".dropdown-shortcut-menu-click-area", function (e) {
+    togglerWrp.on("click keypress", ".dropdown-shortcut-menu-click-area", function (e) {
       if (e.type == "click" || (e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
         var link = $(this);
         vrtxAdm.closeDropdowns();
@@ -1408,14 +1408,14 @@ VrtxAdmin.prototype.initScrollBreadcrumbs = function initScrollBreadcrumbs() {
       e.stopPropagation();
     }  
   });
-  vrtxAdm.cachedDoc.on("click keyup", "#navigate-crumbs-left", function(e) {
+  vrtxAdm.cachedDoc.on("click keypress", "#navigate-crumbs-left", function(e) {
     if(e.type == "click" || ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13))) {
       vrtxAdmin.scrollBreadcrumbsLeft();
       e.stopPropagation();
       e.preventDefault();
     }
   });
-  vrtxAdm.cachedDoc.on("click keyup", "#navigate-crumbs-right", function(e) {
+  vrtxAdm.cachedDoc.on("click keypress", "#navigate-crumbs-right", function(e) {
     if(e.type == "click" || ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13))) {
       vrtxAdmin.scrollBreadcrumbsRight();
       e.stopPropagation();

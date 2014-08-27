@@ -47,7 +47,8 @@ function VrtxAdmin() {
   this.isIETridentInComp = this.isIE7 && /trident/.test(this.ua);
   this.isIPhone = /iphone/.test(this.ua);
   this.isIPad = /ipad/.test(this.ua);
-  this.isNotIos6 = (this.isIPhone || this.isIPad) && this.ua.match(/os (2|3|4|5)_/) != null;
+  this.isIOS = this.isIPhone || this.isIPad;
+  this.isNotIos6 = this.isIOS && this.ua.match(/os (2|3|4|5)_/) != null;
   this.isAndroid = /android/.test(this.ua); // http://www.gtrifonov.com/2011/04/15/google-android-user-agent-strings-2/
   this.isMobileWebkitDevice = (this.isIPhone || this.isIPad || this.isAndroid);
   this.isWin = ((this.ua.indexOf("win") != -1) || (this.ua.indexOf("16bit") != -1));
@@ -2153,7 +2154,7 @@ function ajaxUploadPerform(opts, size) {
  * @this {VrtxAdmin}
  */
 VrtxAdmin.prototype.supportsMultipleAttribute = function supportsMultipleAttribute(inputfield) {
-  return ( !! (inputfield.multiple === false) && !! (inputfield.multiple !== "undefined"));
+  return ( !! (inputfield.multiple === false) && !! (inputfield.multiple !== "undefined")) && !vrtxAdmin.isIOS;
 };
 
 /**

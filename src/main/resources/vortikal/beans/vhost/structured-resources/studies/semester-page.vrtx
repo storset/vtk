@@ -45,6 +45,7 @@ resourcetype semester-page {
   edit-rules {
     ctx-patch (class[vrtx-info-msg]),
 
+    cloned-course-code (size[12]),
     messages-placement (dropdown),
     max-number-of-messages (dropdown),
     group sec (schedule, exam, syllabus) (before link-box-one-title),
@@ -494,9 +495,9 @@ resourcetype semester-page {
     link-box-six-links : (en : "Links", no : "Lenker", nn : "Lenker"),
     linktitle : (en : "Link title", no : "Lenketittel", nn : "Lenketittel"),
     link : (en : "Link", no : "Lenke", nn : "Lenke"),
-    cloned-course : (en : "Joint teaching (cloned course)", no : "Felles undervisning (klonet emne)", nn : "Felles undervisning (klona emne)"),
+    cloned-course : (en : "The course follows the teaching schedule of another course (cloned course)", no : "Emnet følger undervisningen til et annet emne (klonet emne)", nn : "Emnet følgjer undervisninga til eit anna emne (klona emne)"),
+    cloned-course-code : (en : "The course code to the course with the teaching schedule", no : "Emnekoden til emnet der undervisningen foregår", nn : "Emnekoden til emnet der undervisninga går føre seg"),
     cloned-course-title : (en : "Joint teaching", no : "Felles undervisning", nn : "Felles undervisning"),
-    cloned-course-code : (en : "Fill in course code", no : "Skriv inn emnekode", nn : "Skriv inn emnekode"),
     cloned-course-text-start : (en : "This course has jointly taught classes with ", no : "Emnet har felles undervisning med ", nn : "Emnet har felles undervisning med "),
     cloned-course-text-end : (en : ". See this course's semester page for schedule and messages.", no : ". Se semestersiden til dette emnet for timeplan og beskjeder.", nn : ". Sjå semestersida til dette emnet for timeplan og meldingar."),
     fronter : (en : "Fronter", no : "Fronter", nn : "Fronter"),

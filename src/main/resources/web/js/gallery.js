@@ -49,8 +49,10 @@
         isFullscreen = false, isResponsive = false,
         widthProp = "width", heightProp = "height",
         maxRegularWidth = 507, maxRegularHeight = 380,
-        wrpContainerBorderPaddingWidth = wrpContainer.css("paddingLeft") + wrpContainer.css("paddingRight") +
-                                         wrpContainer.css("borderLeftWidth") + wrpContainer.css("borderRightWidth");
+        // TODO: account for description variable padding/width also (instead of -30), but could be none descriptions added at init
+        wrpDescriptionBorderPaddingWidth = 30,
+        wrpContainerBorderPaddingWidth = parseInt(wrpContainer.css("paddingLeft"), 10) + parseInt(wrpContainer.css("paddingRight"), 10) +
+                                         parseInt(wrpContainer.css("borderLeftWidth"), 10) + parseInt(wrpContainer.css("borderRightWidth"), 10);
     
     // Init first active image
     var firstImage = wrpThumbsLinks.filter(".active");
@@ -196,7 +198,7 @@
       }
       var id = genId(src);
       if(wrp.find("a#" + id).length) return;
-      var description = "<div id='" + id + "-description' class='" + container.substring(1) + "-description" + (!images[src].desc ? " empty-description" : "") + "' style='display: none; width: " + (images[src].width - 30) + "px'>" + 
+      var description = "<div id='" + id + "-description' class='" + container.substring(1) + "-description" + (!images[src].desc ? " empty-description" : "") + "' style='display: none; width: " + Math.max(0, ((images[src].width - wrpDescriptionBorderPaddingWidth) + wrpContainerBorderPaddingWidth)) + "px'>" + 
                         images[src].desc + "<div class='toggle-fullscreen-container'><a href='javascript:void(0);' class='toggle-fullscreen minimized'>" + (isResponsive ? settings.i18n.showFullscreenResponsive : settings.i18n.showFullscreen) + "</a></div></div>";
       $($.parseHTML(description)).insertBefore(wrpThumbs);
       wrpContainer.append("<a id='" + id + "' style='display: none' href='" + src + "' class='" + container.substring(1) + "-link'>" +
@@ -387,7 +389,7 @@
       wrpNavNextPrevSpans.css("height", height + "px");
       wrpNav.css("width", width + "px");
       wrpContainer.css("width", width + "px");
-      activeDesc.css("width", (width - 30)); 
+      activeDesc.css("width", Math.max(0, ((width - wrpDescriptionBorderPaddingWidth) + wrpContainerBorderPaddingWidth))); 
     }
 
     function resizeToggleFullscreen() {

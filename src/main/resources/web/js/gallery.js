@@ -48,7 +48,9 @@
         images = {}, imageUrlsToBePrefetchedLen = imageUrlsToBePrefetched.length - 1,
         isFullscreen = false, isResponsive = false,
         widthProp = "width", heightProp = "height",
-        maxRegularWidth = 507, maxRegularHeight = 380;
+        maxRegularWidth = 507, maxRegularHeight = 380,
+        wrpContainerBorderPaddingWidth = wrpContainer.css("paddingLeft") + wrpContainer.css("paddingRight") +
+                                         wrpContainer.css("borderLeftWidth") + wrpContainer.css("borderRightWidth");
     
     // Init first active image
     var firstImage = wrpThumbsLinks.filter(".active");
@@ -312,6 +314,7 @@
         if(dims.url === protocolRelativeSrc) break;
       }
       maxRegularWidth = wrpThumbs.is(":visible") ? Math.min(wrpThumbs.width(), wrp.parent().width()) : wrp.parent().width();
+      maxRegularWidth -= wrpContainerBorderPaddingWidth;
       maxRegularHeight = Math.round(maxRegularWidth/(4/3));
       images[src].fullWidthOrig = parseInt(dims.fullWidth.replace(/[^\d]*/g, ""), 10);
       images[src].fullHeightOrig = parseInt(dims.fullHeight.replace(/[^\d]*/g, ""), 10);
@@ -412,6 +415,7 @@
         var descriptionContainers = wrp.find(container + "-description").filter(":not(.empty-description)"); // Don't calculate empty descriptions
         descriptionContainers.addClass("active-description-recalc");
         maxRegularWidth = wrpThumbs.is(":visible") ? Math.min(wrpThumbs.width(), wrp.parent().width()) : wrp.parent().width();
+        maxRegularWidth -= wrpContainerBorderPaddingWidth;
         maxRegularHeight = Math.round(maxRegularWidth/(4/3));
         for(var key in images) {
           var image = images[key];

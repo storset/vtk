@@ -234,13 +234,6 @@
   -o-transition: all 600ms ease-in-out;
   -ms-transition: all 600ms ease-in-out;
 
-  /*
-  transform-origin: 60% 30%;
-  -webkit-transform-origin: 60% 30%;
-  -moz-transform-origin: 60% 30%;
-  -o-transition-origin: 60% 30%;
-  -ms-transform-origin: 60% 30%;
-  */
   top: 20px;
   left: 13px;
 }

@@ -480,7 +480,7 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
     e.preventDefault();
   });
   
-  // Advanced publish settings
+  // Advanced publish settings (need more encapsulation)
   var apsD;
   var datepickerApsD;
   vrtxAdm.cachedDoc.on("click", "#advanced-publish-settings", function (e) {

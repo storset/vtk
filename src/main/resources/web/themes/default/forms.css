@@ -59,7 +59,7 @@
 }
 
 .forms-new input[type=button]:focus,
-.forms-new input[type=file:focus],
+.forms-new input[type=file]:focus,
 .forms-new input[type=image]:focus,
 .forms-new input[type=reset]:focus,
 .forms-new input[type=submit]:focus,

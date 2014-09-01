@@ -53,6 +53,9 @@
         wrpDescriptionBorderPaddingWidth = 30,
         wrpContainerBorderPaddingWidth = parseInt(wrpContainer.css("paddingLeft"), 10) + parseInt(wrpContainer.css("paddingRight"), 10) +
                                          parseInt(wrpContainer.css("borderLeftWidth"), 10) + parseInt(wrpContainer.css("borderRightWidth"), 10);
+        if(isNaN(wrpContainerBorderPaddingWidth)) {
+          wrpContainerBorderPaddingWidth = 0;
+        }
     
     // Init first active image
     var firstImage = wrpThumbsLinks.filter(".active");
@@ -320,7 +323,7 @@
       maxRegularHeight = Math.round(maxRegularWidth/(4/3));
       images[src].fullWidthOrig = parseInt(dims.fullWidth.replace(/[^\d]*/g, ""), 10);
       images[src].fullHeightOrig = parseInt(dims.fullHeight.replace(/[^\d]*/g, ""), 10);
-      var regularDims = calculateImageDimensions(images[src].fullWidthOrig, images[src].fullHeightOrig, maxRegularWidth, maxRegularHeight);   
+      var regularDims = calculateImageDimensions(images[src].fullWidthOrig, images[src].fullHeightOrig, maxRegularWidth, maxRegularHeight);
       images[src].width = regularDims[0];
       images[src].height = regularDims[1];
 

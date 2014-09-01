@@ -282,7 +282,7 @@
 .forms-new .ui-widget-overlay {
   background: #000;
   opacity: 0.4;
-  filter: alpha(opacity=40);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=40)" !important;
   z-index: 99999 !important; 
 }
 

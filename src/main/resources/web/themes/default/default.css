@@ -3473,7 +3473,7 @@ tr.expandedForm td .vrtx-button-small {
 
   /* Transparent */
   opacity: 0;
-  filter:alpha(opacity=0);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)" !important;
 }
 
 #file-upload-container a.vrtx-file-upload {
@@ -3485,7 +3485,7 @@ tr.expandedForm td .vrtx-button-small {
 
 #dialog-loading-content img {
   opacity: 0.7;
-  filter:alpha(opacity=70);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=70)" !important;
 }
 
 #dialog-uploading-percent {

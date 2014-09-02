@@ -3,76 +3,73 @@
  *
  */
 
-if(typeof viewDropdown === "undefined") {
+if(typeof viewDropdown === "undefined") { // Avoid duplicate running code
   var viewDropdown = true;
   (function() {
     var doc = $(document);
     doc.ready(function() {
+    
+      /* Add missing id with random postfix to avoid duplicates */
+      var addMissingId = function(elm, classPrefix) {
+        if(elm[0].id) {
+          var id = elm[0].id;
+        } else {
+          var id = classPrefix + Math.round((+new Date() + 1) * Math.random());
+          elm.attr("id", id);
+        }
+        return id;
+      };
+      
+      /* Dropdown ARIA states */
       var ariaDropdownState = function (link, menu, isExpanded) {
         if(isExpanded) {
           var firstInteractiveElem = menu.find("a, input[type='button'], input[type='submit']").filter(":first");
           if(firstInteractiveElem.length) firstInteractiveElem.focus();
         }
-        menu.attr("aria-expanded", isExpanded ? "true" : "false");
-        menu.attr("aria-hidden", isExpanded ? "false" : "true");
+        menu.attr("aria-expanded", isExpanded);
+        menu.attr("aria-hidden", !isExpanded);
       };
-
-      var wrappers = $(".vrtx-dropdown-wrapper"), i = wrappers.length;
-      while(i--) {
-        var wrp = $(wrappers[i]);
-        var a = wrp.prev();
-
-        if(wrp[0].id) {
-          var idWrp = wrp[0].id; 
-        } else {
-          var idWrp = "vrtx-dropdown-wrapper-" + Math.round(+new Date() * Math.random());
-          wrp.attr("id", idWrp);
-        }
-        if(a[0].id) {
-          var idLink = a[0].id;
-        } else {
-          var idLink = "vrtx-dropdown-link-" + Math.round((+new Date() + 1) * Math.random());
-          a.attr("id", idLink);
-        }
-
-        a.attr("aria-haspopup", "true");
-        a.attr("aria-controls", idWrp);
-        wrp.attr("aria-labelledby", idLink);
-        ariaDropdownState(a, wrp, false);
-      }
-
-      doc.on("click", ".vrtx-dropdown-component-toggled a.vrtx-dropdown-link", function(e) {
-        var a = $(this);
-        var wrp = a.next(".vrtx-dropdown-wrapper");
-        a.toggleClass("active");
-        if(typeof document.documentMode !== "undefined" && document.documentMode <= 7) {
-          wrp.toggle(); // Because slide sets "overflow: hidden" causing IE7 css-bug
-          ariaDropdownState(a, wrp, wrp.is(":visible"));
-        } else {
-          wrp.slideToggle("fast", function() {
-            ariaDropdownState(a, wrp, wrp.is(":visible"));
-          });
-        }
-        e.stopPropagation();
-        e.preventDefault();
-      });
       
-      var notToggledOpenClose = function(e) {
-        var a = $(this);
-        if(e.target.className.indexOf("vrtx-dropdown-close-link") != -1) {
-          var wrp = a.closest(".vrtx-dropdown-wrapper");
+      /* Dropdown click events handler */
+      var toggledOpenClosable = function(e) {
+        var link = $(this);
+        if(link.parent().hasClass("vrtx-dropdown-component-toggled")) {
+          link.toggleClass("active");
+        }
+        if(link.hasClass("vrtx-dropdown-close-link")) {
+          var wrp = link.closest(".vrtx-dropdown-wrapper");
         } else {
-          var wrp = a.next(".vrtx-dropdown-wrapper");
+          var wrp = link.next(".vrtx-dropdown-wrapper");
         }
         wrp.slideToggle("fast", function() {
-          ariaDropdownState(a, wrp, wrp.is(":visible"));
+          ariaDropdownState(link, wrp, wrp.is(":visible"));
         });
         e.stopPropagation();
         e.preventDefault();
       };
+    
+      /* Initialize dropdowns */
+      var wrappers = $(".vrtx-dropdown-wrapper"),
+          i = wrappers.length,
+          addMissingIdFunc = addMissingId;
+      while(i--) {
+        var wrp = $(wrappers[i]);
+        var link = wrp.prev();
+     
+        var idWrp = addMissingIdFunc(wrp, "vrtx-dropdown-wrapper-");
+        var idLink = addMissingIdFunc(link, "vrtx-dropdown-link-");
+        
+        wrp.attr("aria-labelledby", idLink);
+        link.attr({
+          "aria-controls": idWrp,
+          "aria-haspopup": "true"
+        });
+        
+        ariaDropdownState(link, wrp, false); /* Invisible at init */
+      }
       
-      doc.on("click", ".vrtx-dropdown-component-not-toggled a.vrtx-dropdown-link", notToggledOpenClose);
-      doc.on("click", ".vrtx-dropdown-component-not-toggled a.vrtx-dropdown-close-link", notToggledOpenClose);
+      /* Listen for click events */
+      doc.on("click", ".vrtx-dropdown-component a.vrtx-dropdown-link, .vrtx-dropdown-component a.vrtx-dropdown-close-link", toggledOpenClosable);
     });
   })();
 }

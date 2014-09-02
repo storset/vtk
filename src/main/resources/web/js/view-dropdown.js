@@ -21,13 +21,15 @@ if(typeof viewDropdown === "undefined") { // Avoid duplicate running code
       };
       
       /* Dropdown ARIA states */
-      var ariaDropdownState = function (link, menu, isExpanded) {
+      var ariaDropdownState = function (link, wrp, isExpanded) {
         if(isExpanded) {
-          var firstInteractiveElem = menu.find("a, input[type='button'], input[type='submit']").filter(":first");
+          var firstInteractiveElem = wrp.find("a, input[type='button'], input[type='submit']").filter(":first");
           if(firstInteractiveElem.length) firstInteractiveElem.focus();
         }
-        menu.attr("aria-expanded", isExpanded);
-        menu.attr("aria-hidden", !isExpanded);
+        wrp.attr({
+          "aria-expanded": isExpanded,
+          "aria-hidden": !isExpanded
+        });
       };
       
       /* Dropdown click events handler */

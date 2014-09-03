@@ -39,12 +39,12 @@
     <table id="directory-listing" class="report-document-listing">
       <thead>
         <tr>
-          <th id="vrtx-report-name"><@vrtx.msg code="report.title" default="Name" /></th>
-          <th id="vrtx-report-last-modified"><@vrtx.msg code="report.last-modified" default="Last modified" /></th>
-          <th id="vrtx-report-modified-by"><@vrtx.msg code="report.modified-by" default="Modified by" /></th>
-          <th id="vrtx-report-permissions"><@vrtx.msg code="collectionListing.permissions" default="Permissions"/></th>
+          <th scope="col" id="vrtx-report-name"><@vrtx.msg code="report.title" default="Name" /></th>
+          <th scope="col" id="vrtx-report-last-modified"><@vrtx.msg code="report.last-modified" default="Last modified" /></th>
+          <th scope="col" id="vrtx-report-modified-by"><@vrtx.msg code="report.modified-by" default="Modified by" /></th>
+          <th scope="col" id="vrtx-report-permissions"><@vrtx.msg code="collectionListing.permissions" default="Permissions"/></th>
           <#if report.reportname != "unpublished">
-            <th id="vrtx-report-published"><@vrtx.msg code="report.published" default="Published" /></th>
+            <th scope="col" id="vrtx-report-published"><@vrtx.msg code="report.published" default="Published" /></th>
           </#if>
         </tr>
       </thead>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
   <!-- Video resource -->
 
@@ -25,7 +25,7 @@
       </list>
     </property>
   </bean>
-  
+
   <bean id="mediaPlayerService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="viewService" />
     <property name="order" value="-1" />
@@ -59,7 +59,6 @@
     <property name="handler" ref="displayAudioResource" />
   </bean>
 
-
   <bean id="mediaPlayer" class="org.vortikal.web.display.media.MediaPlayer">
     <property name="posterImagePropDef" ref="posterImagePropDef" />
     <property name="viewService" ref="viewService" />
@@ -86,7 +85,7 @@
       </map>
     </property>
   </bean>
-  
+
   <bean name="displayMediaResourceView" parent="freemarkerView">
     <property name="url" value="pages/media-player.ftl" />
     <property name="attributes">
@@ -112,8 +111,52 @@
     </property>
   </bean>
 
+  <bean id="videoEmbedAssertion" class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="vrtx" />
+    <property name="parameterValue" value="video-embed" />
+  </bean>
+
+  <bean id="embedMediaPlayerService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="viewService" />
+    <property name="order" value="-1" />
+    <property name="assertions">
+      <list>
+        <ref bean="contentTypeMatchesMedia" />
+        <ref bean="videoEmbedAssertion" />
+      </list>
+    </property>
+    <property name="handler" ref="displayEmbedResource" />
+  </bean>
+
+  <bean id="displayEmbedResource" class="org.vortikal.web.display.media.DisplayEmbedMediaController">
+    <property name="mediaPlayer" ref="mediaPlayer" />
+    <property name="viewName" value="viewEmbedMediaPlayer" />
+  </bean>
+
+  <bean id="displayEmbedMediaResourceViewResolver" parent="viewResolver">
+    <property name="views">
+      <map>
+        <entry key="viewEmbedMediaPlayer" value-ref="displayEmbedMediaResourceView" />
+      </map>
+    </property>
+  </bean>
+
+  <bean name="displayEmbedMediaResourceView" parent="freemarkerView">
+    <property name="url" value="pages/embed-media-player.ftl" />
+    <property name="attributes">
+      <map>
+        <entry key="height" value="100%" />
+        <entry key="width" value="100%" />
+        <entry key="autoplay" value="false" />
+        <entry key="audioFlashPlayerJsURL" value="${jsBaseURL}/audio-player.js" />
+        <entry key="audioFlashPlayerFlashURL" value="${flash.baseURL}/audioplayer.swf" />
+        <entry key="strobe" value="${flash.baseURL}/SMP_2.0.2494-patched/10.2/StrobeMediaPlayback.swf" />
+      </map>
+    </property>
+  </bean>
+
   <bean id="videoHtmlDescriptionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
-    parent="abstractPropDef">
+          parent="abstractPropDef">
     <property name="name" value="video-description" />
     <property name="type" value="HTML" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />

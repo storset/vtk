@@ -30,14 +30,14 @@ var VrtxTree = dejavu.Class.declare({
     var rootUrl = "/vrtx/__vrtx/static-resources";
     var jQueryUiVersion = "1.10.4";
     
-    $.loadCSS(location.protocol + "//" + location.host + rootUrl + "/themes/default/report/jquery.treeview.css");
+    $.loadCSS(window.location.protocol + "//" + window.location.host + rootUrl + "/themes/default/report/jquery.treeview.css");
     var futureTree = $.Deferred();
     
     var getScriptFn = (typeof $.cachedScript === "function") ? $.cachedScript : $.getScript;
     
     if (typeof $.fn.treeview !== "function") {
-      getScriptFn(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.treeview.js").done(function () {
-        getScriptFn(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.treeview.async.js").done(function () {
+      getScriptFn(window.location.protocol + "//" + window.location.host + rootUrl + "/jquery/plugins/jquery.treeview.js").done(function () {
+        getScriptFn(window.location.protocol + "//" + window.location.host + rootUrl + "/jquery/plugins/jquery.treeview.async.js").done(function () {
           futureTree.resolve();
         });
       });
@@ -46,7 +46,7 @@ var VrtxTree = dejavu.Class.declare({
     }
     var futureScrollTo = $.Deferred();
     if(typeof $.fn.scrollTo !== "function" && tree.__opts.scrollToContent) {
-      getScriptFn(location.protocol + "//" + location.host + rootUrl + "/jquery/plugins/jquery.scrollTo.min.js").done(function () {
+      getScriptFn(window.location.protocol + "//" + window.location.host + rootUrl + "/jquery/plugins/jquery.scrollTo.min.js").done(function () {
         futureScrollTo.resolve();
       });
     } else {
@@ -55,7 +55,7 @@ var VrtxTree = dejavu.Class.declare({
     $.when(futureTree, futureScrollTo).done(function() {
       opts.elem.treeview({
         animated: "fast",
-        url: location.protocol + '//' + location.host + location.pathname + "?vrtx=admin&uri=&" + opts.service + "&ts=" + (+new Date()),
+        url: window.location.protocol + '//' + window.location.host + window.location.pathname + "?vrtx=admin&uri=&" + opts.service + "&ts=" + (+new Date()),
         service: opts.service,
         dataLoaded: function () {
           tree.__openLeaf();

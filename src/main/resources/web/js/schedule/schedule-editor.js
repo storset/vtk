@@ -5,7 +5,7 @@
 
 function courseSchedule() {
 
-  var baseUrl = location.protocol + "//" + location.host + location.pathname;
+  var baseUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
   if(/\/$/.test(baseUrl)) {
     baseUrl += "index.html";
   }
@@ -404,7 +404,7 @@ function courseSchedule() {
   };
   this.sessionOnlyWindowClose = function(isSaveView) {
     if(onlySessionId && isSaveView) {
-      location.href = $("#global-menu-leave-admin a").attr("href");
+      window.location.href = $("#global-menu-leave-admin a").attr("href");
     }
   };
 

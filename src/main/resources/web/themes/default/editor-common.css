@@ -612,11 +612,11 @@ div#resource\.studentExchangeUniversityAgreementListing\.picture\.preview.no-pre
 }
 
 .cke_chrome .cke_top {
-  box-shadow: none !important;
   background: #ededed !important;
   padding: 0 !important;
-  filter: none !important;
   border-bottom: none !important;
+  box-shadow: none !important;
+  -ms-filter: "none" !important;
 }
 
 /* Contains float alternative fix to make help-menu visible on slide-down (overflowing) */
@@ -627,11 +627,11 @@ div#resource\.studentExchangeUniversityAgreementListing\.picture\.preview.no-pre
 
 .cke_chrome .cke_bottom {
   background: transparent !important;
-  filter: none !important;
   padding: 10px 0 0 0 !important;
   margin: 0 0 -5px 0 !important;
   border-top: none !important;
   box-shadow: none !important;
+  -ms-filter: "none" !important;
 }
 
 .cke_chrome .cke_resizer {
@@ -649,16 +649,16 @@ div#resource\.studentExchangeUniversityAgreementListing\.picture\.preview.no-pre
 }
 
 .cke_chrome .cke_toolgroup {
-  box-shadow: none !important;
   background: #fff !important;
-  filter: none !important;
   margin-bottom: 10px !important;
   border: 1px solid #bbb !important;
+  box-shadow: none !important;
+  -ms-filter: "none" !important;
 }
 
 .cke_chrome .cke_combo_button {
   background: #fff !important;
-  filter: none !important;
+  -ms-filter: "none" !important;
 }
 
 .cke_chrome .cke_combo_text {
@@ -707,7 +707,7 @@ div#resource\.studentExchangeUniversityAgreementListing\.picture\.preview.no-pre
   background: -o-linear-gradient(top, #71b2e9 0%,#66ace7 26%,#499ce2 74%,#3d95e0 100%); /* Opera 11.10+ */
   background: -ms-linear-gradient(top, #71b2e9 0%,#66ace7 26%,#499ce2 74%,#3d95e0 100%); /* IE10+ */
   background: linear-gradient(to bottom, #71b2e9 0%,#66ace7 26%,#499ce2 74%,#3d95e0 100%); /* W3C */
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#71b2e9', endColorstr='#3d95e0',GradientType=0 ); /* IE6-9 */
+  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#71b2e9', endColorstr='#3d95e0',GradientType=0)"; /* IE6-9 */
 }
 
 .cke_dialog a.cke_dialog_ui_button_ok:focus,
@@ -721,26 +721,11 @@ div#resource\.studentExchangeUniversityAgreementListing\.picture\.preview.no-pre
   background: -o-linear-gradient(top, #8ec6ef 0%,#83c2ed 22%,#56b4ea 83%,#4db0e8 100%); /* Opera 11.10+ */
   background: -ms-linear-gradient(top, #8ec6ef 0%,#83c2ed 22%,#56b4ea 83%,#4db0e8 100%); /* IE10+ */
   background: linear-gradient(to bottom, #8ec6ef 0%,#83c2ed 22%,#56b4ea 83%,#4db0e8 100%); /* W3C */
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#8ec6ef', endColorstr='#4db0e8',GradientType=0 ); /* IE6-9 */
+  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#8ec6ef', endColorstr='#4db0e8',GradientType=0)"; /* IE6-9 */
 }
 
 .cke_dialog a.cke_dialog_ui_button_ok span {
   text-shadow: none;
-}
-
-#editor .cke_chrome .cke_rcombo a,
-#editor .cke_chrome .cke_rcombo a:active,
-#editor .cke_chrome .cke_rcombo a:focus,
-#editor .cke_chrome .cke_rcombo a:hover {
-  background-image: none;
-  background-position: 0 0
-  background-repeat: no-repeat;
-  border-bottom: none;
-  border-right: none;
-  float: left;
-  height: 21px;
-  margin: 1px 6px 0 0;
-  padding: 0;
 }
 
 /* ^ Vortex - Editor - Common */

@@ -214,7 +214,6 @@ span.vrtx-add-event a.vrtx-ical-help {
        background: url(icons/icon-info.gif) no-repeat;
        background-position: 87% 50%;
        padding: 0px 10px 0px 10px;
-       zoom: 1; /* IE hack to get background image to display. To be fixed. */
 }
 
 .vrtx-paging-wrapper {

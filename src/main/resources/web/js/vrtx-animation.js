@@ -31,9 +31,9 @@ var VrtxAnimation = dejavu.Class.declare({
   $name: "VrtxAnimation",
   $implements: [VrtxAnimationInterface],
   $constants: {
-    animationSpeed: /(iphone|ipad|android)/.test(navigator.userAgent.toLowerCase()) ? 0 : 200,
-    easeIn: !/msie (8|9.)/.test(navigator.userAgent.toLowerCase()) ? "easeInQuad" : "linear",
-    easeOut: !/msie (8|9.)/.test(navigator.userAgent.toLowerCase()) ? "easeOutQuad" : "linear",
+    animationSpeed: /(iphone|ipad|android)/.test(window.navigator.userAgent.toLowerCase()) ? 0 : 200,
+    easeIn: !/msie (8|9.)/.test(window.navigator.userAgent.toLowerCase()) ? "easeInQuad" : "linear",
+    easeOut: !/msie (8|9.)/.test(window.navigator.userAgent.toLowerCase()) ? "easeOutQuad" : "linear",
     cssTransform: (function () {
       var propArray = ['transform', 'MozTransform', 'WebkitTransform', 'msTransform', 'OTransform'];
       var root = document.documentElement;

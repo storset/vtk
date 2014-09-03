@@ -104,13 +104,13 @@ function forceScrollToTocIdIfNotScrolled() {
   try {
     var doc = document.documentElement;
     var top = (window.pageYOffset || doc.scrollTop)  - (doc.clientTop || 0);
-    if(top == 0 && location.hash && /#toc[\d]{1}/.test(location.hash)) {
+    if(top == 0 && window.location.hash && /#toc[\d]{1}/.test(window.location.hash)) {
       // Force scroll after toc is generated if not already has scrolled
-      var elm = document.getElementById(location.hash.split("#")[1]);
+      var elm = document.getElementById(window.location.hash.split("#")[1]);
       if(typeof elm.scrollIntoView === "function") {
         elm.scrollIntoView();
       } else {
-        location.hash = location.hash;
+        window.location.hash = window.location.hash;
       }
     }
   } catch(e) {}

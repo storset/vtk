@@ -115,6 +115,7 @@
     }
   };
   if(vrtxAdmin.hasFreeze) { // Make immutable
+    Object.freeze(vrtxAdmin.messages);
     Object.freeze(vrtxAdmin.serverFacade.errorMessages);
   }
 // -->

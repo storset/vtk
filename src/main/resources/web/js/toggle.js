@@ -4,6 +4,7 @@
  * 
  * XXX: JSDoc
  * XXX: ARIA/focus
+ * XXX: Should possible be combined with view-dropdown and simplified (is just another show/hide thing)
  * 
  */
 

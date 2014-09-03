@@ -986,7 +986,7 @@ ul.dropdown-shortcut-menu li.dropdown-init .dropdown-shortcut-menu-click-area {
   width: 25px;
   padding: 0;
   margin: 0;
-  cursor: pointer
+  cursor: pointer;
   -webkit-border-top-right-radius: 5px;
   -webkit-border-bottom-right-radius: 5px;
   -moz-border-radius-topright: 5px;
@@ -3473,8 +3473,7 @@ tr.expandedForm td .vrtx-button-small {
 
   /* Transparent */
   opacity: 0;
-  -moz-opacity: 0;
-  filter:alpha(opacity: 0);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)" !important;
 }
 
 #file-upload-container a.vrtx-file-upload {
@@ -3486,6 +3485,7 @@ tr.expandedForm td .vrtx-button-small {
 
 #dialog-loading-content img {
   opacity: 0.7;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=70)" !important;
 }
 
 #dialog-uploading-percent {

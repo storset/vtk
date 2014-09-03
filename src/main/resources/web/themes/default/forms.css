@@ -59,7 +59,7 @@
 }
 
 .forms-new input[type=button]:focus,
-.forms-new input[type=file:focus],
+.forms-new input[type=file]:focus,
 .forms-new input[type=image]:focus,
 .forms-new input[type=reset]:focus,
 .forms-new input[type=submit]:focus,
@@ -282,9 +282,7 @@
 .forms-new .ui-widget-overlay {
   background: #000;
   opacity: 0.4;
-  -moz-opacity: 0.4; 
-  -webkit-opacity: 0.4;
-  filter: alpha(opacity=40);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=40)" !important;
   z-index: 99999 !important; 
 }
 

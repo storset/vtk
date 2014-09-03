@@ -13,7 +13,7 @@
  *  8.  Permissions
  *  9.  Async functions
  *  10. Async helper functions and AJAX server façade
- *  11. CK browse server integration
+ *  11. Popups and CK browse server integration
  *  12. Utils
  *  13. Override JavaScript / jQuery
  *
@@ -23,7 +23,7 @@
     1. Config
 \*-------------------------------------------------------------------*/
 
-var startLoadTime = +new Date();
+var startLoadTime = getNowTime();
 
 /**
  * Creates an instance of VrtxAdmin
@@ -36,7 +36,7 @@ function VrtxAdmin() {
   this._$ = $;
 
   // Browser info/capabilities: used for e.g. progressive enhancement and performance scaling based on knowledge of current JS-engine
-  this.ua = navigator.userAgent.toLowerCase();
+  this.ua = window.navigator.userAgent.toLowerCase();
   this.isIE = /(msie) ([\w.]+)/.test(this.ua);
   var ieVersion = /(msie) ([\w.]+)/.exec(this.ua);
   this.browserVersion = (ieVersion != null) ? ieVersion[2] : "0";
@@ -47,7 +47,8 @@ function VrtxAdmin() {
   this.isIETridentInComp = this.isIE7 && /trident/.test(this.ua);
   this.isIPhone = /iphone/.test(this.ua);
   this.isIPad = /ipad/.test(this.ua);
-  this.isNotIos6 = (this.isIPhone || this.isIPad) && this.ua.match(/os (2|3|4|5)_/) != null;
+  this.isIOS = this.isIPhone || this.isIPad;
+  this.isNotIos6 = this.isIOS && this.ua.match(/os (2|3|4|5)_/) != null;
   this.isAndroid = /android/.test(this.ua); // http://www.gtrifonov.com/2011/04/15/google-android-user-agent-strings-2/
   this.isMobileWebkitDevice = (this.isIPhone || this.isIPad || this.isAndroid);
   this.isWin = ((this.ua.indexOf("win") != -1) || (this.ua.indexOf("16bit") != -1));
@@ -186,7 +187,7 @@ var VrtxAnimation = function(opts) {
 var isEmbedded = window.location.href.indexOf("&embed") !== -1;
 var onlySessionId = gup("sessionid", window.location.href);
 vrtxAdmin._$(document).ready(function () {
-  var startReadyTime = +new Date(), vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
+  var startReadyTime = getNowTime(), vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
   
   if(typeof datePickerLang === "string") {
      vrtxAdm.lang = datePickerLang;
@@ -238,7 +239,7 @@ vrtxAdmin._$(document).ready(function () {
     vrtxAdm.initDomains();
   }, 25);
 
-  vrtxAdm.log({ msg: "Document.ready() in " + (+new Date() - startReadyTime) + "ms." });
+  vrtxAdm.log({ msg: "Document.ready() in " + (getNowTime() - startReadyTime) + "ms." });
 });
 
 
@@ -250,7 +251,7 @@ vrtxAdmin._$(window).load(function () {
   var vrtxAdm = vrtxAdmin;
   if (vrtxAdm.runReadyLoad === false) return; // Return if should not run load() code
 
-  vrtxAdm.log({ msg: "Window.load() in " + (+new Date() - startLoadTime) + "ms." });
+  vrtxAdm.log({ msg: "Window.load() in " + (getNowTime() - startLoadTime) + "ms." });
 });
 
 
@@ -456,7 +457,7 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
             });
 
             dialog.on("click", ".tip a", function (e) { // Override jQuery UI prevention
-              location.href = this.href;
+              window.location.href = this.href;
             });
             
             var tree = new VrtxTree({
@@ -479,7 +480,7 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
     e.preventDefault();
   });
   
-  // Advanced publish settings
+  // Advanced publish settings (need more encapsulation)
   var apsD;
   var datepickerApsD;
   vrtxAdm.cachedDoc.on("click", "#advanced-publish-settings", function (e) {
@@ -844,7 +845,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
           vrtxAdm.updateCollectionListingInteraction();
           deletingPermanentD.close();
           if(deletingPermanentEmptyFolder) { // Redirect on empty trash can
-            location.href = "./?vrtx=admin";
+            window.location.href = "./?vrtx=admin";
           }
         },
         fnError: function() {
@@ -886,9 +887,9 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
             if(vrtxAdm.editorSaveIsRedirectView) {
               var isCollection = _$("#resource-title.true").length;
               if(isCollection) {
-                location.href = "./?vrtx=admin&action=preview";
+                window.location.href = "./?vrtx=admin&action=preview";
               } else {
-                location.href = location.pathname + "?vrtx=admin";
+                window.location.href = window.location.pathname + "?vrtx=admin";
               }
             }
           }).fail(handleAjaxSaveErrors);
@@ -967,7 +968,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
           funcProceedCondition: checkStillAdmin,
           funcComplete: function () {
             if (vrtxAdm.reloadFromServer) {
-              location.reload(true);
+              window.location.reload(true);
             } else {
               vrtxAdm.globalAsyncComplete();
             }
@@ -1125,9 +1126,9 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
     case "vrtx-report-broken-links":
       vrtxAdm.cachedDoc.on("click", ".vrtx-report-alternative-view-switch input", function(e) {
         if(!$(this).is(":checked")) {
-          location.href = location.href.replace("&" + this.name, "");
+          window.location.href = window.location.href.replace("&" + this.name, "");
         } else {
-          location.href = location.href + "&" + this.name;
+          window.location.href = window.location.href + "&" + this.name;
         }
         e.stopPropagation();
         e.preventDefault();
@@ -1300,7 +1301,7 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
     var togglerWrp = list.find("li" + dropdownClickArea);
     togglerWrp.addClass("dropdown-init");
   
-    togglerWrp.on("click keyup", ".dropdown-shortcut-menu-click-area", function (e) {
+    togglerWrp.on("click keypress", ".dropdown-shortcut-menu-click-area", function (e) {
       if (e.type == "click" || (e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
         var link = $(this);
         vrtxAdm.closeDropdowns();
@@ -1404,18 +1405,18 @@ VrtxAdmin.prototype.initScrollBreadcrumbs = function initScrollBreadcrumbs() {
 
   vrtxAdm.cachedDoc.on("keydown", ".vrtx-breadcrumb-level", function(e) {
     if((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
-      location.href = $(this).find("a").attr("href");
+      window.location.href = $(this).find("a").attr("href");
       e.stopPropagation();
     }  
   });
-  vrtxAdm.cachedDoc.on("click keyup", "#navigate-crumbs-left", function(e) {
+  vrtxAdm.cachedDoc.on("click keypress", "#navigate-crumbs-left", function(e) {
     if(e.type == "click" || ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13))) {
       vrtxAdmin.scrollBreadcrumbsLeft();
       e.stopPropagation();
       e.preventDefault();
     }
   });
-  vrtxAdm.cachedDoc.on("click keyup", "#navigate-crumbs-right", function(e) {
+  vrtxAdm.cachedDoc.on("click keypress", "#navigate-crumbs-right", function(e) {
     if(e.type == "click" || ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13))) {
       vrtxAdmin.scrollBreadcrumbsRight();
       e.stopPropagation();
@@ -2153,7 +2154,7 @@ function ajaxUploadPerform(opts, size) {
  * @this {VrtxAdmin}
  */
 VrtxAdmin.prototype.supportsMultipleAttribute = function supportsMultipleAttribute(inputfield) {
-  return ( !! (inputfield.multiple === false) && !! (inputfield.multiple !== "undefined"));
+  return ( !! (inputfield.multiple === false) && !! (inputfield.multiple !== "undefined")) && !vrtxAdmin.isIOS;
 };
 
 /**
@@ -2719,7 +2720,7 @@ function isServerLastModifiedOlderThanClientLastModified(d) {
   var isOlder = true;
   vrtxAdmin._$.ajax({
     type: "GET",
-    url: location.pathname + "?vrtx=admin&mode=about" + (gup("service", location.search) === "view" ? "&service=view" : ""),
+    url: window.location.pathname + "?vrtx=admin&mode=about" + (gup("service", window.location.search) === "view" ? "&service=view" : ""),
     async: false,
     cache: false,
     success: function (results, status, resp) {
@@ -2768,7 +2769,7 @@ function ajaxSaveAsCopy() {
   var vrtxAdm = vrtxAdmin,
   _$ = vrtxAdm._$;
 
-  if(/\/$/i.test(location.pathname)) { // Folder
+  if(/\/$/i.test(window.location.pathname)) { // Folder
     var d = new VrtxMsgDialog({
       msg: vrtxAdm.serverFacade.errorMessages.cantBackupFolder,
       title: vrtxAdm.serverFacade.errorMessages.cantBackupFolderTitle,
@@ -2790,7 +2791,7 @@ function ajaxSaveAsCopy() {
     contentType: "application/x-www-form-urlencoded;charset=UTF-8",
     success: function (results, status, resp) {
       var copyUri = resp.getResponseHeader('Location');
-      var copyEditUri = copyUri + location.search;
+      var copyEditUri = copyUri + window.location.search;
       
       // GET editor for the copy to get token etc.
       _$.ajax({
@@ -2808,9 +2809,9 @@ function ajaxSaveAsCopy() {
           ajaxSave();
           _$.when(vrtxAdm.asyncEditorSavedDeferred).done(function () {
             if(!vrtxAdm.editorSaveIsRedirectView) {
-              location.href = copyEditUri;
+              window.location.href = copyEditUri;
             } else {
-              location.href = copyUri + "/?vrtx=admin";
+              window.location.href = copyUri + "/?vrtx=admin";
             }
           }).fail(handleAjaxSaveErrors);
         },
@@ -2881,7 +2882,7 @@ function retokenizeFormsOpenSaveDialog(d2, isEditorSave) {
   
   $.ajax({
     type: "GET",
-    url: location.href,
+    url: window.location.href,
     cache: true,
     dataType: "html",
     success: function (results, status, resp) {
@@ -3064,7 +3065,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(opts) {
     
     var link = _$(this),
         url = link.attr("href") || link.closest("form").attr("action"),
-        modeUrl = location.href,
+        modeUrl = window.location.href,
         fromModeToNotMode = false,
         existExpandedFormIsReplaced = false,
         expandedForm = $(".expandedForm"),
@@ -3354,7 +3355,7 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(opts)
   var vrtxAdm = vrtxAdmin,
        _$ = vrtxAdm._$,
       url = opts.form.attr("action"),
-      modeUrl = location.href,
+      modeUrl = window.location.href,
       dataString = opts.form.serialize() + "&" + opts.link.attr("name");
 
   vrtxAdmin.serverFacade.postHtml(url, dataString, {
@@ -3896,7 +3897,7 @@ VrtxAdmin.prototype.serverFacade = {
     var serverFacade = this, msg = "";
     vrtxAdmin._$.ajax({
       type: "GET",
-      url: location.href,
+      url: window.location.href,
       async: false,
       success: function (results, status, resp) { // Exists - Locked
         msg = useStatusCodeInMsg ? status + " - " + serverFacade.errorMessages.s423 : "LOCKED";
@@ -3916,7 +3917,7 @@ VrtxAdmin.prototype.serverFacade = {
 
 
 /*-------------------------------------------------------------------*\
-    11. CK browse server integration
+    11. Popups and CK browse server integration
 \*-------------------------------------------------------------------*/
 
 // XXX: don't pollute global namespace
@@ -3987,7 +3988,7 @@ $(window).on("message", function(e) {
 function refreshParent() {
   window.opener.postMessage("displaymsg", "*");
 }
-if(gup("displaymsg", location.href) === "yes") {
+if(gup("displaymsg", window.location.href) === "yes") {
   window.onunload = refreshParent;    
 }
 
@@ -4193,6 +4194,24 @@ VrtxAdmin.prototype.zebraTables = function zebraTables(selector) {
     table.find("tbody tr:first-child").addClass("first");
   }
 };
+
+/**
+ * Get UNIX-time (more accurate if available)
+ *
+ * @param {boolean} useNsRes Use nanoseconds resolution if available (or just add three zeroes if not)
+ * @return {number} Unix-time
+ */
+function getNowTime(useNsRes) {
+  if(window.performance) {
+    var now = window.performance.now();
+  } else {
+    var now = +new Date();
+  }
+  if(typeof useNsRes === "boolean" && useNsRes) {
+    now *= 1000;
+  }
+  return Math.round(now); // performance.now() provides even higher resolution than ns
+}
 
 /* Get URL parameter
  *

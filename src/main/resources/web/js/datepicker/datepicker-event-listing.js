@@ -17,7 +17,7 @@ function eventListingCalendar(allowedDates, activeDate, clickableDayTitle, notCl
   $("#datepicker").datepicker({
     dateFormat: 'yy-mm-dd',
     onSelect: function (dateText, inst) {
-      location.href = location.href.split('?')[0] + "?date=" + dateText;
+      window.location.href = window.location.href.split('?')[0] + "?date=" + dateText;
     },
     showOtherMonths: true,
     defaultDate: activeDateForInit[0],
@@ -44,7 +44,7 @@ function eventListingCalendar(allowedDates, activeDate, clickableDayTitle, notCl
     },
     onChangeMonthYear: function (year, month, inst) {
       var date = $.datepicker.formatDate("yy-mm", new Date(year, month - 1)).toString();
-      location.href = "./?date=" + date;
+      window.location.href = "./?date=" + date;
     }
   });
 

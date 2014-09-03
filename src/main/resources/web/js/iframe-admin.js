@@ -98,20 +98,20 @@
   }
   
   function updateHashShareLink(link) {
-    if(location.hash.length === 1) {
+    if(window.location.hash.length === 1) {
       var hash = "";
       if(window.history && window.history.pushState) { 
         window.history.pushState("", "", window.location.pathname + window.location.search) 
       }
     } else {
-      var hash = location.hash;
+      var hash = window.location.hash;
     }
   
     var msg = link[0].href;
     var msgLines = decodeURI(msg).split("\n");
       
     var msgUrlLineNr = 2;
-    var replacedUrl = encodeURIComponent($.trim(decodeURIComponent(msgLines[msgUrlLineNr]).replace(/#.*$/, "")) + location.hash);
+    var replacedUrl = encodeURIComponent($.trim(decodeURIComponent(msgLines[msgUrlLineNr]).replace(/#.*$/, "")) + window.location.hash);
     msgLines[msgUrlLineNr] = replacedUrl;
 
     link[0].href = msgLines.join(encodeURI("\n")); // Beware: encodeURI() around msgLines gives too much encoding in Thunderbird e-mail
@@ -143,7 +143,7 @@
 
     vrtxAdm.cacheDOMNodesForReuse();
     
-    if(location.hash.length > 1) {
+    if(window.location.hash.length > 1) {
       animationOff = true;
     }
   

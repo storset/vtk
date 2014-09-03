@@ -48,7 +48,14 @@
         images = {}, imageUrlsToBePrefetchedLen = imageUrlsToBePrefetched.length - 1,
         isFullscreen = false, isResponsive = false,
         widthProp = "width", heightProp = "height",
-        maxRegularWidth = 507, maxRegularHeight = 380;
+        maxRegularWidth = 507, maxRegularHeight = 380,
+        // TODO: account for description variable padding/width also (instead of -30), but could be none descriptions added at init
+        wrpDescriptionBorderPaddingWidth = 30,
+        wrpContainerBorderPaddingWidth = parseInt(wrpContainer.css("paddingLeft"), 10) + parseInt(wrpContainer.css("paddingRight"), 10) +
+                                         parseInt(wrpContainer.css("borderLeftWidth"), 10) + parseInt(wrpContainer.css("borderRightWidth"), 10);
+        if(isNaN(wrpContainerBorderPaddingWidth)) {
+          wrpContainerBorderPaddingWidth = 0;
+        }
     
     // Init first active image
     var firstImage = wrpThumbsLinks.filter(".active");
@@ -116,7 +123,7 @@
     var maxRuns = 0;
     $(window).resize($.throttle(250, function () {
       // IE and iPad only run resize event 2 times
-      if (maxRuns < 2 || (!$.browser.msie && !/iPad/.test(navigator.userAgent))) {
+      if (maxRuns < 2 || (!$.browser.msie && !/iPad/.test(window.navigator.userAgent))) {
         if(isFullscreen || isResponsive) {
           resizeFullscreen(true);
         }
@@ -190,11 +197,11 @@
     
     function loadImage(src) {      
       if(src.indexOf("//") === 0) {
-        src = location.protocol + src;
+        src = window.location.protocol + src;
       }
       var id = genId(src);
       if(wrp.find("a#" + id).length) return;
-      var description = "<div id='" + id + "-description' class='" + container.substring(1) + "-description" + (!images[src].desc ? " empty-description" : "") + "' style='display: none; width: " + (images[src].width - 30) + "px'>" + 
+      var description = "<div id='" + id + "-description' class='" + container.substring(1) + "-description" + (!images[src].desc ? " empty-description" : "") + "' style='display: none; width: " + Math.max(0, ((images[src].width - wrpDescriptionBorderPaddingWidth) + wrpContainerBorderPaddingWidth)) + "px'>" + 
                         images[src].desc + "<div class='toggle-fullscreen-container'><a href='javascript:void(0);' class='toggle-fullscreen minimized'>" + (isResponsive ? settings.i18n.showFullscreenResponsive : settings.i18n.showFullscreen) + "</a></div></div>";
       $($.parseHTML(description)).insertBefore(wrpThumbs);
       wrpContainer.append("<a id='" + id + "' style='display: none' href='" + src + "' class='" + container.substring(1) + "-link'>" +
@@ -312,10 +319,11 @@
         if(dims.url === protocolRelativeSrc) break;
       }
       maxRegularWidth = wrpThumbs.is(":visible") ? Math.min(wrpThumbs.width(), wrp.parent().width()) : wrp.parent().width();
+      maxRegularWidth -= wrpContainerBorderPaddingWidth;
       maxRegularHeight = Math.round(maxRegularWidth/(4/3));
       images[src].fullWidthOrig = parseInt(dims.fullWidth.replace(/[^\d]*/g, ""), 10);
       images[src].fullHeightOrig = parseInt(dims.fullHeight.replace(/[^\d]*/g, ""), 10);
-      var regularDims = calculateImageDimensions(images[src].fullWidthOrig, images[src].fullHeightOrig, maxRegularWidth, maxRegularHeight);   
+      var regularDims = calculateImageDimensions(images[src].fullWidthOrig, images[src].fullHeightOrig, maxRegularWidth, maxRegularHeight);
       images[src].width = regularDims[0];
       images[src].height = regularDims[1];
 
@@ -384,7 +392,7 @@
       wrpNavNextPrevSpans.css("height", height + "px");
       wrpNav.css("width", width + "px");
       wrpContainer.css("width", width + "px");
-      activeDesc.css("width", (width - 30)); 
+      activeDesc.css("width", Math.max(0, ((width - wrpDescriptionBorderPaddingWidth) + wrpContainerBorderPaddingWidth))); 
     }
 
     function resizeToggleFullscreen() {
@@ -412,6 +420,7 @@
         var descriptionContainers = wrp.find(container + "-description").filter(":not(.empty-description)"); // Don't calculate empty descriptions
         descriptionContainers.addClass("active-description-recalc");
         maxRegularWidth = wrpThumbs.is(":visible") ? Math.min(wrpThumbs.width(), wrp.parent().width()) : wrp.parent().width();
+        maxRegularWidth -= wrpContainerBorderPaddingWidth;
         maxRegularHeight = Math.round(maxRegularWidth/(4/3));
         for(var key in images) {
           var image = images[key];

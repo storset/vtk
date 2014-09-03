@@ -57,7 +57,6 @@ import org.vortikal.security.PrincipalFactory;
  * 
  * <p>Mapping to/from {@link Acl acl objects} and related attributes.
  * 
- * TODO add testcase.
  */
 public class AclFields extends Fields {
 

@@ -88,7 +88,6 @@ public class ResourceFields extends Fields {
         super(locale);
     }
 
-    // TODO convert to "addResourceFields" style API
     void addResourceFields(final List<IndexableField> fields, PropertySetImpl propSet) {
         // URI
         fields.addAll(makeFields(URI_FIELD_NAME, propSet.getURI().toString(), INDEXED_STORED));

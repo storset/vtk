@@ -35,7 +35,8 @@ import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
-import org.vortikal.repository.index.mapping.FieldNames;
+import org.vortikal.repository.index.mapping.AclFields;
+import org.vortikal.repository.index.mapping.DocumentMapper;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
 import org.vortikal.repository.search.query.filter.FilterFactory;
@@ -45,7 +46,7 @@ import org.vortikal.repository.search.query.filter.FilterFactory;
  */
 public class ACLInheritedFromQueryBuilder implements QueryBuilder {
 
-    private int resourceId;
+    private final int resourceId;
     private boolean invert = false;
     
     public ACLInheritedFromQueryBuilder(int resourceId) {
@@ -60,9 +61,8 @@ public class ACLInheritedFromQueryBuilder implements QueryBuilder {
     @Override
     public Query buildQuery() throws QueryBuilderException {
         
-        Term aclInheritedFromTerm = 
-            new Term(FieldNames.ACL_INHERITED_FROM_FIELD_NAME, 
-                    String.valueOf(this.resourceId));
+        Term aclInheritedFromTerm = new Term(AclFields.INHERITED_FROM_FIELD_NAME, 
+                                                String.valueOf(this.resourceId));
             
         Query query = new TermQuery(aclInheritedFromTerm);
         

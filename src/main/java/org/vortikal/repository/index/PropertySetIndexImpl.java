@@ -32,7 +32,6 @@ package org.vortikal.repository.index;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,7 +39,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.AtomicReader;
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.DocsEnum;
-import org.apache.lucene.index.Fields;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -53,13 +51,13 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.BytesRef;
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.index.mapping.DocumentMapper;
 import org.vortikal.repository.index.mapping.DocumentMappingException;
-import org.vortikal.repository.index.mapping.FieldNames;
-import org.vortikal.security.Principal;
+import org.vortikal.repository.index.mapping.ResourceFields;
 
 /**
  * <code>PropertySet</code> index using Lucene.
@@ -73,14 +71,13 @@ public class PropertySetIndexImpl implements PropertySetIndex {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void addPropertySet(PropertySet propertySet,
-                               Set<Principal> aclReadPrincipals) throws IndexException {
+    public void addPropertySet(PropertySet propertySet, Acl acl) throws IndexException {
 
         // NOTE: Write-locking should be done above this level.
         // This is needed to ensure the possibility of efficiently batching
         // together operations without interruption.
         try {
-            Document doc = this.documentMapper.getDocument((PropertySetImpl) propertySet, aclReadPrincipals);
+            Document doc = this.documentMapper.getDocument((PropertySetImpl) propertySet, acl);
             if (logger.isDebugEnabled()) {
                 StringBuilder docFields = new StringBuilder("Document mapper created the following document for " + propertySet.getURI() + ":\n");
                 for (IndexableField field: doc) {
@@ -99,18 +96,17 @@ public class PropertySetIndexImpl implements PropertySetIndex {
     }
     
     @Override
-    public void updatePropertySet(PropertySet propertySet,
-                                  Set<Principal> aclReadPrincipals) throws IndexException {
+    public void updatePropertySet(PropertySet propertySet, Acl acl) throws IndexException {
         
         try {
-            Term uriTerm = new Term(FieldNames.URI_FIELD_NAME, 
+            Term uriTerm = new Term(ResourceFields.URI_FIELD_NAME, 
                                         propertySet.getURI().toString());
 
             IndexWriter writer = this.index.getIndexWriter();
             
             writer.deleteDocuments(uriTerm);
             
-            addPropertySet(propertySet, aclReadPrincipals);
+            addPropertySet(propertySet, acl);
         } catch (IOException io) {
             throw new IndexException(io);
         }
@@ -121,8 +117,8 @@ public class PropertySetIndexImpl implements PropertySetIndex {
 
         try {
             IndexWriter writer = this.index.getIndexWriter();
-            writer.deleteDocuments(new Term(FieldNames.URI_FIELD_NAME, rootUri.toString()), 
-                                   new Term(FieldNames.URI_ANCESTORS_FIELD_NAME, rootUri.toString()));
+            writer.deleteDocuments(new Term(ResourceFields.URI_FIELD_NAME, rootUri.toString()), 
+                                   new Term(ResourceFields.URI_ANCESTORS_FIELD_NAME, rootUri.toString()));
 
         } catch (IOException io) {
             throw new IndexException(io);
@@ -132,7 +128,7 @@ public class PropertySetIndexImpl implements PropertySetIndex {
     @Override
     public void deletePropertySet(Path uri) throws IndexException {
         try {
-            Term uriTerm = new Term(FieldNames.URI_FIELD_NAME, uri.toString());
+            Term uriTerm = new Term(ResourceFields.URI_FIELD_NAME, uri.toString());
             this.index.getIndexWriter().deleteDocuments(uriTerm);
         } catch (IOException io) {
             throw new IndexException(io);
@@ -151,7 +147,7 @@ public class PropertySetIndexImpl implements PropertySetIndex {
             for (AtomicReaderContext arc: topLevel.leaves()) {
                 final AtomicReader ar = arc.reader();
                 final Bits liveDocs = ar.getLiveDocs();
-                Terms terms = ar.terms(FieldNames.URI_FIELD_NAME);
+                Terms terms = ar.terms(ResourceFields.URI_FIELD_NAME);
                 if (terms == null) {
                     continue;
                 }
@@ -240,7 +236,7 @@ public class PropertySetIndexImpl implements PropertySetIndex {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Iterator orderedUriIterator() throws IndexException {
+    public Iterator<Path> orderedUriIterator() throws IndexException {
         try {
             return new UriIterator(index);
         } catch (IOException io) {
@@ -251,7 +247,7 @@ public class PropertySetIndexImpl implements PropertySetIndex {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void close(Iterator iterator) throws IndexException {
+    public void close(Iterator<?> iterator) throws IndexException {
         try {
             if ((iterator instanceof CloseableIterator)) {
                 ((CloseableIterator) iterator).close();
@@ -396,6 +392,5 @@ public class PropertySetIndexImpl implements PropertySetIndex {
     public void setIndexAccessor(IndexManager index) {
         this.index = index;
     }
-
 
 }

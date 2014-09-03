@@ -31,12 +31,11 @@
 
 package org.vortikal.repository.index.consistency;
 
-import java.util.Set;
+import org.vortikal.repository.Acl;
 
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySetImpl;
-import org.vortikal.security.Principal;
 
 
 
@@ -47,9 +46,9 @@ public class DanglingPropertyInconsistency extends InvalidDataInconsistency {
 
     private Property danglingProp;
     
-    public DanglingPropertyInconsistency(Path uri, PropertySetImpl repositoryPropSet, Set<Principal> aclReadPrincipals,
+    public DanglingPropertyInconsistency(Path uri, PropertySetImpl repositoryPropSet, Acl acl,
                                          Property danglingProp) {
-        super(uri, repositoryPropSet, aclReadPrincipals);
+        super(uri, repositoryPropSet, acl);
         this.danglingProp = danglingProp;
     }
 

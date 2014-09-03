@@ -1,21 +1,21 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2014, University of Oslo, Norway
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  *  * Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
- * 
+ *
  *  * Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 
+ *
  *  * Neither the name of the University of Oslo nor the names of its
  *    contributors may be used to endorse or promote products derived from
  *    this software without specific prior written permission.
- *      
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
  * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
  * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -28,47 +28,33 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.index.consistency;
 
-import org.vortikal.repository.Acl;
+package org.vortikal.repository.search.query;
 
-import org.vortikal.repository.Path;
-import org.vortikal.repository.PropertySetImpl;
-
-/**
- * Invalid ACL inconsistency.
- * 
- * @author oyviste
- *
- */
-public class InvalidACLInheritedFromInconsistency extends InvalidDataInconsistency {
-
-    private int indexInheritedFrom = -1;
-    private int daoInheritedFrom = -1;
+public abstract class AbstractAclQuery implements Query {
     
-    public InvalidACLInheritedFromInconsistency(Path uri, PropertySetImpl daoPropSet, 
-                                               Acl acl, int indexInheritedFrom, int daoInheritedFrom) {
-        super(uri, daoPropSet, acl);
-        this.indexInheritedFrom = indexInheritedFrom;
-        this.daoInheritedFrom = daoInheritedFrom;
+    protected final boolean inverted;
+    
+    public AbstractAclQuery() {
+        this(false);
     }
     
-    @Override
-    public boolean canRepair() {
-        return true;
+    public AbstractAclQuery(boolean inverted) {
+        this.inverted = inverted;
     }
-    
-    @Override
-    public String getDescription() {
-        return "Invalid ACL inherited from inconsistency for index property set at URI '"
-          + getUri() + "', indexACL = " + this.indexInheritedFrom + ", daoACL = " 
-                + this.daoInheritedFrom;
+
+    /**
+     * Returns <code>true</code> if the logical sense of matching should be inverted.
+     * This means the query should match on anything except the criteria it
+     * encapsulates.
+     * 
+     * @return the inverted
+     */
+    public boolean isInverted() {
+        return inverted;
     }
 
     @Override
-    public String toString() {
-        return "InvalidACLInheritedFromInconsistency[URI='" + getUri() + "', indexACL = " 
-        + this.indexInheritedFrom + ", daoACL = " + this.daoInheritedFrom + "]"; 
-    }
-
+    public abstract Object accept(QueryTreeVisitor visitor, Object data);
+    
 }

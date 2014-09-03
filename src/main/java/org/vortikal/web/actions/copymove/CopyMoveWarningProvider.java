@@ -47,9 +47,9 @@ import org.vortikal.repository.search.PropertySelect;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
-import org.vortikal.repository.search.query.ACLExistsQuery;
-import org.vortikal.repository.search.query.ACLInheritedFromQuery;
-import org.vortikal.repository.search.query.ACLQuery;
+import org.vortikal.repository.search.query.AclExistsQuery;
+import org.vortikal.repository.search.query.AclInheritedFromQuery;
+import org.vortikal.repository.search.query.AbstractAclQuery;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
@@ -99,7 +99,7 @@ public class CopyMoveWarningProvider implements ReferenceDataProvider {
                 return;
             }
             // XXX index search can be optimized to avoid iterating resourceset
-            ResultSet rs = indexAclSearch(sessionBean, token, new ACLExistsQuery(), false);
+            ResultSet rs = indexAclSearch(sessionBean, token, new AclExistsQuery(), false);
             if (rs.getSize() > 0) {
                 for (PropertySet ps : rs.getAllResults()) {
                     Resource resource = repository.retrieve(token, ps.getURI(), false);
@@ -132,7 +132,7 @@ public class CopyMoveWarningProvider implements ReferenceDataProvider {
             return;
         }
 
-        ResultSet rs = indexAclSearch(sessionBean, token, new ACLInheritedFromQuery(srcAclResource.getURI()), true);
+        ResultSet rs = indexAclSearch(sessionBean, token, new AclInheritedFromQuery(srcAclResource.getURI()), true);
         if (rs.getSize() > 0) {
             addWarning(model, confirmURL, sessionBean);
         }
@@ -145,7 +145,7 @@ public class CopyMoveWarningProvider implements ReferenceDataProvider {
         model.put("action", sessionBean.getAction());
     }
 
-    private ResultSet indexAclSearch(CopyMoveSessionBean sessionBean, String token, ACLQuery aclTypeQuery,
+    private ResultSet indexAclSearch(CopyMoveSessionBean sessionBean, String token, AbstractAclQuery aclTypeQuery,
             boolean setLimit) {
         OrQuery orQuery = new OrQuery();
         for (String uri : sessionBean.getFilesToBeCopied()) {

@@ -34,34 +34,27 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.lucene.document.DateTools;
-import org.apache.lucene.document.Field;
+import org.apache.lucene.index.IndexableField;
 
-import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFactoryImpl;
-import org.vortikal.security.InvalidPrincipalException;
-import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalFactory;
-import org.vortikal.security.PrincipalImpl;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-import org.vortikal.repository.index.mapping.FieldValues.FieldSpec;
+import org.vortikal.repository.index.mapping.Fields.FieldSpec;
+import org.vortikal.testing.mocktypes.MockPrincipalFactory;
+
 
 public class FieldValuesTest {
 
-    private final FieldValues fvm;
-    private final ValueFactory vf;
+    private final PropertyFields pf;
 
     public FieldValuesTest() {
-        this.fvm = new FieldValues();
         ValueFactoryImpl vf = new ValueFactoryImpl();
         vf.setPrincipalFactory(new MockPrincipalFactory());
-        this.vf = vf;
-        this.fvm.setValueFactory(new ValueFactoryImpl());
+        this.pf = new PropertyFields(null, vf);
     }
 
     @Test
@@ -78,7 +71,7 @@ public class FieldValuesTest {
 
         for (int i = 0; i < dateStrings.length; i++) {
             try {
-                fvm.queryTerm("someDate", dateStrings[i],
+                pf.queryTerm("someDate", dateStrings[i],
                         PropertyType.Type.TIMESTAMP, false);
             } catch (Exception e) {
                 fail("Failed to encode index field value for date format '" + dateFormats[i]
@@ -91,9 +84,9 @@ public class FieldValuesTest {
     @Test
     public void storedFields() {
 
-        Field stringField = fvm.makeFields("string", FieldSpec.STORED, new Value("bâr", PropertyType.Type.STRING)).get(0);
-        Field intField = fvm.makeFields("int", FieldSpec.STORED, new Value(1024)).get(0);
-        Field longField = fvm.makeFields("long", FieldSpec.STORED, new Value(1024L)).get(0);
+        IndexableField stringField = pf.makeFields("string", "bâr", FieldSpec.STORED).get(0);
+        IndexableField intField = pf.makeFields("int", 1024, FieldSpec.STORED).get(0);
+        IndexableField longField = pf.makeFields("long", 1024L, FieldSpec.STORED).get(0);
 
         assertEquals("string", stringField.name());
         assertEquals("int", intField.name());
@@ -110,34 +103,34 @@ public class FieldValuesTest {
         assertEquals(1024L, longField.numericValue().longValue());
         assertEquals("1024", longField.stringValue());
         assertNull(longField.binaryValue());
-
-        Value stringValue = fvm.valueFromField(Type.STRING, stringField);
+        
+        Value stringValue = pf.valueFromField(Type.STRING, stringField);
         assertEquals("bâr", stringValue.getStringValue());
 
-        Value intValue = fvm.valueFromField(Type.INT, intField);
+        Value intValue = pf.valueFromField(Type.INT, intField);
         assertEquals(1024, intValue.getIntValue());
 
-        Value longValue = fvm.valueFromField(Type.LONG, longField);
+        Value longValue = pf.valueFromField(Type.LONG, longField);
         assertEquals(1024, longValue.getLongValue());
     }
     
     @Test
     public void dateFields() {
-        final long now = new Date().getTime();
-        List<Field> fields = fvm.makeFields("date", FieldSpec.INDEXED_STORED, Type.DATE, now);
+        final long nowTime = new Date().getTime();
+        List<IndexableField> fields = pf.makeFields("date", new Date(nowTime), FieldSpec.INDEXED_STORED);
         
         assertEquals(2, fields.size());
         boolean haveStored = false;
         boolean haveIndexed = false;
-        for (Field f : fields) {
+        for (IndexableField f : fields) {
             if (f.fieldType().stored()) {
                 long fieldValue = f.numericValue().longValue();
-                assertEquals(now, fieldValue);
+                assertEquals(nowTime, fieldValue);
                 haveStored = true;
             }
             if (!f.fieldType().stored()) {
                 long fieldValue = f.numericValue().longValue();
-                assertEquals(DateTools.round(now, DateTools.Resolution.SECOND), fieldValue);
+                assertEquals(DateTools.round(nowTime, DateTools.Resolution.SECOND), fieldValue);
                 haveIndexed = true;
             }
         }
@@ -169,20 +162,15 @@ public class FieldValuesTest {
             }
         }
     }
-}
-
-class MockPrincipalFactory extends PrincipalFactory {
-
-    @Override
-    public Principal getPrincipal(String id, Principal.Type type)
-            throws InvalidPrincipalException {
-        return new PrincipalImpl(id, type);
-    }
-
-    @Override
-    public List<Principal> search(String filter, Principal.Type type)
-            throws RepositoryException {
-        return null;
+    
+    @Test
+    public void isLowercaseField() {
+        assertFalse(PropertyFields.isLowercaseField("p_foo"));
+        assertFalse(PropertyFields.isLowercaseField("p_bar:foo"));
+        assertTrue(PropertyFields.isLowercaseField("p_l_bar:foo"));
+        assertFalse(PropertyFields.isLowercaseField(ResourceFields.NAME_FIELD_NAME));
+        assertTrue(PropertyFields.isLowercaseField(ResourceFields.NAME_LC_FIELD_NAME));
+        assertFalse(PropertyFields.isLowercaseField("what:ever"));
     }
 
 }

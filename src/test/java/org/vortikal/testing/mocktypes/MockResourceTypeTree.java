@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2009,2014 University of Oslo, Norway
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,7 @@
 
 package org.vortikal.testing.mocktypes;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -75,11 +76,11 @@ public class MockResourceTypeTree implements ResourceTypeTree {
     }
 
     public List<PropertyTypeDefinition> getPropertyTypeDefinitions() {
-        return null;
+        return Collections.emptyList();
     }
 
     public List<PropertyTypeDefinition> getPropertyTypeDefinitionsIncludingAncestors(ResourceTypeDefinition def) {
-        return null;
+        return Collections.emptyList();
     }
 
     public ResourceTypeDefinition getResourceTypeDefinitionByName(String name) {
@@ -111,11 +112,11 @@ public class MockResourceTypeTree implements ResourceTypeTree {
     }
 
     public List<PrimaryResourceTypeDefinition> getResourceTypeDefinitionChildren(PrimaryResourceTypeDefinition def) {
-        return null;
+        return Collections.emptyList();
     }
 
     public String getResourceTypeTreeAsString() {
-        return null;
+        return getClass().getSimpleName();
     }
 
     public PrimaryResourceTypeDefinition getRoot() {

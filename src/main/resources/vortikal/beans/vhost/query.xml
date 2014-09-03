@@ -53,15 +53,11 @@
          initialized (because it modifies the resource type tree)
      -->
     <property name="resourceTypeTree" ref="resourceTypeTree"/>
-    <property name="fieldValues" ref="fieldValues"/>
-  </bean>
-
-  <!-- Index field value mapper -->  
-  <bean id="fieldValues" class="org.vortikal.repository.index.mapping.FieldValues">
-    <property name="valueFactory" ref="valueFactory"/>
+    <property name="principalFactory" ref="principalFactory" />
+    <property name="valueFactory" ref="valueFactory" />
     <property name="locale" value="${view.defaultLocale}" />
   </bean>
-  
+
   <bean id="searcherFactory" class="org.vortikal.repository.index.WarmupSearcherFactory">
     <property name="hiddenPropDef" ref="hiddenPropDef" />
     <property name="lastModifiedPropDef" ref="lastModifiedPropDef" />
@@ -77,7 +73,13 @@
 <!--    <property name="maxReadOnlyReaders" value="${indexMaxReadOnlyReaders}" />
     <property name="maxAgingReadOnlyReaders" value="${indexMaxAgingReadOnlyReaders}" />
     <property name="agingReadOnlyReaderThreshold" value="${indexAgingReadOnlyReaderThreshold}" />-->
-    <property name="searcherFactory" ref="searcherFactory" />
+    <property name="searcherFactory">
+      <bean class="org.vortikal.repository.index.WarmupSearcherFactory">
+        <property name="hiddenPropDef" ref="hiddenPropDef" />
+        <property name="lastModifiedPropDef" ref="lastModifiedPropDef" />
+        <property name="luceneQueryBuilder" ref="queryBuilder" />
+      </bean>
+    </property>
   </bean>
 
   <!-- Property set index based on primary Lucene index accessor instance.  -->
@@ -104,9 +106,9 @@
   
   <!-- Factory for building Lucene queries. -->
   <bean id="queryBuilder"
-        class="org.vortikal.repository.search.query.LuceneQueryBuilderImpl">
+        class="org.vortikal.repository.search.query.LuceneQueryBuilder">
     <property name="resourceTypeTree" ref="resourceTypeTree"/>
-    <property name="fieldValues" ref="fieldValues"/>
+    <property name="documentMapper" ref="documentMapper"/>
     <property name="queryAuthorizationFilterFactory" ref="queryAuthorizationFilterFactory"/>
     <property name="publishedPropDef" ref="publishedPropDef" />
     <property name="unpublishedCollectionPropDef" ref="unpublishedCollectionPropDef" />

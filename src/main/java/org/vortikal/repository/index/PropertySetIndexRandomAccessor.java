@@ -31,6 +31,7 @@
 package org.vortikal.repository.index;
 
 import java.util.Set;
+import org.vortikal.repository.Acl;
 
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
@@ -92,7 +93,7 @@ public interface PropertySetIndexRandomAccessor {
         Path getURI();
         String getResourceType();
         int getResourceId();
-        Set<String> getAclReadPrincipalNames();
+        Acl getAcl();
         int getAclInheritedFromId();
     }
 }

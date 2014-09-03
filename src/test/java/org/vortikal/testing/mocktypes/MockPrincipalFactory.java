@@ -1,21 +1,21 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2014, University of Oslo, Norway
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  *  * Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
- * 
+ *
  *  * Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 
+ *
  *  * Neither the name of the University of Oslo nor the names of its
  *    contributors may be used to endorse or promote products derived from
  *    this software without specific prior written permission.
- *      
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
  * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
  * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -28,54 +28,31 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.search.query;
 
-public class ACLExistsQuery implements ACLQuery {
+package org.vortikal.testing.mocktypes;
 
-    private boolean inverted = false;
-    
-    public ACLExistsQuery() {}
-    
-    public ACLExistsQuery(boolean inverted) {
-        this.inverted = inverted;
-    }
-    
-    public boolean isInverted() {
-        return this.inverted;
+import java.util.List;
+import org.vortikal.repository.RepositoryException;
+import org.vortikal.security.InvalidPrincipalException;
+import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalFactory;
+import org.vortikal.security.PrincipalImpl;
+
+/**
+ *
+ */
+public class MockPrincipalFactory extends PrincipalFactory {
+
+    @Override
+    public Principal getPrincipal(String id, Principal.Type type)
+            throws InvalidPrincipalException {
+        return new PrincipalImpl(id, type);
     }
 
     @Override
-    public Object accept(QueryTreeVisitor visitor, Object data) {
-        return visitor.visit(this, data);
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder(this.getClass().getName());
-        sb.append(";inverted=").append(this.inverted);
-        return sb.toString();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final ACLExistsQuery other = (ACLExistsQuery) obj;
-        if (this.inverted != other.inverted) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 5;
-        hash = 59 * hash + (this.inverted ? 1 : 0);
-        return hash;
+    public List<Principal> search(String filter, Principal.Type type)
+            throws RepositoryException {
+        return null;
     }
     
 }

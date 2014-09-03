@@ -40,7 +40,7 @@ import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.search.IndexSearcher;
 import org.vortikal.repository.Path;
-import org.vortikal.repository.index.mapping.FieldNames;
+import org.vortikal.repository.index.mapping.ResourceFields;
 
 /**
  * Ordered iteratinoall URIs of property sets present in index
@@ -64,7 +64,7 @@ public class UriIterator implements CloseableIterator<Path> {
     
     private Path nextUri() throws IOException {
         if (te == null) {
-            Terms terms = reader.terms(FieldNames.URI_FIELD_NAME);
+            Terms terms = reader.terms(ResourceFields.URI_FIELD_NAME);
             if (terms == null) {
                 return null;
             }

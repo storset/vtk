@@ -31,36 +31,167 @@
 
 package org.vortikal.repository.index.mapping;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.index.IndexableField;
+
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationManager;
 import org.vortikal.repository.Privilege;
+import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalFactory;
 
 /**
- *
- * Temporary and intermediate support util for ACL fields in index.
+ * ACL field support.
  * 
+ * <p>Mapping to/from {@link Acl acl objects} and related attributes.
+ * 
+ * TODO add testcase.
  */
-public class AclFields {
+public class AclFields extends Fields {
+
+    public static final String ACL_FIELD_PREFIX = "acl_";
+    public static final String GROUPS_PRIV_FIELD_PREFIX = ACL_FIELD_PREFIX + "g_";
+    public static final String USERS_PRIV_FIELD_PREFIX = ACL_FIELD_PREFIX + "u_";
+    
+    public static final String AGGREGATED_READ_FIELD_NAME = ACL_FIELD_PREFIX + "read_aggregate";
+    public static final String INHERITED_FROM_FIELD_NAME = ACL_FIELD_PREFIX + "inherited_from";
+        
+    private final PrincipalFactory principalFactory;
+    
+    AclFields(Locale locale, PrincipalFactory pf) {
+        super(locale);
+        this.principalFactory = pf;
+    }
+    
+    void addAclFields(final List<IndexableField> fields, PropertySetImpl propSet, Acl acl) {
+        for (Privilege action: acl.getActions()) {
+            Set<Principal> principals = acl.getPrincipalSet(action);
+            for (Principal p: principals) {
+                String fieldName = aceFieldName(action, p.getType());
+                fields.add(new StringField(fieldName, p.getQualifiedName(), Field.Store.YES));
+            }
+        }
+        
+        // Aggregate read field used for security filtering
+        for (Principal p: aggregatePrincipalsForRead(acl)) {
+            fields.add(new StringField(AGGREGATED_READ_FIELD_NAME, p.getQualifiedName(), Field.Store.NO));
+        }
+        
+        // ACL inherited from field, index as string identifier
+        fields.add(new StringField(INHERITED_FROM_FIELD_NAME, 
+                Integer.toString(propSet.getAclInheritedFrom()), Field.Store.YES));
+    }
+
+    public Acl fromDocument(Document doc) {
+        return fromFields(doc.getFields());
+    }
+    
+    public Acl fromFields(List<IndexableField> fields) {
+        final Map<Privilege, Set<Principal>> privileges = 
+                new EnumMap<Privilege, Set<Principal>>(Privilege.class);
+        
+        for (IndexableField f : fields) {
+            if (f.name().startsWith(USERS_PRIV_FIELD_PREFIX)
+                    || f.name().startsWith(GROUPS_PRIV_FIELD_PREFIX)) {
+                addEntry(f, privileges);
+            }
+        }
+        
+        return new Acl(privileges);
+    }
+    
+    public static int aclInheritedFrom(List<IndexableField> fields) {
+        for (IndexableField f: fields) {
+            if (f.name().equals(INHERITED_FROM_FIELD_NAME)) {
+                return Integer.parseInt(f.stringValue());
+            }
+        }
+
+        throw new IllegalArgumentException("Required field " + INHERITED_FROM_FIELD_NAME + ": not found in field list: " + fields);
+    }
+    
+    public static int aclInheritedFrom(Document doc) {
+        return aclInheritedFrom(doc.getFields());
+    }
+    
+    public static boolean isAclField(String fieldName) {
+        return fieldName.startsWith(ACL_FIELD_PREFIX);
+    }
+    
+    public static String aceFieldName(Privilege action, Principal.Type principalType) {
+        if (principalType == Principal.Type.USER || principalType == Principal.Type.PSEUDO) {
+            return USERS_PRIV_FIELD_PREFIX + action.getName();
+        } else {
+            return GROUPS_PRIV_FIELD_PREFIX + action.getName();
+        }
+    }
+    
+    private void addEntry(IndexableField field, Map<Privilege, Set<Principal>> actionSets) {
+        Principal.Type type;
+        final int offset;
+        if (field.name().startsWith(USERS_PRIV_FIELD_PREFIX)) {
+            type = Principal.Type.USER;
+            offset = USERS_PRIV_FIELD_PREFIX.length();
+        } else if (field.name().startsWith(GROUPS_PRIV_FIELD_PREFIX)) {
+            type = Principal.Type.GROUP;
+            offset =  GROUPS_PRIV_FIELD_PREFIX.length();
+        } else {
+            throw new IllegalArgumentException("Not an ACL entry field: " + field);
+        }
+        
+        final Privilege action = Privilege.forName(field.name().substring(offset));
+        final String id;
+        if (field.stringValue() != null) {
+            id = field.stringValue();
+        } else {
+            throw new IllegalArgumentException("Field has no stored string value: " + field);
+        }
+        
+        if (id.startsWith("pseudo:")) {
+            type = Principal.Type.PSEUDO;
+        }
+        
+        Set<Principal> principals = actionSets.get(action);
+        if (principals == null) {
+            principals = new HashSet<Principal>();
+            actionSets.put(action, principals);
+        }
+        
+        principals.add(principalFactory.getPrincipal(id, type, false));
+    }
     
     /**
-     * Extract set of all principals in ACL which through suitable privileges
-     * are able to READ the resource.
+     * Extract set of principals in ACL which through suitable privileges
+     * are able to READ the resource. If the {@link PrincipalFactory#ALL ALL user} is
+     * in the final read set, then only this principal will be returned.
      * 
-     * @param acl the 
-     * @return a set of <code>Principal</code> which are in aggregate allowed to
-     * READ through one or more of the privileges present in the ACL.
+     * @param acl the ACL
+     * @return a set of <code>Principal</code>
      */
-    public static Set<Principal> aggregatePrincipalsForRead(Acl acl) {
+    private Set<Principal> aggregatePrincipalsForRead(Acl acl) {
         
         Set<Principal> readSet = new HashSet<Principal>();
         for (Privilege p: AuthorizationManager.superPrivilegesOf(Privilege.READ_PROCESSED)) {
             readSet.addAll(acl.getPrincipalSet(p));
         }
         
+        if (readSet.contains(PrincipalFactory.ALL)) {
+            return new HashSet<Principal>(Arrays.asList(new Principal[]{PrincipalFactory.ALL}));
+        }
+        
         return readSet;
     }
-        
+
 }

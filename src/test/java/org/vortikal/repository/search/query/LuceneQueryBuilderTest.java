@@ -32,11 +32,11 @@ package org.vortikal.repository.search.query;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queries.BooleanFilter;
 import org.apache.lucene.queries.TermsFilter;
@@ -51,12 +51,16 @@ import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Before;
 import org.junit.Test;
 import org.vortikal.repository.Namespace;
-import org.vortikal.repository.index.mapping.FieldNames;
-import org.vortikal.repository.index.mapping.FieldValues;
+import org.vortikal.repository.index.mapping.AclFields;
+import org.vortikal.repository.index.mapping.DocumentMapper;
+
 import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
+import org.vortikal.repository.resourcetype.ValueFactoryImpl;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.query.security.QueryAuthorizationFilterFactory;
 import org.vortikal.security.PrincipalFactory;
+import org.vortikal.testing.mocktypes.MockPrincipalFactory;
+import org.vortikal.testing.mocktypes.MockResourceTypeTree;
 
 /*
  *  TODO: Review this test. It is (at least to me) a bit unclear exactly what we are testing, so 
@@ -65,12 +69,12 @@ import org.vortikal.security.PrincipalFactory;
  * 
  */
 
-public class LuceneQueryBuilderImplTest {
+public class LuceneQueryBuilderTest {
 
     final String dummyToken = "dummy_token";
     final IndexSearcher nullIndexSearcher = null;
 
-    private LuceneQueryBuilderImpl luceneQueryBuilder = new LuceneQueryBuilderImpl();
+    private LuceneQueryBuilder luceneQueryBuilder = new LuceneQueryBuilder();
     private Mockery context = new JUnit4Mockery();
     private QueryAuthorizationFilterFactory mockQueryAuthorizationFilterFactory;
     private TermsFilter dummyAclFilter;
@@ -90,11 +94,20 @@ public class LuceneQueryBuilderImplTest {
         unpublishedCollectionPropDef.setName("unpublishedCollection");
         luceneQueryBuilder.setUnpublishedCollectionPropDef(unpublishedCollectionPropDef);
 
-        luceneQueryBuilder.setFieldValues(new FieldValues());
-
+        // Document mapper dependency
+        PrincipalFactory pf = new MockPrincipalFactory();
+        DocumentMapper dm = new DocumentMapper();
+        dm.setLocale(Locale.getDefault());
+        dm.setResourceTypeTree(new MockResourceTypeTree());
+        dm.setPrincipalFactory(pf);
+        ValueFactoryImpl vf = new ValueFactoryImpl();
+        vf.setPrincipalFactory(pf);
+        dm.setValueFactory(vf);
+        dm.afterPropertiesSet();
+        luceneQueryBuilder.setDocumentMapper(dm);
         
         List<Term> terms = new ArrayList<Term>();
-        terms.add(new Term(FieldNames.ACL_READ_PRINCIPALS_FIELD_NAME, PrincipalFactory.ALL
+        terms.add(new Term(AclFields.AGGREGATED_READ_FIELD_NAME, PrincipalFactory.ALL
                 .getQualifiedName()));
         dummyAclFilter = new TermsFilter(terms);
 

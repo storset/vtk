@@ -41,7 +41,7 @@ import org.apache.lucene.queries.TermsFilter;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.util.BytesRef;
-import org.vortikal.repository.index.mapping.FieldNames;
+import org.vortikal.repository.index.mapping.AclFields;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 
@@ -53,7 +53,7 @@ public class SimpleQueryAuthorizationFilterFactory extends
         AbstractQueryAuthorizationFilterFactory {
 
     protected static final Filter ACL_READ_FOR_ALL_FILTER = 
-            new TermFilter(new Term(FieldNames.ACL_READ_PRINCIPALS_FIELD_NAME, PrincipalFactory.NAME_ALL));
+            new TermFilter(new Term(AclFields.AGGREGATED_READ_FIELD_NAME, PrincipalFactory.NAME_ALL));
     
     @Override
     public Filter authorizationQueryFilter(String token, IndexSearcher searcher) {
@@ -99,27 +99,7 @@ public class SimpleQueryAuthorizationFilterFactory extends
         // Add principal executing the query
         termValues.add(new BytesRef(principal.getQualifiedName()));
         
-        return new TermsFilter(FieldNames.ACL_READ_PRINCIPALS_FIELD_NAME, termValues);
+        return new TermsFilter(AclFields.AGGREGATED_READ_FIELD_NAME, termValues);
     }
     
-// Old Lucene3-impl:        
-//        @Override
-//        public DocIdSet getDocIdSet(IndexReader reader) throws IOException {
-//         
-//            
-//            
-//            OpenBitSet docIdSet = new OpenBitSet(reader.maxDoc());
-//            TermDocs tdocs = reader.termDocs(READ_FOR_ALL_TERM);
-//            try {
-//                while (tdocs.next()) {
-//                    docIdSet.fastSet(tdocs.doc());
-//                }
-//            } finally {
-//                tdocs.close();
-//            }
-//            
-//            return docIdSet;
-//        }
-//    }    
-        
 }

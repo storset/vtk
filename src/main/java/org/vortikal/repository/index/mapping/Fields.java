@@ -32,14 +32,13 @@
 package org.vortikal.repository.index.mapping;
 
 import com.ibm.icu.text.Collator;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import org.apache.lucene.collation.ICUCollationAttributeFactory;
-
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
@@ -47,31 +46,24 @@ import org.apache.lucene.document.IntField;
 import org.apache.lucene.document.LongField;
 import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
-
-
 import org.apache.lucene.index.FieldInfo;
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.NumericUtils;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.resourcetype.PropertyType;
-import org.vortikal.repository.resourcetype.PropertyType.Type;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFormatException;
-
 import org.vortikal.util.cache.ReusableObjectArrayStackCache;
 import org.vortikal.util.cache.ReusableObjectCache;
 
 /**
- * Field value mapping from/to Lucene.
- * 
- * TODO missing JavaDoc for most methods
+ *
  */
-public class FieldValues implements InitializingBean {
+public abstract class Fields {
+    
+    /* Common field prefixes */
+    public static final String LOWERCASE_FIELD_PREFIX = "l_";
+    public static final String SORT_FIELD_PREFIX = "s_";
+            
     
     // Note that order (complex towards simpler format) is important here.
     public static final String[] SUPPORTED_DATE_FORMATS = {
@@ -101,19 +93,24 @@ public class FieldValues implements InitializingBean {
         }
     }
     
-    private ValueFactory valueFactory;
-    private ICUCollationAttributeFactory caFactory;
-    private Locale locale;
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        if (locale == null) {
-            locale = Locale.getDefault();
-        }
-        
-        caFactory = new ICUCollationAttributeFactory(Collator.getInstance(locale));
+    private final Locale locale;
+    private final Collator collator;
+    private final ICUCollationAttributeFactory collationAttributeFactory;
+    
+    Fields(Locale locale) {
+        this.locale = locale != null ? locale : Locale.getDefault();
+        this.collator = Collator.getInstance(this.locale);
+        this.collationAttributeFactory = new ICUCollationAttributeFactory(collator);
     }
-            
+    
+    public Locale getLocale() {
+        return locale;
+    }
+    
+    public Collator getCollator() {
+        return collator;
+    }
+    
     /**
      * Specify indexing characteristics for field.
      * 
@@ -131,7 +128,7 @@ public class FieldValues implements InitializingBean {
         INDEXED_LOWERCASE,
         STORED
     }
-    
+
     /**
      * Create special field used only for sorting string values in a localized
      * fashion. The field value will be encoded as a collation key using the
@@ -141,132 +138,74 @@ public class FieldValues implements InitializingBean {
      * @param value the field value, a string.
      * @return 
      */
-    public Field makeSortField(String name, String value) {
-        if (caFactory != null) {
-            // Use a "token stream", even though we only have one value. This is due to
-            // Lucene API not allowing creation of raw binary indexable terms without going
-            // through this path.
-            StringArrayTokenStream ts = new StringArrayTokenStream(caFactory, value);
-            return new Field(name, ts, STRING_SORT_FIELDTYPE);
+    public IndexableField makeSortField(String name, String value) {
+        // Use a "token stream", even though we only have one value. This is due to
+        // Lucene API not allowing creation of raw binary indexable terms without going
+        // through this path.
+        StringArrayTokenStream ts = new StringArrayTokenStream(collationAttributeFactory, value);
+        return new Field(name, ts, STRING_SORT_FIELDTYPE);
+    }
+    
+    public List<IndexableField> makeFields(String fieldName, String value, FieldSpec spec) {
+        List<IndexableField> fields = new ArrayList<IndexableField>(2);
+        if (isIndex(spec)) {
+            if (isLowercase(spec)) {
+                value = lowercase(value, locale);
+            }
+            fields.add(new StringField(fieldName, value, Field.Store.NO));
+        }
+        if (isStore(spec)) {
+            fields.add(new StoredField(fieldName, value));
         }
         
-        // No configured locale
-        return new StringField(name, value, Field.Store.NO);
+        return fields;
     }
-
-    /**
-     * Create fields according to spec for a list of property values.
-     * 
-     * @param name
-     * @param spec
-     * @param values
-     * @return 
-     */
-    public List<Field> makeFields(String name, FieldSpec spec, Value... values) {
-        List<Field> fields = new ArrayList<Field>(values.length*2);
-        for (int i=0; i<values.length; i++) {
-            fields.addAll(makeFields(name, spec, values[i]));
+    
+    public List<IndexableField> makeFields(String fieldName, Date value, FieldSpec spec) {
+        List<IndexableField> fields = new ArrayList<IndexableField>(2);
+        long longValue = value.getTime();
+        if (isIndex(spec)) {
+            long indexValue = DateTools.round(longValue, DateTools.Resolution.SECOND);
+            fields.add(new LongField(fieldName, indexValue, Field.Store.NO));
+        }
+        if (isStore(spec)) {
+            fields.add(new StoredField(fieldName, longValue));
         }
         return fields;
     }
     
-    /**
-     * Create fields according to spec for a list of value objects having the
-     * given value type.
-     * 
-     * @param name
-     * @param spec
-     * @param values
-     * @return 
-     */
-    public List<Field> makeFields(String name, FieldSpec spec, Type type, Object... values) {
-        List<Field> fields = new ArrayList<Field>(values.length*2);
-        for (int i=0; i<values.length; i++) {
-            fields.addAll(makeFields(name, spec, type, values[i]));
+    public List<IndexableField> makeFields(String fieldName, Boolean value, FieldSpec spec) {
+        if (spec == FieldSpec.INDEXED_LOWERCASE) {
+            spec = FieldSpec.INDEXED;
+        }
+        return makeFields(fieldName, value ? "true" : "false", spec);
+    }
+    
+    public List<IndexableField> makeFields(String fieldName, long value, FieldSpec spec) {
+        List<IndexableField> fields = new ArrayList<IndexableField>(2);
+        if (isIndex(spec)) {
+            fields.add(new LongField(fieldName, value, Field.Store.NO));
+        }
+        if (isStore(spec)) {
+            fields.add(new StoredField(fieldName, value));
         }
         return fields;
     }
-
-    public List<Field> makeFields(String fieldName, FieldSpec spec, Value value) {
-        switch (value.getType()) {
-        case STRING:
-        case HTML:
-        case JSON:
-        case IMAGE_REF:
-        case BOOLEAN:
-        case PRINCIPAL:
-            String stringValue = value.getNativeStringRepresentation();
-            return makeFields(fieldName, spec, value.getType(), stringValue);
-
-        case LONG:
-        case DATE:
-        case TIMESTAMP:
-            long longValue;
-            if (value.getType() != Type.LONG) {
-                longValue = value.getDateValue().getTime();
-            } else {
-                longValue = value.getLongValue();
-            }
-            return makeFields(fieldName, spec, value.getType(), longValue);
-            
-        case INT:
-            Integer intValue = value.getIntValue();
-            return makeFields(fieldName, spec, value.getType(), intValue);
-            
-        default:
-            throw new IllegalArgumentException("Unsupported value type: " + value.getType());
+    
+    public List<IndexableField> makeFields(String fieldName, int value, FieldSpec spec) {
+        List<IndexableField> fields = new ArrayList<IndexableField>(2);
+        if (isIndex(spec)) {
+            fields.add(new IntField(fieldName, value, Field.Store.NO));
         }
+        if (isStore(spec)) {
+            fields.add(new StoredField(fieldName, value));
+        }
+        return fields;
     }
     
-    public List<Field> makeFields(String fieldName, FieldSpec spec, Type type, Object value) {
-        List<Field> fields = new ArrayList<Field>(2);
-        switch (type) {
-        case STRING:
-        case HTML:
-        case JSON:
-        case IMAGE_REF:
-        case BOOLEAN:
-        case PRINCIPAL:
-            String stringValue = (String)value;
-            if (isIndex(spec)) {
-                if (isLowercase(spec)) {
-                    stringValue = lowercase(stringValue);
-                }
-                fields.add(new StringField(fieldName, stringValue, Field.Store.NO));
-            }
-            if (isStore(spec)) {
-                fields.add(new StoredField(fieldName, stringValue));
-            }
-            break;
-
-        case LONG:
-        case DATE:
-        case TIMESTAMP:
-            long longValue = (Long)value;
-            if (isIndex(spec)) {
-                long indexValue = type != Type.LONG ? 
-                        DateTools.round(longValue, DateTools.Resolution.SECOND) : longValue;
-                fields.add(new LongField(fieldName, indexValue, Field.Store.NO));
-            }
-            if (isStore(spec)) {
-                fields.add(new StoredField(fieldName, longValue));
-            }
-            break;
-            
-        case INT:
-            Integer intValue = (Integer)value;
-            if (isIndex(spec)) {
-                fields.add(new IntField(fieldName, intValue, Field.Store.NO));
-            }
-            if (isStore(spec)) {
-                fields.add(new StoredField(fieldName, intValue));
-            }
-            break;
-
-        default:
-            throw new IllegalArgumentException("Unsupported value type: " + type);
-        }
-        
+    public List<IndexableField> makeFields(String fieldName, byte[] value) {
+        List<IndexableField> fields = new ArrayList<IndexableField>(1);
+        fields.add(new StoredField(fieldName, value));
         return fields;
     }
     
@@ -283,6 +222,14 @@ public class FieldValues implements InitializingBean {
     private boolean isLowercase(FieldSpec spec) {
         return spec == FieldSpec.INDEXED_LOWERCASE;
     }
+  
+    private String lowercase(String value, Locale locale) {
+        if (locale != null) {
+            return value.toLowerCase(locale);
+        }
+
+        return value.toLowerCase();
+    }
     
     /**
      * Create a (possibly encoded) query term for the given value object with the
@@ -291,37 +238,34 @@ public class FieldValues implements InitializingBean {
      * 
      * @param fieldName
      * @param value
-     * @param type
+     * @param basicType
      * @param lowercase
      * @return 
      */
-    public Term queryTerm(String fieldName, Object value, Type type, boolean lowercase) {
-        switch (type) {
-        case STRING:
-        case HTML:
-        case JSON:
-        case IMAGE_REF:
-        case BOOLEAN:
-        case PRINCIPAL:
+    public Term queryTerm(String fieldName, Object value, 
+                    Class basicType, boolean lowercase) {
+        if (basicType == String.class) {
             if (lowercase) {
-                return new Term(fieldName, lowercase(value.toString()));
+                return new Term(fieldName, lowercase(value.toString(), locale));
             }
             return new Term(fieldName, value.toString());
-
-        case DATE:
-        case TIMESTAMP:
+            
+        } else if (basicType == java.util.Date.class) {
             return new Term(fieldName, dateValueToIndexTerm(value));
-
-        case INT:
+            
+        } else if (basicType == java.lang.Integer.class) {
             return new Term(fieldName, integerValueToIndexTerm(value));
             
-        case LONG:
+        } else if (basicType == java.lang.Long.class) {
             return new Term(fieldName, longValueToIndexTerm(value));
-
-        default:
-            throw new IllegalArgumentException("Unknown or unsupported type " + type);
+            
+        } else if (basicType == java.lang.Boolean.class) {
+            boolean booleanValue = "true".equals(value) 
+                    || (value instanceof Boolean) && ((Boolean)value).booleanValue();
+            return new Term(fieldName, booleanValue ? "true" : "false");
+        } else {
+            return new Term(fieldName, value.toString());
         }
-        
     }
     
     /**
@@ -359,7 +303,7 @@ public class FieldValues implements InitializingBean {
                     try {
                         d = formatter.parse(stringValue);
                         break;
-                    } catch (Exception e) {
+                    } catch (ParseException e) {
                         // Ignore failed parsing attempt
                     } finally {
                         // Cache the constructed date parser for re-use
@@ -426,102 +370,5 @@ public class FieldValues implements InitializingBean {
         return bytes;
     }
     
-    // Lower case using default locale
-    private String lowercase(String value) {
-        if (locale != null){
-            return value.toLowerCase(locale);
-        } 
-        
-        return value.toLowerCase();
-    }
     
-    public Value[] valuesFromFields(Type type, List<IndexableField> fields) {
-        Value[] values = new Value[fields.size()];
-        for (int i=0; i<fields.size(); i++) {
-            values[i] = valueFromField(type, fields.get(i));
-        }
-        return values;
-    }
-    
-    public Value valueFromField(Type type, IndexableField f) {
-        switch (type) {
-        case STRING:
-        case HTML:
-        case JSON:
-        case IMAGE_REF:
-        case PRINCIPAL:
-        case BOOLEAN:
-            String stringValue = f.stringValue();
-            if (stringValue == null) {
-                throw new IllegalArgumentException("Field " + f + " has no stored string value");
-            }
-            return this.valueFactory.createValue(stringValue, type);
-
-        case DATE:
-        case TIMESTAMP:
-        case LONG:
-            Number longNumber = f.numericValue();
-            if (longNumber == null) {
-                throw new IllegalArgumentException("Field " + f + " has no stored numeric long value");
-            }
-            long longValue = longNumber.longValue();
-            if (type == Type.LONG) {
-                return new Value(longValue);
-            } else {
-                return new Value(new Date(longValue), type == Type.DATE);
-            }
-            
-        case INT:
-            Number intNumber = f.numericValue();
-            if (intNumber == null) {
-                throw new IllegalArgumentException("Field " + f + " has no stored numeric integer value");
-            }
-            return new Value(intNumber.intValue());
-
-        default:
-            throw new IllegalArgumentException("Unsupported value type: " + type);
-        }
-    }
-    
-    
-    /**
-     * Get suitable data type for a JSON field. Only accepts property
-     * defs with value type JSON. Uses JSON field type hints set in property
-     * definition metadata.
-     * 
-     * @param def
-     * @param jsonFieldName Name of a JSON field.
-     * @return 
-     */
-    public static Type getJsonFieldDataType(PropertyTypeDefinition def, String jsonFieldName) {
-        if (def.getType() != PropertyType.Type.JSON) {
-            throw new IllegalArgumentException("Type JSON required: " + def);
-        }
-        Map<String,Object> metadata = def.getMetadata();
-        String typeHint = (String) metadata.get(
-                PropertyTypeDefinition.METADATA_INDEXABLE_JSON_TYPEHINT_FIELD_PREFIX + jsonFieldName);
-        if (typeHint == null) {
-            typeHint = (String) metadata.get(
-                    PropertyTypeDefinition.METADATA_INDEXABLE_JSON_TYPEHINT_DEFAULT);
-        }
-        return typeHint != null ? Type.valueOf(typeHint) : Type.STRING;
-    }
-    
-    @Required
-    public void setValueFactory(ValueFactory valueFactory) {
-        this.valueFactory = valueFactory;
-    }
-
-    /**
-     * Set locale to use for locale-specific sorting and lowercasing of
-     * string values as index terms. When set, specialized sorting fields will
-     * be encoded as collation keys at indexing time.
-     * 
-     * @param locale the locale instance to set.
-     * 
-     * Default value: <code>Locale.getDefault()</code>.
-     */
-    public void setLocale(Locale locale) {
-        this.locale = locale;
-    }
 }

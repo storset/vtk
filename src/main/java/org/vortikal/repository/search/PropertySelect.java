@@ -30,9 +30,12 @@
  */
 package org.vortikal.repository.search;
 
-import java.util.Set;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
+/**
+ * TODO consider renaming this field selection interface, since it's not only about
+ * resource properties anymore.
+ */
 public interface PropertySelect {
 
     /**
@@ -46,6 +49,11 @@ public interface PropertySelect {
         @Override
         public String toString() {
             return "ALL";
+        }
+
+        @Override
+        public boolean isIncludeAcl() {
+            return true;
         }
     };
     
@@ -61,12 +69,25 @@ public interface PropertySelect {
         public String toString() {
             return "NONE";
         }
+
+        @Override
+        public boolean isIncludeAcl() {
+            return false;
+        }
     };
     
     /**
-     * @return <code>true</code> if the given property should be selected.
+     * @param def
+     * @return <code>true</code> if the given property should be selected for
+     * loading in search results.
      */
     public boolean isIncludedProperty(PropertyTypeDefinition def);
+    
+    /**
+     * Should return true if ACL should be included in result.
+     * @return 
+     */
+    public boolean isIncludeAcl();
 
 }
 

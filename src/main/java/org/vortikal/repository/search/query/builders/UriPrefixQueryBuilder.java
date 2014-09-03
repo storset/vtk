@@ -39,7 +39,7 @@ import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
-import org.vortikal.repository.index.mapping.FieldNames;
+import org.vortikal.repository.index.mapping.ResourceFields;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
 import org.vortikal.repository.search.query.UriPrefixQuery;
@@ -59,11 +59,11 @@ public class UriPrefixQueryBuilder implements QueryBuilder {
     
     @Override
     public Query buildQuery() throws QueryBuilderException {
-        Query query = new TermQuery(new Term(FieldNames.URI_ANCESTORS_FIELD_NAME, upQuery.getUri()));
+        Query query = new TermQuery(new Term(ResourceFields.URI_ANCESTORS_FIELD_NAME, upQuery.getUri()));
 
         if (this.upQuery.isIncludeSelf()) {
             BooleanQuery bq = new BooleanQuery();
-            TermQuery uriTermq = new TermQuery(new Term(FieldNames.URI_FIELD_NAME, upQuery.getUri()));
+            TermQuery uriTermq = new TermQuery(new Term(ResourceFields.URI_FIELD_NAME, upQuery.getUri()));
             bq.add(uriTermq, BooleanClause.Occur.SHOULD);
             bq.add(query, BooleanClause.Occur.SHOULD);
             query = bq;

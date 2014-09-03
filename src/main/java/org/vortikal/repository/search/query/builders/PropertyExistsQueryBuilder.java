@@ -34,7 +34,7 @@ package org.vortikal.repository.search.query.builders;
 
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.FieldValueFilter;
-import org.vortikal.repository.index.mapping.FieldNames;
+import org.vortikal.repository.index.mapping.PropertyFields;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.query.PropertyExistsQuery;
@@ -44,7 +44,6 @@ import org.vortikal.repository.search.query.QueryBuilderException;
 
 /**
  * 
- * @author oyviste
  */
 public class PropertyExistsQueryBuilder implements QueryBuilder {
 
@@ -59,9 +58,9 @@ public class PropertyExistsQueryBuilder implements QueryBuilder {
         
         PropertyTypeDefinition def = this.query.getPropertyDefinition();
 
-        String fieldName = FieldNames.propertyFieldName(def, false);
+        String fieldName = PropertyFields.propertyFieldName(def, false);
         if (def.getType() == Type.JSON && query.getComplexValueAttributeSpecifier() != null) {
-            fieldName = FieldNames.jsonFieldName(def, query.getComplexValueAttributeSpecifier(), false);
+            fieldName = PropertyFields.jsonFieldName(def, query.getComplexValueAttributeSpecifier(), false);
         }
         
         return new ConstantScoreQuery(new FieldValueFilter(fieldName, query.isInverted()));

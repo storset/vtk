@@ -35,8 +35,7 @@ import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
-import org.vortikal.repository.index.mapping.FieldValues;
-import org.vortikal.repository.index.mapping.FieldNames;
+import org.vortikal.repository.index.mapping.PropertyFields;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.query.PropertyTermQuery;
@@ -61,11 +60,11 @@ import org.vortikal.repository.search.query.filter.FilterFactory;
 public class PropertyTermQueryBuilder implements QueryBuilder {
 
     private final PropertyTermQuery ptq;
-    private FieldValues fvm;
+    private PropertyFields pf;
     
-    public PropertyTermQueryBuilder(PropertyTermQuery ptq, FieldValues fvm) {
+    public PropertyTermQueryBuilder(PropertyTermQuery ptq, PropertyFields fvm) {
         this.ptq = ptq;
-        this.fvm = fvm;
+        this.pf = fvm;
     }
 
     @Override
@@ -80,17 +79,17 @@ public class PropertyTermQueryBuilder implements QueryBuilder {
         final PropertyType.Type valueType;
         final String fieldName;
         if (cva != null) {
-            valueType = FieldValues.getJsonFieldDataType(propDef, cva);
-            fieldName = FieldNames.jsonFieldName(propDef, cva, lowercase);
+            valueType = PropertyFields.jsonFieldDataType(propDef, cva);
+            fieldName = PropertyFields.jsonFieldName(propDef, cva, lowercase);
         } else {
             valueType = propDef.getType();
-            fieldName = FieldNames.propertyFieldName(propDef, lowercase);
+            fieldName = PropertyFields.propertyFieldName(propDef, lowercase);
         }
         
         if (op == TermOperator.EQ || op == TermOperator.EQ_IGNORECASE) {
-            return new TermQuery(fvm.queryTerm(fieldName, fieldValue, valueType, lowercase));
+            return new TermQuery(pf.queryTerm(fieldName, fieldValue, valueType, lowercase));
         } else if (op == TermOperator.NE || op == TermOperator.NE_IGNORECASE) {
-            TermFilter tf = new TermFilter(fvm.queryTerm(fieldName, fieldValue, valueType, lowercase));
+            TermFilter tf = new TermFilter(pf.queryTerm(fieldName, fieldValue, valueType, lowercase));
             Filter f = FilterFactory.inversionFilter(tf);
             return new ConstantScoreQuery(f);
         } else {

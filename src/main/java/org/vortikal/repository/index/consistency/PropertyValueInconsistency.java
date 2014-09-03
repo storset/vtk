@@ -31,25 +31,23 @@
 
 package org.vortikal.repository.index.consistency;
 
-import java.util.Set;
+import org.vortikal.repository.Acl;
 
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySetImpl;
-import org.vortikal.security.Principal;
 
 /**
  *
  */
-
-public class PropertyValueInconsistency extends InvalidDataInconsistency{
+public class PropertyValueInconsistency extends InvalidDataInconsistency {
 
     private Property daoProp;
     private Property indexProp;
     
-    public PropertyValueInconsistency(Path uri, PropertySetImpl repositoryPropSet, Set<Principal> aclReadPrincipals,
+    public PropertyValueInconsistency(Path uri, PropertySetImpl repositoryPropSet, Acl acl,
                                       Property indexProp, Property daoProp) {
-        super(uri, repositoryPropSet, aclReadPrincipals);
+        super(uri, repositoryPropSet, acl);
         this.daoProp = daoProp;
         this.indexProp = indexProp;
     }

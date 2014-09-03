@@ -56,10 +56,11 @@ import org.vortikal.repository.search.Parser;
 import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
+import org.vortikal.repository.search.Searcher.MatchingResult;
 import org.vortikal.repository.search.SortFieldDirection;
 import org.vortikal.repository.search.Sorting;
 import org.vortikal.repository.search.TypedSortField;
-import org.vortikal.repository.search.query.ACLReadForAllQuery;
+import org.vortikal.repository.search.query.AclReadForAllQuery;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.PropertyExistsQuery;
@@ -308,7 +309,8 @@ public class BrokenLinksReport extends DocumentReporter {
             }
 
             @Override
-            public boolean matching(PropertySet propertySet) throws Exception {
+            public boolean matching(MatchingResult result) throws Exception {
+                PropertySet propertySet = result.propertySet();
                 Property prop = propertySet.getProperty(brokenLinksCountPropDef);
                 if (prop == null)
                     return true;
@@ -437,7 +439,8 @@ public class BrokenLinksReport extends DocumentReporter {
         }
 
         @Override
-        public boolean matching(PropertySet propertySet) throws Exception {
+        public boolean matching(MatchingResult result) throws Exception {
+            PropertySet propertySet = result.propertySet();
             Property prop = propertySet.getProperty(brokenLinksCountPropDef);
             if (prop == null) {
                 return true;
@@ -505,10 +508,10 @@ public class BrokenLinksReport extends DocumentReporter {
 
         if (readRestriction != null) {
             if ("true".equals(readRestriction)) {
-                ACLReadForAllQuery aclReadForAllQ = new ACLReadForAllQuery(true);
+                AclReadForAllQuery aclReadForAllQ = new AclReadForAllQuery(true);
                 topLevelQ.add(aclReadForAllQ);
             } else if ("false".equals(readRestriction)) {
-                ACLReadForAllQuery aclReadForAllQ = new ACLReadForAllQuery();
+                AclReadForAllQuery aclReadForAllQ = new AclReadForAllQuery();
                 topLevelQ.add(aclReadForAllQ);
             }
         }

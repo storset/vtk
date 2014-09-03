@@ -223,11 +223,14 @@ public class IndexManager implements InitializingBean, DisposableBean {
     public void releaseIndexSearcher(IndexSearcher searcher) throws IOException {
         if (searcher == null) return;
         
+        
         // Guard against possible NPE at closing time
         SearcherManager sm = searcherManager;
         if (sm != null) {
             sm.release(searcher);
         }
+        
+        logger.debug("searcher.getIndexReader().getRefCount() = " + searcher.getIndexReader().getRefCount());
     }
     
     /** Check index filesystem-lock, force-unlock if requested. */

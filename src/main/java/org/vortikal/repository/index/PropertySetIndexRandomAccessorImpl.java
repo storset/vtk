@@ -38,19 +38,24 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.DocumentStoredFieldVisitor;
 import org.apache.lucene.index.AtomicReader;
 import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.FieldInfo;
+import org.apache.lucene.index.StoredFieldVisitor;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queries.TermFilter;
 import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.util.Bits;
+import org.vortikal.repository.Acl;
 
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.index.mapping.AclFields;
 import org.vortikal.repository.index.mapping.DocumentMapper;
-import org.vortikal.repository.index.mapping.FieldNames;
+import org.vortikal.repository.index.mapping.ResourceFields;
 
 /**
  * Random access (lookup by id) implementation for property set index.
@@ -71,9 +76,14 @@ class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRandomAccess
     @Override
     public int countInstances(Path uri) throws IndexException {
 
-        Term term = new Term(FieldNames.URI_FIELD_NAME, uri.toString());
+        Term term = new Term(ResourceFields.URI_FIELD_NAME, uri.toString());
         try {
-            List<Document> docs = lookupDocs(term, Collections.<String>emptySet());
+            List<Document> docs = lookupDocs(term, new LoadFieldCallback() {
+                @Override
+                public boolean loadField(String fieldName) {
+                    return false;
+                }
+            });
             return docs.size();
         } catch (IOException io) {
             throw new IndexException(io);
@@ -85,7 +95,7 @@ class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRandomAccess
         PropertySet propSet = null;
 
         try {
-            List<Document> docs = lookupDocs(new Term(FieldNames.URI_FIELD_NAME, uri.toString()), null);
+            List<Document> docs = lookupDocs(new Term(ResourceFields.URI_FIELD_NAME, uri.toString()), null);
             if (docs.size() > 0) {
                 Document doc = docs.get(0); // Just pick first in case of duplicates
                 propSet = mapper.getPropertySet(doc);
@@ -101,7 +111,7 @@ class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRandomAccess
     public PropertySet getPropertySetByUUID(String uuid) throws IndexException {
         PropertySet propSet = null;
         try {
-            List<Document> docs = lookupDocs(new Term(FieldNames.ID_FIELD_NAME, uuid), null);
+            List<Document> docs = lookupDocs(new Term(ResourceFields.ID_FIELD_NAME, uuid), null);
             if (docs.size() > 0) {
                 Document doc = docs.get(0); // Just pick first in case of duplicates
                 propSet = mapper.getPropertySet(doc);
@@ -117,21 +127,30 @@ class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRandomAccess
     public PropertySetInternalData getPropertySetInternalData(final Path uri) throws IndexException {
 
         try {
-            Set<String> fields = new HashSet<String>();
-            fields.add(FieldNames.URI_FIELD_NAME);
-            fields.add(FieldNames.RESOURCETYPE_FIELD_NAME);
-            fields.add(FieldNames.ID_FIELD_NAME);
-            fields.add(FieldNames.ACL_INHERITED_FROM_FIELD_NAME);
-            fields.add(FieldNames.ACL_READ_PRINCIPALS_FIELD_NAME);
+            LoadFieldCallback lfc = new LoadFieldCallback() {
+                @Override
+                public boolean loadField(String fieldName) {
+                    if (ResourceFields.URI_FIELD_NAME.equals(fieldName)
+                            || ResourceFields.RESOURCETYPE_FIELD_NAME.equals(fieldName)
+                            || ResourceFields.ID_FIELD_NAME.equals(fieldName)) {
+                        return true;
+                    }
+                    if (fieldName.startsWith(AclFields.ACL_FIELD_PREFIX)) {
+                        return true;
+                    }
+                    
+                    return false;
+                }
+            };
             
-            List<Document> docs = lookupDocs(new Term(FieldNames.URI_FIELD_NAME, uri.toString()), fields);
+            List<Document> docs = lookupDocs(new Term(ResourceFields.URI_FIELD_NAME, uri.toString()), lfc);
             if (docs.isEmpty()) return null;
 
             Document doc = docs.get(0); // Just pick first in case of duplicates
-            final String rt = doc.get(FieldNames.RESOURCETYPE_FIELD_NAME);
-            final int id = mapper.getResourceId(doc);
-            final int aclInheritedFrom = mapper.getAclInheritedFrom(doc);
-            final Set<String> aclReadPrincipalNames = mapper.getACLReadPrincipalNames(doc);
+            final String rt = doc.get(ResourceFields.RESOURCETYPE_FIELD_NAME);
+            final int id = ResourceFields.getResourceId(doc);
+            final int aclInheritedFrom = AclFields.aclInheritedFrom(doc);
+            final Acl acl = mapper.getAclFields().fromDocument(doc);
 
             return new PropertySetInternalData() {
                 @Override
@@ -155,8 +174,8 @@ class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRandomAccess
                 }
 
                 @Override
-                public Set<String> getAclReadPrincipalNames() {
-                    return aclReadPrincipalNames;
+                public Acl getAcl() {
+                    return acl;
                 }
             };
         } catch (IOException io) {
@@ -165,8 +184,11 @@ class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRandomAccess
         
     }
     
-    private List<Document> lookupDocs(Term term, Set<String> loadFields) throws IOException {
-
+    private static interface LoadFieldCallback {
+        boolean loadField(String fieldName);
+    }
+    
+    private List<Document> lookupDocs(Term term, final LoadFieldCallback lfc) throws IOException {
         final List<Document> documents = new ArrayList<Document>();
         final TermFilter tf = new TermFilter(term);
         try {
@@ -179,8 +201,18 @@ class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRandomAccess
                     if (disi != null) {
                         int docId;
                         while ((docId = disi.nextDoc()) != DocIdSetIterator.NO_MORE_DOCS) {
-                            Document doc = ar.document(docId, loadFields);
-                            documents.add(doc);
+                            DocumentStoredFieldVisitor fv =
+                                new DocumentStoredFieldVisitor() {
+                                    @Override
+                                    public StoredFieldVisitor.Status needsField(FieldInfo fieldInfo) throws IOException {
+                                        if (lfc == null || lfc.loadField(fieldInfo.name)) {
+                                            return StoredFieldVisitor.Status.YES;
+                                        }
+                                        return StoredFieldVisitor.Status.NO;
+                                    }
+                                };
+                            ar.document(docId, fv);
+                            documents.add(fv.getDocument());
                         }
                     }
                 }

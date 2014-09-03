@@ -205,60 +205,6 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
         return new Acl(aclHolder);
     }
     
-    /**
-     * Fetch a set of principals (normal principals, pseudo-principals and groups) 
-     * which are allowed to read or read-processed the resource that the property set
-     * represents.
-     * 
-     * @return <code>null</code> if the resource or the resource from which ACL is
-     *                           inherited could not be found. Otherwise 
-     *                           a <code>Set</code> of <code>Principal</code> instances. 
-     */
-    Set<Principal> loadAclReadPrincipals(PropertySet propertySet)
-            throws org.vortikal.repository.store.DataAccessException {
-        
-        // Cast to impl
-        PropertySetImpl propSetImpl = (PropertySetImpl)propertySet;
-        
-        Set<Principal> aclReadPrincipals = new HashSet<Principal>();
-        
-        // Now determine where to fetch the rest of the ACL information (either from self or an ancestor)
-        int aclResourceId = propSetImpl.isInheritedAcl() ? 
-                    propSetImpl.getAclInheritedFrom() : propSetImpl.getID();
-        
-        // Fetch ACL from database for the given resource/node
-        String statement = getSqlMap("getAclReadPrincipalNames");
-        SqlMapClientTemplate client = getSqlMapClientTemplate();
-        
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> principalAttributeList = 
-                                    client.queryForList(statement, aclResourceId);
-
-        if (principalAttributeList.isEmpty()) {
-            // Resource is gone, return null
-            return null;
-        } else {
-            for (Map<String, Object> principalAttributes: principalAttributeList) {
-                String name = (String) principalAttributes.get("name");
-                Boolean isUser = (Boolean) principalAttributes.get("isUser");
-                
-                Principal.Type type;
-                if (name.startsWith("pseudo:")) {
-                    type = Principal.Type.PSEUDO;
-                } else if (isUser.booleanValue()) {
-                    type = Principal.Type.USER;
-                } else {
-                    type = Principal.Type.GROUP;
-                }
-                
-                Principal principal = this.principalFactory.getPrincipal(name, type, false);
-                aclReadPrincipals.add(principal);
-            }
-        }
-        
-        return aclReadPrincipals;
-    }
-    
     Property createProperty(SqlDaoUtils.PropHolder holder) {
         return this.sqlMapDataAccessor.createProperty(holder);
     }

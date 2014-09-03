@@ -123,9 +123,7 @@ public class DirectReindexer implements PropertySetIndexReindexer {
         public void handlePropertySet(PropertySet propertySet, 
                                       Acl acl) {
 
-            Set<Principal> aclReadPrincipals = AclFields.aggregatePrincipalsForRead(acl);
-            
-            this.index.addPropertySet(propertySet, aclReadPrincipals);
+            this.index.addPropertySet(propertySet, acl);
 
             if (++count % 10000 == 0) {
                 DirectReindexer.this.logger.info("Reindexing progress: " + count + " resources indexed.");

@@ -35,7 +35,7 @@ import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.PrefixFilter;
 import org.apache.lucene.search.Query;
-import org.vortikal.repository.index.mapping.FieldNames;
+import org.vortikal.repository.index.mapping.PropertyFields;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.query.PropertyPrefixQuery;
@@ -81,9 +81,9 @@ public class PropertyPrefixQueryBuilder implements QueryBuilder {
             term = term.toLowerCase();
         }
 
-        String fieldName = FieldNames.propertyFieldName(def, ignorecase);
+        String fieldName = PropertyFields.propertyFieldName(def, ignorecase);
         if (def.getType() == Type.JSON && this.ppq.getComplexValueAttributeSpecifier() != null) {
-            fieldName = FieldNames.jsonFieldName(
+            fieldName = PropertyFields.jsonFieldName(
                     def, ppq.getComplexValueAttributeSpecifier(), ignorecase);
         }
 

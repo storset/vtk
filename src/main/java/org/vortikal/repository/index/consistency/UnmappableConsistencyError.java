@@ -30,41 +30,40 @@
  */
 package org.vortikal.repository.index.consistency;
 
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.index.IndexException;
 import org.vortikal.repository.index.PropertySetIndex;
-import org.vortikal.security.Principal;
 
 /**
  * Consistency error representing an index document which could not be mapped to a
  * <code>PropertySet</code> instance. This is usually caused by property/resource type configuration 
  * problems.
  * 
- * @author oyviste
- *
  */
 public class UnmappableConsistencyError extends RequireOriginalDataConsistencyError {
 
     private static final Log LOG = LogFactory.getLog(UnmappableConsistencyError.class);
     
-    private Exception mappingException;
+    private final Exception mappingException;
     
     public UnmappableConsistencyError(Path uri, Exception mappingException, 
                                       PropertySetImpl repositoryPropSet,
-                                      Set<Principal> aclReadPrincipals) {
-        super(uri, repositoryPropSet, aclReadPrincipals);
+                                      Acl acl) {
+        super(uri, repositoryPropSet, acl);
         this.mappingException = mappingException;
     }
 
+    @Override
     public boolean canRepair() {
         return true;
     }
     
+    @Override
     public String getDescription() {
         return "Index document representing property set at URI '" 
             + getUri() + "' could not be mapped to a PropertySet instance,"
@@ -73,13 +72,15 @@ public class UnmappableConsistencyError extends RequireOriginalDataConsistencyEr
 
     /**
      * Repair by deleting index property set and re-adding pristine copy from repository.
+     * @param index
      */
     protected void repair(PropertySetIndex index) throws IndexException {
         LOG.info("Repairing unmappable consistency error at URI '" + getUri() + "'");
 
-        index.updatePropertySet(super.repositoryPropSet, super.repositoryAclReadPrincipals);
+        index.updatePropertySet(super.repositoryPropSet, super.acl);
     }
     
+    @Override
     public String toString() {
         return "UnmappableConsistencyError[URI = '" + getUri() + "', exception message = '" 
         + mappingException.getMessage() + "']";

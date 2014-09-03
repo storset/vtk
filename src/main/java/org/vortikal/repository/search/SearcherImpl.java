@@ -31,7 +31,6 @@
 package org.vortikal.repository.search;
 
 import java.io.IOException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
@@ -40,12 +39,10 @@ import org.apache.lucene.index.AtomicReader;
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.DocsEnum;
 import org.apache.lucene.index.Fields;
-
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.index.Terms;
 import org.apache.lucene.index.TermsEnum;
-
 import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.search.Filter;
@@ -56,9 +53,13 @@ import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.FixedBitSet;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.index.IndexManager;
 import org.vortikal.repository.index.mapping.DocumentMapper;
+import org.vortikal.repository.index.mapping.LazyMappedPropertySet;
+import org.vortikal.repository.index.mapping.ResultSetWithAcls;
+import org.vortikal.repository.search.Searcher.MatchingResult;
 import org.vortikal.repository.search.query.DumpQueryTreeVisitor;
 import org.vortikal.repository.search.query.LuceneQueryBuilder;
 import org.vortikal.repository.search.query.Query;
@@ -155,10 +156,10 @@ public class SearcherImpl implements Searcher {
 
             ScoreDoc[] scoreDocs = topDocs.scoreDocs;
             
-            ResultSetImpl rs;
+            ResultSetWithAcls rs;
             if (clientCursor < scoreDocs.length) {
                 int end = Math.min(need, scoreDocs.length);
-                rs = new ResultSetImpl(end-clientCursor);
+                rs = new ResultSetWithAcls(end-clientCursor);
                 
                 startTime = System.currentTimeMillis();
                 for (int i=clientCursor; i < end; i++) {
@@ -166,7 +167,7 @@ public class SearcherImpl implements Searcher {
                             documentMapper.newStoredFieldVisitor(selectedProperties);
                     searcher.doc(scoreDocs[i].doc, fieldVisitor);
                     Document doc = fieldVisitor.getDocument();
-                    PropertySet propSet = this.documentMapper.getPropertySet(doc);
+                    LazyMappedPropertySet propSet = this.documentMapper.getPropertySet(doc);
                     rs.addResult(propSet);
                 }
                 endTime = System.currentTimeMillis();
@@ -177,7 +178,7 @@ public class SearcherImpl implements Searcher {
                     logger.debug("Document mapping took " + (endTime-startTime) + "ms");
                 }
             } else {
-                rs = new ResultSetImpl(0);
+                rs = new ResultSetWithAcls(0);
             }
             rs.setTotalHits(topDocs.totalHits);
             
@@ -314,8 +315,8 @@ public class SearcherImpl implements Searcher {
 
                             DocumentStoredFieldVisitor visitor = documentMapper.newStoredFieldVisitor(propertySelect);
                             r.document(docId, visitor);
-                            PropertySet ps = documentMapper.getPropertySet(visitor.getDocument());
-                            boolean continueIteration = callback.matching(ps);
+                            LazyMappedPropertySet ps = documentMapper.getPropertySet(visitor.getDocument());
+                            boolean continueIteration = callback.matching(new MatchingResultImpl(ps, ps.getAcl()));
                             if (++callbackCounter == limit || !continueIteration) {
                                 return;
                             }
@@ -332,8 +333,8 @@ public class SearcherImpl implements Searcher {
                     }
                     DocumentStoredFieldVisitor visitor = documentMapper.newStoredFieldVisitor(propertySelect);
                     r.document(i, visitor);
-                    PropertySet ps = documentMapper.getPropertySet(visitor.getDocument());
-                    boolean continueIteration = callback.matching(ps);
+                    LazyMappedPropertySet ps = documentMapper.getPropertySet(visitor.getDocument());
+                    boolean continueIteration = callback.matching(new MatchingResultImpl(ps, ps.getAcl()));
                     if (++callbackCounter == limit || !continueIteration) {
                         return;
                     }
@@ -417,8 +418,8 @@ public class SearcherImpl implements Searcher {
                 }
                 DocumentStoredFieldVisitor visitor = documentMapper.newStoredFieldVisitor(propertySelect);
                 reader.document(docId, visitor);
-                PropertySet ps = documentMapper.getPropertySet(visitor.getDocument());
-                boolean continueIteration = callback.matching(ps);
+                LazyMappedPropertySet ps = documentMapper.getPropertySet(visitor.getDocument());
+                boolean continueIteration = callback.matching(new MatchingResultImpl(ps, ps.getAcl()));
                 if (++callbackCounter == limit || !continueIteration) {
                     return;
                 }
@@ -503,6 +504,23 @@ public class SearcherImpl implements Searcher {
         return fbs;
     }
     
+    private static final class MatchingResultImpl implements MatchingResult {
+        private PropertySet ps;
+        private Acl acl;
+        MatchingResultImpl(PropertySet ps, Acl acl) {
+            this.ps = ps;
+            this.acl = acl;
+        }
+        @Override
+        public PropertySet propertySet() {
+            return ps;
+        }
+        @Override
+        public Acl acl() {
+            return acl;
+        }
+    }
+    
     @Required
     public void setDocumentMapper(DocumentMapper documentMapper) {
         this.documentMapper = documentMapper;
@@ -540,5 +558,8 @@ public class SearcherImpl implements Searcher {
     public void setUnauthenticatedQueryMaxDirtyAge(int unauthenticatedQueryMaxDirtyAge) {
         this.unauthenticatedQueryMaxDirtyAge = unauthenticatedQueryMaxDirtyAge;
     }
+    
+    
+
 
 }

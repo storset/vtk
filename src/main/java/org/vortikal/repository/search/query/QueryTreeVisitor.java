@@ -68,12 +68,14 @@ public interface QueryTreeVisitor {
     
     public Object visit(UriTermQuery utQuery, Object data);
     
-    public Object visit(ACLExistsQuery aclQuery, Object data);
+    public Object visit(AclExistsQuery aclQuery, Object data);
     
-    public Object visit(ACLInheritedFromQuery aclIHFQuery, Object data);
+    public Object visit(AclInheritedFromQuery aclIHFQuery, Object data);
     
-    public Object visit(ACLReadForAllQuery query, Object data);
+    public Object visit(AclReadForAllQuery query, Object data);
     
+    public Object visit(AclPrivilegeQuery query, Object data);
+
     public Object visit(MatchAllQuery query, Object data);
     
 }

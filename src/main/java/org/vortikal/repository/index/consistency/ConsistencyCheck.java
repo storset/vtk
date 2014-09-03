@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, 2007, University of Oslo, Norway
+/* Copyright (c) 2006,2007,2014 University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -51,12 +51,9 @@ import org.vortikal.repository.index.PropertySetIndex;
 import org.vortikal.repository.index.PropertySetIndexRandomAccessor;
 import org.vortikal.repository.index.PropertySetIndexRandomAccessor.PropertySetInternalData;
 import org.vortikal.repository.index.StorageCorruptionException;
-import org.vortikal.repository.index.mapping.AclFields;
 import org.vortikal.repository.index.mapping.DocumentMappingException;
 import org.vortikal.repository.store.IndexDao;
 import org.vortikal.repository.store.PropertySetHandler;
-import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalFactory;
 
 /**
  * Check consistency and optionally repair errors afterwords.
@@ -79,10 +76,10 @@ public class ConsistencyCheck {
      */
     public static final int ERROR_LIMIT = 10000;
 
-    private IndexDao indexDao;
-    private PropertySetIndex index;
+    private final IndexDao indexDao;
+    private final PropertySetIndex index;
 
-    private List<AbstractConsistencyError> errors = 
+    private final List<AbstractConsistencyError> errors = 
         new ArrayList<AbstractConsistencyError>(); // List of detected inconsistencies
     private boolean completed = false; 
     
@@ -123,7 +120,7 @@ public class ConsistencyCheck {
 
         LOG.info("Running consistency check on index '" + indexId + "'");
 
-        Iterator indexUriIterator = null;
+        Iterator<Path> indexUriIterator = null;
         PropertySetIndexRandomAccessor randomIndexAccessor = null;
 
         try {
@@ -159,7 +156,7 @@ public class ConsistencyCheck {
     
     @SuppressWarnings("unchecked")
     private void runConsistencyCheck(final PropertySetIndexRandomAccessor randomIndexAccessor,
-                                     final Iterator indexUriIterator) 
+                                     final Iterator<Path> indexUriIterator) 
         throws IndexException {
         
         final Set<Path> validURIs = new HashSet<Path>(30000);
@@ -177,12 +174,10 @@ public class ConsistencyCheck {
                 int indexInstances = 
                     randomIndexAccessor.countInstances(currentUri);
                 
-                final Set<Principal> aclReadPrincipals = AclFields.aggregatePrincipalsForRead(acl);
-                
                 if (indexInstances == 0) {
                     // Missing in index
                     ConsistencyCheck.this.addError(
-                            new MissingInconsistency(currentUri, daoPropSet, aclReadPrincipals));
+                            new MissingInconsistency(currentUri, daoPropSet, acl));
                     return;
                 } else  if (indexInstances == 1) {
                     // OK, only a single instance exists, verify the instance data
@@ -190,14 +185,14 @@ public class ConsistencyCheck {
                         ConsistencyCheck.this.checkPropertySet(currentUri,
                                                   randomIndexAccessor, 
                                                   daoPropSet,
-                                                  aclReadPrincipals);
+                                                  acl);
                     } catch (IOException io) {
                         throw new ConsistencyCheckException("IOException while running consistency check", io);
                     }
                 } else {
                     // Multiples inconsistency
                     ConsistencyCheck.this.addError(
-                            new MultiplesInconsistency(currentUri, indexInstances, daoPropSet, aclReadPrincipals));
+                            new MultiplesInconsistency(currentUri, indexInstances, daoPropSet, acl));
                 }
                 // Add to set of valid index property set URIs
                 validURIs.add(currentUri);
@@ -214,7 +209,7 @@ public class ConsistencyCheck {
         // Need to make a complete pass over index URIs to detect dangling inconsistencies
         LOG.info("Checking for dangling property sets in index ..");
         while (indexUriIterator.hasNext()) {
-            Path currentUri = (Path) indexUriIterator.next();
+            Path currentUri = indexUriIterator.next();
             if (! validURIs.contains(currentUri)) {
                 this.addError(new DanglingInconsistency(currentUri));
             }
@@ -234,7 +229,7 @@ public class ConsistencyCheck {
     private void checkPropertySet(Path indexUri, 
                                   PropertySetIndexRandomAccessor randomIndexAccessor, 
                                   PropertySetImpl repoPropSet,
-                                  Set<Principal> repoAclReadPrincipals)
+                                  Acl repoAcl) 
         throws IOException, IndexException {
     
         try {
@@ -246,45 +241,30 @@ public class ConsistencyCheck {
             
             if (indexUUID != daoUUID) {
                 // Invalid UUID (this can also be considered a dangling inconsistency)
-                addError(new InvalidUUIDInconsistency(indexUri, repoPropSet, repoAclReadPrincipals, indexUUID, daoUUID));
+                addError(new InvalidUUIDInconsistency(indexUri, repoPropSet, repoAcl, indexUUID, daoUUID));
                 return;
             }
             
-            // Check ACL read principals data
-            Set<String> indexAclReadPrincipalNames = indexPropSetInternalData.getAclReadPrincipalNames();
-            if (repoAclReadPrincipals.contains(PrincipalFactory.ALL)) {
-                if (! (indexAclReadPrincipalNames.contains(PrincipalFactory.NAME_ALL) && indexAclReadPrincipalNames.size() == 1)) {
-                    addError(new InvalidACLReadPrincipalsInconsistency(indexUri, repoPropSet, repoAclReadPrincipals, indexAclReadPrincipalNames));
-                    return;
-                }
-            } else {
-                // not read-for-all, then size and all elements must match
-                if (repoAclReadPrincipals.size() != indexAclReadPrincipalNames.size()) {
-                    addError(new InvalidACLReadPrincipalsInconsistency(indexUri, repoPropSet, repoAclReadPrincipals, indexAclReadPrincipalNames));
-                    return;
-                }
-                
-                for (Principal p: repoAclReadPrincipals) {
-                    String qualifiedName = p.getQualifiedName();
-                    if (!indexAclReadPrincipalNames.contains(qualifiedName)) {
-                        addError(new InvalidACLReadPrincipalsInconsistency(indexUri, repoPropSet, repoAclReadPrincipals, indexAclReadPrincipalNames));
-                        return;
-                    }
-                }
+            // Check ACL data
+            Acl indexAcl = indexPropSetInternalData.getAcl();
+            
+            if (!repoAcl.equals(indexAcl)) {
+                addError(new InvalidACLInconsistency(indexUri, repoPropSet, repoAcl, indexAcl));
+                return;
             }
             
             // Check ACL inherited from
-            int indexACL = indexPropSetInternalData.getAclInheritedFromId();
+            int indexAclInheritedFrom = indexPropSetInternalData.getAclInheritedFromId();
             int daoACL = repoPropSet.getAclInheritedFrom();
-            if (indexACL != daoACL) {
+            if (indexAclInheritedFrom != daoACL) {
                 // Invalid ACL inherited from
-                addError(new InvalidACLInheritedFromInconsistency(indexUri, repoPropSet, repoAclReadPrincipals, indexACL, daoACL));
+                addError(new InvalidACLInheritedFromInconsistency(indexUri, repoPropSet, repoAcl, indexAclInheritedFrom, daoACL));
                 return;
             }
             
             // Check resource type
             if (!repoPropSet.getResourceType().equals(indexPropSet.getResourceType())) {
-                addError(new InvalidResourceTypeInconsistency(indexUri, repoPropSet, repoAclReadPrincipals,
+                addError(new InvalidResourceTypeInconsistency(indexUri, repoPropSet, repoAcl,
                                                               indexPropSet.getResourceType(), repoPropSet.getResourceType()));
                 return;
             }
@@ -296,21 +276,19 @@ public class ConsistencyCheck {
                 Property repoProp = repoPropSet.getProperty(indexProp.getDefinition());
                 if (repoProp != null) {
                     if (!propertyValuesEqual(indexProp, repoProp)) {
-                        addError(new PropertyValueInconsistency(indexUri, repoPropSet, repoAclReadPrincipals,
-                                                                indexProp, repoProp));
+                        addError(new PropertyValueInconsistency(indexUri, repoPropSet, repoAcl, indexProp, repoProp));
                         return;
                     }
                 } else {
                     // Dangling property in index propset
-                    addError(new DanglingPropertyInconsistency(indexUri, repoPropSet, repoAclReadPrincipals, indexProp));
+                    addError(new DanglingPropertyInconsistency(indexUri, repoPropSet, repoAcl, indexProp));
                     return;
                 }
             }
             
-            
         } catch (DocumentMappingException dme) {
             // Unmappable inconsistency
-            addError(new UnmappableConsistencyError(indexUri, dme, repoPropSet, repoAclReadPrincipals));
+            addError(new UnmappableConsistencyError(indexUri, dme, repoPropSet, repoAcl));
         }
     
     }

@@ -28,72 +28,47 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.search.query;
+package org.vortikal.repository.index.consistency;
+
+import java.util.Set;
+import org.vortikal.repository.Acl;
 
 import org.vortikal.repository.Path;
+import org.vortikal.repository.PropertySetImpl;
 
-public class ACLInheritedFromQuery implements ACLQuery {
+public class InvalidACLInconsistency extends
+        InvalidDataInconsistency {
 
-    private Path uri;
-    private boolean inverted = false;
+    private Acl indexAcl;
     
-    public ACLInheritedFromQuery(Path uri) {
-        this.uri = uri;
-    }
-    
-    public ACLInheritedFromQuery(Path uri, boolean inverted) {
-        this.uri = uri;
-        this.inverted = inverted;
-    }
-    
-    public boolean isInverted() {
-        return this.inverted;
-    }
-
-    public Path getUri() {
-        return this.uri;
+    public InvalidACLInconsistency(Path uri, PropertySetImpl daoPropSet, 
+                                                 Acl databaseAcl, 
+                                                 Acl indexAcl) {
+        super(uri, daoPropSet, databaseAcl);
+        this.indexAcl = indexAcl;
     }
     
     @Override
-    public Object accept(QueryTreeVisitor visitor, Object data) {
-        return visitor.visit(this, data);
-    }
-    
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder(this.getClass().getName());
-        if (this.inverted) {
-            sb.append(";uri!=").append(this.uri);
-        } else {
-            sb.append(";uri=").append(this.uri);
-        }
-        return sb.toString();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final ACLInheritedFromQuery other = (ACLInheritedFromQuery) obj;
-        if (this.uri != other.uri && (this.uri == null || !this.uri.equals(other.uri))) {
-            return false;
-        }
-        if (this.inverted != other.inverted) {
-            return false;
-        }
+    public boolean canRepair() {
         return true;
     }
-
+    
     @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 47 * hash + (this.uri != null ? this.uri.hashCode() : 0);
-        hash = 47 * hash + (this.inverted ? 1 : 0);
-        return hash;
+    public String getDescription() {
+        StringBuilder desc = new StringBuilder(
+                "Invalid ACL read principals inconsistency for index property set at URI '");
+        desc.append(getUri()).append("'");
+        desc.append(", repository ACL = ").append(
+                super.acl);
+        desc.append(", index ACL =").append(
+                this.indexAcl);
+
+        return desc.toString();
     }
 
+    @Override
+    public String toString() {
+        return getDescription();
+    }
+    
 }

@@ -31,9 +31,51 @@
 package org.vortikal.repository.search.query;
 
 /**
- * Marker for all queries related to resource ACL. 
- *
+ * TODO rename class to "AclNotInheritedQuery" (more precise)
+ * @author oyvind
  */
-public interface ACLQuery extends Query {
+public class AclExistsQuery extends AbstractAclQuery {
 
+    public AclExistsQuery() {
+        super(false);
+    }
+    
+    public AclExistsQuery(boolean inverted) {
+        super(inverted);
+    }
+    
+    @Override
+    public Object accept(QueryTreeVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder(this.getClass().getName());
+        sb.append(";inverted=").append(super.inverted);
+        return sb.toString();
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final AclExistsQuery other = (AclExistsQuery) obj;
+        if (super.inverted != other.inverted) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 59 * hash + (super.inverted ? 1 : 0);
+        return hash;
+    }
+    
 }

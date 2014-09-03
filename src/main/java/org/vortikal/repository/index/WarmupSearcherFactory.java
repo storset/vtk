@@ -45,7 +45,8 @@ import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopFieldDocs;
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.index.mapping.FieldNames;
+import org.vortikal.repository.index.mapping.PropertyFields;
+import org.vortikal.repository.index.mapping.ResourceFields;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.query.LuceneQueryBuilder;
@@ -98,15 +99,15 @@ public class WarmupSearcherFactory extends SearcherFactory {
 
     private Query getWarmupQuery() {
         BooleanQuery bq = new BooleanQuery();
-        bq.add(new TermQuery(new Term(FieldNames.URI_ANCESTORS_FIELD_NAME, "/")), BooleanClause.Occur.SHOULD);
-        bq.add(new TermQuery(new Term(FieldNames.RESOURCETYPE_FIELD_NAME, "collection")), BooleanClause.Occur.SHOULD);
+        bq.add(new TermQuery(new Term(ResourceFields.URI_ANCESTORS_FIELD_NAME, "/")), BooleanClause.Occur.SHOULD);
+        bq.add(new TermQuery(new Term(ResourceFields.RESOURCETYPE_FIELD_NAME, "collection")), BooleanClause.Occur.SHOULD);
         return bq;
     }
 
     private Sort getWarmupSorting() {
         SortField[] fields = new SortField[2];
-        fields[0] = new SortField(FieldNames.sortFieldName(this.lastModifiedPropDef), SortField.Type.STRING, true);
-        fields[1] = new SortField(FieldNames.URI_SORT_FIELD_NAME, SortField.Type.STRING);
+        fields[0] = new SortField(PropertyFields.sortFieldName(this.lastModifiedPropDef), SortField.Type.STRING, true);
+        fields[1] = new SortField(ResourceFields.URI_SORT_FIELD_NAME, SortField.Type.STRING);
         return new Sort(fields);
     }
 

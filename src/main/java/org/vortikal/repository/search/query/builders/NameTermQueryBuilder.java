@@ -36,7 +36,8 @@ import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TermRangeFilter;
 import org.apache.lucene.util.BytesRef;
-import org.vortikal.repository.index.mapping.FieldNames;
+import org.vortikal.repository.index.mapping.ResourceFields;
+
 import org.vortikal.repository.search.query.NameTermQuery;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
@@ -62,7 +63,7 @@ public class NameTermQueryBuilder implements QueryBuilder {
         TermOperator op = this.ntq.getOperator();
 
         if (op == TermOperator.EQ || op == TermOperator.NE) {
-            Term t = new Term(FieldNames.NAME_FIELD_NAME, term);
+            Term t = new Term(ResourceFields.NAME_FIELD_NAME, term);
                 
             if (op == TermOperator.EQ){
                 return new TermQuery(t);
@@ -72,7 +73,7 @@ public class NameTermQueryBuilder implements QueryBuilder {
         }
 
         if (op == TermOperator.EQ_IGNORECASE || op == TermOperator.NE_IGNORECASE) {
-            Term t = new Term(FieldNames.NAME_LC_FIELD_NAME, term.toLowerCase());
+            Term t = new Term(ResourceFields.NAME_LC_FIELD_NAME, term.toLowerCase());
             
             if (op == TermOperator.EQ_IGNORECASE) {
                 return new TermQuery(t);
@@ -104,7 +105,7 @@ public class NameTermQueryBuilder implements QueryBuilder {
             throw new QueryBuilderException("Unknown term operator"); 
         }
         
-        TermRangeFilter trFilter = new TermRangeFilter(FieldNames.NAME_FIELD_NAME,
+        TermRangeFilter trFilter = new TermRangeFilter(ResourceFields.NAME_FIELD_NAME,
                                         new BytesRef(lowerTerm),
                                         new BytesRef(upperTerm),
                                         includeLower,

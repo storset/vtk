@@ -30,39 +30,38 @@
  */
 package org.vortikal.repository.index.consistency;
 
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.index.IndexException;
 import org.vortikal.repository.index.PropertySetIndex;
-import org.vortikal.security.Principal;
 
 /**
  * Represents error where multiple index documents (property sets) exist for a single URI.
  * 
- * @author oyviste
- *
  */
 public class MultiplesInconsistency extends RequireOriginalDataConsistencyError {
 
     private static final Log LOG = LogFactory.getLog(MultiplesInconsistency.class);
     
-    private int multiples;
+    private final int multiples;
     
     public MultiplesInconsistency(Path uri, int multiples, 
                                   PropertySetImpl repositoryPropSet, 
-                                  Set<Principal> aclReadPrincipals) {
-        super(uri, repositoryPropSet, aclReadPrincipals);
+                                  Acl acl) {
+        super(uri, repositoryPropSet, acl);
         this.multiples = multiples;
     }
     
+    @Override
     public boolean canRepair() {
         return true;
     }
     
+    @Override
     public String getDescription() {
         return "Multiples inconsistency, there are " 
             + multiples + " property sets in index at URI '" + getUri() + "'";
@@ -71,13 +70,16 @@ public class MultiplesInconsistency extends RequireOriginalDataConsistencyError 
     /**
      * Repair by removing all property sets for the URI, then re-adding a pristine copy from the
      * repository.
+     * @param index
      */
+    @Override
     protected void repair(PropertySetIndex index) throws IndexException {
         LOG.info("Repairing multiples inconsistency for URI '" + getUri() 
                                                     + "' (" + multiples + " multiples)");
-        index.updatePropertySet(super.repositoryPropSet, super.repositoryAclReadPrincipals);
+        index.updatePropertySet(super.repositoryPropSet, super.acl);
     }
 
+    @Override
     public String toString() {
         return "MultipleConsistencyError[URI = '" + getUri() + "', number of multiples in index: " 
                                                                             + this.multiples + "]";

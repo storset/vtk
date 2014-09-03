@@ -203,10 +203,8 @@ public class IncrementalUpdater {
                             logger.debug("ADD " + propertySet.getURI());
                         }
                         
-                        Set<Principal> readPrincipals = AclFields.aggregatePrincipalsForRead(acl);
-
                         // Add updated resource to index
-                        index.addPropertySet(propertySet, readPrincipals);
+                        index.addPropertySet(propertySet, acl);
                         
                         if (++count % 10000 == 0) {
                             // Log some progress to update

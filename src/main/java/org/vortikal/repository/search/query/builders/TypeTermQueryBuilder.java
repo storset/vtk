@@ -39,7 +39,7 @@ import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
-import org.vortikal.repository.index.mapping.FieldNames;
+import org.vortikal.repository.index.mapping.ResourceFields;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
 import org.vortikal.repository.search.query.TermOperator;
@@ -62,7 +62,7 @@ public class TypeTermQueryBuilder implements QueryBuilder {
 
     @Override
     public Query buildQuery() throws QueryBuilderException {
-        Term t = new Term(FieldNames.RESOURCETYPE_FIELD_NAME, this.term.toString());
+        Term t = new Term(ResourceFields.RESOURCETYPE_FIELD_NAME, this.term.toString());
         
         if (op == TermOperator.NE) {
             Filter filter = FilterFactory.inversionFilter(new TermFilter(t));

@@ -32,6 +32,7 @@ package org.vortikal.repository.index;
 
 import java.util.Iterator;
 import java.util.Set;
+import org.vortikal.repository.Acl;
 
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
@@ -74,11 +75,10 @@ public interface PropertySetIndex {
      * <em>Does not erasing any existing property sets at the same URI.</em>
      *  
      * @param propertySet
-     * @param aclReadPrincipals
+     * @param acl
      * @throws IndexException
      */
-    public void addPropertySet(PropertySet propertySet, 
-                               Set<Principal> aclReadPrincipals) throws IndexException;
+    public void addPropertySet(PropertySet propertySet, Acl acl) throws IndexException;
     
     
     /**
@@ -88,10 +88,10 @@ public interface PropertySetIndex {
      * This method will always erase any existing property sets at the same URI for
      * the property set to update.
      * @param propertySet
-     * @param aclReadPrincipals
+     * @param acl
      */
     public void updatePropertySet(PropertySet propertySet,
-                                  Set<Principal> aclReadPrincipals) throws IndexException;
+                                 Acl acl) throws IndexException;
     
     
     /**
@@ -127,26 +127,19 @@ public interface PropertySetIndex {
     public PropertySetIndexRandomAccessor randomAccessor() throws IndexException;
     
     /**
-     * Get an {@link java.util.Iterator} over all existing URIs in index. 
+     * Get an {@link java.util.Iterator} over all existing URI paths in index. 
      * 
      * The iteration is ordered by URI lexicographically. Any URI-duplicates are included. 
      * 
-     * Note that calling this method will implicitly commit all changes made earlier
-     * using any of the methods for deleting, updating or adding property sets.
-     * 
-     * @return
+     * @return an iterator of paths 
      * @throws IndexException
      */
-    public Iterator<Object> orderedUriIterator() throws IndexException;
+    public Iterator<Path> orderedUriIterator() throws IndexException;
     
     /**
      * Count all property set instances currently in index. This number includes any multiples
      * for a single URI.
      *  
-     * // XXX this is no longer the case:
-     * Note that calling this method will implicitly commit all changes made earlier
-     * using any of the methods for deleting, updating or adding property sets.
-     * 
      * @return
      * @throws IndexException
      */
@@ -158,7 +151,7 @@ public interface PropertySetIndex {
      * @param iterator
      * @throws IndexException
      */
-    public void close(Iterator<Object> iterator) throws IndexException;
+    public void close(Iterator<?> iterator) throws IndexException;
     
     /**
      * Clear all contents of index (create a new and empty index).

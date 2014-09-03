@@ -129,7 +129,7 @@
         }
         maxRuns++;
       } else {
-        maxRuns = 0; /* IE8: let it rest */
+        maxRuns = 0; /* IE8: Let it rest */
       }
     }));
     $(window).on("orientationchange", function (e) {

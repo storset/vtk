@@ -312,6 +312,7 @@ VrtxEditor.prototype.richtextEditorFacade = {
     config.disableNativeSpellChecker = false;
     config.allowedContent = true;
     
+    // Enable ACF
     if (vrtxEditor.editorForm.hasClass("vrtx-course-schedule")) {
       config.allowedContent = null;
     }

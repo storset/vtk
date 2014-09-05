@@ -28,9 +28,6 @@ function courseSchedule() {
   this.lastSessionId = "";
   this.lastElm = null;
 
-  this.lookupRule(isPlenary, teachingMethod, id) {
-    return isPlenary ? (teachingMethod != "for" ? id : teachingMethod) : id;
-  };
   this.getSessionOnlyHtml = function(sessionId) {
     var sessionData = this.getSessionJSONFromId(sessionId);
     if(!sessionData) return null;
@@ -47,14 +44,14 @@ function courseSchedule() {
     
     var descs = this.retrievedScheduleData[type].vrtxEditableDescription;
 
-    if(!this.sessionsLookup[this.lookupRule(isPlenary, teachingMethod, id)]) {
-      this.sessionsLookup[this.lookupRule(isPlenary, teachingMethod, id)] = {};
+    if(!this.sessionsLookup[id]) {
+      this.sessionsLookup[id] = {};
     }
     var sessionDateTime = this.getDateTime(session.dtStart, session.dtEnd);
     var sessionHtml = this.getSessionHtml(id, prevId, nextId, session, teachingMethod, sessionDateTime, sequences, descs, isPlenary, vrtxEditor);    
     
     this.lastElm = $(".properties"); 
-    this.lastId = this.lookupRule(isPlenary, teachingMethod, id);
+    this.lastId = id;
     this.lastSessionId = sessionId;
                                                     
     return { id: id, isPlenary: isPlenary, teachingMethod: teachingMethod, html: sessionHtml.html, title: sessionHtml.title };
@@ -85,7 +82,7 @@ function courseSchedule() {
           groupCode = teachingMethod,
           groupNumber = ((dt.party && dt.party.name) ? parseInt(dt.party.name, 10) : 0);
 
-      this.sessionsLookup[this.lookupRule(isPlenary, teachingMethod, id)] = {};
+      this.sessionsLookup[id] = {};
       
       // Add together sessions from sequences
       for(var j = 0, len = dt.sequences.length; j < len; j++) {
@@ -97,7 +94,7 @@ function courseSchedule() {
         sessions = sessions.concat(sequence.sessions);
       }
       
-      if(!isPlenary || (teachingMethod != "for" || (teachingMethod === "for" && (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod)))) {
+      if(!isPlenary || (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod)) {
         // Evaluate and cache dateTime
         var map = [], sessionsProcessed = [];
         for(j = 0, len = sessions.length; j < len; j++) {
@@ -135,10 +132,10 @@ function courseSchedule() {
         }
         
         if(isPlenary) {
-          this.sessionsLookup[this.lookupRule(isPlenary, teachingMethod, id)].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
-          html += vrtxEdit.htmlFacade.getAccordionInteraction("3", (teachingMethod != "for" ? id : teachingMethod), (type + " skip-tier"), teachingMethodName, "");
+          this.sessionsLookup[id].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
+          html += vrtxEdit.htmlFacade.getAccordionInteraction("3", id, (type + " skip-tier"), teachingMethodName, "");
         } else {
-          this.sessionsLookup[this.lookupRule(isPlenary, teachingMethod, id)].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
+          this.sessionsLookup[id].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
           htmlArr.push({ "groupCode": groupCode, "groupNr": groupNumber, "accHtml": vrtxEdit.htmlFacade.getAccordionInteraction("4", id, type, title, "") });
           
           if(!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod) {
@@ -191,9 +188,9 @@ function courseSchedule() {
                        (prevId ? "<a class='prev' href='" + window.location.protocol + "//" + window.location.host + window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + prevId + "'>" + this.i18n.prev + "</a>" : "") +
                        (nextId ? "<a class='next' href='" + window.location.protocol + "//" + window.location.host + window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + nextId + "'>" + this.i18n.next + "</a>" : "") +
                        ((prevId || nextId) ? "</div>" : ""),
-        sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, this.lookupRule(isPlenary, teachingMethod, id), session, this.retrievedScheduleData.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
+        sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, id, session, this.retrievedScheduleData.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
 
-     this.sessionsLookup[this.lookupRule(isPlenary, teachingMethod, id)][sessionId] = {
+     this.sessionsLookup[id][sessionId] = {
        rawPtr: session,
        rawOrig: jQuery.extend(true, {}, session), // Copy object
        descsPtr: descs,
@@ -286,7 +283,7 @@ function courseSchedule() {
           }
           sessions = sessions.concat(sequence.sessions);
         }
-        if(!isPlenary || (teachingMethod != "for" || (teachingMethod === "for" && (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod)))) {
+        if(!isPlenary || (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod)) {
           // Evaluate and cache dateTime
           var map = [], sessionsProcessed = [];
           for(j = 0, len = sessions.length; j < len; j++) {
@@ -553,7 +550,7 @@ function courseSchedule() {
       
       if(sessionOnly) {
         editorProperties.prepend("<h4 class='property-label'>" + sessionOnly.title + "</h4>" + html);
-        csRef.enhanceSession(csRef.lookupRule(sessionOnly.isPlenary, sessionOnly.teachingMethod, sessionOnly.id)), onlySessionId, editorProperties);
+        csRef.enhanceSession(sessionOnly.id, onlySessionId, editorProperties);
         var newButtonsHtml = "<input class='vrtx-button vrtx-embedded-button' id='vrtx-embedded-save-view-button' type='submit' value='" + csRef.i18n.saveView + "' />" +
                              "<input class='vrtx-focus-button vrtx-embedded-button' id='vrtx-embedded-save-button' type='submit' value='" + csRef.i18n.save + "' />" +
                              "<input class='vrtx-button vrtx-embedded-button' id='vrtx-embedded-cancel-button' type='submit' value='" + csRef.i18n.cancel + "' />";

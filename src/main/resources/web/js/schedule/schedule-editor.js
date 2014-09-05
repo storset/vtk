@@ -26,8 +26,8 @@ function courseSchedule() {
   
   this.retrievedScheduleData = null;
   this.i18n = scheduleI18n;
-  this.lookupRule(skipTier, dtShort, id) {
-    return skipTier ? (dtShort != "for" ? id : dtShort) : id;
+  this.lookupRule(isPlenary, dtShort, id) {
+    return isPlenary ? (dtShort != "for" ? id : dtShort) : id;
   };
   this.getSessionOnlyHtml = function(sessionId) {
     var sessionData = this.getSessionJSONFromId(sessionId);
@@ -38,26 +38,26 @@ function courseSchedule() {
     var sessionDateTime = sessionData.sessionDateTime;
     var sequences = sessionData.sequences;
     var type = sessionData.type;
-    var skipTier = sessionData.skipTier;
+    var isPlenary = sessionData.isPlenary;
     var dtShort = sessionData.dtShort;
     var prevId = sessionData.prevId;
     var nextId = sessionData.nextId;
     
     var descs = this.retrievedScheduleData[type].vrtxEditableDescription;
 
-    if(!this.sessionsLookup[this.lookupRule(skipTier, dtShort, id)]) {
-      this.sessionsLookup[this.lookupRule(skipTier, dtShort, id)] = {};
+    if(!this.sessionsLookup[this.lookupRule(isPlenary, dtShort, id)]) {
+      this.sessionsLookup[this.lookupRule(isPlenary, dtShort, id)] = {};
     }
     var sessionDateTime = this.getDateTime(session.dtStart, session.dtEnd);
-    var sessionHtml = this.getSessionHtml(id, prevId, nextId, session, dtShort, sessionDateTime, sequences, descs, skipTier, vrtxEditor);    
+    var sessionHtml = this.getSessionHtml(id, prevId, nextId, session, dtShort, sessionDateTime, sequences, descs, isPlenary, vrtxEditor);    
     
     this.lastElm = $(".properties"); 
-    this.lastId = this.lookupRule(skipTier, dtShort, id);
+    this.lastId = this.lookupRule(isPlenary, dtShort, id);
     this.lastSessionId = sessionId;
                                                     
-    return { id: id, skipTier: skipTier, dtShort: dtShort, html: sessionHtml.html, title: sessionHtml.title };
+    return { id: id, isPlenary: isPlenary, dtShort: dtShort, html: sessionHtml.html, title: sessionHtml.title };
   };
-  this.getActivitiesForTypeHtml = function(type, skipTier) {
+  this.getActivitiesForTypeHtml = function(type, isPlenary) {
     if(!this.retrievedScheduleData[type]) return "";
     var descs = this.retrievedScheduleData[type].vrtxEditableDescription,
         data = this.retrievedScheduleData[type].activities;
@@ -79,11 +79,11 @@ function courseSchedule() {
           dtShort = dt.teachingMethod.toLowerCase(),
           dtLong = dt.teachingMethodName,
           id = dtShort + "-" + dt.id,
-          title = skipTier ? dtLong : (dt.title || dtLong),
+          title = isPlenary ? dtLong : (dt.title || dtLong),
           groupCode = dtShort,
           groupNumber = ((dt.party && dt.party.name) ? parseInt(dt.party.name, 10) : 0);
 
-      this.sessionsLookup[this.lookupRule(skipTier, dtShort, id)] = {};
+      this.sessionsLookup[this.lookupRule(isPlenary, dtShort, id)] = {};
       
       // Add together sessions from sequences
       for(var j = 0, len = dt.sequences.length; j < len; j++) {
@@ -95,7 +95,7 @@ function courseSchedule() {
         sessions = sessions.concat(sequence.sessions);
       }
       
-      if(!skipTier || (dtShort != "for" || (dtShort === "for" && (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== dtShort)))) {
+      if(!isPlenary || (dtShort != "for" || (dtShort === "for" && (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== dtShort)))) {
         // Evaluate and cache dateTime
         var map = [], sessionsProcessed = [];
         for(j = 0, len = sessions.length; j < len; j++) {
@@ -128,15 +128,15 @@ function courseSchedule() {
         for(j = 0, len = map.length; j < len; j++) {
           var session = sessions[map[j].index];
           var sessionProcessed = sessionsProcessed[map[j].index];
-          var sessionHtml = this.getSessionHtml(id, null, null, session, dtShort, sessionProcessed.dateTime, sequences, descs, skipTier, vrtxEdit);
-          sessionsHtml += vrtxEdit.htmlFacade.getAccordionInteraction(!skipTier ? "5" : "4", sessionHtml.sessionId, "session", sessionHtml.title, sessionHtml.html);
+          var sessionHtml = this.getSessionHtml(id, null, null, session, dtShort, sessionProcessed.dateTime, sequences, descs, isPlenary, vrtxEdit);
+          sessionsHtml += vrtxEdit.htmlFacade.getAccordionInteraction(!isPlenary ? "5" : "4", sessionHtml.sessionId, "session", sessionHtml.title, sessionHtml.html);
         }
         
-        if(skipTier) {
-          this.sessionsLookup[this.lookupRule(skipTier, dtShort, id)].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
+        if(isPlenary) {
+          this.sessionsLookup[this.lookupRule(isPlenary, dtShort, id)].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
           html += vrtxEdit.htmlFacade.getAccordionInteraction("3", (dtShort != "for" ? id : dtShort), (type + " skip-tier"), dtLong, "");
         } else {
-          this.sessionsLookup[this.lookupRule(skipTier, dtShort, id)].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
+          this.sessionsLookup[this.lookupRule(isPlenary, dtShort, id)].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
           htmlArr.push({ "groupCode": groupCode, "groupNr": groupNumber, "accHtml": vrtxEdit.htmlFacade.getAccordionInteraction("4", id, type, title, "") });
           
           if(!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== dtShort) {
@@ -165,7 +165,7 @@ function courseSchedule() {
      
     return html;
   };
-  this.getSessionHtml = function(id, prevId, nextId, session, dtShort, sessionDateTime, sequences, descs, skipTier, vrtxEdit) {
+  this.getSessionHtml = function(id, prevId, nextId, session, dtShort, sessionDateTime, sequences, descs, isPlenary, vrtxEdit) {
     var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime),
         sessionId = id + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId,
         sequenceIdSplit = session.id.split("/");
@@ -189,9 +189,9 @@ function courseSchedule() {
                        (prevId ? "<a class='prev' href='" + window.location.protocol + "//" + window.location.host + window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + prevId + "'>" + this.i18n.prev + "</a>" : "") +
                        (nextId ? "<a class='next' href='" + window.location.protocol + "//" + window.location.host + window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + nextId + "'>" + this.i18n.next + "</a>" : "") +
                        ((prevId || nextId) ? "</div>" : ""),
-        sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, this.lookupRule(skipTier, dtShort, id), session, this.retrievedScheduleData.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
+        sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, this.lookupRule(isPlenary, dtShort, id), session, this.retrievedScheduleData.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
 
-     this.sessionsLookup[this.lookupRule(skipTier, dtShort, id)][sessionId] = {
+     this.sessionsLookup[this.lookupRule(isPlenary, dtShort, id)][sessionId] = {
        rawPtr: session,
        rawOrig: jQuery.extend(true, {}, session), // Copy object
        descsPtr: descs,
@@ -271,7 +271,7 @@ function courseSchedule() {
       var dataLen = data.length;
       if(!dataLen) continue;
       
-      var skipTier = type === "plenary";
+      var isPlenary = type === "plenary";
       for(var i = 0; i < dataLen; i++) {
         var dt = data[i];
         var dtShort = dt.teachingMethod.toLowerCase();
@@ -284,7 +284,7 @@ function courseSchedule() {
           }
           sessions = sessions.concat(sequence.sessions);
         }
-        if(!skipTier || (dtShort != "for" || (dtShort === "for" && (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== dtShort)))) {
+        if(!isPlenary || (dtShort != "for" || (dtShort === "for" && (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== dtShort)))) {
           // Evaluate and cache dateTime
           var map = [], sessionsProcessed = [];
           for(j = 0, len = sessions.length; j < len; j++) {
@@ -324,7 +324,7 @@ function courseSchedule() {
               break;
             }
             if(findSessionId === sessionId) {
-              foundObj = { id: id, prevId: prevId, session: session, sessionDateTime: sessionDateTime, sequences: sequences, type: type, skipTier: skipTier, dtShort: dtShort };
+              foundObj = { id: id, prevId: prevId, session: session, sessionDateTime: sessionDateTime, sequences: sequences, type: type, isPlenary: isPlenary, dtShort: dtShort };
             } else {
               prevId = sessionId;
             }
@@ -551,7 +551,7 @@ function courseSchedule() {
       
       if(sessionOnly) {
         editorProperties.prepend("<h4 class='property-label'>" + sessionOnly.title + "</h4>" + html);
-        csRef.enhanceSession(csRef.lookupRule(sessionOnly.skipTier, sessionOnly.dtShort, sessionOnly.id)), onlySessionId, editorProperties);
+        csRef.enhanceSession(csRef.lookupRule(sessionOnly.isPlenary, sessionOnly.dtShort, sessionOnly.id)), onlySessionId, editorProperties);
         var newButtonsHtml = "<input class='vrtx-button vrtx-embedded-button' id='vrtx-embedded-save-view-button' type='submit' value='" + csRef.i18n.saveView + "' />" +
                              "<input class='vrtx-focus-button vrtx-embedded-button' id='vrtx-embedded-save-button' type='submit' value='" + csRef.i18n.save + "' />" +
                              "<input class='vrtx-button vrtx-embedded-button' id='vrtx-embedded-cancel-button' type='submit' value='" + csRef.i18n.cancel + "' />";

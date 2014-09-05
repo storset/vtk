@@ -5,27 +5,30 @@
 
 function courseSchedule() {
 
+  // Edit service
   var baseUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
   if(/\/$/.test(baseUrl)) {
     baseUrl += "index.html";
   }
   url = baseUrl + "?action=course-schedule&mode=edit&t=" + (+new Date());
-  
   // Debug: Local development
   // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
   
   // Hide shortcut for saving working copy
   $("#vrtx-save-as-working-copy-shortcut, #saveWorkingCopyAction, #buttons-or-text").hide();
-  
+
+  // Data / lookup
+  this.retrievedScheduleData = null;
   this.sessionsLookup = {};
+  this.i18n = scheduleI18n;
   
+  // Last edited sessions
   this.lastId = "";
   this.lastSessionId = "";
   this.lastElm = null;
+
   
-  this.retrievedScheduleData = null;
-  this.i18n = scheduleI18n;
   this.lookupRule(isPlenary, dtShort, id) {
     return isPlenary ? (dtShort != "for" ? id : dtShort) : id;
   };

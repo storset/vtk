@@ -77,7 +77,7 @@ function courseSchedule() {
       var dt = data[i],
           teachingMethod = dt.teachingMethod.toLowerCase(),
           teachingMethodName = dt.teachingMethodName,
-          id = teachingMethod + "-" + dt.id,
+          id = teachingMethod + "-" + dt.id.replace(/\//g, "-"),
           title = isPlenary ? teachingMethodName : (dt.title || teachingMethodName),
           groupNumber = ((dt.party && dt.party.name) ? parseInt(dt.party.name, 10) : 0);
 
@@ -274,7 +274,7 @@ function courseSchedule() {
       for(var i = 0; i < dataLen; i++) {
         var dt = data[i],
             teachingMethod = dt.teachingMethod.toLowerCase(),
-            id = teachingMethod + "-" + dt.id,
+            id = teachingMethod + "-" + dt.id.replace(/\//g, "-"),
             groupNumber = ((dt.party && dt.party.name) ? parseInt(dt.party.name, 10) : 0)
         for(var j = 0, len = dt.sequences.length; j < len; j++) {
           var sequence = dt.sequences[j];

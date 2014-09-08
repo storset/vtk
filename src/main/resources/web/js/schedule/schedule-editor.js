@@ -332,7 +332,7 @@ function courseSchedule() {
             }
             sessions = [];
           } else {
-            groupsSessions.push({ "groupCode": teachingMethod, "groupNr": groupNumber, "sessions": sessions, "map": map });
+            groupsSessions.push({ "groupCode": teachingMethod, "groupNr": groupNumber, "sessions": sessions, "map": map, "sessionsProcessed": sessionsProcessed });
             sessions = [];
             if(!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod) {
               // Sort group code and group number if equal
@@ -347,7 +347,7 @@ function courseSchedule() {
                 var groupSessions = groupsSessions[k];
                 for(j = 0, len2 = groupSessions.map.length; j < len2; j++) {
                   var session = groupSessions.sessions[groupSessions.map[j].index];
-                  var sessionProcessed = sessionsProcessed[map[j].index];
+                  var sessionProcessed = groupSessions.sessionsProcessed[groupSessions.map[j].index];
                   var sessionDateTime = sessionProcessed.dateTime;
                   var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime);
                   var sessionId = id + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;

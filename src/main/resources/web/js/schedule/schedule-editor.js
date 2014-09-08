@@ -77,7 +77,7 @@ function courseSchedule() {
       var dt = data[i],
           teachingMethod = dt.teachingMethod.toLowerCase(),
           teachingMethodName = dt.teachingMethodName,
-          id = teachingMethod + "-" + dt.id.replace(/\//g, "-"),
+          id = teachingMethod + "-" + dt.id,
           title = isPlenary ? teachingMethodName : (dt.title || teachingMethodName),
           groupNumber = ((dt.party && dt.party.name) ? parseInt(dt.party.name, 10) : 0);
 
@@ -274,7 +274,7 @@ function courseSchedule() {
       for(var i = 0; i < dataLen; i++) {
         var dt = data[i],
             teachingMethod = dt.teachingMethod.toLowerCase(),
-            id = teachingMethod + "-" + dt.id.replace(/\//g, "-"),
+            id = teachingMethod + "-" + dt.id,
             groupNumber = ((dt.party && dt.party.name) ? parseInt(dt.party.name, 10) : 0)
         for(var j = 0, len = dt.sequences.length; j < len; j++) {
           var sequence = dt.sequences[j];
@@ -332,7 +332,7 @@ function courseSchedule() {
             }
             sessions = [];
           } else {
-            groupsSessions.push({ "groupCode": teachingMethod, "groupNr": groupNumber, "sessions": sessions, "map": map, "sessionsProcessed": sessionsProcessed });
+            groupsSessions.push({ "id": id, "groupCode": teachingMethod, "groupNr": groupNumber, "sessions": sessions, "map": map, "sessionsProcessed": sessionsProcessed });
             sessions = [];
             if(!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod) {
               // Sort group code and group number if equal
@@ -350,17 +350,20 @@ function courseSchedule() {
                   var sessionProcessed = groupSessions.sessionsProcessed[groupSessions.map[j].index];
                   var sessionDateTime = sessionProcessed.dateTime;
                   var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime);
-                  var sessionId = id + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
+                  var sessionId = groupSessions.id + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
 
                   if(foundObj && !nextId) {
                     nextId = sessionId;
                     break;
                   }
                   if(findSessionId === sessionId) {
-                    foundObj = { id: id, prevId: prevId, session: session, sessionDateTime: sessionDateTime, sequences: sequences, type: type, isPlenary: isPlenary, teachingMethod: teachingMethod };
+                    foundObj = { id: groupSessions.id, prevId: prevId, session: session, sessionDateTime: sessionDateTime, sequences: sequences, type: type, isPlenary: isPlenary, teachingMethod: groupSessions.groupCode };
                   } else {
                     prevId = sessionId;
                   }
+                }
+                if(nextId) {
+                  break;
                 }
               }
               groupSessions = [];

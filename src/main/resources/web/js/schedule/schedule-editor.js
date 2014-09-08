@@ -318,14 +318,12 @@ function courseSchedule() {
               var sessionProcessed = sessionsProcessed[map[j].index];
               var sessionDateTime = sessionProcessed.dateTime;
               var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime);
-              var sessionId = id + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
+              var sessionId = teachingMethod + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
 
               if(foundObj && !nextId) {
                 nextId = sessionId;
                 break;
               }
-              console.log(findSessionId);
-              console.log(sessionId);
               if(findSessionId === sessionId) {
                 foundObj = { id: id, prevId: prevId, session: session, sessionDateTime: sessionDateTime, sequences: sequences, type: type, isPlenary: isPlenary, teachingMethod: teachingMethod };
               } else {
@@ -352,14 +350,12 @@ function courseSchedule() {
                   var sessionProcessed = groupSessions.sessionsProcessed[groupSessions.map[j].index];
                   var sessionDateTime = sessionProcessed.dateTime;
                   var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime);
-                  var sessionId = groupSessions.id + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
+                  var sessionId = groupSessions.groupCode + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
 
                   if(foundObj && !nextId) {
                     nextId = sessionId;
                     break;
                   }
-                  console.log(findSessionId);
-                  console.log(sessionId);
                   if(findSessionId === sessionId) {
                     foundObj = { id: groupSessions.id, prevId: prevId, session: session, sessionDateTime: sessionDateTime, sequences: sequences, type: type, isPlenary: isPlenary, teachingMethod: groupSessions.groupCode };
                   } else {

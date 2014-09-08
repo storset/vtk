@@ -324,6 +324,8 @@ function courseSchedule() {
                 nextId = sessionId;
                 break;
               }
+              console.log(findSessionId);
+              console.log(sessionId);
               if(findSessionId === sessionId) {
                 foundObj = { id: id, prevId: prevId, session: session, sessionDateTime: sessionDateTime, sequences: sequences, type: type, isPlenary: isPlenary, teachingMethod: teachingMethod };
               } else {
@@ -356,6 +358,8 @@ function courseSchedule() {
                     nextId = sessionId;
                     break;
                   }
+                  console.log(findSessionId);
+                  console.log(sessionId);
                   if(findSessionId === sessionId) {
                     foundObj = { id: groupSessions.id, prevId: prevId, session: session, sessionDateTime: sessionDateTime, sequences: sequences, type: type, isPlenary: isPlenary, teachingMethod: groupSessions.groupCode };
                   } else {

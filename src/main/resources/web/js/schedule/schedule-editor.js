@@ -51,6 +51,7 @@ function courseSchedule() {
           teachingMethod = dt.teachingMethod.toLowerCase(),
           teachingMethodName = dt.teachingMethodName,
           id = teachingMethod + "-" + dt.id,
+          sessions = dt.sessions,
           title = isPlenary ? teachingMethodName : (dt.title || teachingMethodName);
 
       this.sessionsLookup[id] = {};
@@ -62,7 +63,6 @@ function courseSchedule() {
         if(fixedResources) {
           sequences[sequence.id] = fixedResources;
         }
-        sessions = sessions.concat(sequence.sessions);
       }
       
       if(!isPlenary || (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod)) {
@@ -135,6 +135,7 @@ function courseSchedule() {
       var groupsSessions = [];
       for(var i = 0; i < dataLen; i++) {
         var dt = data[i],
+            sessions = dt.sessions,
             teachingMethod = dt.teachingMethod.toLowerCase();
         for(var j = 0, len = dt.sequences.length; j < len; j++) {
           var sequence = dt.sequences[j];
@@ -142,7 +143,6 @@ function courseSchedule() {
           if(fixedResources) {           
             sequences[sequence.id] = fixedResources;
           }
-          sessions = sessions.concat(sequence.sessions);
         }
         for(j = 0, len = sessions.length; j < len; j++) {
           var session = sessions[j];

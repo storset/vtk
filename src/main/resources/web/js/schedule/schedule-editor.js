@@ -67,7 +67,7 @@ function courseSchedule() {
       
       if(!isPlenary || (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod)) {
         // Generate sessions HTML
-        for(j = 0, len = map.length; j < len; j++) {
+        for(j = 0, len = sessions.length; j < len; j++) {
           var session = sessions[j];
           var dateTime = this.getDateTime(session.dtStart, session.dtEnd);
           var sessionHtml = this.getSessionHtml(id, null, null, session, teachingMethod, dateTime, sequences, descs, isPlenary, vrtxEdit);

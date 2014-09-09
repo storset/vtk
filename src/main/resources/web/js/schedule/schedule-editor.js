@@ -28,33 +28,7 @@ function courseSchedule() {
   this.lastSessionId = "";
   this.lastElm = null;
 
-  this.getSessionOnlyHtml = function(sessionId) {
-    var sessionData = this.getSessionJSONFromId(sessionId);
-    if(!sessionData) return null;
-    
-    var session = sessionData.session;
-    var sessionDateTime = sessionData.sessionDateTime;
-    var sequences = sessionData.sequences;
-    var type = sessionData.type;
-    var isPlenary = sessionData.isPlenary;
-    var teachingMethod = sessionData.teachingMethod;
-    var prevId = sessionData.prevId;
-    var nextId = sessionData.nextId;
-    
-    var descs = this.retrievedScheduleData[type].vrtxEditableDescription;
-
-    if(!this.sessionsLookup["single"]) {
-      this.sessionsLookup["single"] = {};
-    }
-    var sessionDateTime = this.getDateTime(session.dtStart, session.dtEnd);
-    var sessionHtml = this.getSessionHtml("single", prevId, nextId, session, teachingMethod, sessionDateTime, sequences, descs, isPlenary, vrtxEditor);    
-    
-    this.lastElm = $(".properties"); 
-    this.lastId = "single";
-    this.lastSessionId = "one";
-                                                    
-    return { id: "single", isPlenary: isPlenary, teachingMethod: teachingMethod, html: sessionHtml.html, title: sessionHtml.title };
-  };
+  // Get HTML for type ("plenary" or "group")
   this.getActivitiesForTypeHtml = function(type, isPlenary) {
     if(!this.retrievedScheduleData[type]) return "";
     var descs = this.retrievedScheduleData[type].vrtxEditableDescription,
@@ -162,100 +136,26 @@ function courseSchedule() {
      
     return html;
   };
-  this.getSessionHtml = function(id, prevId, nextId, session, teachingMethod, sessionDateTime, sequences, descs, isPlenary, vrtxEdit) {
-    var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime);
-    if(id === "single") {
-      sessionId = "one";
-    } else {
-      sessionId = id + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
-    }
-    var sequenceIdSplit = session.id.split("/");
-    if(sequenceIdSplit.length == 3) {
-      var sequenceId = sequenceIdSplit[1];
-    } else if(sequenceIdSplit == 2) {
-      var sequenceId = sequenceIdSplit[0];
-    } else {
-      var sequenceId = sequenceIdSplit[0] || session.id;
-    }
-    var sessionOrphan = session.vrtxOrphan,
-        sessionCancelled = !session.vrtxOrphan && (session.vrtxStatus && session.vrtxStatus === "cancelled") || (session.status && session.status === "cancelled"),
-        rooms = session.rooms,
-        sessionTitle = "<span class='session-date'>" + sessionDatePostFixId.date + "</span>" +
-                       "<span class='session-title' data-orig='" + encodeURI(session.title || session.id) + "'>" + 
-                       (sessionOrphan ? "<span class='header-status'>" + this.i18n.orphan + "</span> - " : "") +
-                       (sessionCancelled ? "<span class='header-status'>" + this.i18n.cancelled + "</span> - " : "") +
-                       "<span class='header-title'>" + (session.vrtxTitle || session.title || session.id) + "</span></span>" +
-                       (rooms ? (" - <span class='session-room'>" + (rooms[0].buildingAcronym || rooms[0].buildingId) + " " + rooms[0].roomId) + "</span>" : "") +
-                       ((prevId || nextId) ? "<div class='prev-next'>" : "") +
-                       (prevId ? "<a class='prev' href='" + window.location.protocol + "//" + window.location.host + window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + prevId + "'>" + this.i18n.prev + "</a>" : "") +
-                       (nextId ? "<a class='next' href='" + window.location.protocol + "//" + window.location.host + window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + nextId + "'>" + this.i18n.next + "</a>" : "") +
-                       ((prevId || nextId) ? "</div>" : ""),
-        sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, id, session, this.retrievedScheduleData.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
-
-     this.sessionsLookup[id][sessionId] = {
-       rawPtr: session,
-       rawOrig: jQuery.extend(true, {}, session), // Copy object
-       descsPtr: descs,
-       multiples: sessionContent.multiples,
-       rtEditors: sessionContent.rtEditors,
-       sequenceId: sequenceId,
-       isCancelled: sessionCancelled,
-       isOrphan: sessionOrphan,
-       isEnhanced: false,
-       hasChanges: false
-     };
-     
-     return { sessionId: sessionId, html: sessionContent.html, title: sessionTitle };
-  };
-  this.loadingUpdate = function(msg) {
-    var loader = $("#editor-loading-inner");
-    if(!loader.length) {
-      var loaderHtml = "<span id='editor-loading'><span id='editor-loading-inner'>" + msg + "...</span></span>";
-      $(loaderHtml).insertAfter(".properties");
-    } else {
-      if(msg.length) {
-        loader.text(msg + "...");
-      } else {
-        loader.parent().remove();
-        if(onlySessionId) {
-          $("html").removeClass("embedded-loading");
-          $("#editor").css("height", "auto");
-        }
-      }
-    }
-  };
-  this.parseDate = function(dateString) {
-    var m = /^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})\.([0-9]{3})([+-])([0-9]{2}):([0-9]{2})$/.exec(dateString);
-    return { year: m[1], month: m[2], date: m[3], hh: m[4], mm: m[5], tzhh: m[9], tzmm: m[10] };
-  };
-  this.getDateTime = function(s, e) {
-    var startDateTime = this.parseDate(s);
-    var endDateTime = this.parseDate(e);
-    return { start: startDateTime, end: endDateTime };
-  };
-  this.getDate = function(year, month, date, hh, mm, tzpm, tzhh, tzmm) {
-    var date = new Date(year, month, date, hh, mm, 0, 0);
+  // Get HTML for single session
+  this.getSessionOnlyHtml = function(sessionId) {
+    var sessionData = this.getSessionJSONFromId(sessionId);
+    if(!sessionData) return null;
     
-    var clientTimeZoneOffset = date.getTimezoneOffset();
-    var serverTimeZoneOffset = (tzhh * 60) + tzmm;
-    if(tzpm === "+") serverTimeZoneOffset = -serverTimeZoneOffset;
+    var session = sessionData.session;
+    var descs = this.retrievedScheduleData[sessionData.type].vrtxEditableDescription;
+    if(!this.sessionsLookup["single"]) {
+      this.sessionsLookup["single"] = {};
+    }
+    var sessionHtml = this.getSessionHtml("single", sessionData.prevId, sessionData.nextId, session, sessionData.teachingMethod, sessionData.sessionDateTime,
+                                          sessionData.sequences, descs, sessionData.isPlenary, vrtxEditor);    
     
-    if(clientTimeZoneOffset === serverTimeZoneOffset) return date; // Same offset in same date
-    
-    // Timezone correction offset for local time
-    var offset = clientTimeZoneOffset > serverTimeZoneOffset ? clientTimeZoneOffset - serverTimeZoneOffset 
-                                                             : serverTimeZoneOffset - clientTimeZoneOffset;
-    return new Date(date.getTime() + offset);
+    this.lastElm = $(".properties"); 
+    this.lastId = "single";
+    this.lastSessionId = "one";
+                                                    
+    return { id: "single", isPlenary: sessionData.isPlenary, teachingMethod: sessionData.teachingMethod, html: sessionHtml.html, title: sessionHtml.title };
   };
-  this.getDateAndPostFixId = function(dateTime) {
-    var start = dateTime.start;
-    var end = dateTime.end;
-    var endDate = this.getDate(end.year, parseInt(end.month, 10) - 1, parseInt(end.date, 10), parseInt(end.hh, 10), parseInt(end.mm, 10), end.tzpm, parseInt(end.tzhh, 10), parseInt(end.tzmm, 10));
-    var endDay = this.i18n["d" + endDate.getDay()];
-    var strDate = endDay.substring(0,2) + ". " + parseInt(start.date, 10) + ". " + this.i18n["m" + start.month] + ". - " + start.hh + ":" + start.mm + "-" + end.hh + ":" + end.mm;
-    var postFixId = start.date + "-" + start.month + "-" + start.year + "-" + start.hh + "-" + start.mm + "-" + end.hh + "-" + end.mm;
-    return { date: strDate, postFixId: postFixId };
-  };
+  // Find single session
   this.getSessionJSONFromId = function(findSessionId) { // XXX: Refactor with getActivitiesForTypeHtml
     var foundObj = null;
     var nextId = null;
@@ -382,6 +282,89 @@ function courseSchedule() {
     }
     return foundObj;
   };
+  // Get session HTML
+  this.getSessionHtml = function(id, prevId, nextId, session, teachingMethod, sessionDateTime, sequences, descs, isPlenary, vrtxEdit) {
+    var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime);
+    if(id === "single") {
+      sessionId = "one";
+    } else {
+      sessionId = id + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
+    }
+    var sequenceIdSplit = session.id.split("/");
+    if(sequenceIdSplit.length == 3) {
+      var sequenceId = sequenceIdSplit[1];
+    } else if(sequenceIdSplit == 2) {
+      var sequenceId = sequenceIdSplit[0];
+    } else {
+      var sequenceId = sequenceIdSplit[0] || session.id;
+    }
+    var sessionOrphan = session.vrtxOrphan,
+        sessionCancelled = !session.vrtxOrphan && (session.vrtxStatus && session.vrtxStatus === "cancelled") || (session.status && session.status === "cancelled"),
+        rooms = session.rooms,
+        sessionTitle = "<span class='session-date'>" + sessionDatePostFixId.date + "</span>" +
+                       "<span class='session-title' data-orig='" + encodeURI(session.title || session.id) + "'>" + 
+                       (sessionOrphan ? "<span class='header-status'>" + this.i18n.orphan + "</span> - " : "") +
+                       (sessionCancelled ? "<span class='header-status'>" + this.i18n.cancelled + "</span> - " : "") +
+                       "<span class='header-title'>" + (session.vrtxTitle || session.title || session.id) + "</span></span>" +
+                       (rooms ? (" - <span class='session-room'>" + (rooms[0].buildingAcronym || rooms[0].buildingId) + " " + rooms[0].roomId) + "</span>" : "") +
+                       ((prevId || nextId) ? "<div class='prev-next'>" : "") +
+                       (prevId ? "<a class='prev' href='" + window.location.protocol + "//" + window.location.host + window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + prevId + "'>" + this.i18n.prev + "</a>" : "") +
+                       (nextId ? "<a class='next' href='" + window.location.protocol + "//" + window.location.host + window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + nextId + "'>" + this.i18n.next + "</a>" : "") +
+                       ((prevId || nextId) ? "</div>" : ""),
+        sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, id, session, this.retrievedScheduleData.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
+
+     this.sessionsLookup[id][sessionId] = {
+       rawPtr: session,
+       rawOrig: jQuery.extend(true, {}, session), // Copy object
+       descsPtr: descs,
+       multiples: sessionContent.multiples,
+       rtEditors: sessionContent.rtEditors,
+       sequenceId: sequenceId,
+       isCancelled: sessionCancelled,
+       isOrphan: sessionOrphan,
+       isEnhanced: false,
+       hasChanges: false
+     };
+     
+     return { sessionId: sessionId, html: sessionContent.html, title: sessionTitle };
+  };
+  
+  /* Dates */
+  
+  this.parseDate = function(dateString) {
+    var m = /^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})\.([0-9]{3})([+-])([0-9]{2}):([0-9]{2})$/.exec(dateString);
+    return { year: m[1], month: m[2], date: m[3], hh: m[4], mm: m[5], tzhh: m[9], tzmm: m[10] };
+  };
+  this.getDateTime = function(s, e) {
+    var startDateTime = this.parseDate(s);
+    var endDateTime = this.parseDate(e);
+    return { start: startDateTime, end: endDateTime };
+  };
+  this.getDate = function(year, month, date, hh, mm, tzpm, tzhh, tzmm) {
+    var date = new Date(year, month, date, hh, mm, 0, 0);
+    
+    var clientTimeZoneOffset = date.getTimezoneOffset();
+    var serverTimeZoneOffset = (tzhh * 60) + tzmm;
+    if(tzpm === "+") serverTimeZoneOffset = -serverTimeZoneOffset;
+    
+    if(clientTimeZoneOffset === serverTimeZoneOffset) return date; // Same offset in same date
+    
+    // Timezone correction offset for local time
+    var offset = clientTimeZoneOffset > serverTimeZoneOffset ? clientTimeZoneOffset - serverTimeZoneOffset 
+                                                             : serverTimeZoneOffset - clientTimeZoneOffset;
+    return new Date(date.getTime() + offset);
+  };
+  this.getDateAndPostFixId = function(dateTime) {
+    var start = dateTime.start;
+    var end = dateTime.end;
+    var endDate = this.getDate(end.year, parseInt(end.month, 10) - 1, parseInt(end.date, 10), parseInt(end.hh, 10), parseInt(end.mm, 10), end.tzpm, parseInt(end.tzhh, 10), parseInt(end.tzmm, 10));
+    var endDay = this.i18n["d" + endDate.getDay()];
+    var strDate = endDay.substring(0,2) + ". " + parseInt(start.date, 10) + ". " + this.i18n["m" + start.month] + ". - " + start.hh + ":" + start.mm + "-" + end.hh + ":" + end.mm;
+    var postFixId = start.date + "-" + start.month + "-" + start.year + "-" + start.hh + "-" + start.mm + "-" + end.hh + "-" + end.mm;
+    return { date: strDate, postFixId: postFixId };
+  };
+  
+  // Enhance session fields (multiple and CK)
   this.enhanceSession = function(id, sessionId, contentElm) {
     var session = this.sessionsLookup[id][sessionId];
     if(session && !session.isEnhanced) { // If not already enhanced
@@ -403,6 +386,23 @@ function courseSchedule() {
         });
       }
       session.isEnhanced = true;
+    }
+  };
+  this.loadingUpdate = function(msg) {
+    var loader = $("#editor-loading-inner");
+    if(!loader.length) {
+      var loaderHtml = "<span id='editor-loading'><span id='editor-loading-inner'>" + msg + "...</span></span>";
+      $(loaderHtml).insertAfter(".properties");
+    } else {
+      if(msg.length) {
+        loader.text(msg + "...");
+      } else {
+        loader.parent().remove();
+        if(onlySessionId) {
+          $("html").removeClass("embedded-loading");
+          $("#editor").css("height", "auto");
+        }
+      }
     }
   };
   this.checkUnsavedChanges = function() {

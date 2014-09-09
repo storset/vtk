@@ -342,7 +342,7 @@ function courseSchedule() {
     var rawPtrDtType = sessionLookup.rawPtrDtType;
     
     // Find sequence session (rawPtr)
-    var rawPtrData = this.retrievedScheduleData[rawPtrDtType].activities[rawPtrDtI];
+    var rawPtrDt = this.retrievedScheduleData[rawPtrDtType].activities[rawPtrDtI];
     var id = rawPtrDt.id;
     var teachingMethod = rawPtrDt.teachingMethod;
     for(var i = 0, len = rawPtrDt.sequences.length; i < len; i++) {

@@ -512,7 +512,7 @@ function courseSchedule() {
                           "&propertyValue%5B%5D=" + encodeURIComponent(sessionDisciplines[i]);
           }
         }
-        dataString += "&propertyNamespace%5B%5D=" +
+        dataString += "&propertyNamespace%5B%5D=" + encodeURIComponent("http://www.uio.no/navigation") +
                       "&propertyName%5B%5D=hidden" +
                       "&propertyValue%5B%5D=true";
         dataString += "&csrf-prevention-token=" + csrf;

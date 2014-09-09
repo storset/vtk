@@ -32,8 +32,9 @@ function courseSchedule() {
     var sessionData = this.getSessionJSONFromId(sessionId);
     if(!sessionData) return null;
     
-    var id = sessionData.id;
+    var id = sessionData.id; // teachingMethod
     var session = sessionData.session;
+    var sessionIdFinal = sessionData.sessionId;
     var sessionDateTime = sessionData.sessionDateTime;
     var sequences = sessionData.sequences;
     var type = sessionData.type;
@@ -52,9 +53,9 @@ function courseSchedule() {
     
     this.lastElm = $(".properties"); 
     this.lastId = id;
-    this.lastSessionId = sessionId;
+    this.lastSessionId = sessionIdFinal;
                                                     
-    return { id: id, isPlenary: isPlenary, teachingMethod: teachingMethod, html: sessionHtml.html, title: sessionHtml.title };
+    return { id: id, sessionId: sessionIdFinal, isPlenary: isPlenary, teachingMethod: teachingMethod, html: sessionHtml.html, title: sessionHtml.title };
   };
   this.getActivitiesForTypeHtml = function(type, isPlenary) {
     if(!this.retrievedScheduleData[type]) return "";
@@ -587,7 +588,7 @@ function courseSchedule() {
       
       if(sessionOnly) {
         editorProperties.prepend("<h4 class='property-label'>" + sessionOnly.title + "</h4>" + html);
-        csRef.enhanceSession(sessionOnly.id, onlySessionId, editorProperties);
+        csRef.enhanceSession(sessionOnly.id, sessionOnly.sessionId, editorProperties);
         var newButtonsHtml = "<input class='vrtx-button vrtx-embedded-button' id='vrtx-embedded-save-view-button' type='submit' value='" + csRef.i18n.saveView + "' />" +
                              "<input class='vrtx-focus-button vrtx-embedded-button' id='vrtx-embedded-save-button' type='submit' value='" + csRef.i18n.save + "' />" +
                              "<input class='vrtx-button vrtx-embedded-button' id='vrtx-embedded-cancel-button' type='submit' value='" + csRef.i18n.cancel + "' />";

@@ -70,7 +70,7 @@ function courseSchedule() {
         for(j = 0, len = sessions.length; j < len; j++) {
           var session = sessions[j];
           var dateTime = this.getDateTime(session.dtStart, session.dtEnd);
-          var sessionHtml = this.getSessionHtml(id, null, null, session, teachingMethod, dateTime, sequences, descs, isPlenary, vrtxEdit);
+          var sessionHtml = this.getSessionHtml(false, id, null, null, session, teachingMethod, dateTime, sequences, dt, descs, isPlenary, vrtxEdit);
           sessionsHtml += vrtxEdit.htmlFacade.getAccordionInteraction(!isPlenary ? "5" : "4", sessionHtml.sessionId, "session", sessionHtml.title, sessionHtml.html);
         }
         if(isPlenary) {
@@ -108,9 +108,9 @@ function courseSchedule() {
     if(!this.sessionsLookup["single"]) {
       this.sessionsLookup["single"] = {};
     }
-    var sessionHtml = this.getSessionHtml("single", sessionData.prevId, sessionData.nextId, session, sessionData.teachingMethod, sessionData.sessionDateTime,
-                                          sessionData.sequences, descs, sessionData.isPlenary, vrtxEditor);    
-    
+    var sessionHtml = this.getSessionHtml(true, sessionData.id, sessionData.prevId, sessionData.nextId, session, sessionData.teachingMethod, sessionData.sessionDateTime,
+                                          sessionData.sequences, sessionData.dt, descs, sessionData.isPlenary, vrtxEditor);
+                                          
     this.lastElm = $(".properties"); 
     this.lastId = "single";
     this.lastSessionId = "one";
@@ -135,14 +135,15 @@ function courseSchedule() {
       var groupsSessions = [];
       for(var i = 0; i < dataLen; i++) {
         var dt = data[i],
-            teachingMethod = dt.teachingMethod.toLowerCase();
+            sessions = dt.sessions,
+            teachingMethod = dt.teachingMethod.toLowerCase(),
+            id = teachingMethod + "-" + dt.id;
         for(var j = 0, len = dt.sequences.length; j < len; j++) {
           var sequence = dt.sequences[j];
           var fixedResources = sequence.vrtxResourcesFixed;
           if(fixedResources) {           
             sequences[sequence.id] = fixedResources;
           }
-          sessions = sessions.concat(sequence.sessions);
         }
         for(j = 0, len = sessions.length; j < len; j++) {
           var session = sessions[j];
@@ -154,7 +155,7 @@ function courseSchedule() {
             break;
           }
           if(findSessionId === sessionId) {
-            foundObj = { prevId: prevId, session: session, sessionDateTime: dateTime, sequences: sequences, type: type, isPlenary: isPlenary, teachingMethod: teachingMethod };
+            foundObj = { id: id, prevId: prevId, session: session, sessionDateTime: dateTime, sequences: sequences, dt: dt, type: type, isPlenary: isPlenary, teachingMethod: teachingMethod };
           } else {
             prevId = sessionId;
           }
@@ -173,12 +174,15 @@ function courseSchedule() {
     return foundObj;
   };
   // Get session HTML
-  this.getSessionHtml = function(id, prevId, nextId, session, teachingMethod, sessionDateTime, sequences, descs, isPlenary, vrtxEdit) {
+  this.getSessionHtml = function(isSingle, id, prevId, nextId, session, teachingMethod, sessionDateTime, sequences, dt, descs, isPlenary, vrtxEdit) {
     var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime);
-    if(id === "single") {
+    
+    var sessionId = id + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
+    var rawPtrId = sessionId;
+    
+    if(isSingle) {
+      id = "single";
       sessionId = "one";
-    } else {
-      sessionId = id + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
     }
     var sequenceIdSplit = session.id.split("/");
     if(sequenceIdSplit.length == 3) {
@@ -204,7 +208,8 @@ function courseSchedule() {
         sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, id, session, this.retrievedScheduleData.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
 
      this.sessionsLookup[id][sessionId] = {
-       rawPtr: session,
+       rawPtrId: rawPtrId,
+       rawPtrDt: dt,
        rawOrig: jQuery.extend(true, {}, session), // Copy object
        descsPtr: descs,
        multiples: sessionContent.multiples,
@@ -306,6 +311,18 @@ function courseSchedule() {
     }
     return false;
   };
+  this.discardCombinedSessions = function() {
+    for(var type in this.retrievedScheduleData[type]) {
+      var data = this.retrievedScheduleData[type].activities;
+      if(data) {
+        var dataLen = data.length;
+        for(var i = 0; i < dataLen; i++) {
+          var dt = data[i];
+          delete dt.sessions;
+        }
+      }
+    }
+  };
   this.saveLastSession = function() {
     if(this.lastElm) {
       this.saveSession(this.lastElm, this.lastId, this.lastSessionId);
@@ -315,10 +332,32 @@ function courseSchedule() {
     saveMultipleInputFields(sessionElms, "$$$");
 
     var sessionLookup = this.sessionsLookup[id][sessionId];
-    var rawOrig = sessionLookup.rawOrig;
-    var rawPtr = sessionLookup.rawPtr;
     var descsPtr = sessionLookup.descsPtr;
-
+    var rawOrig = sessionLookup.rawOrig;
+    var rawPtr = null;
+    
+    var rawPtrId = sessionLookup.rawPtrId;
+    var rawPtrDt = sessionLookup.rawPtrDt;
+    
+    // Find sequence session (rawPtr)
+    var id = rawPtrDt.id;
+    var teachingMethod = rawPtrDt.teachingMethod;
+    for(var i = 0, len = rawPtrDt.sequences.length; i < len; i++) {
+      var sessions = rawPtrDt.sequences[i].sessions;
+      for(var j = 0, len2 = sessions.length; j < len2; j++) {
+        var session = sessions[j];
+        var dateTime = this.getDateTime(session.dtStart, session.dtEnd);
+        var sessionDatePostFixId = this.getDateAndPostFixId(dateTime);
+        var sessionId = id + "-" + teachingMethod + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
+        if(sessionId === rawPtrId) {
+          rawPtr = session;
+          break;
+        }
+      }
+      if(rawPtr != null) {
+        break;
+      }
+    }
     sessionLookup.hasChanges = vrtxEditor.htmlFacade.htmlToJson(sessionElms, sessionId, descsPtr, rawOrig, rawPtr);
   };
   this.saved = function(isSaveView) {
@@ -532,6 +571,9 @@ function courseSchedule() {
       editorProperties.prepend("<div class='vrtx-grouped'>" + html + "</div>"); 
       setupFullEditorAccordions(csRef, editorProperties);
     }
+    
+    // Delete combined sessions to avoid to much data
+    csRef.discardCombinedSessions();
     
     JSON_ELEMENTS_INITIALIZED.resolve();
     

@@ -640,97 +640,7 @@ function courseSchedule() {
       
       // Add HTML to DOM
       editorProperties.prepend("<div class='vrtx-grouped'>" + html + "</div>"); 
-       
-      // Accordions - define at run-time
-      var accordionOnActivateTier3 = function (id, e, ui, accordion) {
-        if(ui.newHeader[0]) { // Enhance multiple fields in session on open
-          var sessionId = ui.newHeader[0].id;
-          var sessionElm = $(ui.newHeader).closest("div");
-          var content = sessionElm.find("> .accordion-content");
-        
-          csRef.lastId = id;
-          csRef.lastSessionId = sessionId;
-          csRef.lastElm = content;
-          
-          csRef.enhanceSession(id, sessionId, content);
-        }
-        if(ui.oldHeader[0]) { // Update session and accordion title on close
-          var sessionId = ui.oldHeader[0].id;
-          var sessionElm = $(ui.oldHeader).closest("div");
-          var content = sessionElm.find("> .accordion-content");
-          
-          csRef.saveSession(content, id, sessionId);
-        }
-      };  
-    
-      // Tier 2
-      var accordionOnActivateTier2 = function (id, isTier1, e, ui, accordion) {
-        if(isTier1) {
-          accordionOnActivateTier3(id, e, ui, accordion);
-        } else {
-          if(ui.newHeader[0]) {
-            var contentWrp = $(ui.newHeader[0]).parent().find(".accordion-content");
-            var optsH5 = {
-              elem: contentWrp.find(".vrtx-grouped"),
-              headerSelector: "h5",
-              onActivate: function (e, ui, accordion) {
-                accordionOnActivateTier3(id, e, ui, accordion);
-              },
-              animationSpeed: 200
-            };
-            var accH5 = new VrtxAccordion(optsH5);
-            accH5.create();
-            optsH5.elem.addClass("fast");
-          }
-        }
-      };
-      
-      // Tier 1
-      var accordionOnActivateTier1 = function (isTier1, e, ui, accordion) {
-        if(ui.newHeader[0]) {
-          var id = ui.newHeader[0].id;
-          var contentWrp = $("#" + id).parent().find(".accordion-content");
-          if(isTier1) { // Lookup and add sessions HTML to DOM
-            if(!contentWrp.children().length) { // If not already added
-              contentWrp.html("<div class='vrtx-grouped'>" + csRef.sessionsLookup[id].html + "</div>");
-            }
-          }
-          var optsH4 = {
-            elem: contentWrp.find(".vrtx-grouped"),
-            headerSelector: "h4",
-            onActivate: function (e, ui, accordion) {
-              if(!isTier1 && ui.newHeader[0]) { // Lookup and add sessions HTML to DOM
-                id = ui.newHeader[0].id;
-                var contentWrp = $("#" + id).parent().find(".accordion-content");
-                if(!contentWrp.children().length) { // If not already added
-                  contentWrp.html("<div class='vrtx-grouped'>" + csRef.sessionsLookup[id].html + "</div>");
-                }
-              }
-              accordionOnActivateTier2(id, isTier1, e, ui, accordion);
-            },
-            animationSpeed: 200
-          };
-          var accH4 = new VrtxAccordion(optsH4);
-          accH4.create();
-          optsH4.elem.addClass("fast");
-        }
-      };
-    
-      // Tier 0
-      var optsH3 = {
-        elem: editorProperties.find("> .vrtx-grouped"),
-        headerSelector: "h3",
-        onActivate: function (e, ui, accordion) {
-          if(ui.newHeader[0]) {
-            var ident = $(ui.newHeader[0]).closest(".accordion-wrapper");
-            accordionOnActivateTier1(ident.hasClass("skip-tier"), e, ui, accordion);
-          }
-        },
-        animationSpeed: 200
-      };
-      var accH3 = new VrtxAccordion(optsH3);
-      accH3.create();
-      optsH3.elem.addClass("fast");
+      setupFullEditorAccordions(csRef, editorProperties);
     }
     
     JSON_ELEMENTS_INITIALIZED.resolve();
@@ -740,4 +650,99 @@ function courseSchedule() {
       editorProperties.show();
     }, 50);
   });
+}
+
+function setupFullEditorAccordions(csRef, editorProperties) {
+  var animationSpeed = 200;
+
+  // Accordions - define at run-time
+  var accordionOnActivateTier3 = function (id, e, ui, accordion) {
+    if(ui.newHeader[0]) { // Enhance multiple fields in session on open
+      var sessionId = ui.newHeader[0].id;
+      var sessionElm = $(ui.newHeader).closest("div");
+      var content = sessionElm.find("> .accordion-content");
+    
+      csRef.lastId = id;
+      csRef.lastSessionId = sessionId;
+      csRef.lastElm = content;
+      
+      csRef.enhanceSession(id, sessionId, content);
+    }
+    if(ui.oldHeader[0]) { // Update session and accordion title on close
+      var sessionId = ui.oldHeader[0].id;
+      var sessionElm = $(ui.oldHeader).closest("div");
+      var content = sessionElm.find("> .accordion-content");
+      
+      csRef.saveSession(content, id, sessionId);
+    }
+  };  
+
+  // Tier 2
+  var accordionOnActivateTier2 = function (id, isTier1, e, ui, accordion) {
+    if(isTier1) {
+      accordionOnActivateTier3(id, e, ui, accordion);
+    } else {
+      if(ui.newHeader[0]) {
+        var contentWrp = $(ui.newHeader[0]).parent().find(".accordion-content");
+        var optsH5 = {
+          elem: contentWrp.find(".vrtx-grouped"),
+          headerSelector: "h5",
+          onActivate: function (e, ui, accordion) {
+            accordionOnActivateTier3(id, e, ui, accordion);
+          },
+          animationSpeed: animationSpeed
+        };
+        var accH5 = new VrtxAccordion(optsH5);
+        accH5.create();
+        optsH5.elem.addClass("fast");
+      }
+    }
+  };
+  
+  // Tier 1
+  var accordionOnActivateTier1 = function (isTier1, e, ui, accordion) {
+    if(ui.newHeader[0]) {
+      var id = ui.newHeader[0].id;
+      var contentWrp = $("#" + id).parent().find(".accordion-content");
+      if(isTier1) { // Lookup and add sessions HTML to DOM
+        if(!contentWrp.children().length) { // If not already added
+          contentWrp.html("<div class='vrtx-grouped'>" + csRef.sessionsLookup[id].html + "</div>");
+        }
+      }
+      var optsH4 = {
+        elem: contentWrp.find(".vrtx-grouped"),
+        headerSelector: "h4",
+        onActivate: function (e, ui, accordion) {
+          if(!isTier1 && ui.newHeader[0]) { // Lookup and add sessions HTML to DOM
+            id = ui.newHeader[0].id;
+            var contentWrp = $("#" + id).parent().find(".accordion-content");
+            if(!contentWrp.children().length) { // If not already added
+              contentWrp.html("<div class='vrtx-grouped'>" + csRef.sessionsLookup[id].html + "</div>");
+            }
+          }
+          accordionOnActivateTier2(id, isTier1, e, ui, accordion);
+        },
+        animationSpeed: animationSpeed
+      };
+      var accH4 = new VrtxAccordion(optsH4);
+      accH4.create();
+      optsH4.elem.addClass("fast");
+    }
+  };
+
+  // Tier 0
+  var optsH3 = {
+    elem: editorProperties.find("> .vrtx-grouped"),
+    headerSelector: "h3",
+    onActivate: function (e, ui, accordion) {
+      if(ui.newHeader[0]) {
+        var ident = $(ui.newHeader[0]).closest(".accordion-wrapper");
+        accordionOnActivateTier1(ident.hasClass("skip-tier"), e, ui, accordion);
+      }
+    },
+    animationSpeed: animationSpeed
+  };
+  var accH3 = new VrtxAccordion(optsH3);
+  accH3.create();
+  optsH3.elem.addClass("fast");
 }

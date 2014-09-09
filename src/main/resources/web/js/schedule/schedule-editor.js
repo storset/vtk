@@ -491,7 +491,7 @@ function courseSchedule() {
       collectionBaseUrl += "/";
     }
     var collectionUrl = collectionBaseUrl + collectionName;
-    
+
     // Create fixed resources folder
     vrtxAdmin.serverFacade.getHtml(baseUrl + "?vrtx=admin&service=create-collection-with-properties", {
       success: function (results, status, resp) {
@@ -512,6 +512,9 @@ function courseSchedule() {
                           "&propertyValue%5B%5D=" + encodeURIComponent(sessionDisciplines[i]);
           }
         }
+        dataString += "&propertyNamespace%5B%5D=" +
+                      "&propertyName%5B%5D=hidden" +
+                      "&propertyValue%5B%5D=true";
         dataString += "&csrf-prevention-token=" + csrf;
         vrtxAdmin.serverFacade.postHtml(form.attr("action"), dataString, {
           success: function (results, status, resp) {

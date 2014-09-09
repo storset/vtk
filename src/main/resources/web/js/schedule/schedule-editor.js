@@ -135,12 +135,12 @@ function courseSchedule() {
           html += vrtxEdit.htmlFacade.getAccordionInteraction("3", id, (type + " skip-tier"), teachingMethodName, "");
         } else {
           this.sessionsLookup[id].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
-          htmlArr.push({ "groupCode": teachingMethod, "groupNr": groupNumber, "accHtml": vrtxEdit.htmlFacade.getAccordionInteraction("4", id, type, title, "") });
+          htmlArr.push({ "teachingMethod": teachingMethod, "groupNr": groupNumber, "accHtml": vrtxEdit.htmlFacade.getAccordionInteraction("4", id, type, title, "") });
           
           if(!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod) {
             // Sort group code and group number if equal
             htmlArr.sort(function(a, b) { // http://www.sitepoint.com/sophisticated-sorting-in-javascript/
-              var x = a.groupCode, y = b.groupCode;
+              var x = a.teachingMethod, y = b.teachingMethod;
               if(x === y) {
                 return a.groupNr - b.groupNr;
               }
@@ -222,9 +222,6 @@ function courseSchedule() {
     }
   };
   this.parseDate = function(dateString) {
-    // Old
-    // var m = /^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2})(?::([0-9]*)(\.[0-9]*)?)?(?:([+-])([0-9]{2}):([0-9]{2}))?/.exec(dateString);
-            // 2014     - 08       - 18       T12        : 15       :00         .000         +    02       :00
     var m = /^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})\.([0-9]{3})([+-])([0-9]{2}):([0-9]{2})$/.exec(dateString);
     return { year: m[1], month: m[2], date: m[3], hh: m[4], mm: m[5], tzhh: m[9], tzmm: m[10] };
   };
@@ -332,12 +329,12 @@ function courseSchedule() {
             }
             sessions = [];
           } else {
-            groupsSessions.push({ "id": id, "groupCode": teachingMethod, "groupNr": groupNumber, "sessions": sessions, "map": map, "sessionsProcessed": sessionsProcessed });
+            groupsSessions.push({ "id": id, "teachingMethod": teachingMethod, "groupNr": groupNumber, "sessions": sessions, "map": map, "sessionsProcessed": sessionsProcessed });
             sessions = [];
             if(!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod) {
               // Sort group code and group number if equal
               groupsSessions.sort(function(a, b) { // http://www.sitepoint.com/sophisticated-sorting-in-javascript/
-                var x = a.groupCode, y = b.groupCode;
+                var x = a.teachingMethod, y = b.teachingMethod;
                 if(x === y) {
                   return a.groupNr - b.groupNr;
                 }
@@ -350,14 +347,14 @@ function courseSchedule() {
                   var sessionProcessed = groupSessions.sessionsProcessed[groupSessions.map[j].index];
                   var sessionDateTime = sessionProcessed.dateTime;
                   var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime);
-                  var sessionId = groupSessions.groupCode + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
+                  var sessionId = groupSessions.teachingMethod + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
 
                   if(foundObj && !nextId) {
                     nextId = sessionId;
                     break;
                   }
                   if(findSessionId === sessionId) {
-                    foundObj = { id: groupSessions.id, prevId: prevId, session: session, sessionDateTime: sessionDateTime, sequences: sequences, type: type, isPlenary: isPlenary, teachingMethod: groupSessions.groupCode };
+                    foundObj = { id: groupSessions.teachingMethod, prevId: prevId, session: session, sessionDateTime: sessionDateTime, sequences: sequences, type: type, isPlenary: isPlenary, teachingMethod: groupSessions.teachingMethod };
                   } else {
                     prevId = sessionId;
                   }

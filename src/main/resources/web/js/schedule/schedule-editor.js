@@ -163,9 +163,13 @@ function courseSchedule() {
     return html;
   };
   this.getSessionHtml = function(id, prevId, nextId, session, teachingMethod, sessionDateTime, sequences, descs, isPlenary, vrtxEdit) {
-    var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime),
-        sessionId = id + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId,
-        sequenceIdSplit = session.id.split("/");
+    var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime);
+    if(id === "single") {
+      sessionId = "one";
+    } else {
+      sessionId = id + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
+    }
+    var sequenceIdSplit = session.id.split("/");
     if(sequenceIdSplit.length == 3) {
       var sequenceId = sequenceIdSplit[1];
     } else if(sequenceIdSplit == 2) {

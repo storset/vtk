@@ -135,7 +135,6 @@ function courseSchedule() {
       var groupsSessions = [];
       for(var i = 0; i < dataLen; i++) {
         var dt = data[i],
-            sessions = dt.sessions,
             teachingMethod = dt.teachingMethod.toLowerCase();
         for(var j = 0, len = dt.sequences.length; j < len; j++) {
           var sequence = dt.sequences[j];
@@ -143,6 +142,7 @@ function courseSchedule() {
           if(fixedResources) {           
             sequences[sequence.id] = fixedResources;
           }
+          sessions = sessions.concat(sequence.sessions);
         }
         for(j = 0, len = sessions.length; j < len; j++) {
           var session = sessions[j];

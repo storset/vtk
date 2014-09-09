@@ -32,9 +32,7 @@ function courseSchedule() {
     var sessionData = this.getSessionJSONFromId(sessionId);
     if(!sessionData) return null;
     
-    var id = sessionData.id; // teachingMethod
     var session = sessionData.session;
-    var sessionIdFinal = sessionData.sessionId;
     var sessionDateTime = sessionData.sessionDateTime;
     var sequences = sessionData.sequences;
     var type = sessionData.type;
@@ -45,17 +43,17 @@ function courseSchedule() {
     
     var descs = this.retrievedScheduleData[type].vrtxEditableDescription;
 
-    if(!this.sessionsLookup[id]) {
-      this.sessionsLookup[id] = {};
+    if(!this.sessionsLookup["single"]) {
+      this.sessionsLookup["single"] = {};
     }
     var sessionDateTime = this.getDateTime(session.dtStart, session.dtEnd);
-    var sessionHtml = this.getSessionHtml(id, prevId, nextId, session, teachingMethod, sessionDateTime, sequences, descs, isPlenary, vrtxEditor);    
+    var sessionHtml = this.getSessionHtml("single", prevId, nextId, session, teachingMethod, sessionDateTime, sequences, descs, isPlenary, vrtxEditor);    
     
     this.lastElm = $(".properties"); 
-    this.lastId = id;
-    this.lastSessionId = sessionIdFinal;
+    this.lastId = "single";
+    this.lastSessionId = "one";
                                                     
-    return { id: id, sessionId: sessionIdFinal, isPlenary: isPlenary, teachingMethod: teachingMethod, html: sessionHtml.html, title: sessionHtml.title };
+    return { id: "single", isPlenary: isPlenary, teachingMethod: teachingMethod, html: sessionHtml.html, title: sessionHtml.title };
   };
   this.getActivitiesForTypeHtml = function(type, isPlenary) {
     if(!this.retrievedScheduleData[type]) return "";
@@ -272,7 +270,6 @@ function courseSchedule() {
       for(var i = 0; i < dataLen; i++) {
         var dt = data[i],
             teachingMethod = dt.teachingMethod.toLowerCase(),
-            id = teachingMethod + "-" + dt.id,
             groupNumber = ((dt.party && dt.party.name) ? parseInt(dt.party.name, 10) : 0)
         for(var j = 0, len = dt.sequences.length; j < len; j++) {
           var sequence = dt.sequences[j];
@@ -323,14 +320,14 @@ function courseSchedule() {
                 break;
               }
               if(findSessionId === sessionId) {
-                foundObj = { id: teachingMethod, prevId: prevId, session: session, sessionDateTime: sessionDateTime, sequences: sequences, type: type, isPlenary: isPlenary, teachingMethod: teachingMethod };
+                foundObj = { prevId: prevId, session: session, sessionDateTime: sessionDateTime, sequences: sequences, type: type, isPlenary: isPlenary, teachingMethod: teachingMethod };
               } else {
                 prevId = sessionId;
               }
             }
             sessions = [];
           } else {
-            groupsSessions.push({ "id": id, "teachingMethod": teachingMethod, "groupNr": groupNumber, "sessions": sessions, "map": map, "sessionsProcessed": sessionsProcessed });
+            groupsSessions.push({ "teachingMethod": teachingMethod, "groupNr": groupNumber, "sessions": sessions, "map": map, "sessionsProcessed": sessionsProcessed });
             sessions = [];
             if(!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod) {
               // Sort group code and group number if equal
@@ -355,7 +352,7 @@ function courseSchedule() {
                     break;
                   }
                   if(findSessionId === sessionId) {
-                    foundObj = { id: groupSessions.teachingMethod, prevId: prevId, session: session, sessionDateTime: sessionDateTime, sequences: sequences, type: type, isPlenary: isPlenary, teachingMethod: groupSessions.teachingMethod };
+                    foundObj = { prevId: prevId, session: session, sessionDateTime: sessionDateTime, sequences: sequences, type: type, isPlenary: isPlenary, teachingMethod: groupSessions.teachingMethod };
                   } else {
                     prevId = sessionId;
                   }
@@ -588,7 +585,7 @@ function courseSchedule() {
       
       if(sessionOnly) {
         editorProperties.prepend("<h4 class='property-label'>" + sessionOnly.title + "</h4>" + html);
-        csRef.enhanceSession(sessionOnly.id, sessionOnly.sessionId, editorProperties);
+        csRef.enhanceSession("single", "one", editorProperties);
         var newButtonsHtml = "<input class='vrtx-button vrtx-embedded-button' id='vrtx-embedded-save-view-button' type='submit' value='" + csRef.i18n.saveView + "' />" +
                              "<input class='vrtx-focus-button vrtx-embedded-button' id='vrtx-embedded-save-button' type='submit' value='" + csRef.i18n.save + "' />" +
                              "<input class='vrtx-button vrtx-embedded-button' id='vrtx-embedded-cancel-button' type='submit' value='" + csRef.i18n.cancel + "' />";

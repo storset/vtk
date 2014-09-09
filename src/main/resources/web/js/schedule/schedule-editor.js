@@ -313,11 +313,10 @@ function courseSchedule() {
     return false;
   };
   this.discardCombinedSessions = function() {
-    for(var type in this.retrievedScheduleData[type]) {
+    for(var type in this.retrievedScheduleData) {
       var data = this.retrievedScheduleData[type].activities;
       if(data) {
-        var dataLen = data.length;
-        for(var i = 0; i < dataLen; i++) {
+        for(var i = 0; i < data.length; i++) {
           var dt = data[i];
           delete dt.sessions;
         }

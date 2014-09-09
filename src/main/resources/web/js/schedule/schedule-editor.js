@@ -344,14 +344,14 @@ function courseSchedule() {
     // Find sequence session (rawPtr)
     var rawPtrDt = this.retrievedScheduleData[rawPtrDtType].activities[rawPtrDtI];
     var id = rawPtrDt.id;
-    var teachingMethod = rawPtrDt.teachingMethod;
+    var teachingMethod = rawPtrDt.teachingMethod.toLowerCase();
     for(var i = 0, len = rawPtrDt.sequences.length; i < len; i++) {
       var sessions = rawPtrDt.sequences[i].sessions;
       for(var j = 0, len2 = sessions.length; j < len2; j++) {
         var session = sessions[j];
         var dateTime = this.getDateTime(session.dtStart, session.dtEnd);
         var sessionDatePostFixId = this.getDateAndPostFixId(dateTime);
-        var sessionId = id + "-" + teachingMethod + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
+        var sessionId = teachingMethod + "-" + id + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
         if(sessionId === rawPtrId) {
           rawPtr = session;
           break;

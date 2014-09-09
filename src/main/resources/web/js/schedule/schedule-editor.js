@@ -51,8 +51,7 @@ function courseSchedule() {
           teachingMethod = dt.teachingMethod.toLowerCase(),
           teachingMethodName = dt.teachingMethodName,
           id = teachingMethod + "-" + dt.id,
-          title = isPlenary ? teachingMethodName : (dt.title || teachingMethodName),
-          groupNumber = ((dt.party && dt.party.name) ? parseInt(dt.party.name, 10) : 0);
+          title = isPlenary ? teachingMethodName : (dt.title || teachingMethodName);
 
       this.sessionsLookup[id] = {};
       
@@ -67,58 +66,21 @@ function courseSchedule() {
       }
       
       if(!isPlenary || (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod)) {
-        // Evaluate and cache dateTime
-        var map = [], sessionsProcessed = [];
-        for(j = 0, len = sessions.length; j < len; j++) {
-          var session = sessions[j];
-          
-          var dateTime = self.getDateTime(session.dtStart, session.dtEnd);
-          var start = dateTime.start;
-          var end = dateTime.end;
-          var startEndString = start.year + "" + start.month + "" + start.date + "" + start.hh + "" + start.mm + "" + end.hh + "" + end.mm;
-          
-          map.push({
-            "index": j, // Save index
-            "startEndString": startEndString,
-            "isOrphan": session.vrtxOrphan
-          });
-          sessionsProcessed.push({
-            "dateTime": dateTime
-          });
-        }
-        // Sort
-        map.sort(function(a, b) {
-          var x = a.isOrphan, y = b.isOrphan;
-          if(x === y) {
-            return a.startEndString > b.startEndString ? 1 : -1;
-          }
-          return !x && y ? -1 : x && !y ? 1 : 0;
-        });
-        
-        // Generate sessions HTML (get correctly sorted from map)
+        // Generate sessions HTML
         for(j = 0, len = map.length; j < len; j++) {
-          var session = sessions[map[j].index];
-          var sessionProcessed = sessionsProcessed[map[j].index];
-          var sessionHtml = this.getSessionHtml(id, null, null, session, teachingMethod, sessionProcessed.dateTime, sequences, descs, isPlenary, vrtxEdit);
+          var session = sessions[j];
+          var dateTime = this.getDateTime(session.dtStart, session.dtEnd);
+          var sessionHtml = this.getSessionHtml(id, null, null, session, teachingMethod, dateTime, sequences, descs, isPlenary, vrtxEdit);
           sessionsHtml += vrtxEdit.htmlFacade.getAccordionInteraction(!isPlenary ? "5" : "4", sessionHtml.sessionId, "session", sessionHtml.title, sessionHtml.html);
         }
-        
         if(isPlenary) {
           this.sessionsLookup[id].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
           html += vrtxEdit.htmlFacade.getAccordionInteraction("3", id, (type + " skip-tier"), teachingMethodName, "");
         } else {
           this.sessionsLookup[id].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
-          htmlArr.push({ "teachingMethod": teachingMethod, "groupNr": groupNumber, "accHtml": vrtxEdit.htmlFacade.getAccordionInteraction("4", id, type, title, "") });
+          htmlArr.push({ "accHtml": vrtxEdit.htmlFacade.getAccordionInteraction("4", id, type, title, "") });
           
           if(!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod) {
-            // Sort group code and group number if equal
-            htmlArr.sort(function(a, b) { // http://www.sitepoint.com/sophisticated-sorting-in-javascript/
-              var x = a.teachingMethod, y = b.teachingMethod;
-              if(x === y) {
-                return a.groupNr - b.groupNr;
-              }
-              return x < y ? -1 : x > y ? 1 : 0;
-            });
             var htmlMiddle = "";
             for(j = 0, len = htmlArr.length; j < len; j++) {
               htmlMiddle += htmlArr[j].accHtml;
@@ -173,8 +135,7 @@ function courseSchedule() {
       var groupsSessions = [];
       for(var i = 0; i < dataLen; i++) {
         var dt = data[i],
-            teachingMethod = dt.teachingMethod.toLowerCase(),
-            groupNumber = ((dt.party && dt.party.name) ? parseInt(dt.party.name, 10) : 0)
+            teachingMethod = dt.teachingMethod.toLowerCase();
         for(var j = 0, len = dt.sequences.length; j < len; j++) {
           var sequence = dt.sequences[j];
           var fixedResources = sequence.vrtxResourcesFixed;
@@ -183,90 +144,19 @@ function courseSchedule() {
           }
           sessions = sessions.concat(sequence.sessions);
         }
-        if(!isPlenary || (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod)) {
-          // Evaluate and cache dateTime
-          var map = [], sessionsProcessed = [];
-          for(j = 0, len = sessions.length; j < len; j++) {
-            var session = sessions[j];
-          
-            var dateTime = this.getDateTime(session.dtStart, session.dtEnd);
-            var start = dateTime.start;
-            var end = dateTime.end;
-            var startEndString = start.year + "" + start.month + "" + start.date + "" + start.hh + "" + start.mm + "" + end.hh + "" + end.mm;
-          
-            map.push({
-              "index": j, // Save index
-              "startEndString": startEndString,
-              "isOrphan": session.vrtxOrphan
-            });
-            sessionsProcessed.push({
-              "dateTime": dateTime
-            });
+        for(j = 0, len = sessions.length; j < len; j++) {
+          var session = sessions[j];
+          var dateTime = this.getDateTime(session.dtStart, session.dtEnd);
+          var sessionDatePostFixId = this.getDateAndPostFixId(dateTime);
+          var sessionId = teachingMethod + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
+          if(foundObj && !nextId) {
+            nextId = sessionId;
+            break;
           }
-          // Sort
-          map.sort(function(a, b) {
-            var x = a.isOrphan, y = b.isOrphan;
-            if(x === y) {
-              return a.startEndString > b.startEndString ? 1 : -1;
-            }
-            return !x && y ? -1 : x && !y ? 1 : 0;
-          });
-          if(isPlenary) {
-            for(j = 0, len = map.length; j < len; j++) {
-              var session = sessions[map[j].index];
-              var sessionProcessed = sessionsProcessed[map[j].index];
-              var sessionDateTime = sessionProcessed.dateTime;
-              var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime);
-              var sessionId = teachingMethod + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
-
-              if(foundObj && !nextId) {
-                nextId = sessionId;
-                break;
-              }
-              if(findSessionId === sessionId) {
-                foundObj = { prevId: prevId, session: session, sessionDateTime: sessionDateTime, sequences: sequences, type: type, isPlenary: isPlenary, teachingMethod: teachingMethod };
-              } else {
-                prevId = sessionId;
-              }
-            }
-            sessions = [];
+          if(findSessionId === sessionId) {
+            foundObj = { prevId: prevId, session: session, sessionDateTime: dateTime, sequences: sequences, type: type, isPlenary: isPlenary, teachingMethod: teachingMethod };
           } else {
-            groupsSessions.push({ "teachingMethod": teachingMethod, "groupNr": groupNumber, "sessions": sessions, "map": map, "sessionsProcessed": sessionsProcessed });
-            sessions = [];
-            if(!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod) {
-              // Sort group code and group number if equal
-              groupsSessions.sort(function(a, b) { // http://www.sitepoint.com/sophisticated-sorting-in-javascript/
-                var x = a.teachingMethod, y = b.teachingMethod;
-                if(x === y) {
-                  return a.groupNr - b.groupNr;
-                }
-                return x < y ? -1 : x > y ? 1 : 0;
-              });
-              for(k = 0, len1 = groupsSessions.length; k < len1; k++) {
-                var groupSessions = groupsSessions[k];
-                for(j = 0, len2 = groupSessions.map.length; j < len2; j++) {
-                  var session = groupSessions.sessions[groupSessions.map[j].index];
-                  var sessionProcessed = groupSessions.sessionsProcessed[groupSessions.map[j].index];
-                  var sessionDateTime = sessionProcessed.dateTime;
-                  var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime);
-                  var sessionId = groupSessions.teachingMethod + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
-
-                  if(foundObj && !nextId) {
-                    nextId = sessionId;
-                    break;
-                  }
-                  if(findSessionId === sessionId) {
-                    foundObj = { prevId: prevId, session: session, sessionDateTime: sessionDateTime, sequences: sequences, type: type, isPlenary: isPlenary, teachingMethod: groupSessions.teachingMethod };
-                  } else {
-                    prevId = sessionId;
-                  }
-                }
-                if(nextId) {
-                  break;
-                }
-              }
-              groupSessions = [];
-            }
+            prevId = sessionId;
           }
         }
         if(nextId) {

@@ -325,7 +325,7 @@ function courseSchedule() {
                 break;
               }
               if(findSessionId === sessionId) {
-                foundObj = { id: id, prevId: prevId, session: session, sessionDateTime: sessionDateTime, sequences: sequences, type: type, isPlenary: isPlenary, teachingMethod: teachingMethod };
+                foundObj = { id: teachingMethod, prevId: prevId, session: session, sessionDateTime: sessionDateTime, sequences: sequences, type: type, isPlenary: isPlenary, teachingMethod: teachingMethod };
               } else {
                 prevId = sessionId;
               }

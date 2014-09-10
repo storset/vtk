@@ -211,16 +211,19 @@ function courseSchedule() {
                        ((prevId || nextId) ? "</div>" : ""),
         sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, id, session, this.retrievedScheduleData.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
 
+     var rawOrigAll = jQuery.extend(true, {}, session); // For TP comparison
+
      this.discardMetadataSession(session);
 
      this.sessionsLookup[id][sessionId] = {
-       rawPtr: session,
        /*
        rawPtrId: rawPtrId,
        rawPtrDtI: dtI,
        rawPtrDtType: (isPlenary ? "plenary" : "group"),
        */
+       rawPtr: session,
        rawOrig: jQuery.extend(true, {}, session), // Copy object
+       rawOrigAll: rawOrigAll,
        descsPtr: jQuery.extend(true, {}, descs), // Copy object
        multiples: sessionContent.multiples,
        rtEditors: sessionContent.rtEditors,
@@ -324,6 +327,9 @@ function courseSchedule() {
   this.discardMetadataSession = function(session) {
     delete session.dtStart;
     delete session.dtEnd;
+    delete session.status;
+    delete session.title;
+    delete session.staff;
     delete session.weekNr;
     delete session.rooms;
   };
@@ -346,6 +352,7 @@ function courseSchedule() {
     var sessionLookup = this.sessionsLookup[id][sessionId];
     var descsPtr = sessionLookup.descsPtr;
     var rawOrig = sessionLookup.rawOrig;
+    var rawOrigAll = sessionLookup.rawOrigAll;
     var rawPtr = sessionLookup.rawPtr;
     /*
     var rawPtr = null;
@@ -375,7 +382,7 @@ function courseSchedule() {
     }
     sessionLookup.rawPtr = rawPtr;
     */
-    sessionLookup.hasChanges = vrtxEditor.htmlFacade.htmlToJson(sessionElms, sessionId, descsPtr, rawOrig, rawPtr);
+    sessionLookup.hasChanges = vrtxEditor.htmlFacade.htmlToJson(sessionElms, sessionId, descsPtr, rawOrig, rawOrigAll, rawPtr);
   };
   this.saved = function(isSaveView) {
     for(var type in this.sessionsLookup) {

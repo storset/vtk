@@ -1852,7 +1852,7 @@ VrtxEditor.prototype.htmlFacade = {
  /* 
   * Turn a block of HTML/DOM into JSON (Only working for Schedule per. 14.08.2014)
   */
-  htmlToJson: function (sessionElms, sessionId, descs, rawOrig, rawPtr) {
+  htmlToJson: function (sessionElms, sessionId, descs, rawOrig, rawOrigAll, rawPtr) {
     var vrtxEdit = vrtxEditor;
     var hasChanges = false;
     var editorDetectChangeFunc = editorDetectChange;
@@ -1904,7 +1904,8 @@ VrtxEditor.prototype.htmlFacade = {
       // Changes in Vortex properties
       if(val && val.length) {
         // If changes in Vortex properties and differs from TP/UIOWS-data
-        if(editorDetectChangeFunc(sessionId, val, rawOrig[name], name === "vrtxResourcesText") && editorDetectChangeFunc(sessionId, val, rawOrig[name.split("vrtx")[1].toLowerCase()], name === "vrtxResourcesText")) {
+        if(editorDetectChangeFunc(sessionId, val, rawOrig[name], name === "vrtxResourcesText") &&
+           editorDetectChangeFunc(sessionId, val, rawOrigAll[name.split("vrtx")[1].toLowerCase()], name === "vrtxResourcesText")) {
           vrtxAdmin.log({msg: "ADD / CHANGE " + name + (typeof val === "string" ? " " + val : "")});
           rawPtr[name] = val;
           hasChanges = true;

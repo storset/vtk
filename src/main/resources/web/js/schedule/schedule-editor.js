@@ -221,7 +221,7 @@ function courseSchedule() {
        rawPtrDtType: (isPlenary ? "plenary" : "group"),
        */
        rawOrig: jQuery.extend(true, {}, session), // Copy object
-       descsPtr: jQuery.extend(true, {}, descs),
+       descsPtr: jQuery.extend(true, {}, descs), // Copy object
        multiples: sessionContent.multiples,
        rtEditors: sessionContent.rtEditors,
        sequenceId: sequenceId,
@@ -329,9 +329,8 @@ function courseSchedule() {
   };
   this.discardMetadata = function() {
     for(var type in this.retrievedScheduleData) {
-      var data = this.retrievedScheduleData[type].vrtxEditableDescription;
-      if(data) {
-        delete data;
+      if(this.retrievedScheduleData[type].vrtxEditableDescription) {
+        delete this.retrievedScheduleData[type].vrtxEditableDescription;
       }
     }
     delete this.retrievedScheduleData.vrtxResourcesFixedUrl;

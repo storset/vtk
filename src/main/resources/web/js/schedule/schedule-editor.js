@@ -319,17 +319,6 @@ function courseSchedule() {
     }
     return false;
   };
-  this.discardCombinedSessions = function() {
-    for(var type in this.retrievedScheduleData) {
-      var data = this.retrievedScheduleData[type].activities;
-      if(data) {
-        for(var i = 0; i < data.length; i++) {
-          var dt = data[i];
-          delete dt.sessions;
-        }
-      }
-    }
-  };
   this.saveLastSession = function() {
     if(this.lastElm) {
       this.saveSession(this.lastElm, this.lastId, this.lastSessionId);
@@ -583,10 +572,7 @@ function courseSchedule() {
       editorProperties.prepend("<div class='vrtx-grouped'>" + html + "</div>"); 
       setupFullEditorAccordions(csRef, editorProperties);
     }
-    
-    // Delete combined sessions to avoid to much data
-    csRef.discardCombinedSessions();
-    
+
     JSON_ELEMENTS_INITIALIZED.resolve();
     
     var waitALittle = setTimeout(function() {      

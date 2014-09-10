@@ -326,6 +326,7 @@ function courseSchedule() {
         delete data;
       }
     }
+    delete this.retrievedScheduleData.vrtxResourcesFixedUrl;
   };
   this.saveLastSession = function() {
     if(this.lastElm) {

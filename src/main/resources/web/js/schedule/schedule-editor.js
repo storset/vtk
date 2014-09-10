@@ -319,7 +319,7 @@ function courseSchedule() {
     }
     return false;
   };
-  this.discardCombinedSessions = function() {
+  this.discardMetadata = function() {
     for(var type in this.retrievedScheduleData) {
       var data = this.retrievedScheduleData[type].vrtxEditableDescription;
       if(data) {
@@ -583,7 +583,7 @@ function courseSchedule() {
     }
     
     // Delete combined sessions to avoid to much data
-    csRef.discardCombinedSessions();
+    csRef.discardMetadata();
     
     JSON_ELEMENTS_INITIALIZED.resolve();
     

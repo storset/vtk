@@ -211,6 +211,8 @@ function courseSchedule() {
                        ((prevId || nextId) ? "</div>" : ""),
         sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, id, session, this.retrievedScheduleData.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
 
+     this.discardMetadataSession(session);
+
      this.sessionsLookup[id][sessionId] = {
        rawPtr: session,
        /*
@@ -318,6 +320,12 @@ function courseSchedule() {
       }
     }
     return false;
+  };
+  this.discardMetadataSession = function(session) {
+    delete session.dtStart;
+    delete session.dtEnd;
+    delete session.weekNr;
+    delete session.rooms;
   };
   this.discardMetadata = function() {
     for(var type in this.retrievedScheduleData) {

@@ -213,7 +213,7 @@ function courseSchedule() {
 
      var rawOrigAll = jQuery.extend(true, {}, session); // For TP comparison
 
-     this.discardMetadataSession(session);
+     this.discardDataSession(session);
 
      this.sessionsLookup[id][sessionId] = {
        /*
@@ -324,14 +324,12 @@ function courseSchedule() {
     }
     return false;
   };
-  this.discardMetadataSession = function(session) {
-    delete session.dtStart;
-    delete session.dtEnd;
-    delete session.status;
-    delete session.title;
-    delete session.staff;
-    delete session.weekNr;
-    delete session.rooms;
+  this.discardDataSession = function(session) {
+    for(var prop in session) {
+      if(!/^vrtx/.test(prop) && prop != "id") {
+        delete session[prop];
+      }
+    }
   };
   this.discardMetadata = function() {
     for(var type in this.retrievedScheduleData) {

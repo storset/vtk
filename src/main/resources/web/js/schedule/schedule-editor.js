@@ -219,7 +219,7 @@ function courseSchedule() {
        rawPtrDtType: (isPlenary ? "plenary" : "group"),
        */
        rawOrig: jQuery.extend(true, {}, session), // Copy object
-       descsPtr: descs,
+       descsPtr: jQuery.extend(true, {}, descs),
        multiples: sessionContent.multiples,
        rtEditors: sessionContent.rtEditors,
        sequenceId: sequenceId,
@@ -318,6 +318,14 @@ function courseSchedule() {
       }
     }
     return false;
+  };
+  this.discardCombinedSessions = function() {
+    for(var type in this.retrievedScheduleData) {
+      var data = this.retrievedScheduleData[type].vrtxEditableDescription;
+      if(data) {
+        delete data;
+      }
+    }
   };
   this.saveLastSession = function() {
     if(this.lastElm) {
@@ -572,7 +580,10 @@ function courseSchedule() {
       editorProperties.prepend("<div class='vrtx-grouped'>" + html + "</div>"); 
       setupFullEditorAccordions(csRef, editorProperties);
     }
-
+    
+    // Delete combined sessions to avoid to much data
+    csRef.discardCombinedSessions();
+    
     JSON_ELEMENTS_INITIALIZED.resolve();
     
     var waitALittle = setTimeout(function() {      

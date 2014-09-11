@@ -56,15 +56,7 @@ function courseSchedule() {
 
       this.sessionsLookup[id] = {};
       
-      // Fixed resources
-      /*
-      for(var j = 0, len = dt.fixedResources.length; j < len; j++) {
-        var fixedResources = dt.fixedResources[j];
-        if(fixedResources) {
-          sequences[fixedResources.id] = fixedResources.resources;
-        }
-      }
-      */
+      this.getFixedResources(dt, sequences);
       
       if(!isPlenary || (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod)) {
         // Generate sessions HTML
@@ -139,14 +131,9 @@ function courseSchedule() {
             sessions = dt.sessions,
             teachingMethod = dt.teachingMethod.toLowerCase(),
             id = teachingMethod + "-" + dt.id;
-        /*
-        for(var j = 0, len = dt.fixedResources.length; j < len; j++) {
-          var fixedResources = dt.fixedResources[j];
-          if(fixedResources) {
-            sequences[fixedResources.id] = fixedResources.resources;
-          }
-        }
-        */
+            
+        this.getFixedResources(dt, sequences);
+        
         for(j = 0, len = sessions.length; j < len; j++) {
           var session = sessions[j];
           var dateTime = this.getDateTime(session.dtStart, (session.dtEnd ? session.dtEnd : session.dtStart));
@@ -174,6 +161,16 @@ function courseSchedule() {
       foundObj.nextId = nextId;
     }
     return foundObj;
+  };
+  this.getFixedResources(dt, sequences) {
+    /*
+    for(var j = 0, len = dt.fixedResources.length; j < len; j++) {
+      var fixedResources = dt.fixedResources[j];
+      if(fixedResources) {
+        sequences[fixedResources.id] = fixedResources.resources;
+      }
+    }
+    */
   };
   // Get session HTML
   this.getSessionHtml = function(isSingle, id, prevId, nextId, session, teachingMethod, sessionDateTime, sequences, dtI, descs, isPlenary, vrtxEdit) {

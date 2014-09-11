@@ -58,11 +58,10 @@ function courseSchedule() {
       
       // Fixed resources
       /*
-      for(var j = 0, len = dt.sequences.length; j < len; j++) {
-        var sequence = dt.sequences[j];
-        var fixedResources = sequence.vrtxResourcesFixed;
+      for(var j = 0, len = dt.fixedResources.length; j < len; j++) {
+        var fixedResources = dt.fixedResources[j];
         if(fixedResources) {
-          sequences[sequence.id] = fixedResources;
+          sequences[fixedResources.id] = fixedResources.resources;
         }
       }
       */
@@ -141,11 +140,10 @@ function courseSchedule() {
             teachingMethod = dt.teachingMethod.toLowerCase(),
             id = teachingMethod + "-" + dt.id;
         /*
-        for(var j = 0, len = dt.sequences.length; j < len; j++) {
-          var sequence = dt.sequences[j];
-          var fixedResources = sequence.vrtxResourcesFixed;
-          if(fixedResources) {           
-            sequences[sequence.id] = fixedResources;
+        for(var j = 0, len = dt.fixedResources.length; j < len; j++) {
+          var fixedResources = dt.fixedResources[j];
+          if(fixedResources) {
+            sequences[fixedResources.id] = fixedResources.resources;
           }
         }
         */

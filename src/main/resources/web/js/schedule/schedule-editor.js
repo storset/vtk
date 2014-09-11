@@ -326,9 +326,9 @@ function courseSchedule() {
   };
   this.discardDataSession = function(session) {
     var keep = {
-      "id": "",
-      "dtStart": "",
-      "title": ""
+      "id": "y",
+      "dtStart": "y",
+      "title": "y"
     };
     for(var prop in session) {
       if(!/^vrtx/.test(prop) && !keep[prop]) {

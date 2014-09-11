@@ -47,7 +47,9 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
 
     private static final int LIMIT = 5; // default limit
     private static final int MAX_FADE_EFFECT = 999; // ms
-
+    private static final String MAX_HEIGHT_DEFAULT = "4-3";
+    private static final String MAX_HEIGHT_NONE = "none";
+    
     private static final String PARAMETER_URI = "uri";
     private static final String PARAMETER_URI_DESC = "URI of the image folder to include pictures from (root-relative or absolute).";
 
@@ -65,6 +67,10 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
     private static final String PARAMETER_HIDE_THUMBNAILS = "hide-thumbnails";
     private static final String PARAMETER_HIDE_THUMBNAILS_DESC = "Optional parameter used when parameter 'type' is set to 'gallery'. "
             + "When set to 'true', will hide thumbnails in gallery view. Default is 'false'.";
+    
+    private static final String PARAMETER_MAX_HEIGHT = "max-height";
+    private static final String PARAMETER_MAX_HEIGHT_DESC = "Optional parameter used when parameter 'type' is set to 'gallery'. "
+            + "Default is 4-3 (on). Can be set to 4-3 or none (off).";
 
     private static final String PARAMETER_EXCLUDE_SCRIPTS = "exclude-scripts";
     private static final String PARAMETER_EXCLUDE_SCRIPTS_DESC = "Use to exclude multiple inclusion of scripts for gallery display. "
@@ -103,6 +109,9 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
         if ("true".equals(hideThumbnails)) {
             model.put("hideThumbnails", true);
         }
+        
+        String maxHeight = request.getStringParameter(PARAMETER_MAX_HEIGHT);
+        model.put("maxHeight", getMaxHeight(maxHeight));
 
         String excludeScripts = request.getStringParameter("");
         if (excludeScripts != null && "true".equalsIgnoreCase(excludeScripts.trim())) {
@@ -160,6 +169,14 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
         }
         return 0;
     }
+    
+    private String getMaxHeight(String maxHeight) {
+        String max = MAX_HEIGHT_DEFAULT;
+        if(MAX_HEIGHT_NONE.equals(maxHeight)) {
+            max = MAX_HEIGHT_NONE;
+        }
+        return max;
+    }
 
     @Required
     public void setSearchComponent(SearchComponent searchComponent) {
@@ -173,6 +190,7 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
     protected Map<String, String> getParameterDescriptionsInternal() {
         Map<String, String> map = new LinkedHashMap<String, String>();
         map.put(PARAMETER_EXCLUDE_SCRIPTS, PARAMETER_EXCLUDE_SCRIPTS_DESC);
+        map.put(PARAMETER_MAX_HEIGHT, PARAMETER_MAX_HEIGHT_DESC);
         map.put(PARAMETER_HIDE_THUMBNAILS, PARAMETER_HIDE_THUMBNAILS_DESC);
         map.put(PARAMETER_FADE_EFFECT, PARAMETER_FADE_EFFECT_DESC);
         map.put(PARAMETER_LIMIT, PARAMETER_LIMIT_DESC);

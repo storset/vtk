@@ -117,7 +117,7 @@
         <#local activeImage = RequestParameters['actimg'] />
       </#if>
 
-      <@gallery.galleryJSInit 0 />
+      <@gallery.galleryJSInit 0 "4-3" />
 
       <ul class="vrtx-image-listing-include-thumbs-pure-css">
         <@gallery.galleryListImages images activeImage imageListing />

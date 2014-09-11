@@ -7,7 +7,7 @@
   -
   -->
 
-<#macro galleryJSInit fadeEffect>
+<#macro galleryJSInit fadeEffect maxHeight>
   <script type="text/javascript"><!--
     $(document).ready(function() {
       $("#vrtx-image-listing-include-${unique}").addClass("loading");
@@ -16,6 +16,7 @@
 	  var container = ".vrtx-image-listing-include-container";	  
 	  $("#vrtx-image-listing-include-${unique}" + " li a").vrtxSGallery("#vrtx-image-listing-include-${unique}", container, "${unique}", {
 	    fadeInOutTime : ${fadeEffect},
+	    maxHeight: "${maxHeight}",
 	    i18n: {
 	      showImageDescription: "${vrtx.getMsg('imageListing.description.show')}",
 	      hideImageDescription: "${vrtx.getMsg('imageListing.description.hide')}",

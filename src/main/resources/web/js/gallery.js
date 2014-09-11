@@ -53,9 +53,18 @@
         wrpDescriptionBorderPaddingWidth = 30,
         wrpContainerBorderPaddingWidth = parseInt(wrpContainer.css("paddingLeft"), 10) + parseInt(wrpContainer.css("paddingRight"), 10) +
                                          parseInt(wrpContainer.css("borderLeftWidth"), 10) + parseInt(wrpContainer.css("borderRightWidth"), 10);
-        if(isNaN(wrpContainerBorderPaddingWidth)) {
-          wrpContainerBorderPaddingWidth = 0;
-        }
+        
+    var maxHeight = 4/3;
+    if(settings.maxHeight == "none") {
+      maxHeight = 99999;
+    } else if(settings.maxHeight == "4-3") {
+      maxHeight = 4/3;
+    }
+    
+    if(isNaN(wrpContainerBorderPaddingWidth)) {
+      wrpContainerBorderPaddingWidth = 0;
+    }
+        
     
     // Init first active image
     var firstImage = wrpThumbsLinks.filter(".active");
@@ -89,7 +98,6 @@
     wrp.on("click mouseover mouseout", "a.next, " + container + "-link", function (e) {
       nextPrevNavigate(e, 1);
     });
-
     wrp.on("click mouseover mouseout", "a.prev", function (e) {
       nextPrevNavigate(e, -1);
     });
@@ -320,7 +328,7 @@
       }
       maxRegularWidth = wrpThumbs.is(":visible") ? Math.min(wrpThumbs.width(), wrp.parent().width()) : wrp.parent().width();
       maxRegularWidth -= wrpContainerBorderPaddingWidth;
-      maxRegularHeight = Math.round(maxRegularWidth/(4/3));
+      maxRegularHeight = maxHeight == 99999 ? maxHeight : Math.round(maxRegularWidth/(maxHeight));
       images[src].fullWidthOrig = parseInt(dims.fullWidth.replace(/[^\d]*/g, ""), 10);
       images[src].fullHeightOrig = parseInt(dims.fullHeight.replace(/[^\d]*/g, ""), 10);
       var regularDims = calculateImageDimensions(images[src].fullWidthOrig, images[src].fullHeightOrig, maxRegularWidth, maxRegularHeight);
@@ -421,7 +429,7 @@
         descriptionContainers.addClass("active-description-recalc");
         maxRegularWidth = wrpThumbs.is(":visible") ? Math.min(wrpThumbs.width(), wrp.parent().width()) : wrp.parent().width();
         maxRegularWidth -= wrpContainerBorderPaddingWidth;
-        maxRegularHeight = Math.round(maxRegularWidth/(4/3));
+        maxRegularHeight = maxHeight == 99999 ? maxHeight : Math.round(maxRegularWidth/(maxHeight));
         for(var key in images) {
           var image = images[key];
           var dimsRegular = cacheCalculateImageDimensions(image.fullWidthOrig, image.fullHeightOrig, maxRegularWidth, maxRegularHeight);   

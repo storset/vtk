@@ -48,6 +48,7 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
     private static final int LIMIT = 5; // default limit
     private static final int MAX_FADE_EFFECT = 999; // ms
     private static final String MAX_HEIGHT_DEFAULT = "4-3";
+    private static final String MAX_HEIGHT_WIDESCREEN = "16-9";
     private static final String MAX_HEIGHT_NONE = "none";
     
     private static final String PARAMETER_URI = "uri";
@@ -70,7 +71,7 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
     
     private static final String PARAMETER_MAX_HEIGHT = "max-height";
     private static final String PARAMETER_MAX_HEIGHT_DESC = "Optional parameter used when parameter 'type' is set to 'gallery'. "
-            + "Default is 4-3 (on). Can be set to 4-3 or none (off).";
+            + "Default is 4-3 (on). Can be set to '4-3', '16-9' or 'none' (off).";
 
     private static final String PARAMETER_EXCLUDE_SCRIPTS = "exclude-scripts";
     private static final String PARAMETER_EXCLUDE_SCRIPTS_DESC = "Use to exclude multiple inclusion of scripts for gallery display. "
@@ -174,6 +175,8 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
         String max = MAX_HEIGHT_DEFAULT;
         if(MAX_HEIGHT_NONE.equals(maxHeight)) {
             max = MAX_HEIGHT_NONE;
+        } else if(MAX_HEIGHT_WIDESCREEN.equals(maxHeight)) {
+            max = MAX_HEIGHT_WIDESCREEN;
         }
         return max;
     }

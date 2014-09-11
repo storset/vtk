@@ -58,7 +58,9 @@
     if(settings.maxHeight == "none") {
       maxHeight = 99999;
     } else if(settings.maxHeight == "4-3") {
-      maxHeight = 4/3;
+      maxHeight = 4/3; // 1.33:1
+    } else if(settings.maxHeight == "16-9") {
+      maxHeight = 16/9; // 1.77:1
     }
     
     if(isNaN(wrpContainerBorderPaddingWidth)) {

@@ -161,7 +161,7 @@ function courseSchedule() {
     }
     return foundObj;
   };
-  this.getFixedResources(dt, sequences) {
+  this.getFixedResources = function(dt, sequences) {
     /*
     for(var j = 0, len = dt.fixedResources.length; j < len; j++) {
       var fixedResources = dt.fixedResources[j];
@@ -593,9 +593,10 @@ function courseSchedule() {
       setupFullEditorAccordions(csRef, editorProperties);
     }
     
-    // Delete combined sessions to avoid to much data
+    // Delete meta data for edit to avoid storing it
     csRef.discardMetadata();
     
+    // See editor.js
     JSON_ELEMENTS_INITIALIZED.resolve();
     
     var waitALittle = setTimeout(function() {      

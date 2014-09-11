@@ -10,7 +10,7 @@ function courseSchedule() {
   if(/\/$/.test(baseUrl)) {
     baseUrl += "index.html";
   }
-  url = baseUrl + "?action=course-schedule&mode=edit&t=" + (+new Date());
+  url = baseUrl + "?action=course-schedule&mode=edit&internal=true&t=" + (+new Date());
   // Debug: Local development
   // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   

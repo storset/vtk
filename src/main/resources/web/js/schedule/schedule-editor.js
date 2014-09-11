@@ -71,7 +71,7 @@ function courseSchedule() {
         // Generate sessions HTML
         for(j = 0, len = sessions.length; j < len; j++) {
           var session = sessions[j];
-          var dateTime = this.getDateTime(session.dtStart, session.dtEnd);
+          var dateTime = this.getDateTime(session.dtStart, (session.dtEnd ? session.dtEnd : session.dtStart));
           var sessionHtml = this.getSessionHtml(false, id, null, null, session, teachingMethod, dateTime, sequences, i, descs, isPlenary, vrtxEdit);
           sessionsHtml += vrtxEdit.htmlFacade.getAccordionInteraction(!isPlenary ? "5" : "4", sessionHtml.sessionId, "session", sessionHtml.title, sessionHtml.html);
         }
@@ -151,7 +151,7 @@ function courseSchedule() {
         */
         for(j = 0, len = sessions.length; j < len; j++) {
           var session = sessions[j];
-          var dateTime = this.getDateTime(session.dtStart, session.dtEnd);
+          var dateTime = this.getDateTime(session.dtStart, (session.dtEnd ? session.dtEnd : session.dtStart));
           var sessionDatePostFixId = this.getDateAndPostFixId(dateTime);
           var sessionId = teachingMethod + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
           if(foundObj && !nextId) {

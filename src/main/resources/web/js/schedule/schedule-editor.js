@@ -324,14 +324,14 @@ function courseSchedule() {
     }
     return false;
   };
+  this.keepDataSession = {
+    "id": "y",
+    "dtStart": "y",
+    "title": "y"
+  };
   this.discardDataSession = function(session) {
-    var keep = {
-      "id": "y",
-      "dtStart": "y",
-      "title": "y"
-    };
     for(var prop in session) {
-      if(!/^vrtx/.test(prop) && !keep[prop]) {
+      if(!/^vrtx/.test(prop) && !this.keepDataSession[prop]) {
         delete session[prop];
       }
     }

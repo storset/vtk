@@ -325,8 +325,13 @@ function courseSchedule() {
     return false;
   };
   this.discardDataSession = function(session) {
+    var keep = {
+      "id": "",
+      "dtStart": "",
+      "title": ""
+    };
     for(var prop in session) {
-      if(!/^vrtx/.test(prop) && prop != "id") {
+      if(!/^vrtx/.test(prop) && !keep[prop]) {
         delete session[prop];
       }
     }

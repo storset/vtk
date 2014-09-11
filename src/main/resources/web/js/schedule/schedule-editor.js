@@ -44,8 +44,7 @@ function courseSchedule() {
         htmlArr = [],
         sessions = [],
         sequences = {}, // For fixed resources
-        sessionsHtml = "",
-        self = this;
+        sessionsHtml = "";
     for(var i = 0; i < dataLen; i++) {
       var dt = data[i],
           teachingMethod = dt.teachingMethod.toLowerCase(),

@@ -203,7 +203,7 @@ function courseSchedule() {
                        (prevId ? "<a class='prev' href='" + window.location.protocol + "//" + window.location.host + window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + prevId + "'>" + this.i18n.prev + "</a>" : "") +
                        (nextId ? "<a class='next' href='" + window.location.protocol + "//" + window.location.host + window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + nextId + "'>" + this.i18n.next + "</a>" : "") +
                        ((prevId || nextId) ? "</div>" : ""),
-        sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, id, session, this.retrievedScheduleData.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
+        sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, session, this.retrievedScheduleData.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
 
      var rawOrigAll = jQuery.extend(true, {}, session); // For TP comparison
 

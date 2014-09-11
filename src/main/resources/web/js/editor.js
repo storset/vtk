@@ -1723,7 +1723,7 @@ VrtxEditor.prototype.htmlFacade = {
   /* 
    * Turn a block of JSON into HTML (Only working for Schedule per. 14.08.2014)
    */
-  jsonToHtml: function(id, sessionId, idForLookup, session, fixedResourcesUrl, fixedResources, descs, i18n) {
+  jsonToHtml: function(id, sessionId, session, fixedResourcesUrl, fixedResources, descs, i18n) {
     var html = "";
     var multiples = [];
     var rtEditors = [];
@@ -1785,7 +1785,7 @@ VrtxEditor.prototype.htmlFacade = {
           if(fixedResourcesUrl) {
             html += "<div class='vrtx-simple-html'><label>" + i18n[name] + "<abbr tabindex='0' class='tooltips label-tooltips' title='" + i18n.vrtxResourcesFixedInfo + "'></abbr></label>";
             if(!val) { // Create
-              var buttons = "<a class='vrtx-button create-fixed-resources-folder' id='create-fixed-resources-folder-" + idForLookup + "SID" + sessionId + "' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a>";
+              var buttons = "<a class='vrtx-button create-fixed-resources-folder' id='create-fixed-resources-folder-" + id + "SID" + sessionId + "' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a>";
               html += buttons;
             } else { // Admin
               if(val.length != undefined) {

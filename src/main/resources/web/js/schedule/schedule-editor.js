@@ -57,7 +57,7 @@ function courseSchedule() {
       
       this.getFixedResources(dt, sequences);
       
-      if(!isPlenary || (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod)) {
+      if(!isPlenary || (!data[i+1] || data[i+1].teachingMethod !== teachingMethod)) {
         // Generate sessions HTML
         for(j = 0, len = sessions.length; j < len; j++) {
           var session = sessions[j];
@@ -72,7 +72,7 @@ function courseSchedule() {
           this.sessionsLookup[id].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
           htmlArr.push({ "accHtml": vrtxEdit.htmlFacade.getAccordionInteraction("4", id, type, title, "") });
           
-          if(!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod) {
+          if(!data[i+1] || data[i+1].teachingMethod !== teachingMethod) {
             var htmlMiddle = "";
             for(j = 0, len = htmlArr.length; j < len; j++) {
               htmlMiddle += htmlArr[j].accHtml;

@@ -125,34 +125,34 @@ function courseSchedule() {
       
       var isPlenary = type === "plenary";
       var groupsSessions = [];
-      for(var i = 0; i < dataLen; i++) {
+      for(var i = 0; i < dataLen; i++) { // Activities
         var dt = data[i],
             sessions = dt.sessions,
             teachingMethod = dt.teachingMethod,
             id = teachingMethod + "-" + dt.id;
             
         this.getFixedResources(dt, sequences);
-        
-        for(j = 0, len = sessions.length; j < len; j++) {
+
+        for(j = 0, len = sessions.length; j < len; j++) { // Sessions
           var session = sessions[j];
           var dateTime = this.getDateTime(session.dtStart, (session.dtEnd ? session.dtEnd : session.dtStart));
           var sessionDatePostFixId = this.getDateAndPostFixId(dateTime);
           var sessionId = teachingMethod + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
-          if(foundObj && !nextId) {
+          if(foundObj && !nextId) { // Next
             nextId = sessionId;
             break;
           }
-          if(findSessionId === sessionId) {
+          if(findSessionId === sessionId) { // Current
             foundObj = { id: id, prevId: prevId, session: session, sessionDateTime: dateTime, sequences: sequences, type: type, isPlenary: isPlenary, teachingMethod: teachingMethod };
-          } else {
+          } else { // Prev
             prevId = sessionId;
           }
         }
-        if(nextId) {
+        if(nextId) { // Finished
           break;
         }
       }
-      if(nextId) {
+      if(nextId) { // Finished
         break;
       }
     }

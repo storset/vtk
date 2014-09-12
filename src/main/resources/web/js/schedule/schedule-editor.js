@@ -62,7 +62,7 @@ function courseSchedule() {
         for(j = 0, len = sessions.length; j < len; j++) {
           var session = sessions[j];
           var dateTime = this.getDateTime(session.dtStart, (session.dtEnd ? session.dtEnd : session.dtStart));
-          var sessionHtml = this.getSessionHtml(false, id, null, null, session, teachingMethod, dateTime, sequences, i, descs, isPlenary, vrtxEdit);
+          var sessionHtml = this.getSessionHtml(false, id, null, null, session, teachingMethod, dateTime, sequences, descs, isPlenary, vrtxEdit);
           sessionsHtml += vrtxEdit.htmlFacade.getAccordionInteraction(!isPlenary ? "5" : "4", sessionHtml.sessionId, "session", sessionHtml.title, sessionHtml.html);
         }
         if(isPlenary) {
@@ -101,7 +101,7 @@ function courseSchedule() {
       this.sessionsLookup["single"] = {};
     }
     var sessionHtml = this.getSessionHtml(true, sessionData.id, sessionData.prevId, sessionData.nextId, session, sessionData.teachingMethod, sessionData.sessionDateTime,
-                                          sessionData.sequences, sessionData.dtI, descs, sessionData.isPlenary, vrtxEditor);
+                                          sessionData.sequences, descs, sessionData.isPlenary, vrtxEditor);
                                           
     this.lastElm = $(".properties"); 
     this.lastId = "single";
@@ -143,7 +143,7 @@ function courseSchedule() {
             break;
           }
           if(findSessionId === sessionId) {
-            foundObj = { id: id, prevId: prevId, session: session, sessionDateTime: dateTime, sequences: sequences, dtI: i, type: type, isPlenary: isPlenary, teachingMethod: teachingMethod };
+            foundObj = { id: id, prevId: prevId, session: session, sessionDateTime: dateTime, sequences: sequences, type: type, isPlenary: isPlenary, teachingMethod: teachingMethod };
           } else {
             prevId = sessionId;
           }
@@ -172,7 +172,7 @@ function courseSchedule() {
     */
   };
   // Get session HTML
-  this.getSessionHtml = function(isSingle, id, prevId, nextId, session, teachingMethod, sessionDateTime, sequences, dtI, descs, isPlenary, vrtxEdit) {
+  this.getSessionHtml = function(isSingle, id, prevId, nextId, session, teachingMethod, sessionDateTime, sequences, descs, isPlenary, vrtxEdit) {
     var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime);
     
     var sessionId = id + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
@@ -210,11 +210,6 @@ function courseSchedule() {
      this.discardDataSession(session);
 
      this.sessionsLookup[id][sessionId] = {
-       /*
-       rawPtrId: rawPtrId,
-       rawPtrDtI: dtI,
-       rawPtrDtType: (isPlenary ? "plenary" : "group"),
-       */
        rawPtr: session,
        rawOrig: jQuery.extend(true, {}, session), // Copy object
        rawOrigAll: rawOrigAll,
@@ -351,34 +346,6 @@ function courseSchedule() {
     var rawOrig = sessionLookup.rawOrig;
     var rawOrigAll = sessionLookup.rawOrigAll;
     var rawPtr = sessionLookup.rawPtr;
-    /*
-    var rawPtr = null;
-    var rawPtrId = sessionLookup.rawPtrId;
-    var rawPtrDtI = sessionLookup.rawPtrDtI;
-    var rawPtrDtType = sessionLookup.rawPtrDtType;
-    
-    // Find sequence session (rawPtr)
-    var rawPtrDt = this.retrievedScheduleData[rawPtrDtType].activities[rawPtrDtI];
-    var id = rawPtrDt.id;
-    var teachingMethod = rawPtrDt.teachingMethod.toLowerCase();
-    for(var i = 0, len = rawPtrDt.sequences.length; i < len; i++) {
-      var sessions = rawPtrDt.sequences[i].sessions;
-      for(var j = 0, len2 = sessions.length; j < len2; j++) {
-        var session = sessions[j];
-        var dateTime = this.getDateTime(session.dtStart, session.dtEnd);
-        var sessionDatePostFixId = this.getDateAndPostFixId(dateTime);
-        var sessionId = teachingMethod + "-" + id + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
-        if(sessionId === rawPtrId) {
-          rawPtr = session;
-          break;
-        }
-      }
-      if(rawPtr != null) {
-        break;
-      }
-    }
-    sessionLookup.rawPtr = rawPtr;
-    */
     sessionLookup.hasChanges = vrtxEditor.htmlFacade.htmlToJson(sessionElms, sessionId, descsPtr, rawOrig, rawOrigAll, rawPtr);
   };
   this.saved = function(isSaveView) {

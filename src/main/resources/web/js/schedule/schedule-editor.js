@@ -207,7 +207,23 @@ function courseSchedule() {
 
      var rawOrigAll = jQuery.extend(true, {}, session); // For TP comparison
 
-     this.discardDataSession(session);
+     if(isSingle) { // Delete all other data not needed also
+       for(var type in this.retrievedScheduleData) {
+         if(!this.retrievedScheduleData[type]) continue;
+         var data = this.retrievedScheduleData[type].activities;
+         if(!data) continue;
+         var dataLen = data.length;
+         if(!dataLen) continue;
+         for(var i = 0; i < dataLen; i++) { // Activities
+           var sessions = data[i].sessions;
+           for(j = 0, len = sessions.length; j < len; j++) { // Sessions
+             this.discardDataSession(sessions[j]);
+           }
+         }
+       }
+     } else {
+       this.discardDataSession(session);
+     }
 
      this.sessionsLookup[id][sessionId] = {
        rawPtr: session,

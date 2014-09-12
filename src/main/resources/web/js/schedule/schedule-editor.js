@@ -47,7 +47,7 @@ function courseSchedule() {
         sessionsHtml = "";
     for(var i = 0; i < dataLen; i++) {
       var dt = data[i],
-          teachingMethod = dt.teachingMethod.toLowerCase(),
+          teachingMethod = dt.teachingMethod,
           teachingMethodName = dt.teachingMethodName,
           id = teachingMethod + "-" + dt.id,
           sessions = dt.sessions,
@@ -128,7 +128,7 @@ function courseSchedule() {
       for(var i = 0; i < dataLen; i++) {
         var dt = data[i],
             sessions = dt.sessions,
-            teachingMethod = dt.teachingMethod.toLowerCase(),
+            teachingMethod = dt.teachingMethod,
             id = teachingMethod + "-" + dt.id;
             
         this.getFixedResources(dt, sequences);

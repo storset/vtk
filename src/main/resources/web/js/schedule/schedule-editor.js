@@ -174,7 +174,7 @@ function courseSchedule() {
       for(var i = 0; i < dataLen; i++) {
         var dt = data[i],
             teachingMethod = dt.teachingMethod.toLowerCase(),
-            id = teachingMethod + "-" + dt.id,
+            id = teachingMethod,
             groupNumber = ((dt.party && dt.party.name) ? parseInt(dt.party.name, 10) : 0)
         for(var j = 0, len = dt.sequences.length; j < len; j++) {
           var sequence = dt.sequences[j];
@@ -218,7 +218,7 @@ function courseSchedule() {
               var sessionProcessed = sessionsProcessed[map[j].index];
               var sessionDateTime = sessionProcessed.dateTime;
               var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime);
-              var sessionId = id + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
+              var sessionId = teachingMethod + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
 
               if(foundObj && !nextId) {
                 nextId = sessionId;
@@ -232,7 +232,7 @@ function courseSchedule() {
             }
             sessions = [];
           } else {
-            groupsSessions.push({ "id": id, "teachingMethod": teachingMethod, "groupNr": groupNumber, "sessions": sessions, "map": map, "sessionsProcessed": sessionsProcessed });
+            groupsSessions.push({ "teachingMethod": teachingMethod, "groupNr": groupNumber, "sessions": sessions, "map": map, "sessionsProcessed": sessionsProcessed });
             sessions = [];
             if(!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod) {
               // Sort group code and group number if equal
@@ -250,7 +250,7 @@ function courseSchedule() {
                   var sessionProcessed = groupSessions.sessionsProcessed[groupSessions.map[j].index];
                   var sessionDateTime = sessionProcessed.dateTime;
                   var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime);
-                  var sessionId = groupSessions.id + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
+                  var sessionId = groupSessions.teachingMethod + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
 
                   if(foundObj && !nextId) {
                     nextId = sessionId;

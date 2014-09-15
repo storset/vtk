@@ -48,7 +48,7 @@ function courseSchedule() {
         self = this;
     for(var i = 0; i < dataLen; i++) {
       var dt = data[i],
-          teachingMethod = dt.teachingMethod.toLowerCase(),
+          teachingMethod = dt.teachingMethod,
           teachingMethodName = dt.teachingMethodName,
           id = teachingMethod + "-" + dt.id,
           title = isPlenary ? teachingMethodName : (dt.title || teachingMethodName),
@@ -66,7 +66,7 @@ function courseSchedule() {
         sessions = sessions.concat(sequence.sessions);
       }
       
-      if(!isPlenary || (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod)) {
+      if(!isPlenary || (!data[i+1] || data[i+1].teachingMethod !== teachingMethod)) {
         // Evaluate and cache dateTime
         var map = [], sessionsProcessed = [];
         for(j = 0, len = sessions.length; j < len; j++) {
@@ -110,7 +110,7 @@ function courseSchedule() {
           this.sessionsLookup[id].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
           htmlArr.push({ "teachingMethod": teachingMethod, "groupNr": groupNumber, "accHtml": vrtxEdit.htmlFacade.getAccordionInteraction("4", id, type, title, "") });
           
-          if(!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod) {
+          if(!data[i+1] || data[i+1].teachingMethod !== teachingMethod) {
             // Sort group code and group number if equal
             htmlArr.sort(function(a, b) { // http://www.sitepoint.com/sophisticated-sorting-in-javascript/
               var x = a.teachingMethod, y = b.teachingMethod;
@@ -173,7 +173,7 @@ function courseSchedule() {
       var groupsSessions = [];
       for(var i = 0; i < dataLen; i++) {
         var dt = data[i],
-            teachingMethod = dt.teachingMethod.toLowerCase(),
+            teachingMethod = dt.teachingMethod,
             groupNumber = ((dt.party && dt.party.name) ? parseInt(dt.party.name, 10) : 0)
         for(var j = 0, len = dt.sequences.length; j < len; j++) {
           var sequence = dt.sequences[j];
@@ -183,7 +183,7 @@ function courseSchedule() {
           }
           sessions = sessions.concat(sequence.sessions);
         }
-        if(!isPlenary || (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod)) {
+        if(!isPlenary || (!data[i+1] || data[i+1].teachingMethod !== teachingMethod)) {
           // Evaluate and cache dateTime
           var map = [], sessionsProcessed = [];
           for(j = 0, len = sessions.length; j < len; j++) {
@@ -233,7 +233,7 @@ function courseSchedule() {
           } else {
             groupsSessions.push({ "teachingMethod": teachingMethod, "groupNr": groupNumber, "sessions": sessions, "map": map, "sessionsProcessed": sessionsProcessed });
             sessions = [];
-            if(!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod) {
+            if(!data[i+1] || data[i+1].teachingMethod !== teachingMethod) {
               // Sort group code and group number if equal
               groupsSessions.sort(function(a, b) { // http://www.sitepoint.com/sophisticated-sorting-in-javascript/
                 var x = a.teachingMethod, y = b.teachingMethod;
@@ -505,6 +505,7 @@ function courseSchedule() {
                          "&propertyNamespace%5B%5D=" + encodeURIComponent("http://www.uio.no/resource-types/fixed-resources-collection") +
                          "&propertyName%5B%5D=fixed-resources-codes" +
                          "&propertyValue%5B%5D=" + encodeURIComponent(sequenceId);
+        // Disciplines if exists
         if(sessionDisciplines) {
           for(var i = 0, len = sessionDisciplines.length; i < len; i++) {
             dataString += "&propertyNamespace%5B%5D=" +
@@ -512,6 +513,7 @@ function courseSchedule() {
                           "&propertyValue%5B%5D=" + encodeURIComponent(sessionDisciplines[i]);
           }
         }
+        // Hide folder from navigation
         dataString += "&propertyNamespace%5B%5D=" + encodeURIComponent("http://www.uio.no/navigation") +
                       "&propertyName%5B%5D=hidden" +
                       "&propertyValue%5B%5D=true";

@@ -48,7 +48,7 @@ function courseSchedule() {
         self = this;
     for(var i = 0; i < dataLen; i++) {
       var dt = data[i],
-          teachingMethod = dt.teachingMethod,
+          teachingMethod = dt.teachingMethod.toLowerCase(),
           teachingMethodName = dt.teachingMethodName,
           id = teachingMethod + "-" + dt.id,
           title = isPlenary ? teachingMethodName : (dt.title || teachingMethodName),
@@ -66,7 +66,7 @@ function courseSchedule() {
         sessions = sessions.concat(sequence.sessions);
       }
       
-      if(!isPlenary || (!data[i+1] || data[i+1].teachingMethod !== teachingMethod)) {
+      if(!isPlenary || (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod)) {
         // Evaluate and cache dateTime
         var map = [], sessionsProcessed = [];
         for(j = 0, len = sessions.length; j < len; j++) {
@@ -110,7 +110,7 @@ function courseSchedule() {
           this.sessionsLookup[id].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
           htmlArr.push({ "teachingMethod": teachingMethod, "groupNr": groupNumber, "accHtml": vrtxEdit.htmlFacade.getAccordionInteraction("4", id, type, title, "") });
           
-          if(!data[i+1] || data[i+1].teachingMethod !== teachingMethod) {
+          if(!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod) {
             // Sort group code and group number if equal
             htmlArr.sort(function(a, b) { // http://www.sitepoint.com/sophisticated-sorting-in-javascript/
               var x = a.teachingMethod, y = b.teachingMethod;
@@ -173,7 +173,8 @@ function courseSchedule() {
       var groupsSessions = [];
       for(var i = 0; i < dataLen; i++) {
         var dt = data[i],
-            teachingMethod = dt.teachingMethod,
+            teachingMethod = dt.teachingMethod.toLowerCase(),
+            id = teachingMethod + "-" + dt.id,
             groupNumber = ((dt.party && dt.party.name) ? parseInt(dt.party.name, 10) : 0)
         for(var j = 0, len = dt.sequences.length; j < len; j++) {
           var sequence = dt.sequences[j];
@@ -183,7 +184,7 @@ function courseSchedule() {
           }
           sessions = sessions.concat(sequence.sessions);
         }
-        if(!isPlenary || (!data[i+1] || data[i+1].teachingMethod !== teachingMethod)) {
+        if(!isPlenary || (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod)) {
           // Evaluate and cache dateTime
           var map = [], sessionsProcessed = [];
           for(j = 0, len = sessions.length; j < len; j++) {
@@ -217,7 +218,7 @@ function courseSchedule() {
               var sessionProcessed = sessionsProcessed[map[j].index];
               var sessionDateTime = sessionProcessed.dateTime;
               var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime);
-              var sessionId = teachingMethod + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
+              var sessionId = id + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
 
               if(foundObj && !nextId) {
                 nextId = sessionId;
@@ -231,9 +232,9 @@ function courseSchedule() {
             }
             sessions = [];
           } else {
-            groupsSessions.push({ "teachingMethod": teachingMethod, "groupNr": groupNumber, "sessions": sessions, "map": map, "sessionsProcessed": sessionsProcessed });
+            groupsSessions.push({ "id": id, "teachingMethod": teachingMethod, "groupNr": groupNumber, "sessions": sessions, "map": map, "sessionsProcessed": sessionsProcessed });
             sessions = [];
-            if(!data[i+1] || data[i+1].teachingMethod !== teachingMethod) {
+            if(!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod) {
               // Sort group code and group number if equal
               groupsSessions.sort(function(a, b) { // http://www.sitepoint.com/sophisticated-sorting-in-javascript/
                 var x = a.teachingMethod, y = b.teachingMethod;
@@ -249,7 +250,7 @@ function courseSchedule() {
                   var sessionProcessed = groupSessions.sessionsProcessed[groupSessions.map[j].index];
                   var sessionDateTime = sessionProcessed.dateTime;
                   var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime);
-                  var sessionId = groupSessions.teachingMethod + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
+                  var sessionId = groupSessions.id + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
 
                   if(foundObj && !nextId) {
                     nextId = sessionId;

@@ -10,7 +10,7 @@ function courseSchedule() {
   if(/\/$/.test(baseUrl)) {
     baseUrl += "index.html";
   }
-  url = baseUrl + "?action=course-schedule&mode=edit&internal=true&t=" + (+new Date());
+  url = baseUrl + "?action=course-schedule&mode=edit&t=" + (+new Date());
   // Debug: Local development
   // url = "/vrtx/__vrtx/static-resources/js/tp-test.json";
   
@@ -44,35 +44,81 @@ function courseSchedule() {
         htmlArr = [],
         sessions = [],
         sequences = {}, // For fixed resources
-        sessionsHtml = "";
+        sessionsHtml = "",
+        self = this;
     for(var i = 0; i < dataLen; i++) {
       var dt = data[i],
-          teachingMethod = dt.teachingMethod,
+          teachingMethod = dt.teachingMethod.toLowerCase(),
           teachingMethodName = dt.teachingMethodName,
           id = teachingMethod + "-" + dt.id,
-          sessions = dt.sessions,
-          title = isPlenary ? teachingMethodName : (dt.title || teachingMethodName);
+          title = isPlenary ? teachingMethodName : (dt.title || teachingMethodName),
+          groupNumber = ((dt.party && dt.party.name) ? parseInt(dt.party.name, 10) : 0);
 
       this.sessionsLookup[id] = {};
       
-      this.getFixedResources(dt, sequences);
+      // Add together sessions from sequences
+      for(var j = 0, len = dt.sequences.length; j < len; j++) {
+        var sequence = dt.sequences[j];
+        var fixedResources = sequence.vrtxResourcesFixed;
+        if(fixedResources) {
+          sequences[sequence.id] = fixedResources;
+        }
+        sessions = sessions.concat(sequence.sessions);
+      }
       
-      if(!isPlenary || (!data[i+1] || data[i+1].teachingMethod !== teachingMethod)) {
-        // Generate sessions HTML
+      if(!isPlenary || (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod)) {
+        // Evaluate and cache dateTime
+        var map = [], sessionsProcessed = [];
         for(j = 0, len = sessions.length; j < len; j++) {
           var session = sessions[j];
-          var dateTime = this.getDateTime(session.dtStart, (session.dtEnd ? session.dtEnd : session.dtStart));
-          var sessionHtml = this.getSessionHtml(false, id, null, null, session, teachingMethod, dateTime, sequences, descs, isPlenary, vrtxEdit);
+          
+          var dateTime = self.getDateTime(session.dtStart, session.dtEnd);
+          var start = dateTime.start;
+          var end = dateTime.end;
+          var startEndString = start.year + "" + start.month + "" + start.date + "" + start.hh + "" + start.mm + "" + end.hh + "" + end.mm;
+          
+          map.push({
+            "index": j, // Save index
+            "startEndString": startEndString,
+            "isOrphan": session.vrtxOrphan
+          });
+          sessionsProcessed.push({
+            "dateTime": dateTime
+          });
+        }
+        // Sort
+        map.sort(function(a, b) {
+          var x = a.isOrphan, y = b.isOrphan;
+          if(x === y) {
+            return a.startEndString > b.startEndString ? 1 : -1;
+          }
+          return !x && y ? -1 : x && !y ? 1 : 0;
+        });
+        
+        // Generate sessions HTML (get correctly sorted from map)
+        for(j = 0, len = map.length; j < len; j++) {
+          var session = sessions[map[j].index];
+          var sessionProcessed = sessionsProcessed[map[j].index];
+          var sessionHtml = this.getSessionHtml(id, null, null, session, teachingMethod, sessionProcessed.dateTime, sequences, descs, isPlenary, vrtxEdit);
           sessionsHtml += vrtxEdit.htmlFacade.getAccordionInteraction(!isPlenary ? "5" : "4", sessionHtml.sessionId, "session", sessionHtml.title, sessionHtml.html);
         }
+        
         if(isPlenary) {
           this.sessionsLookup[id].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
           html += vrtxEdit.htmlFacade.getAccordionInteraction("3", id, (type + " skip-tier"), teachingMethodName, "");
         } else {
           this.sessionsLookup[id].html = "<span class='accordion-content-title'>" + this.i18n.titles.activities + "</span>" + sessionsHtml;
-          htmlArr.push({ "accHtml": vrtxEdit.htmlFacade.getAccordionInteraction("4", id, type, title, "") });
+          htmlArr.push({ "teachingMethod": teachingMethod, "groupNr": groupNumber, "accHtml": vrtxEdit.htmlFacade.getAccordionInteraction("4", id, type, title, "") });
           
-          if(!data[i+1] || data[i+1].teachingMethod !== teachingMethod) {
+          if(!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod) {
+            // Sort group code and group number if equal
+            htmlArr.sort(function(a, b) { // http://www.sitepoint.com/sophisticated-sorting-in-javascript/
+              var x = a.teachingMethod, y = b.teachingMethod;
+              if(x === y) {
+                return a.groupNr - b.groupNr;
+              }
+              return x < y ? -1 : x > y ? 1 : 0;
+            });
             var htmlMiddle = "";
             for(j = 0, len = htmlArr.length; j < len; j++) {
               htmlMiddle += htmlArr[j].accHtml;
@@ -100,9 +146,9 @@ function courseSchedule() {
     if(!this.sessionsLookup["single"]) {
       this.sessionsLookup["single"] = {};
     }
-    var sessionHtml = this.getSessionHtml(true, sessionData.id, sessionData.prevId, sessionData.nextId, session, sessionData.teachingMethod, sessionData.sessionDateTime,
-                                          sessionData.sequences, descs, sessionData.isPlenary, vrtxEditor);
-                                          
+    var sessionHtml = this.getSessionHtml("single", sessionData.prevId, sessionData.nextId, session, sessionData.teachingMethod, sessionData.sessionDateTime,
+                                          sessionData.sequences, descs, sessionData.isPlenary, vrtxEditor);    
+    
     this.lastElm = $(".properties"); 
     this.lastId = "single";
     this.lastSessionId = "one";
@@ -125,34 +171,109 @@ function courseSchedule() {
       
       var isPlenary = type === "plenary";
       var groupsSessions = [];
-      for(var i = 0; i < dataLen; i++) { // Activities
+      for(var i = 0; i < dataLen; i++) {
         var dt = data[i],
-            sessions = dt.sessions,
-            teachingMethod = dt.teachingMethod,
-            id = teachingMethod + "-" + dt.id;
-            
-        this.getFixedResources(dt, sequences);
-
-        for(j = 0, len = sessions.length; j < len; j++) { // Sessions
-          var session = sessions[j];
-          var dateTime = this.getDateTime(session.dtStart, (session.dtEnd ? session.dtEnd : session.dtStart));
-          var sessionDatePostFixId = this.getDateAndPostFixId(dateTime);
-          var sessionId = teachingMethod + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
-          if(foundObj && !nextId) { // Next
-            nextId = sessionId;
-            break;
+            teachingMethod = dt.teachingMethod.toLowerCase(),
+            groupNumber = ((dt.party && dt.party.name) ? parseInt(dt.party.name, 10) : 0)
+        for(var j = 0, len = dt.sequences.length; j < len; j++) {
+          var sequence = dt.sequences[j];
+          var fixedResources = sequence.vrtxResourcesFixed;
+          if(fixedResources) {           
+            sequences[sequence.id] = fixedResources;
           }
-          if(findSessionId === sessionId) { // Current
-            foundObj = { id: id, prevId: prevId, session: session, sessionDateTime: dateTime, sequences: sequences, type: type, isPlenary: isPlenary, teachingMethod: teachingMethod };
-          } else { // Prev
-            prevId = sessionId;
+          sessions = sessions.concat(sequence.sessions);
+        }
+        if(!isPlenary || (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod)) {
+          // Evaluate and cache dateTime
+          var map = [], sessionsProcessed = [];
+          for(j = 0, len = sessions.length; j < len; j++) {
+            var session = sessions[j];
+          
+            var dateTime = this.getDateTime(session.dtStart, session.dtEnd);
+            var start = dateTime.start;
+            var end = dateTime.end;
+            var startEndString = start.year + "" + start.month + "" + start.date + "" + start.hh + "" + start.mm + "" + end.hh + "" + end.mm;
+          
+            map.push({
+              "index": j, // Save index
+              "startEndString": startEndString,
+              "isOrphan": session.vrtxOrphan
+            });
+            sessionsProcessed.push({
+              "dateTime": dateTime
+            });
+          }
+          // Sort
+          map.sort(function(a, b) {
+            var x = a.isOrphan, y = b.isOrphan;
+            if(x === y) {
+              return a.startEndString > b.startEndString ? 1 : -1;
+            }
+            return !x && y ? -1 : x && !y ? 1 : 0;
+          });
+          if(isPlenary) {
+            for(j = 0, len = map.length; j < len; j++) {
+              var session = sessions[map[j].index];
+              var sessionProcessed = sessionsProcessed[map[j].index];
+              var sessionDateTime = sessionProcessed.dateTime;
+              var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime);
+              var sessionId = teachingMethod + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
+
+              if(foundObj && !nextId) {
+                nextId = sessionId;
+                break;
+              }
+              if(findSessionId === sessionId) {
+                foundObj = { prevId: prevId, session: session, sessionDateTime: sessionDateTime, sequences: sequences, type: type, isPlenary: isPlenary, teachingMethod: teachingMethod };
+              } else {
+                prevId = sessionId;
+              }
+            }
+            sessions = [];
+          } else {
+            groupsSessions.push({ "teachingMethod": teachingMethod, "groupNr": groupNumber, "sessions": sessions, "map": map, "sessionsProcessed": sessionsProcessed });
+            sessions = [];
+            if(!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod) {
+              // Sort group code and group number if equal
+              groupsSessions.sort(function(a, b) { // http://www.sitepoint.com/sophisticated-sorting-in-javascript/
+                var x = a.teachingMethod, y = b.teachingMethod;
+                if(x === y) {
+                  return a.groupNr - b.groupNr;
+                }
+                return x < y ? -1 : x > y ? 1 : 0;
+              });
+              for(k = 0, len1 = groupsSessions.length; k < len1; k++) {
+                var groupSessions = groupsSessions[k];
+                for(j = 0, len2 = groupSessions.map.length; j < len2; j++) {
+                  var session = groupSessions.sessions[groupSessions.map[j].index];
+                  var sessionProcessed = groupSessions.sessionsProcessed[groupSessions.map[j].index];
+                  var sessionDateTime = sessionProcessed.dateTime;
+                  var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime);
+                  var sessionId = groupSessions.teachingMethod + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
+
+                  if(foundObj && !nextId) {
+                    nextId = sessionId;
+                    break;
+                  }
+                  if(findSessionId === sessionId) {
+                    foundObj = { prevId: prevId, session: session, sessionDateTime: sessionDateTime, sequences: sequences, type: type, isPlenary: isPlenary, teachingMethod: groupSessions.teachingMethod };
+                  } else {
+                    prevId = sessionId;
+                  }
+                }
+                if(nextId) {
+                  break;
+                }
+              }
+              groupSessions = [];
+            }
           }
         }
-        if(nextId) { // Finished
+        if(nextId) {
           break;
         }
       }
-      if(nextId) { // Finished
+      if(nextId) {
         break;
       }
     }
@@ -161,26 +282,13 @@ function courseSchedule() {
     }
     return foundObj;
   };
-  this.getFixedResources = function(dt, sequences) {
-    /*
-    for(var j = 0, len = dt.fixedResources.length; j < len; j++) {
-      var fixedResources = dt.fixedResources[j];
-      if(fixedResources) {
-        sequences[fixedResources.id] = fixedResources.resources;
-      }
-    }
-    */
-  };
   // Get session HTML
-  this.getSessionHtml = function(isSingle, id, prevId, nextId, session, teachingMethod, sessionDateTime, sequences, descs, isPlenary, vrtxEdit) {
+  this.getSessionHtml = function(id, prevId, nextId, session, teachingMethod, sessionDateTime, sequences, descs, isPlenary, vrtxEdit) {
     var sessionDatePostFixId = this.getDateAndPostFixId(sessionDateTime);
-    
-    var sessionId = id + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
-    var rawPtrId = sessionId;
-    
-    if(isSingle) {
-      id = "single";
+    if(id === "single") {
       sessionId = "one";
+    } else {
+      sessionId = id + "-" + session.id.replace(/\//g, "-").replace(/#/g, "-") + "-" + sessionDatePostFixId.postFixId;
     }
     var sequenceIdSplit = session.id.split("/");
     if(sequenceIdSplit.length == 3) {
@@ -203,33 +311,12 @@ function courseSchedule() {
                        (prevId ? "<a class='prev' href='" + window.location.protocol + "//" + window.location.host + window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + prevId + "'>" + this.i18n.prev + "</a>" : "") +
                        (nextId ? "<a class='next' href='" + window.location.protocol + "//" + window.location.host + window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + nextId + "'>" + this.i18n.next + "</a>" : "") +
                        ((prevId || nextId) ? "</div>" : ""),
-        sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, session, this.retrievedScheduleData.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
-
-     var rawOrigAll = jQuery.extend(true, {}, session); // For TP comparison
-
-     if(isSingle) { // Delete all other data not needed also
-       for(var type in this.retrievedScheduleData) {
-         if(!this.retrievedScheduleData[type]) continue;
-         var data = this.retrievedScheduleData[type].activities;
-         if(!data) continue;
-         var dataLen = data.length;
-         if(!dataLen) continue;
-         for(var i = 0; i < dataLen; i++) { // Activities
-           var sessions = data[i].sessions;
-           for(j = 0, len = sessions.length; j < len; j++) { // Sessions
-             this.discardDataSession(sessions[j]);
-           }
-         }
-       }
-     } else {
-       this.discardDataSession(session);
-     }
+        sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, id, session, this.retrievedScheduleData.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
 
      this.sessionsLookup[id][sessionId] = {
        rawPtr: session,
        rawOrig: jQuery.extend(true, {}, session), // Copy object
-       rawOrigAll: rawOrigAll,
-       descsPtr: jQuery.extend(true, {}, descs), // Copy object
+       descsPtr: descs,
        multiples: sessionContent.multiples,
        rtEditors: sessionContent.rtEditors,
        sequenceId: sequenceId,
@@ -329,26 +416,6 @@ function courseSchedule() {
     }
     return false;
   };
-  this.keepDataSession = {
-    "id": "y",
-    "dtStart": "y",
-    "title": "y"
-  };
-  this.discardDataSession = function(session) {
-    for(var prop in session) {
-      if(!/^vrtx/.test(prop) && !this.keepDataSession[prop]) {
-        delete session[prop];
-      }
-    }
-  };
-  this.discardMetadata = function() {
-    for(var type in this.retrievedScheduleData) {
-      if(this.retrievedScheduleData[type].vrtxEditableDescription) {
-        delete this.retrievedScheduleData[type].vrtxEditableDescription;
-      }
-    }
-    delete this.retrievedScheduleData.vrtxResourcesFixedUrl;
-  };
   this.saveLastSession = function() {
     if(this.lastElm) {
       this.saveSession(this.lastElm, this.lastId, this.lastSessionId);
@@ -358,11 +425,11 @@ function courseSchedule() {
     saveMultipleInputFields(sessionElms, "$$$");
 
     var sessionLookup = this.sessionsLookup[id][sessionId];
-    var descsPtr = sessionLookup.descsPtr;
     var rawOrig = sessionLookup.rawOrig;
-    var rawOrigAll = sessionLookup.rawOrigAll;
     var rawPtr = sessionLookup.rawPtr;
-    sessionLookup.hasChanges = vrtxEditor.htmlFacade.htmlToJson(sessionElms, sessionId, descsPtr, rawOrig, rawOrigAll, rawPtr);
+    var descsPtr = sessionLookup.descsPtr;
+
+    sessionLookup.hasChanges = vrtxEditor.htmlFacade.htmlToJson(sessionElms, sessionId, descsPtr, rawOrig, rawPtr);
   };
   this.saved = function(isSaveView) {
     for(var type in this.sessionsLookup) {
@@ -576,10 +643,6 @@ function courseSchedule() {
       setupFullEditorAccordions(csRef, editorProperties);
     }
     
-    // Delete meta data for edit to avoid storing it
-    csRef.discardMetadata();
-    
-    // See editor.js
     JSON_ELEMENTS_INITIALIZED.resolve();
     
     var waitALittle = setTimeout(function() {      

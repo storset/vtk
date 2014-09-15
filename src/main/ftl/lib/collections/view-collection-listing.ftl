@@ -19,6 +19,19 @@
         <#-- The actual resource we are displaying -->
         <#local entryPropSet = entry.propertySet />
         <#assign url = entry.url />
+        <#assign linkURL = url />
+
+        <#-- XX: Provide a way to construct link with assertion
+             matching using PropertySet objects: -->
+        <#if vrtx.getProp(entryPropSet, "contentType")?exists>
+          <#local contentType = vrtx.getProp(entryPropSet, "contentType").value />
+          <#if contentType?starts_with("image/")
+               || contentType?starts_with("audio/")
+               || contentType?starts_with("video/")>
+
+            <#assign linkURL = vrtx.linkConstructor(url.path, 'viewAsWebPageService') />
+          </#if>
+        </#if>
 
         <#if !hideIcon?exists>
           <div class="vrtx-resource vrtx-resource-icon">
@@ -34,7 +47,7 @@
 		  <#if !title?has_content>
 		    <#assign title = vrtx.propValue(entryPropSet, "solr.name", "", "") />
 		  </#if>
-          <a class="vrtx-title vrtx-title-link" href="${url?html}">${title?html}</a>
+          <a class="vrtx-title vrtx-title-link" href="${linkURL?html}">${title?html}</a>
 
           <#--
             Only local resources are ever evaluated for edit authorization.

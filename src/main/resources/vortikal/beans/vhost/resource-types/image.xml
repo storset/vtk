@@ -34,11 +34,6 @@
     <property name="mandatory" value="false" />
   </bean>
 
-  <bean id="asWebpageAssertion" class="org.vortikal.web.service.RequestParameterAssertion">
-    <property name="parameterName" value="vrtx" />
-    <property name="parameterValue" value="view-as-webpage" />
-  </bean>
-
   <bean id="viewImageInfoService.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
     <property name="modelName" value="previewImage" />
     <property name="urlName" value="URL" />
@@ -52,13 +47,12 @@
   </bean>
 
   <bean id="viewImageInfoService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="viewService" />
+    <property name="parent" ref="viewAsWebPageService" />
     <property name="order" value="-1" />
     <property name="assertions">
       <list>
         <ref bean="resourceIsPublishedAssertion" />
         <ref bean="contentTypeMatchesImage" />
-        <ref bean="asWebpageAssertion" />
       </list>
     </property>
     <property name="handler" ref="imageWithInfoHandler" />
@@ -68,6 +62,15 @@
     <property name="viewName" value="imageWithInfoView" />
     <property name="titlePropDef" ref="titlePropDef" />
     <property name="descriptionPropDef" ref="imageHtmlDescriptionPropDef" />
+    <property name="resourceAssertion">
+      <bean class="org.vortikal.web.service.InvertAssertion">
+        <property name="assertion">
+          <bean class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
+            <property name="pattern" value="image/x-photoshop" />
+          </bean>
+        </property>
+      </bean>
+    </property>
   </bean>
 
   <bean id="imageWithInfoViewResolver" parent="decoratorViewResolver">

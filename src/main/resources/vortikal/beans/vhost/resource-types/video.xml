@@ -27,12 +27,11 @@
   </bean>
 
   <bean id="mediaPlayerService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="viewService" />
+    <property name="parent" ref="viewAsWebPageService" />
     <property name="order" value="-1" />
     <property name="assertions">
       <list>
         <ref bean="contentTypeMatchesMedia" />
-        <ref bean="asWebpageAssertion" />
       </list>
     </property>
   </bean>
@@ -42,7 +41,6 @@
     <property name="assertions">
       <list>
         <ref bean="contentTypeMatchesVideo" />
-        <ref bean="asWebpageAssertion" />
       </list>
     </property>
     <property name="handler" ref="displayVideoResource" />
@@ -53,7 +51,6 @@
     <property name="assertions">
       <list>
         <ref bean="contentTypeMatchesAudio" />
-        <ref bean="asWebpageAssertion" />
       </list>
     </property>
     <property name="handler" ref="displayAudioResource" />

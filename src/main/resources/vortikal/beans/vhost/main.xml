@@ -27,6 +27,7 @@
   <import resource="schema-registry.xml" />
   <import resource="template-lang.xml" />
   <import resource="view.xml" />
+  <import resource="view-as-webpage.xml" />
   <import resource="system-decorating.xml" />
   <import resource="controllers.xml" />
   <import resource="service.xml" />

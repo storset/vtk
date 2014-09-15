@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <bean id="viewAsWebPageService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="viewService" />
+    <property name="order" value="0" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="vrtx" />
+          <property name="parameterValue" value="view-as-webpage" />
+        </bean>
+        <bean class="org.vortikal.web.service.OrAssertion">
+          <property name="assertions">
+            <list>
+              <ref bean="contentTypeMatchesImage" />
+              <ref bean="contentTypeMatchesMedia" />
+              <ref bean="contentTypeMatchesVideo" />
+              <ref bean="contentTypeMatchesAudio" />
+            </list>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+  
+</beans>

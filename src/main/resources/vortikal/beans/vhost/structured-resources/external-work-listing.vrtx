@@ -139,7 +139,7 @@ resourcetype external-work-listing {
               [endif]
 
               [def unitURL replace(settings.services.orgUnitLookup,
-                                   "{areacode}", areacode) ]
+                                   "%a", areacode) ]
 
               [def unitResponse url-as-json(unitURL) ]
 
@@ -148,7 +148,7 @@ resourcetype external-work-listing {
               [else]
                 [def unit unitResponse.payload]
                 [def serviceURL replace(settings.services.externalWorkListing,
-                                        "{areacode}", areacode) ]
+                                        "%a", areacode) ]
 
                 [def response url-as-json(serviceURL) ]
 

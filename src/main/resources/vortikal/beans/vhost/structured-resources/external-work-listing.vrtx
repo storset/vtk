@@ -72,7 +72,7 @@ resourcetype external-work-listing {
                 [list entries entry]
                   <tr>
                     <td>[val url # unescaped]</td>
-                    <td>[val unit.name]</td>
+                    <td>[if unit.name][val unit.name][endif]</td>
                     <td>[if entry.data.orgnavn][if entry.data.orgtype]<abbr title="[val entry.data.orgtype]">[endif][val entry.data.orgnavn][if entry.data.orgtype]</abbr>[endif][endif]</td>
                     <td>[val entry.data.tekst # unescaped]</td>
                     <td>[if entry.data.startdato][val entry.data.startdato][endif]</td>

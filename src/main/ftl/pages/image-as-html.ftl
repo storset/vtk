@@ -2,10 +2,16 @@
 <#--
   - File: image-as-html.ftl
   - 
-  - Description: TODO
+  - Description: Display image with metadata and download link
+  -
+  - Required model data:
+  -  resource
+  -  inline
   -
   - Optional model data:
-  -   TODO
+  -  src
+  -  description
+  -  jsURLs
   -->
   
 <#import "/lib/vortikal.ftl" as vrtx />
@@ -28,7 +34,7 @@
 </#if>
   </div>
   
-<#if src?exists>
+<#if src?exists && inline>
   <a href="${src?html}"><img src="${src?html}" alt="" /></a>
 </#if>
 

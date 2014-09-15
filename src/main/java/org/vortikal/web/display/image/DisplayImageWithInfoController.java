@@ -43,12 +43,14 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.Assertion;
 
 public class DisplayImageWithInfoController implements Controller {
 
     private String viewName;
     private PropertyTypeDefinition titlePropDef;
     private PropertyTypeDefinition descriptionPropDef;
+    private Assertion resourceAssertion;
 
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -61,8 +63,13 @@ public class DisplayImageWithInfoController implements Controller {
         Property titleProp = resource.getProperty(titlePropDef);
         Property descriptionProp = resource.getProperty(descriptionPropDef);
 
+        boolean inline = true;
         HashMap<String, Object> model = new HashMap<String, Object>();
+        if (resourceAssertion != null) {
+            inline = resourceAssertion.matches(request, resource, requestContext.getPrincipal());
+        }
         model.put("src", uri);
+        model.put("inline", inline);
         model.put("nanoTime", System.nanoTime());
         
         model.put("resource", resource);   
@@ -84,6 +91,10 @@ public class DisplayImageWithInfoController implements Controller {
 
     public void setTitlePropDef(PropertyTypeDefinition titlePropDef) {
         this.titlePropDef = titlePropDef;
+    }
+    
+    public void setResourceAssertion(Assertion resourceAssertion) {
+        this.resourceAssertion = resourceAssertion;
     }
 
     public PropertyTypeDefinition getTitlePropDef() {

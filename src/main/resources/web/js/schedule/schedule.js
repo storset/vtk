@@ -14,7 +14,7 @@ $(document).ready(function() {
       $(this)[e.type === "focusin" ? "addClass" : "removeClass"]("visible");
     });
     if(canEdit === "true") {
-      // Open edit window for session on click
+      // Open edit window for session on click (this should not be needed)
       activitiesElm.on("click", "a.edit-link", function(e) {
         var row = $(this).closest("tr");
         var idRow = row[0].id;

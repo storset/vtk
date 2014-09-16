@@ -539,13 +539,14 @@ function courseSchedule() {
     e.stopPropagation();
   });
   
+  // Open fixed resources
   contents.on("click", ".admin-fixed-resources-folder", function(e) {
     var fixedResourcesWindow = openPopupScrollable(this.href, 1040, 700, "adminFixedResources");
     e.preventDefault();
     e.stopPropagation();
   });
   
-  // Status change
+  // Status change (refactor with the one below; almost identical)
   contents.on("click", "input[name='vrtxStatus']", function(e) {
     var cancelledElm = $(this);
     var content = cancelledElm.closest(onlySessionId ? ".properties" : ".accordion-wrapper");
@@ -557,6 +558,7 @@ function courseSchedule() {
                   "<span class='header-title'>" + (hasNewTitle ? newTitle.val() : origTitle) + "</span>");
     e.stopPropagation();
   });
+  
   // Title change
   contents.on("keyup", "input[name='vrtxTitle']", $.debounce(50, true, function () {
     var content = $(this).closest(onlySessionId ? ".properties" : ".accordion-wrapper");

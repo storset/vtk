@@ -437,7 +437,7 @@ function courseSchedule() {
       for(var session in this.sessionsLookup[type]) {
         var sessionObj = this.sessionsLookup[type][session];
         if(sessionObj.hasChanges) {
-          sessionObj.rawOrig = sessionObj.rawPtr;
+          sessionObj.rawOrig = sessionObj.rawPtr; // Copy over Ptr to Orig
           sessionObj.hasChanges = false;
         }
       }

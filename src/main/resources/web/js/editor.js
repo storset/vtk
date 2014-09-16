@@ -312,6 +312,7 @@ VrtxEditor.prototype.richtextEditorFacade = {
     config.disableNativeSpellChecker = false;
     config.allowedContent = true;
     
+    // Enable ACF
     if (vrtxEditor.editorForm.hasClass("vrtx-course-schedule")) {
       config.allowedContent = null;
     }
@@ -1073,8 +1074,6 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
     vrtxEdit.accordionGroupedInit("[class*=link-box]");
   } else if (vrtxEdit.editorForm.hasClass("vrtx-student-exchange-agreement")) {
     vrtxEdit.accordionGroupedInit(".vrtx-sea-accordion");
-  } else if (vrtxEdit.editorForm.hasClass("vrtx-frontpage")) {
-    vrtxEdit.accordionGroupedInit(".vrtx-sea-accordion", "fast");
   } else if (vrtxEdit.editorForm.hasClass("vrtx-samlet-program")) {
     var samletElm = vrtxEdit.editorForm.find(".samlet-element");
     vrtxEdit.replaceTag(samletElm, "h6", "strong");
@@ -1083,6 +1082,19 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
     vrtxEdit.replaceTag(samletElm, "h3", "h4");
     vrtxEdit.replaceTag(samletElm, "h2", "h3");
     vrtxEdit.replaceTag(samletElm, "h1", "h2");
+  } else if (vrtxEdit.editorForm.hasClass("vrtx-frontpage")) {
+    vrtxEdit.accordionGroupedInit(".vrtx-sea-accordion", "fast");
+  } else if (vrtxEdit.editorForm.hasClass("vrtx-contact-supervisor")) {
+    vrtxAdm.cachedDoc.on("keyup", ".vrtx-string.id input[type='text']", $.debounce(50, true, function () {
+      updateField({
+        field: $(this),
+        substitutions: {
+          "#": "",
+          " ": "-"
+        },
+        toLowerCase: false
+      });
+    }));
   }
 };
 

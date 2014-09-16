@@ -15,7 +15,7 @@ $(document).ready(function() {
     });
     if(canEdit === "true") {
       // Open edit window for session on click
-      activitiesElm.on("click", "a.course-schedule-table-edit-link", function(e) {
+      activitiesElm.on("click", "a.edit-link", function(e) {
         var row = $(this).closest("tr");
         var idRow = row[0].id;
         var editUrl = window.location.pathname;
@@ -31,13 +31,13 @@ $(document).ready(function() {
   
   // Show hidden more resources
   var resourcesMoreHideVisible = function() {
-    var visible = $(".course-schedule-table-resources-after.visible");
+    var visible = $(".res-more.visible");
     if(visible.length) {
       visible.removeClass("visible");
       visible.prev().text(scheduleI18n.showMore + "...");
     }
   };
-  activitiesElm.on("click", "a.course-schedule-table-resources-after-toggle", function(e) {
+  activitiesElm.on("click", "a.res-more-toggle", function(e) {
     var link = $(this);
     var wrapperElm = link.next();
     var isWrapperVisible = wrapperElm.hasClass("visible");

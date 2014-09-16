@@ -1147,8 +1147,7 @@ VrtxAdmin.prototype.initDomainsInstant = function initDomainsInstant() {
     case "vrtx-trash-can":
     case "vrtx-manage-collectionlisting":
       vrtxAdm.collectionListingInteraction();
-    default:
-      // noop
+    default: // noop
       break;
   }
 };
@@ -1610,6 +1609,7 @@ VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
 function createFuncComplete() {
   var vrtxAdm = vrtxAdmin;
   
+  // Navigate radio buttons
   vrtxAdm.cachedDoc.on("keydown", "#active-tab .vrtx-admin-form .radio-buttons input[type='radio']", function(e) {
     if(isKey(e, [vrtxAdm.keys.LEFT_ARROW, vrtxAdm.keys.UP_ARROW, vrtxAdm.keys.RIGHT_ARROW, vrtxAdm.keys.DOWN_ARROW])) {
       var checkBox = $(this);
@@ -1721,7 +1721,7 @@ function createCheckUncheckIndexFile(nameField, indexCheckbox) {
 
 function createTitleChange(titleField, nameField, indexCheckbox) {
   if (vrtxAdmin.createResourceReplaceTitle) {
-    var nameFieldVal = replaceInvalidChar(titleField.val(), true);
+    var nameFieldVal = replaceInvalidChar(titleField.val(), fileTitleSubstitutions, true);
     if (!indexCheckbox || !indexCheckbox.length || !indexCheckbox.is(":checked")) {
       if (nameFieldVal.length > 50) {
         nameFieldVal = nameFieldVal.substring(0, 50);
@@ -1739,41 +1739,50 @@ function createFileNameChange(nameField) {
     vrtxAdmin.createResourceReplaceTitle = false;
   }
 
-  var currentCaretPos = getCaretPos(nameField[0]);
-
-  var nameFieldValBeforeReplacement = nameField.val();
-  var nameFieldVal = replaceInvalidChar(nameFieldValBeforeReplacement, true);
-  nameField.val(nameFieldVal);
-  growField(nameField, nameFieldVal, 5, 100, 530);
-
-  setCaretToPos(nameField[0], currentCaretPos - (nameFieldValBeforeReplacement.length - nameFieldVal.length));
-
+  updateField({
+    field: nameField,
+    substitutions: fileTitleSubstitutions,
+    toLowerCase: true,
+    afterUpdate: function(after) {
+      growField(this.field, after, 5, 100, 530);
+    }
+  });
+  
   $(".file-name-from-title").removeClass("file-name-from-title");
 }
 
-function replaceInvalidChar(val, isLowerCasing) {
-  if(isLowerCasing) val = val.toLowerCase();
-  var replaceMap = {
-    " ": "-",
-    "&": "-",
-    "'": "-",
-    "\"": "-",
-    "\\/": "-",
-    "\\\\": "-",
-    "æ": "e",
-    "ø": "o",
-    "å": "a",
-    ",": "",
-    "%": "",
-    "#": "",
-    "\\?": ""
-  };
+var fileTitleSubstitutions = {
+  " ": "-",
+  "&": "-",
+  "'": "-",
+  "\"": "-",
+  "\\/": "-",
+  "\\\\": "-",
+  "æ": "e",
+  "ø": "o",
+  "å": "a",
+  ",": "",
+  "%": "",
+  "#": "",
+  "\\?": ""
+};
 
-  for (var key in replaceMap) {
+function updateField(opts) {
+  var currentCaretPos = getCaretPos(opts.field[0]);
+  var before = opts.field.val();
+  var after = replaceInvalidChar(before, opts.substitutions, opts.toLowerCase);
+  opts.field.val(after);
+  if(opts.afterUpdate) opts.afterUpdate(after);
+  setCaretToPos(opts.field[0], currentCaretPos - (before.length - after.length));
+  return after;
+}
+
+function replaceInvalidChar(val, substitutions, toLowerCase) {
+  if(toLowerCase) val = val.toLowerCase();
+  for (var key in substitutions) {
     var replaceThisCharGlobally = new RegExp(key, "g");
-    val = val.replace(replaceThisCharGlobally, replaceMap[key]);
+    val = val.replace(replaceThisCharGlobally, substitutions[key]);
   }
-
   return val;
 }
 

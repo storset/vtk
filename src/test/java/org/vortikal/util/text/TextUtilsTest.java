@@ -30,10 +30,13 @@
  */
 package org.vortikal.util.text;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.fail;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -374,5 +377,55 @@ public class TextUtilsTest {
         assertEquals("", TextUtils.unescape("\\"));
         assertEquals(" ", TextUtils.unescape("\\ "));
         assertEquals("a \\ b", TextUtils.unescape("a \\\\ b"));
+    }
+    
+    @Test
+    public void testJoinEmpty() {
+        String[] strings = {};
+        assertEquals("join result", "", TextUtils.join(strings, ", "));
+    }
+
+    @Test
+    public void testJoinSingleDoesNotUseSeparator() {
+        String[] strings = {"one"};
+        assertEquals("join result", "one", TextUtils.join(strings, ", "));
+    }
+
+    @Test
+    public void testJoinMultipleUseSeparator() {
+        String[] strings = {"one", "two"};
+        assertEquals("join result", "one, two", TextUtils.join(strings, ", "));
+    }
+
+    @Test
+    public void testJoinEmptyStringsMayBeIncluded() {
+        String[] strings = {"", "one", ""};
+        assertEquals("join result", ", one, ", TextUtils.join(strings, ", "));
+    }
+
+    @Test
+    public void testJoinEmptyStringsMayBeSkipped() {
+        String[] strings = {"", "one", ""};
+        assertEquals("join result", "one", TextUtils.join(strings, ", ", true));
+    }
+
+    @Test
+    public void testJoinNullsMayBeSkipped() {
+        String[] strings = {"one", null, "two"};
+        assertEquals("join result", "one, two", TextUtils.join(strings, ", ", true, true));
+    }
+
+    @Test(expected=java.lang.NullPointerException.class)
+    public void testJoinUnsolicitedNullsCauseFailure() {
+        String[] strings = {"one", null, "two"};
+        assertEquals("join result", "", TextUtils.join(strings, ", ", true, false));
+    }
+
+    @Test
+    public void testJoinList() {
+        List<String> strings = new ArrayList<String>();
+        strings.add("one");
+        strings.add("two");
+        assertEquals("join result", "one, two", TextUtils.join(strings, ", "));
     }
 }

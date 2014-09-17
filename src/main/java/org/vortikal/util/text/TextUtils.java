@@ -31,6 +31,7 @@
 package org.vortikal.util.text;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -484,5 +485,83 @@ public class TextUtils {
 
     private static boolean hasFlag(int flag, int flags) {
         return (flag & flags) != 0;
+    }
+    
+    /**
+     * Join all strings into a new concatenated string.
+     * @param strings
+     * @param separator
+     * @return concatenated string with separator in between elements. 
+     */
+    public static String join(String[] strings, String separator) {
+        return join(Arrays.asList(strings), separator, false, false);
+    }
+
+    /**
+     * Join all strings into a new concatenated string.
+     * @param strings
+     * @param separator
+     * @param skipEmpty
+     * @return concatenated string with separator in between elements. 
+     */
+    public static String join(String[] strings, String separator, boolean skipEmpty) {
+        return join(Arrays.asList(strings), separator, skipEmpty, false);
+    }
+
+    /**
+     * Join all strings into a new concatenated string.
+     * @param strings
+     * @param separator
+     * @param skipEmpty
+     * @param skipNull
+     * @return concatenated string with separator in between elements. 
+     */
+    public static String join(String[] strings, String separator, boolean skipEmpty, boolean skipNull) {
+        return join(Arrays.asList(strings), separator, skipEmpty, skipNull);
+    }
+
+    /**
+     * Join all strings into a new concatenated string.
+     * @param strings
+     * @param separator
+     * @return concatenated string with separator in between elements. 
+     */
+    public static String join(List<String> strings, String separator) {
+        return join(strings, separator, false, false);
+    }
+    
+    /**
+     * Join all strings into a new concatenated string.
+     * @param strings
+     * @param separator
+     * @param skipEmpty
+     * @return concatenated string with separator in between elements. 
+     */
+    public static String join(List<String> strings, String separator, boolean skipEmpty) {
+        return join(strings, separator, skipEmpty, false);
+    }
+
+    /**
+     * Join all strings into a new concatenated string.
+     * @param strings
+     * @param separator
+     * @param skipEmpty
+     * @param skipNull
+     * @return concatenated string with separator in between elements. 
+     */
+    public static String join(List<String> strings, String separator, boolean skipEmpty, boolean skipNull) {
+        StringBuilder sb = new StringBuilder();
+        boolean isAfterFirst = false;
+        for (String string : strings) {
+            boolean isSkip = (skipNull && string == null) || (skipEmpty && string.isEmpty());
+            if (!isSkip) {
+                if (isAfterFirst) {
+                    sb.append(separator);
+                }
+                sb.append(string);
+                isAfterFirst = true;
+            }
+        }
+        return sb.toString();
     }
 }

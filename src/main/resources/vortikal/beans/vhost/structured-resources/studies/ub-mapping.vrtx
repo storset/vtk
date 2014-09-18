@@ -20,11 +20,10 @@ resourcetype ub-mapping {
           [def prefix mapping.prefix]
           [def link-no mapping.mappinglink-no]
           [def link-en mapping.mappinglink-en]
-            [if prefix != null && prefix != ""]
-              <p>
-                [localized 'prefix']: [val prefix][if link-no != null && link-no != ""], <a href="[val link-no]">[localized 'mappinglink-no']</a>[endif][if link-en != null && link-en != ""], <a href="[val link-en]">[localized 'mappinglink-en']</a>[endif]
-              </p>
-            [endif]
+          [if prefix != null && prefix != ""]
+            <p>
+              [localized 'prefix']: [val prefix][if link-no != null && link-no != ""], <a href="[val link-no]">[localized 'mappinglink-no']</a>[endif][if link-en != null && link-en != ""], <a href="[val link-en]">[localized 'mappinglink-en']</a>[endif]
+            </p>
           [endif]
         [endlist]
       [endif]

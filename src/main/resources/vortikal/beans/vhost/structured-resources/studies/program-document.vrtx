@@ -315,8 +315,7 @@ resourcetype program-document {
               </div>
             [endif]
             </div>
-          [endlist]
-        [endif]
+        [endlist]
       [endif]
       ##
     }

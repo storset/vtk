@@ -13,6 +13,7 @@
       <list>
         <value>classpath:/vortikal/beans/vortikal.properties</value>
         <value>classpath:vortikal-custom.properties</value>
+        <value>classpath:/org/vortikal/util/version.properties</value>
         <value>file://${user.home}/*vortikal.properties</value>
         <value>file://${user.home}/*vrtx.properties</value>
         <value>file://${user.home}/*.vrtx.properties</value>

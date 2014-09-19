@@ -6,8 +6,8 @@
 if(typeof agentWebDav === "undefined") {
   $(function() {
     var ua = window.navigator.userAgent.toLowerCase();         
-    var isWinWebDav = ((ua.indexOf("win") != -1) || (ua.indexOf("16bit") != -1));
-    if (($.browser.msie && $.browser.version >= 7) || /.*Trident\/7\.0.*/.test(ua)) && isWinWebDav) {  
+    var isWin = ((ua.indexOf("win") != -1) || (ua.indexOf("16bit") != -1));
+    if (($.browser.msie && $.browser.version >= 7) || /.*Trident\/7\.0.*/.test(ua)) && isWin) {  
       $(".vrtx-resource-open-webdav").click(function(e) {
         var openOffice = new ActiveXObject("Sharepoint.OpenDocuments.1").EditDocument(this.href);
         e.stopPropagation();

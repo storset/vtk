@@ -24,7 +24,7 @@
          if(!(isWin || isMac)) {
            $("#vrtx-edit-win-mac").hide(0);
          }
-         if ($.browser.msie && $.browser.version >= 7 && isWin) {
+         if (($.browser.msie && $.browser.version >= 7) || /.*Trident\/7\.0.*/.test(agent)) && isWin) {
            var openWebdavWrp = $("#vrtx-open-webdav-wrapper");
            openWebdavWrp.show(0);
            openWebdavWrp.on("click", "#vrtx-open-webdav", function(e) {

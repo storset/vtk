@@ -1,5 +1,5 @@
 /*
- * WebDAV functionality
+ * WebDAV<=>Office functionality for IE7+
  *
  */
 
@@ -7,7 +7,7 @@ if(typeof agentWebDav === "undefined") {
   $(function() {
     var ua = window.navigator.userAgent.toLowerCase();         
     var isWinWebDav = ((ua.indexOf("win") != -1) || (ua.indexOf("16bit") != -1));
-    if ($.browser.msie && $.browser.version >= 7 && isWinWebDav) {  
+    if (($.browser.msie && $.browser.version >= 7) || /.*Trident\/7\.0.*/.test(ua)) && isWinWebDav) {  
       $(".vrtx-resource-open-webdav").click(function(e) {
         var openOffice = new ActiveXObject("Sharepoint.OpenDocuments.1").EditDocument(this.href);
         e.stopPropagation();

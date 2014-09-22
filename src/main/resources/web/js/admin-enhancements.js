@@ -4355,7 +4355,7 @@ vrtxAdmin._$(window).on("resize orientationchanged", vrtxAdmin._$.debounce(20, f
 }));
 
 function resizeOrientationChangeWindowHandler() {
-  $(".ui-dialog-content").filter(":visible").dialog("option", "position", "center");
+  $(".ui-dialog-content, .cke_dialog").filter(":visible").dialog("option", "position", "center");
   if(vrtxAdmin.crumbsActive) {
     vrtxAdmin.scrollBreadcrumbsRight();
   }

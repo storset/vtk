@@ -4380,13 +4380,14 @@ function repositionDialogsTouchDevices() {
   var jqCkDialog = $(".ui-dialog, table.cke_dialog").filter(":visible");
   if(jqCkDialog.length === 1) { // If more than one box: ignore (should not happen)
     var winInnerWidth = window.innerWidth;
+    var winInnerHeight = window.innerHeight;
     var boxWidth = jqCkDialog.outerWidth();
     var boxHeight = jqCkDialog.outerHeight();
-    if(boxWidth < winInnerWidth) { // Scroll is in effect
+    if(boxWidth < winInnerWidth && boxHeight < winInnerHeight) { // Otherwise scroll is in effect
       var left = ((winInnerWidth / 2) + window.pageXOffset) - (boxWidth / 2);
-      var top = ((window.innerHeight / 2) + window.pageYOffset) - (boxHeight / 2);
+      var top = ((winInnerHeight / 2) + window.pageYOffset) - (boxHeight / 2);
+      jqCkDialog.css({ "position": "absolute", "top": top + "px", "left": left + "px" });
     }
-    jqCkDialog.css({ "position": "absolute", "top": top + "px", "left": left + "px" });
   }
 }
 

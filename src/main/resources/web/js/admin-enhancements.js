@@ -4344,6 +4344,7 @@ jQuery.fn.extend({
 
 var countResize = 0;
 vrtxAdmin._$(window).resize(vrtxAdmin._$.debounce(20, function () {
+  // TODO: Should maybe be moved to vrtx-simple-dialogs.js
   $(".ui-dialog-content").filter(":visible").dialog("option", "position", "center");
   if (vrtxAdmin.runReadyLoad && countResize < 3) {
     countResize++;

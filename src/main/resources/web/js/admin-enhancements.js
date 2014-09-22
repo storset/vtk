@@ -51,6 +51,7 @@ function VrtxAdmin() {
   this.isNotIos6 = this.isIOS && this.ua.match(/os (2|3|4|5)_/) != null;
   this.isAndroid = /android/.test(this.ua); // http://www.gtrifonov.com/2011/04/15/google-android-user-agent-strings-2/
   this.isMobileWebkitDevice = (this.isIPhone || this.isIPad || this.isAndroid);
+  this.isTouchDevice = window.ontouchstart !== undefined;
   this.isWin = ((this.ua.indexOf("win") != -1) || (this.ua.indexOf("16bit") != -1));
   
   this.supportsFileList = window.FileList;
@@ -4355,7 +4356,11 @@ vrtxAdmin._$(window).on("resize orientationchanged", vrtxAdmin._$.debounce(20, f
 }));
 
 function resizeOrientationChangeWindowHandler() {
-  $(".ui-dialog-content, .cke_dialog").filter(":visible").dialog("option", "position", "center");
+  if(!vrtxAdmin.isTouchDevice) {
+    $(".ui-dialog-content").filter(":visible").dialog("option", "position", "center");
+  } else {
+    // innerHeight and innerWidth viewport resize
+  }
   if(vrtxAdmin.crumbsActive) {
     vrtxAdmin.scrollBreadcrumbsRight();
   }

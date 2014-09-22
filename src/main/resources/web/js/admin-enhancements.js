@@ -4377,8 +4377,8 @@ function repositionDialogsTouchDevices() {
     var top = (window.innerHeight / 2) + window.pageYOffset;
     var left = (window.innerWidth / 2) + window.pageXOffset;
     // Debug
-    $("#total-main, #right-main").append("<p>Top: " + top + " Left: " + left + "</p>");
-    jqCkDialog.css({ "top": top + "px", "left": left + "px" });
+    $("#app-content").append("<p>Top: " + top + " Left: " + left + "</p>");
+    jqCkDialog.css({ "position": "absolute", "top": top + "px", "left": left + "px" });
   }
 }
 

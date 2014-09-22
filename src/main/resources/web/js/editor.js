@@ -1258,7 +1258,7 @@ function initMultipleInputFields() {
 
 function enhanceMultipleInputFields(name, isMovable, isBrowsable, limit, json) { // TODO: simplify
   var inputField = $("." + name + " input[type='text']");
-  if (!inputField.length) return;
+  if (!inputField.length && !(vrtxAdmin.isIE7 || vrtxAdmin.isIETridentInComp)) return;
 
   // Config
   var size = inputField.attr("size");

@@ -4360,8 +4360,11 @@ function resizeOrientationChangeWindowHandler() {
     $(".ui-dialog-content").filter(":visible").dialog("option", "position", "center");
   } else {
     var jqCkDialog = $(".ui-dialog-content, .cke_dialog").filter(":visible");
-    var top = window.innerHeight + window.pageYOffset;
-    jqCkDialog.css({"top": top + "px"});
+    if(jqCkDialog.length) {
+      var top = window.innerHeight + window.pageYOffset;
+      alert(top);
+      jqCkDialog.css({"top": top + "px"});
+    }
   }
   if(vrtxAdmin.crumbsActive) {
     vrtxAdmin.scrollBreadcrumbsRight();

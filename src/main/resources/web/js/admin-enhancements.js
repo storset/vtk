@@ -4211,7 +4211,7 @@ VrtxAdmin.prototype.zebraTables = function zebraTables(selector) {
  * @return {number} Unix-time
  */
 function getNowTime(useNsRes) {
-  if(window.performance) {
+  if(window.performance && typeof window.performance.now === "function") {
     var now = window.performance.now();
   } else {
     var now = +new Date();

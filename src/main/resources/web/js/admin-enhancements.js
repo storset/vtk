@@ -4373,11 +4373,11 @@ function resizeOrientationChangeWindowHandler() {
 
 function repositionDialogsTouchDevices() {
   var jqCkDialog = $(".ui-dialog, table.cke_dialog").filter(":visible");
-  if(jqCkDialog.length) {
-    var top = (window.innerHeight / 2) + window.pageYOffset;
-    var left = (window.innerWidth / 2) + window.pageXOffset;
-    // Debug
-    $("#app-content").append("<p>Top: " + top + " Left: " + left + "</p>");
+  if(jqCkDialog.length === 1) { // If more than one box: ignore (should not happen)
+    var boxWidth = jqCkDialog.css("width")
+    var boxHeight = jqCkDialog.css("height");
+    var top = ((window.innerHeight / 2) + window.pageYOffset) - (boxWidth / 2);
+    var left = ((window.innerWidth / 2) + window.pageXOffset) - (boxHeight / 2);
     jqCkDialog.css({ "position": "absolute", "top": top + "px", "left": left + "px" });
   }
 }

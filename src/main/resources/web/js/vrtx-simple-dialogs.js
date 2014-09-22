@@ -28,6 +28,7 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
       var dialogOpts =     { modal: true,                        
                              autoOpen: false,
                              resizable: false,
+                             //draggable: false,
                              buttons: this.__generateButtons() };
       if (opts.width)      { dialogOpts.width = opts.width; }
       if (opts.height)     { dialogOpts.height = opts.height; }

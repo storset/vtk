@@ -4344,7 +4344,7 @@ jQuery.fn.extend({
 (function(b,c){var $=b.jQuery||b.Cowboy||(b.Cowboy={}),a;$.throttle=a=function(e,f,j,i){var h,d=0;if(typeof f!=="boolean"){i=j;j=f;f=c}function g(){var o=this,m=+new Date()-d,n=arguments;function l(){d=+new Date();j.apply(o,n)}function k(){h=c}if(i&&!h){l()}h&&clearTimeout(h);if(i===c&&m>e){l()}else{if(f!==true){h=setTimeout(i?k:l,i===c?e-m:e)}}}if($.guid){g.guid=j.guid=j.guid||$.guid++}return g};$.debounce=function(d,e,f){return f===c?a(d,e,false):a(d,f,e!==false)}})(this);
 
 var countResize = 0;
-vrtxAdmin._$(window).on("resize orientationchanged", vrtxAdmin._$.debounce(20, function () {
+vrtxAdmin._$(window).on("resize", vrtxAdmin._$.debounce(20, function () {
   if (vrtxAdmin.runReadyLoad && countResize < 3) { // Only use this extra fix for iOS 5 and IE8?
     countResize++;
     resizeOrientationChangeWindowHandler();
@@ -4355,21 +4355,31 @@ vrtxAdmin._$(window).on("resize orientationchanged", vrtxAdmin._$.debounce(20, f
   }
 }));
 
+if(vrtxAdmin.isTouchDevice) {
+  vrtxAdmin._$(window).on("scroll orientationchange", vrtxAdmin._$.debounce(20, repositionDialogsTouchDevices));
+}
+
 function resizeOrientationChangeWindowHandler() {
   if(!vrtxAdmin.isTouchDevice) {
     $(".ui-dialog-content").filter(":visible").dialog("option", "position", "center");
   } else {
-    var jqCkDialog = $(".ui-dialog-content, .cke_dialog").filter(":visible");
-    if(jqCkDialog.length) {
-      var top = window.innerHeight + window.pageYOffset;
-      alert(top);
-      jqCkDialog.css({"top": top + "px"});
-    }
+    repositionDialogsTouchDevices();
   }
   if(vrtxAdmin.crumbsActive) {
     vrtxAdmin.scrollBreadcrumbsRight();
   }
   vrtxAdmin.adjustResourceTitle();
+}
+
+function repositionDialogsTouchDevices() {
+  var jqCkDialog = $(".ui-dialog, table.cke_dialog").filter(":visible");
+  if(jqCkDialog.length) {
+    var top = (window.innerHeight / 2) + window.pageYOffset;
+    var left = (window.innerWidth / 2) + window.pageXOffset;
+    // Debug
+    $("#total-main, #right-main").append("<p>Top: " + top + " Left: " + left + "</p>");
+    jqCkDialog.css({ "top": top + "px", "left": left + "px" });
+  }
 }
 
 /* Easing 

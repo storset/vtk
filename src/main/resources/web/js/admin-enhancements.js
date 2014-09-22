@@ -105,6 +105,7 @@ function VrtxAdmin() {
 
   // Throttle / debounced listeners
   this.windowResizeScrollDebounceRate = 20;
+  this.keyInputDebounceRate = 50;
 
   // Application logic
   this.editorSaveButtonName = "";
@@ -1626,13 +1627,13 @@ function createFuncComplete() {
     }
   });
   
-  vrtxAdm.cachedDoc.on("keyup", "#vrtx-div-collection-title input[type='text']", $.debounce(50, true, function () {
+  vrtxAdm.cachedDoc.on("keyup", "#vrtx-div-collection-title input[type='text']", $.debounce(vrtxAdm.keyInputDebounceRate, true, function () {
     createTitleChange($(this), $("#vrtx-div-collection-name input[type='text']"), null);
   }));
-  vrtxAdm.cachedDoc.on("keyup", "#vrtx-div-file-title input[type='text']", $.debounce(50, true, function () {
+  vrtxAdm.cachedDoc.on("keyup", "#vrtx-div-file-title input[type='text']", $.debounce(vrtxAdm.keyInputDebounceRate, true, function () {
     createTitleChange($(this), $("#vrtx-div-file-name input[type='text']"), $("#isIndex"));
   }));
-  vrtxAdm.cachedDoc.on("keyup", "#vrtx-div-file-name input[type='text'], #vrtx-div-collection-name input[type='text']", $.debounce(50, true, function () {
+  vrtxAdm.cachedDoc.on("keyup", "#vrtx-div-file-name input[type='text'], #vrtx-div-collection-name input[type='text']", $.debounce(vrtxAdm.keyInputDebounceRate, true, function () {
     createFileNameChange($(this));
   }));
 
@@ -4366,7 +4367,10 @@ if(vrtxAdmin.isTouchDevice) {
 
 function resizeOrientationChangeWindowHandler() {
   if(!vrtxAdmin.isTouchDevice) {
-    $(".ui-dialog-content").filter(":visible").dialog("option", "position", "center");
+    var jqDialog = $(".ui-dialog-content").filter(":visible")
+    if(jqDialog.length === 1) { // If more than one box: ignore (should not happen)
+      jqDialog.dialog("option", "position", "center");
+    }
   } else {
     repositionDialogsTouchDevices();
   }
@@ -4378,7 +4382,7 @@ function resizeOrientationChangeWindowHandler() {
 
 function repositionDialogsTouchDevices() {
   var jqCkDialog = $(".ui-dialog, table.cke_dialog").filter(":visible");
-  if(jqCkDialog.length === 1) { // If more than one box: ignore (should not happen)
+  if(jqCkDialog.length === 1) {
     var winInnerWidth = window.innerWidth;
     var winInnerHeight = window.innerHeight;
     var boxWidth = jqCkDialog.outerWidth();

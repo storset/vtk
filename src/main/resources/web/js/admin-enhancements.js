@@ -4359,7 +4359,9 @@ function resizeOrientationChangeWindowHandler() {
   if(!vrtxAdmin.isTouchDevice) {
     $(".ui-dialog-content").filter(":visible").dialog("option", "position", "center");
   } else {
-    // innerHeight and innerWidth viewport resize
+    var jqCkDialog = $(".ui-dialog-content, .cke_dialog").filter(":visible");
+    var top = window.innerHeight + window.pageYOffset;
+    jqCkDialog.css({"top": top + "px"});
   }
   if(vrtxAdmin.crumbsActive) {
     vrtxAdmin.scrollBreadcrumbsRight();

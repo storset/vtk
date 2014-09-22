@@ -4343,10 +4343,10 @@ jQuery.fn.extend({
 (function(b,c){var $=b.jQuery||b.Cowboy||(b.Cowboy={}),a;$.throttle=a=function(e,f,j,i){var h,d=0;if(typeof f!=="boolean"){i=j;j=f;f=c}function g(){var o=this,m=+new Date()-d,n=arguments;function l(){d=+new Date();j.apply(o,n)}function k(){h=c}if(i&&!h){l()}h&&clearTimeout(h);if(i===c&&m>e){l()}else{if(f!==true){h=setTimeout(i?k:l,i===c?e-m:e)}}}if($.guid){g.guid=j.guid=j.guid||$.guid++}return g};$.debounce=function(d,e,f){return f===c?a(d,e,false):a(d,f,e!==false)}})(this);
 
 var countResize = 0;
-vrtxAdmin._$(window).resize(vrtxAdmin._$.debounce(20, function () {
+vrtxAdmin._$(window).on("resize orientationchanged", vrtxAdmin._$.debounce(20, function () {
   if (vrtxAdmin.runReadyLoad && countResize < 3) { // Only use this extra fix for iOS 5 and IE8?
     countResize++;
-    resizeWindowHandler();
+    resizeOrientationChangeWindowHandler();
   } else { // Let it rest a second..
     var waitResize = setTimeout(function() {
       countResize = 0;
@@ -4354,7 +4354,7 @@ vrtxAdmin._$(window).resize(vrtxAdmin._$.debounce(20, function () {
   }
 }));
 
-function resizeWindowHandler() {
+function resizeOrientationChangeWindowHandler() {
   $(".ui-dialog-content").filter(":visible").dialog("option", "position", "center");
   if(vrtxAdmin.crumbsActive) {
     vrtxAdmin.scrollBreadcrumbsRight();

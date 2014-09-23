@@ -146,7 +146,7 @@ resourcetype structured-document {
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
     pictureAlt: (en: "Alternative text", no: "Alternativ tekst", nn : "Alternativ tekst"),
     hidePicture : (en : "Hide image in document", no : "Skjul bilde i dokument", nn : "Skjul bilete i dokument"),
-    photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
+    photo-prefix : (en : "Photo", no : "Foto", nn : "Foto"),
     caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
     preview : (en : "Preview", no : "Forhåndsvisning", nn : "Førehandsvisning"),
     content : (en : "Content", no : "Innhold", nn : "Innhald"),

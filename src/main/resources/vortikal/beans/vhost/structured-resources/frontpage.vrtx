@@ -360,7 +360,7 @@ resourcetype frontpage {
      introduction : (en : "Introduction", no : "Innledning", nn : "Innleiing"),
      picture : (en: "Image", no: "Bilde", nn : "Bilete"),
      pictureAlt: (en: "Alternative text", no: "Alternativ tekst", nn : "Alternativ tekst"),
-     photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
+     photo-prefix : (en : "Photo", no : "Foto", nn : "Foto"),
      caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
      main-content : (en : "Main content", no : "Hovedinnhold", nn : "Hovedinnhold"),
      relatedContent : (en : "Additional content", no : "Relatert innhold", nn : "Relatert innhald"),

@@ -201,7 +201,7 @@ resourcetype oppbygning {
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
     pictureAlt: (en: "Alternative text", no: "Alternativ tekst", nn : "Alternativ tekst"),
     caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
-    photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
+    photo-prefix : (en : "Photo", no : "Foto", nn : "Foto"),
     gradsnavn : (en : "Name of degree (shared text)", no : "Gradsnavn (fellestekst)", nn : "Gradsnamn (fellestekst)"),
     gradsnavn-no : (en : "Name of degree (bokmål)", no : "Gradsnavn (bokmål)", nn : "Gradsnamn (bokmål)"),
     gradsnavn-nn : (en : "Name of degree (nynorsk)", no : "Gradsnavn (nynorsk)", nn : "Gradsnamn (nynorsk)"),

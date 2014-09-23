@@ -210,7 +210,7 @@ resourcetype structured-master {
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
     pictureAlt: (en: "Alternative text", no: "Alternativ tekst", nn : "Alternativ tekst"),
     caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
-    photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
+    photo-prefix : (en : "Photo", no : "Foto", nn : "Foto"),
     related-content : (en : "Related content (right column)", no : "Relatert innhold (vises i høyre kolonne)", nn : "Relatert innhald (visast i høgre kolonne)"),
     supervisorsHeader : (en : "Supervisors", no : "Veiledere", nn : "Rettleiarar"),
     supervisorsUsernames : (en : "Supervisors from UiO (enter the supervisor username)",no : "Veiledere fra UiO (fyll inn veilederens brukernavn)", nn :"Rettleiarar fra UiO (fyll inn rettleiarens brukernavn)"),

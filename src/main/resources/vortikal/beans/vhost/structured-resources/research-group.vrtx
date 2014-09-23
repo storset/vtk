@@ -244,7 +244,7 @@ resourcetype research-group {
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
     pictureAlt: (en: "Alternative text", no: "Alternativ tekst", nn : "Alternativ tekst"),
     caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
-    photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
+    photo-prefix : (en : "Photo", no : "Foto", nn : "Foto"),
     hidePicture : (en : "Hide image in research group", no : "Skjul bilde i forskergruppe", nn : "Skjul bilete i forskargruppe"),
     related-content : (en : "Related content (right column)", no : "Relatert innhold (vises i høyre kolonne)", nn : "Relatert innhald (visast i høgre kolonne)"),
     participantsHeader : (en : "Participants", no : "Deltakere", nn : "Deltakarar"),

@@ -26,7 +26,7 @@
     var lastEvent = "";
     var toggleOn = false;
     var hoverTip = false;
-    var keyTriggersOpen = 13;
+    var keyTriggersOpen = 13; // Enter
 
     var openCloseTooltip = function(e) {
       var isMouseEnter = e.type == "mouseenter";
@@ -41,8 +41,7 @@
       } else if(isEnterFocusIn || isEnterFocusOut) { 
         thisEvent = "b";
       }
-      console.log(opts.enterOpens + " " + keycode);
-
+      
       if ((isMouseEnter || isEnterFocusIn) && !toggleOn) {
         lastEvent = thisEvent;
         toggleOn = true;

@@ -13,8 +13,6 @@
 	opts.enterOpens = opts.enterOpens || false;
 	opts.autoWidth = opts.autoWidth || false;
 	opts.extra = opts.extra || false;
-	
-	var keyTriggersOpen = opts.keySpaceTriggersOpen ? 32 : 13;
 
     var html = '<span class="tip ' + opts.appendTo.substring(1) + '">&nbsp;</span>';
     if (opts.extra) {
@@ -25,11 +23,28 @@
     var tipText;
     var fadeOutTimer;
     var waitForKeyUp;
+    var lastEvent = "";
     var toggleOn = false;
     var hoverTip = false;
+    var keyTriggersOpen = 13;
 
     var openCloseTooltip = function(e) {
-      if (e.type == "mouseenter" || (opts.enterOpens ? (((e.which && e.which == keyTriggersOpen) || (e.keyCode && e.keyCode == keyTriggersOpen)) && !toggleOn) : (e.type == "focusin"))) {
+      var isMouseEnter = e.type == "mouseenter";
+      var isMouseLeave = e.type == "mouseleave";
+      
+      var keycode = e.keyCode ? e.keyCode : e.which;
+      var isEnterFocusIn = opts.enterOpens ? keycode == keyTriggersOpen : e.type == "focusin";
+      var isEnterFocusOut = opts.enterOpens ? keycode == keyTriggersOpen : e.type == "focusout";
+      
+      if(isMouseEnter || isMouseLeave) {
+        thisEvent = "a";
+      } else if(isEnterFocusIn || isEnterFocusOut) { 
+        thisEvent = "b";
+      }
+      console.log(opts.enterOpens + " " + keycode);
+
+      if ((isMouseEnter || isEnterFocusIn) && !toggleOn) {
+        lastEvent = thisEvent;
         toggleOn = true;
         
         var link = $(this);
@@ -41,13 +56,12 @@
         if (typeof link.attr("href") === "undefined" && !link.is("abbr")) {
           link = link.find("a");
         }
+        
         clearTimeout(fadeOutTimer);
-        if (tip) {
-          tip.remove();
-        }
-        if (tipExtra) {
-          tipExtra.remove();
-        }
+        
+        if (tip) tip.remove();
+        if (tipExtra) tipExtra.remove();
+        
         $(opts.appendTo).append(html);
         tip = $('.tip.' + opts.appendTo.substring(1));
         tip.hide();
@@ -67,12 +81,15 @@
         var nPos = link.position();
         nPos.top = nPos.top + opts.yOffset;
         var left = nPos.left + link.width() + opts.xOffset;
+        
+        // Extra markup
         if (opts.extra) {
           var ePos = link.position();
           ePos.top = ePos.top + opts.yOffset;
           tipExtra.css('position', 'absolute').css('z-index', '-1').css('width', '99%');
           ePos.left = 0;
         }
+        // Automatic width
         if (opts.autoWidth) {
           var tipWidth = left;
           nPos.left = 0;
@@ -80,6 +97,7 @@
           var tipWidth = opts.containerWidth;
           nPos.left = left;
         }
+        
         tip.css({'position': 'absolute', 'z-index': '1000', 'width': tipWidth + 'px'})
            .css(nPos).fadeIn(opts.animInSpeed, function() {
           var buttons = $(this).find(".vrtx-button, .vrtx-button-small").filter(":visible");
@@ -90,12 +108,12 @@
         if (opts.extra) {
           tipExtra.css(ePos).fadeIn(opts.animInSpeed);
         }
-        if(opts.enterOpens && e.type == "keypress") {
-          tip.on("focusout keypress", function (e) {
+        if(opts.enterOpens && e.type == "keyup") {
+          tip.on("focusout keyup", function (e) {
             if(hoverTip) return;
             if(e.type == "focusout") {
               waitForKeyUp = window.setTimeout(function() {
-                var e2 = jQuery.Event("keypress");
+                var e2 = jQuery.Event("keyup");
                 e2.which = keyTriggersOpen;
                 link.trigger(e2);
               }, 200);
@@ -107,7 +125,9 @@
           });
         }
         e.stopPropagation();
-      } else if (e.type == "mouseleave" || (opts.enterOpens ? (((e.which && e.which == keyTriggersOpen) || (e.keyCode && e.keyCode == keyTriggersOpen)) && toggleOn) : (e.type == "focusout"))) {
+      } else if ((isMouseLeave || isEnterFocusOut) && toggleOn && (lastEvent === thisEvent || lastEvent === "")) {
+        lastEvent = thisEvent;
+      
         var link = $(this);
         if(opts.expandHoverToTipBox) {
           tip.on("mouseenter" + (opts.enterOpens ? "" : " focusin"), function (e) {
@@ -126,7 +146,7 @@
             link = link.find("a");
           }
           link.attr('title', tipText);
-          if(e.type == "keypress") {
+          if(e.type == "keyup") {
             link.focus();
           }
           fadeOutTimer = setTimeout(function () {
@@ -146,6 +166,6 @@
       }
     };
     
-    $(this).on("mouseenter mouseleave" + (opts.enterOpens ? " keypress" : " focusin focusout"), subSelector, openCloseTooltip);
+    $(this).on("mouseenter mouseleave" + (opts.enterOpens ? " keyup" : " focusin focusout"), subSelector, openCloseTooltip);
   }
 })(jQuery);

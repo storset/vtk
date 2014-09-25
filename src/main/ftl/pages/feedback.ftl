@@ -62,7 +62,7 @@
         
         <input type="hidden" id="user-agent-viewport" name="userAgentViewport" value="" />
         <script type="text/javascript"><!--
-          $("#user-agent-viewport").val(navigator.userAgent + " " + ((window.innerWidth && window.innerHeight) ? (window.innerWidth + "x" + window.innerHeight) : ""));
+          $("#user-agent-viewport").val(navigator.userAgent + " " + ((window.innerWidth && window.innerHeight) ? ("(" + window.innerWidth + "x" + window.innerHeight + "px)") : ""));
         // -->
         </script>
            

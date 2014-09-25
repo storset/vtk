@@ -45,9 +45,6 @@
     </a>
     <script type="text/javascript"><!--
       var updatedTitle = '<@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" />';
-      $(document).ready(function() {
-        $("#user-agent-viewport").val(navigator.userAgent + " " + ((window.innerWidth && window.innerHeight) ? (window.innerWidth + "x" + window.innerHeight) : ""));
-      });
     // -->
     </script>
   <#else>
@@ -64,6 +61,10 @@
         </#if>
         
         <input type="hidden" id="user-agent-viewport" name="userAgentViewport" value="" />
+        <script type="text/javascript"><!--
+          $("#user-agent-viewport").val(navigator.userAgent + " " + ((window.innerWidth && window.innerHeight) ? (window.innerWidth + "x" + window.innerHeight) : ""));
+        // -->
+        </script>
            
         <#if mailto?has_content>
           <input type="hidden" name="mailto" value="${mailto?html}" />

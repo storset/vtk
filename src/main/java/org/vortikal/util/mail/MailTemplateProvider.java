@@ -49,12 +49,13 @@ public class MailTemplateProvider {
     private ResourceDetailProvider resourceDetailProvider;
     
     public String generateMailBody(String title, String url, String mailFrom,
-            String comment, String site) throws Exception {
+            String comment, String userAgentViewport, String site) throws Exception {
 
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("title", title);
         model.put("mailFrom", mailFrom);
         model.put("comment", comment);
+        model.put("userAgentViewport", userAgentViewport);
         model.put("site", site);
         model.put("uri", url);
 

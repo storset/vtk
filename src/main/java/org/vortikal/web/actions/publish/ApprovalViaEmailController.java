@@ -101,7 +101,7 @@ public class ApprovalViaEmailController implements Controller {
         String[] subjectParams = { getLocalizedMsg(request, "resourcetype.name." + resource.getResourceType(),
                 new Object[0]) };
         String subject = getLocalizedMsg(request, "send-to-approval.subject", subjectParams);
-        String mailBody = mailTemplateProvider.generateMailBody(title, url, emailFrom, "", "");
+        String mailBody = mailTemplateProvider.generateMailBody(title, url, emailFrom, "", "", "");
 
         if (method.equals("POST")) {
             String emailTo = request.getParameter("emailTo");
@@ -136,7 +136,7 @@ public class ApprovalViaEmailController implements Controller {
                         }
                     }
                     if (validAddresses && MailExecutor.isValidEmail(emailFrom)) {
-                        mailBody = mailTemplateProvider.generateMailBody(title, url, emailFrom, comment, "");
+                        mailBody = mailTemplateProvider.generateMailBody(title, url, emailFrom, comment, "", "");
 
                         MimeMessage mimeMessage = mailExecutor.createMimeMessage(mailBody, emailMultipleTo, emailFrom,
                                 true, subject);

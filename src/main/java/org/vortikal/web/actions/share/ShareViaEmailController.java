@@ -113,7 +113,7 @@ public class ShareViaEmailController implements Controller {
                     
                     if (validAddresses) {
                         String url = this.viewService.constructURL(uri).toString();
-                        String mailBody = mailTemplateProvider.generateMailBody(resource.getTitle(), url, emailFrom, comment, this.siteName);
+                        String mailBody = mailTemplateProvider.generateMailBody(resource.getTitle(), url, emailFrom, comment, "", this.siteName);
 
                         MimeMessage mimeMessage = mailExecutor.createMimeMessage(
                                 mailBody,

@@ -100,6 +100,7 @@ public class FeedbackController implements Controller {
         String url = this.viewService.constructURL(uri).toString();
         
         String yourComment = request.getParameter("yourComment");
+        String userAgentViewport = request.getParameter("userAgentViewport");
 
         String[] recipients = this.recipients;
         String recipientsStr = this.recipientsStr;
@@ -151,7 +152,7 @@ public class FeedbackController implements Controller {
             if(yourCommentIsMail) {
                 mailBody = yourComment;
             } else {
-                mailBody = mailTemplateProvider.generateMailBody(title, url, this.sender, yourComment, this.siteName);
+                mailBody = mailTemplateProvider.generateMailBody(title, url, this.sender, yourComment, userAgentViewport != null ? userAgentViewport : "", this.siteName);
             }
 
             MimeMessage mimeMessage = mailExecutor.createMimeMessage(

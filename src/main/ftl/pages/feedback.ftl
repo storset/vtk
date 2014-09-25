@@ -45,6 +45,9 @@
     </a>
     <script type="text/javascript"><!--
       var updatedTitle = '<@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" />';
+      $(document).ready(function() {
+        $("#user-agent-viewport").val(navigator.userAgent + " " + ((window.innerWidth && window.innerHeight) ? (window.innerWidth + "x" + window.innerHeight) : ""));
+      });
     // -->
     </script>
   <#else>
@@ -59,6 +62,8 @@
         <#else>
           <textarea class="round-corners" rows="15" cols="10" id="yourComment" name="yourComment"></textarea> 
         </#if>
+        
+        <input type="hidden" id="user-agent-viewport" name="userAgentViewport" value="" />
            
         <#if mailto?has_content>
           <input type="hidden" name="mailto" value="${mailto?html}" />

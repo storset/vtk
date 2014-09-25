@@ -29,9 +29,11 @@
     var keyTriggersOpen = 13; // Enter
 
     var openCloseTooltip = function(e) {
+      // Mouse events
       var isMouseEnter = e.type == "mouseenter";
       var isMouseLeave = e.type == "mouseleave";
       
+      // Key / focus secondary events
       var keycode = e.keyCode ? e.keyCode : e.which;
       var isEnterFocusIn = opts.enterOpens ? keycode == keyTriggersOpen : e.type == "focusin";
       var isEnterFocusOut = opts.enterOpens ? keycode == keyTriggersOpen : e.type == "focusout";

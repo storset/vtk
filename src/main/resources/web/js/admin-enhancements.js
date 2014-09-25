@@ -211,6 +211,22 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.bodyId = vrtxAdm.cachedBody.attr("id") || "";
   vrtxAdm.cachedBody.addClass("js");
   if(vrtxAdm.isIE8) vrtxAdm.cachedBody.addClass("ie8");
+  
+  
+  // Show message in IE6, IE7 and IETrident in compability mode
+  if ((vrtxAdm.isIE7 || vrtxAdm.isIETridentInComp) && typeof outdatedBrowserText === "string") {
+    var message = vrtxAdm.cachedAppContent.find(" > .message");
+    if (message.length) {
+      message.html(outdatedBrowserText);
+    } else {
+      if(vrtxAdm.bodyId === "vrtx-simple-editor" || isEmbedded) {
+        vrtxAdm.cachedBody.prepend("<div class='infomessage'>" + outdatedBrowserText + "</div>");
+      } else {
+        vrtxAdm.cachedAppContent.prepend("<div class='infomessage'>" + outdatedBrowserText + "</div>");
+      }
+    }
+  }
+  
   if (vrtxAdm.runReadyLoad === false) return; // Return if should not run all of ready() code
 
   // Load required init components (animations and trees)
@@ -1527,16 +1543,6 @@ VrtxAdmin.prototype.initMiscAdjustments = function initMiscAdjustments() {
     };
     window.onbeforeunload = ignoreAjaxErrorOnBeforeUnload;    
   } 
-
-  // Show message in IE6, IE7 and IETrident in compability mode
-  if (vrtxAdm.isIE7 || vrtxAdm.isIETridentInComp) {
-    var message = vrtxAdm.cachedAppContent.find(" > .message");
-    if (message.length) {
-      message.html(outdatedBrowserText);
-    } else {
-      vrtxAdm.cachedAppContent.prepend("<div class='infomessage'>" + outdatedBrowserText + "</div>");
-    }
-  }
 };
 
 /**

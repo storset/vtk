@@ -27,6 +27,16 @@
   </#if>
   <#include "/system/javascript.ftl" />
   <script type="text/javascript"><!-- 
+    if(vrtxAdmin.isIE7 || vrtxAdmin.isIETridentInComp) {
+      if(vrtxAdmin.isIETridentInComp) {
+        var outdatedBrowserText = '${vrtx.getMsg("msg.browser.msie.comp")}';   
+      } else if(vrtxAdmin.isIE7) {   
+        var outdatedBrowserText = '${vrtx.getMsg("msg.browser.msie.msie7")}';    
+      } else if(vrtxAdmin.isIE6) {
+        var outdatedBrowserText = '${vrtx.getMsg("msg.browser.msie.msie6")}';
+      }
+    }
+    
     vrtxAdmin.multipleFormGroupingMessages = {
       add: "${vrtx.getMsg('editor.add')}",
       remove: "${vrtx.getMsg('editor.remove')}",

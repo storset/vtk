@@ -3079,6 +3079,7 @@ table.resourceInfo.revisions tr:nth-child(even) td {
 /* Resource bar messages */
 
 #app-content > div.message,
+body > div.infomessage,
 #app-content > div.infomessage,
 #app-content > noscript > div.infomessage {
   background-color: #fff;
@@ -3088,12 +3089,14 @@ table.resourceInfo.revisions tr:nth-child(even) td {
 }
 
 #app-content > div.infomessage,
+body > div.infomessage,
 #app-content > noscript > div.infomessage,
 #app-content > div.errormessage {
   padding-left: 46px;
 }
 
 #app-content > div.infomessage,
+body > div.infomessage,
 #app-content > noscript > div.infomessage {
   background: #fff url(images/info.png) no-repeat 14px 8px;
 }

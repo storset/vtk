@@ -438,6 +438,11 @@ VrtxEditor.prototype.richtextEditorFacade = {
   isChanged: function(instance) {
     return instance.checkDirty(); 
   },
+  resetChanged: function() {
+    for (var instance in CKEDITOR.instances) {
+      CKEDITOR.instances[instance].resetDirty();
+    }
+  },
   getInstance: function(name) {
     return CKEDITOR.instances[name] || null;
   },

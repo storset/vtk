@@ -72,6 +72,9 @@
         _$("#editor").on("click", "#saveAndViewButton, #saveCopyButton", function(e) {
           var ok = performSave();
           if(!ok) return false;
+          if(this.id === "saveCopyButton") {
+            vrtxEditor.needToConfirm = false;
+          }
           if(typeof vrtxImageEditor !== "undefined" && vrtxImageEditor.save && !vrtxImageEditor.savedImage) {
             vrtxImageEditor.save(_$(this).attr("id"));
             e.preventDefault();
@@ -118,7 +121,6 @@
         if(!vrtxEditor.editorForm.hasClass("vrtx-course-schedule")) {
           saveMultipleInputFields();
         }
-        vrtxEditor.needToConfirm = false;
         return true;
       }
       

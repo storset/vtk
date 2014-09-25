@@ -75,8 +75,6 @@
         boxUrlTextField.val(vrtxAdmin._$.trim(boxUrlTextField.val()));
       }
       
-      vrtxEditor.needToConfirm = false;
-      
       return true;
     }
 

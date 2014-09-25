@@ -890,11 +890,17 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
             vrtxAdm.removeMsg("error");
             // Redirect after save
             if(vrtxAdm.editorSaveIsRedirectView) {
+              vrtxEditor.needToConfirm = false;
               var isCollection = _$("#resource-title.true").length;
               if(isCollection) {
                 window.location.href = "./?vrtx=admin&action=preview";
               } else {
                 window.location.href = window.location.pathname + "?vrtx=admin";
+              }
+            } else {
+              storeInitPropValues($("#app-content > form, #contents"));
+              if(typeof CKEDITOR != "undefined" && typeof vrtxEditor != "undefined") {
+                vrtxEditor.richtextEditorFacade.resetChanged();
               }
             }
           }).fail(handleAjaxSaveErrors);
@@ -2714,9 +2720,6 @@ function ajaxSave() {
         }
       },
       error: function (xhr, textStatus, errMsg) {
-        if(typeof vrtxEditor != "undefined") {
-          vrtxEditor.needToConfirm = true;
-        }
         d.close();
         vrtxAdmin.asyncEditorSavedDeferred.rejectWith(this, [xhr, textStatus]);
       }
@@ -2822,6 +2825,7 @@ function ajaxSaveAsCopy() {
           vrtxAdm.clientLastModified = vrtxAdm.serverLastModified; // Make sure we can proceed
           ajaxSave();
           _$.when(vrtxAdm.asyncEditorSavedDeferred).done(function () {
+            vrtxEditor.needToConfirm = false;
             if(!vrtxAdm.editorSaveIsRedirectView) {
               window.location.href = copyEditUri;
             } else {

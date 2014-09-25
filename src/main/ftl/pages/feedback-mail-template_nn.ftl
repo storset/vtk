@@ -6,5 +6,5 @@
   <pre>${comment}</pre>
 </#if>
 <#if userAgentViewport?has_content>
-  <p>Client/viewport: ${userAgentViewport?html}</p>
+  <p>Klient/viewport: ${userAgentViewport?html}</p>
 </#if>

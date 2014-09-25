@@ -509,6 +509,11 @@ vrtxEditor.richtextEditorFacade.toolbars.studyRefToolbar = [
 ];
 
 vrtxEditor.richtextEditorFacade.toolbars.messageToolbar = [
+  ['Source', 'PasteText', 'Bold', 'Italic', 'Strike', 'RemoveFormat', '-', 'Undo', 'Redo', '-', 'Link',
+   'Unlink', 'Subscript', 'Superscript', 'NumberedList', 'BulletedList', 'Outdent', 'Indent']
+];
+
+vrtxEditor.richtextEditorFacade.toolbars.resourcesTextToolbar = [
   ['Source', 'PasteText', 'Bold', 'Italic', 'Strike', '-', 'Undo', 'Redo', '-', 'Link',
    'Unlink', 'Subscript', 'Superscript', 'NumberedList', 'BulletedList', 'Outdent', 'Indent']
 ];
@@ -566,10 +571,11 @@ VrtxEditor.prototype.setupEditorToolbar = function setupEditorToolbar(c, opts) {
   return classification.isMain ? ((c.isCourseDescriptionB || c.isCourseGroup) ? tb.studyRefToolbar 
                                                                               : (c.isStudyContent ? tb.studyToolbar
                                                                                                   : tb.completeToolbar))
-                               : ((c.isMessage || c.isResourcesText) ? tb.messageToolbar
-                                                                     : (c.isStudyField ? tb.studyToolbar 
-                                                                                       : ((c.isIntro || c.isCaption || c.isScheduleComment) ? tb.inlineToolbar
-                                                                                                                                            : tb.withoutSubSuperToolbar)));
+                               : (c.isMessage ? tb.messageToolbar
+                                              : (c.isResourcesText ? tb.resourcesTextToolbar                     
+                                                                   : (c.isStudyField ? tb.studyToolbar 
+                                                                                     : ((c.isIntro || c.isCaption || c.isScheduleComment) ? tb.inlineToolbar
+                                                                                                                                            : tb.withoutSubSuperToolbar))));
 };
 
 VrtxEditor.prototype.setupEditorResizable = function setupEditorResizable(c, opts) {

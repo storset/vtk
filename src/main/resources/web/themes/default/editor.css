@@ -335,7 +335,7 @@ body#vrtx-simple-editor {
 }
 
 body#vrtx-simple-editor #app-content {
-  width: 495px;
+  width: 530px;
   padding: 20px 20px 68px 20px;
   position: relative;
   background: #fff;
@@ -355,11 +355,15 @@ body#vrtx-simple-editor .vrtx-focus-button {
 }
 
 body#vrtx-simple-editor #vrtx-message-cancel {
-  left: 95px;
+  left: 170px;
+}
+
+body#vrtx-simple-editor .simple-editor-save-view #vrtx-message-cancel {
+  left: 155px;
 }
 
 body#vrtx-simple-editor #vrtx-message-delete {
-  left: 173px;
+  left: 240px;
 }
 
 body#vrtx-simple-editor h3 {

@@ -80,7 +80,7 @@
   </script>
 </head>
 <body id="vrtx-simple-editor" class="forms-new">
-<div id="app-content">
+<div id="app-content" <#if !isCollection>class="simple-editor-save-view"</#if>>
   <#if isNew??>
     <h3>${vrtx.getMsg("message-listing.new-message")}<a href="javascript:void(0)" id="vrtx-close-simple-structured-editor" class="vrtx-close-dialog-editor"></a></h3>
   <#else>
@@ -103,7 +103,9 @@
           <textarea id="message" name="message"><#if properties?exists && properties.message?exists>${properties.message?html}</#if></textarea>
         </div>
       </div>
-      <input class="vrtx-focus-button" type="submit" id="save" name="save" value="${vrtx.getMsg("editor.save")}" />
+      
+      <input class="vrtx-focus-button" type="submit" id="save" name="save" 
+             value="<#if isCollection>${vrtx.getMsg("editor.saveAndPublish")}<#else>${vrtx.getMsg("editor.saveAndView")}</#if>" />
     </form>
     <form action="" method="post" id="vrtx-message-cancel">
       <@vrtx.csrfPreventionToken url />

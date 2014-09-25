@@ -110,7 +110,7 @@ function VrtxAdmin() {
   // Application logic
   this.editorSaveButtonName = "";
   this.editorSaveButton = null;
-  this.editorSaveIsRedirectView = false;
+  this.editorSaveIsRedirectPreview = false;
   this.asyncEditorSavedDeferred = null;
   this.asyncGetFormsInProgress = 0;
   this.asyncGetStatInProgress = false;
@@ -899,13 +899,13 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
           vrtxAdm.editorSaveButtonName = link.attr("name");
           vrtxAdm.editorSaveButton = link;
           // ! Edit single course schedule session
-          vrtxAdm.editorSaveIsRedirectView = (this.id === "saveAndViewButton" || this.id === "saveViewAction")
+          vrtxAdm.editorSaveIsRedirectPreview = (this.id === "saveAndViewButton" || this.id === "saveViewAction")
                                           && (typeof vrtxEditor === "undefined" || !(vrtxEditor.editorForm.hasClass("vrtx-course-schedule") && onlySessionId.length));
           ajaxSave();
           _$.when(vrtxAdm.asyncEditorSavedDeferred).done(function () {
             vrtxAdm.removeMsg("error");
             // Redirect after save
-            if(vrtxAdm.editorSaveIsRedirectView) {
+            if(vrtxAdm.editorSaveIsRedirectPreview) {
               vrtxEditor.needToConfirm = false;
               var isCollection = _$("#resource-title.true").length;
               if(isCollection) {
@@ -2832,7 +2832,7 @@ function ajaxSaveAsCopy() {
           ajaxSave();
           _$.when(vrtxAdm.asyncEditorSavedDeferred).done(function () {
             vrtxEditor.needToConfirm = false;
-            if(!vrtxAdm.editorSaveIsRedirectView) {
+            if(!vrtxAdm.editorSaveIsRedirectPreview) {
               window.location.href = copyEditUri;
             } else {
               window.location.href = copyUri + "/?vrtx=admin";

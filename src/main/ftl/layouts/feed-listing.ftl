@@ -3,10 +3,10 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 <#if conf.auth && (feed.entries?size &gt; 0 || conf.includeIfEmpty)>
 <div class="vrtx-feed<#if conf.itemPicture?exists > with-images</#if>">
-  <#if overrideFeedTitle?exists && feed.link?exists>
-  	<a class="feed-title" href="${feed.link}">${overrideFeedTitle}</a>
-  <#elseif conf.feedTitle?exists && feed.link?exists>
-    <a class="feed-title" href="${feed.link}">${feed.title?html}</a> 
+  <#if overrideFeedTitle?exists && viewURL?exists>
+  	<a class="feed-title" href="${viewURL}">${overrideFeedTitle}</a>
+  <#elseif conf.feedTitle?exists && viewURL?exists>
+    <a class="feed-title" href="${viewURL}">${feed.title?html}</a> 
   <#elseif conf.feedTitleValue?exists>
     <div class="feed-title">${conf.feedTitleValue?html}</div> 
   </#if>
@@ -61,8 +61,8 @@
 	 </span>
   </#if>
 
-  <#if conf.bottomLinkToAllMessages?exists && feed.link?exists>
-  <a class="all-messages" href="${feed.link}">
+  <#if conf.bottomLinkToAllMessages?exists && viewURL?exists>
+  <a class="all-messages" href="${viewURL}">
    <@vrtx.msg code="decorating.feedComponent.allMessages" default="More..." />
   </a>
   </#if>

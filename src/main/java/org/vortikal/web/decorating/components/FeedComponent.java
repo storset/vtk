@@ -231,6 +231,7 @@ public class FeedComponent extends AbstractFeedComponent {
         }
 
         baseURL.clearParameters();
+        model.put("viewURL", baseURL);
 
         List<String> elementOrder = getElementOrder(PARAMETER_FEED_ELEMENT_ORDER, request);
         model.put("elementOrder", elementOrder);

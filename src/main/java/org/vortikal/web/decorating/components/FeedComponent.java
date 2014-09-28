@@ -203,9 +203,10 @@ public class FeedComponent extends AbstractFeedComponent {
         SyndFeed feed = null;
         URL requestURL = RequestContext.getRequestContext().getRequestURL();
         URL baseURL = null;
+        URL feedURL = null;
         boolean auth = true;
         try {
-            URL feedURL = requestURL.relativeURL(url);
+            feedURL = requestURL.relativeURL(url);
             if (feedURL.getHost().equals(requestURL.getHost())) {
                 baseURL = new URL(requestURL);
                 retrieveLocalResource(feedURL);
@@ -231,7 +232,7 @@ public class FeedComponent extends AbstractFeedComponent {
         }
 
         baseURL.clearParameters();
-        model.put("viewURL", baseURL);
+        model.put("viewURL", feedURL.clearParameters());
 
         List<String> elementOrder = getElementOrder(PARAMETER_FEED_ELEMENT_ORDER, request);
         model.put("elementOrder", elementOrder);

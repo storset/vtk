@@ -9,9 +9,9 @@ div.vrtx-comments {
   padding: 1em 0 0 0;
   height: 1%;
   clear: both;
-  border-radius: .75em;  /* CSS3 */
+  border-radius: .75em;
   -moz-border-radius: .75em;
-  -webkit-border-radius: .75em; 
+  -webkit-border-radius: .75em;
 }
 
 div.vrtx-comments  div.comments-header {

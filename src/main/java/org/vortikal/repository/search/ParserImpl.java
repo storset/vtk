@@ -166,7 +166,7 @@ public class ParserImpl implements Parser, InitializingBean {
 
         result.add(new TypedSortField(PropertySet.URI_IDENTIFIER, uriDirection));
 
-        return new SortingImpl(result);
+        return new Sorting(result);
     }
 
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2009, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,31 +28,47 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.index;
+package org.vortikal.repository.index.consistency;
 
-import java.io.IOException;
+import java.util.Set;
+import org.vortikal.repository.Acl;
 
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
-import org.vortikal.repository.index.mapping.DocumentMapper;
+import org.vortikal.repository.Path;
+import org.vortikal.repository.PropertySetImpl;
 
-/**
- * Unordered property set index iterator.
- * 
- * @author oyviste
- *
- */
-class PropertySetIndexUnorderedIterator extends AbstractDocumentIterator {
+public class InvalidACLInconsistency extends
+        InvalidDataInconsistency {
 
-    private DocumentMapper mapper;
-    public PropertySetIndexUnorderedIterator(IndexReader reader, DocumentMapper mapper)
-            throws IOException {
-        super(reader);
-        this.mapper = mapper;
+    private Acl indexAcl;
+    
+    public InvalidACLInconsistency(Path uri, PropertySetImpl daoPropSet, 
+                                                 Acl databaseAcl, 
+                                                 Acl indexAcl) {
+        super(uri, daoPropSet, databaseAcl);
+        this.indexAcl = indexAcl;
+    }
+    
+    @Override
+    public boolean canRepair() {
+        return true;
+    }
+    
+    @Override
+    public String getDescription() {
+        StringBuilder desc = new StringBuilder(
+                "Invalid ACL read principals inconsistency for index property set at URI '");
+        desc.append(getUri()).append("'");
+        desc.append(", repository ACL = ").append(
+                super.acl);
+        desc.append(", index ACL =").append(
+                this.indexAcl);
+
+        return desc.toString();
     }
 
-    protected Object getObjectFromDocument(Document document) throws Exception {
-        return this.mapper.getPropertySet(document);
+    @Override
+    public String toString() {
+        return getDescription();
     }
-
+    
 }

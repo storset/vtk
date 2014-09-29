@@ -46,7 +46,7 @@ import org.vortikal.repository.search.ConfigurablePropertySelect;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
-import org.vortikal.repository.search.SortingImpl;
+import org.vortikal.repository.search.Sorting;
 import org.vortikal.repository.search.TypedSortField;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.OrQuery;
@@ -116,7 +116,7 @@ public class RepositorySearchResourceTemplateLocator implements ResourceTemplate
         
         search.setPropertySelect(select);
         
-        SortingImpl sorting = new SortingImpl();
+        Sorting sorting = new Sorting();
         sorting.addSortField(new TypedSortField(PropertySet.NAME_IDENTIFIER));
         search.setSorting(sorting); 
         

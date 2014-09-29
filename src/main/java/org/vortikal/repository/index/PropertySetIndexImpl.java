@@ -32,26 +32,32 @@ package org.vortikal.repository.index;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.index.AtomicReader;
+import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.DocsEnum;
+
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermDocs;
-import org.apache.lucene.index.TermEnum;
-import org.apache.lucene.store.Directory;
+import org.apache.lucene.index.Terms;
+import org.apache.lucene.index.TermsEnum;
+import org.apache.lucene.search.DocIdSetIterator;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.util.Bits;
+import org.apache.lucene.util.BytesRef;
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.index.mapping.DocumentMapper;
 import org.vortikal.repository.index.mapping.DocumentMappingException;
-import org.vortikal.repository.index.mapping.FieldNames;
-import org.vortikal.security.Principal;
+import org.vortikal.repository.index.mapping.ResourceFields;
 
 /**
  * <code>PropertySet</code> index using Lucene.
@@ -60,36 +66,27 @@ public class PropertySetIndexImpl implements PropertySetIndex {
    
     Log logger = LogFactory.getLog(PropertySetIndexImpl.class);
 
-    private LuceneIndexManager indexAccessor; // Underlying Lucene index
-                                              // accessor.
+    private IndexManager index; 
     private DocumentMapper documentMapper;
 
     @SuppressWarnings("unchecked")
     @Override
-    public void addPropertySet(PropertySet propertySet,
-                               Set<Principal> aclReadPrincipals) throws IndexException {
+    public void addPropertySet(PropertySet propertySet, Acl acl) throws IndexException {
 
         // NOTE: Write-locking should be done above this level.
         // This is needed to ensure the possibility of efficiently batching
         // together operations without interruption.
         try {
-            Document doc = this.documentMapper.getDocument((PropertySetImpl) propertySet, aclReadPrincipals);
-
+            Document doc = this.documentMapper.getDocument((PropertySetImpl) propertySet, acl);
             if (logger.isDebugEnabled()) {
-                logger.debug("Adding new property set at URI '" + propertySet.getURI() + "'");
-                logger.debug("Document mapper created the following document: ");
-
-                for (Fieldable field: doc.getFields()) {
-                    if (field.isBinary()) {
-                        logger.debug("Field '" + field.name() + "', value: [BINARY]");
-                    } else {
-                        logger.debug("Field '" + field.name() + "', value: '" + field.stringValue()
-                                + "'");
-                    }
+                StringBuilder docFields = new StringBuilder("Document mapper created the following document for " + propertySet.getURI() + ":\n");
+                for (IndexableField field: doc) {
+                    docFields.append(field.toString()).append('\n');
                 }
+                logger.debug(docFields.toString());
             }
 
-            this.indexAccessor.getIndexWriter().addDocument(doc);
+            this.index.getIndexWriter().addDocument(doc);
         } catch (DocumentMappingException dme) {
             logger.warn("Could not map property set to index document", dme);
             throw new IndexException("Could not map property set to index document", dme);
@@ -99,18 +96,17 @@ public class PropertySetIndexImpl implements PropertySetIndex {
     }
     
     @Override
-    public void updatePropertySet(PropertySet propertySet,
-                                  Set<Principal> aclReadPrincipals) throws IndexException {
+    public void updatePropertySet(PropertySet propertySet, Acl acl) throws IndexException {
         
         try {
-            Term uriTerm = new Term(FieldNames.URI_FIELD_NAME, 
+            Term uriTerm = new Term(ResourceFields.URI_FIELD_NAME, 
                                         propertySet.getURI().toString());
 
-            IndexWriter writer = this.indexAccessor.getIndexWriter();
+            IndexWriter writer = this.index.getIndexWriter();
             
             writer.deleteDocuments(uriTerm);
             
-            addPropertySet(propertySet, aclReadPrincipals);
+            addPropertySet(propertySet, acl);
         } catch (IOException io) {
             throw new IndexException(io);
         }
@@ -120,9 +116,9 @@ public class PropertySetIndexImpl implements PropertySetIndex {
     public void deletePropertySetTree(Path rootUri) throws IndexException {
 
         try {
-            IndexWriter writer = this.indexAccessor.getIndexWriter();
-            writer.deleteDocuments(new Term(FieldNames.URI_FIELD_NAME, rootUri.toString()));
-            writer.deleteDocuments(new Term(FieldNames.URI_ANCESTORS_FIELD_NAME, rootUri.toString()));
+            IndexWriter writer = this.index.getIndexWriter();
+            writer.deleteDocuments(new Term(ResourceFields.URI_FIELD_NAME, rootUri.toString()), 
+                                   new Term(ResourceFields.URI_ANCESTORS_FIELD_NAME, rootUri.toString()));
 
         } catch (IOException io) {
             throw new IndexException(io);
@@ -132,8 +128,8 @@ public class PropertySetIndexImpl implements PropertySetIndex {
     @Override
     public void deletePropertySet(Path uri) throws IndexException {
         try {
-            Term uriTerm = new Term(FieldNames.URI_FIELD_NAME, uri.toString());
-            this.indexAccessor.getIndexWriter().deleteDocuments(uriTerm);
+            Term uriTerm = new Term(ResourceFields.URI_FIELD_NAME, uri.toString());
+            this.index.getIndexWriter().deleteDocuments(uriTerm);
         } catch (IOException io) {
             throw new IndexException(io);
         }
@@ -141,42 +137,88 @@ public class PropertySetIndexImpl implements PropertySetIndex {
 
     @Override
     public int countAllInstances() throws IndexException {
-        TermEnum termEnum = null;
-        TermDocs termDocs = null;
-        int count = 0;
-
+        
+        // Count all docs with URI field that are not deleted
+        IndexSearcher searcher = null;
         try {
-            IndexReader reader = this.indexAccessor.getIndexReader();
-            Term start = new Term(FieldNames.URI_FIELD_NAME, "");
-            String enumField = start.field();
-            termEnum = reader.terms(start);
-            termDocs = reader.termDocs(start);
-
-            while (termEnum.term() != null
-                    && termEnum.term().field() == enumField) { // Interned String comparison
-                termDocs.seek(termEnum);
-                while (termDocs.next()) {
-                    ++count;
+            int count=0;
+            searcher = index.getIndexSearcher();
+            IndexReader topLevel = searcher.getIndexReader();
+            for (AtomicReaderContext arc: topLevel.leaves()) {
+                final AtomicReader ar = arc.reader();
+                final Bits liveDocs = ar.getLiveDocs();
+                Terms terms = ar.terms(ResourceFields.URI_FIELD_NAME);
+                if (terms == null) {
+                    continue;
                 }
-                termEnum.next();
+                TermsEnum te = terms.iterator(null);
+                DocsEnum de = null;
+                BytesRef termText;
+                while ((termText = te.next()) != null) {
+                    de = te.docs(liveDocs, de, DocsEnum.FLAG_NONE);
+                    while (de.nextDoc() != DocIdSetIterator.NO_MORE_DOCS) {
+                        ++count;
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("Count = " + count 
+                                    + ", PropertySet URI = " + termText.utf8ToString());
+                        }
+                    }
+                }
             }
+            
+            return count;
+
         } catch (IOException io) {
             throw new IndexException(io);
-        } finally {
-            try {
-                termEnum.close();
-                termDocs.close();
-            } catch (IOException io) {
+        }
+        finally {
+            if (searcher != null) {
+                try {
+                    index.releaseIndexSearcher(searcher);
+                } catch (IOException io) {
+                    throw new IndexException(io);
+                }
             }
         }
-
-        return count;
+        
+// Old Lucene3-code:        
+//        TermEnum termEnum = null;
+//        TermDocs termDocs = null;
+//        int count = 0;
+//
+//        try {
+//            IndexReader reader = this.indexAccessor.getIndexReader();
+//            Term start = new Term(FieldNames.URI_FIELD_NAME, "");
+//            String enumField = start.field();
+//            termEnum = reader.terms(start);
+//            termDocs = reader.termDocs(start);
+//
+//            while (termEnum.term() != null
+//                    && termEnum.term().field() == enumField) { // Interned String comparison
+//                termDocs.seek(termEnum);
+//                while (termDocs.next()) {
+//                    ++count;
+//                }
+//                termEnum.next();
+//            }
+//        } catch (IOException io) {
+//            throw new IndexException(io);
+//        } finally {
+//            try {
+//                termEnum.close();
+//                termDocs.close();
+//            } catch (IOException io) {
+//            }
+//        }
+//
+//        return count;
     }
 
     @Override
-    public void clearContents() throws IndexException {
+    public void clear() throws IndexException {
         try {
-            this.indexAccessor.clearContents();
+            this.index.close();
+            this.index.open(true);
         } catch (IOException io) {
             throw new IndexException(io);
         }
@@ -185,25 +227,18 @@ public class PropertySetIndexImpl implements PropertySetIndex {
 
     @Override
     public PropertySetIndexRandomAccessor randomAccessor() throws IndexException {
-        PropertySetIndexRandomAccessor accessor = null;
-
         try {
-            accessor = new PropertySetIndexRandomAccessorImpl(this.indexAccessor.getIndexReader(),
-                    this.documentMapper);
+            return new PropertySetIndexRandomAccessorImpl(index, documentMapper);
         } catch (IOException io) {
             throw new IndexException(io);
         }
-
-        return accessor;
     }
-
 
     @SuppressWarnings("unchecked")
     @Override
-    public Iterator propertySetIterator() throws IndexException {
+    public Iterator<Path> orderedUriIterator() throws IndexException {
         try {
-            return new PropertySetIndexUnorderedIterator(this.indexAccessor.getIndexReader(),
-                    this.documentMapper);
+            return new UriIterator(index);
         } catch (IOException io) {
             throw new IndexException(io);
         }
@@ -212,42 +247,7 @@ public class PropertySetIndexImpl implements PropertySetIndex {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Iterator orderedPropertySetIterator() throws IndexException {
-        try {
-            return new PropertySetIndexIterator(this.indexAccessor.getIndexReader(),
-                    this.documentMapper);
-        } catch (IOException io) {
-            throw new IndexException(io);
-        }
-    }
-
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public Iterator orderedSubtreePropertySetIterator(Path rootUri) throws IndexException {
-        try {
-            return new PropertySetIndexSubtreeIterator(this.indexAccessor.getIndexReader(),
-                    this.documentMapper, rootUri.toString());
-        } catch (IOException io) {
-            throw new IndexException(io);
-        }
-    }
-
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public Iterator orderedUriIterator() throws IndexException {
-        try {
-            return new PropertySetIndexUriIterator(this.indexAccessor.getIndexReader());
-        } catch (IOException io) {
-            throw new IndexException(io);
-        }
-    }
-
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public void close(Iterator iterator) throws IndexException {
+    public void close(Iterator<?> iterator) throws IndexException {
         try {
             if ((iterator instanceof CloseableIterator)) {
                 ((CloseableIterator) iterator).close();
@@ -263,14 +263,14 @@ public class PropertySetIndexImpl implements PropertySetIndex {
 
     @Override
     public boolean isClosed() {
-        return this.indexAccessor.isClosed();
+        return this.index.isClosed();
     }
 
 
     @Override
     public void commit() throws IndexException {
         try {
-            this.indexAccessor.commit();
+            this.index.commit();
         } catch (IOException io) {
             throw new IndexException(io);
         }
@@ -281,7 +281,7 @@ public class PropertySetIndexImpl implements PropertySetIndex {
     public void close() throws IndexException {
         try {
             logger.info("Closing index ..");
-            this.indexAccessor.close();
+            this.index.close();
         } catch (IOException io) {
             throw new IndexException(io);
         }
@@ -292,7 +292,8 @@ public class PropertySetIndexImpl implements PropertySetIndex {
     public void reinitialize() throws IndexException {
         try {
             logger.info("Re-initializing index ..");
-            this.indexAccessor.reinitialize();
+            this.index.close();
+            this.index.open();
         } catch (IOException io) {
             throw new IndexException(io);
         }
@@ -300,26 +301,23 @@ public class PropertySetIndexImpl implements PropertySetIndex {
 
 
     @Override
-    public void addIndexContents(PropertySetIndex index) throws IndexException {
-        if (!(index instanceof PropertySetIndexImpl)) {
+    public void addIndexContents(PropertySetIndex propSetIndex) throws IndexException {
+        if (!(propSetIndex instanceof PropertySetIndexImpl)) {
             throw new IllegalArgumentException(
                     "Only 'org.vortikal.repository.query.PropertySetIndexImpl' instances are supported.");
         }
 
         try {
-            PropertySetIndexImpl indexImpl = (PropertySetIndexImpl) index;
-
-            LuceneIndexManager accessor = indexImpl.indexAccessor;
-
-            Directory[] dirs = { accessor.getIndexReader().directory() };
+            PropertySetIndexImpl indexImpl = (PropertySetIndexImpl) propSetIndex;
+            IndexManager otherIndex = indexImpl.index;
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Adding all contents of index '" + indexImpl.getId() + "' to '"
                         + this.getId() + "' (this index)");
             }
             
-            IndexWriter indexWriter = this.indexAccessor.getIndexWriter();
-            indexWriter.addIndexes(dirs);
+            IndexWriter indexWriter = index.getIndexWriter();
+            indexWriter.addIndexes(otherIndex.getIndexSearcher().getIndexReader());
             
             if (logger.isDebugEnabled()){
                 logger.debug("Optimizing index ..");
@@ -334,62 +332,65 @@ public class PropertySetIndexImpl implements PropertySetIndex {
 
     @Override
     public void validateStorageFacility() throws StorageCorruptionException {
+        final String storageId = index.getStorageId();
+        boolean ok;
         try {
-            this.indexAccessor.corruptionTest();
+            ok = this.index.checkIndex();
         } catch (IOException io) {
-            String storagePath = this.indexAccessor.getStorageRootPath() + "/"
-                    + this.indexAccessor.getStorageId();
-
             throw new StorageCorruptionException(
-                    "Possible Lucene index corruption detected (storage path = '" 
-                    + storagePath + "'): ", io);
+                    "Possible index corruption detected for index " + storageId, io);
+        }
+        
+        if (!ok) {
+            throw new StorageCorruptionException(
+                    "Possible index corruption detected for index " + storageId);
         }
     }
 
+    /**
+     * It is no longer recommended to do explicit optimizations to one segment in
+     * Lucene.
+     */
     @Override
     public void optimize() throws IndexException {
         try {
-            this.indexAccessor.optimize();
+            this.index.getIndexWriter().forceMerge(1, true);
+            this.index.getIndexWriter().commit();
         } catch (IOException io) {
-            throw new IndexException("IOException while optimizing", io);
+            throw new IndexException("IOException while merging", io);
         }
     }
 
-
+    @Override
+    public String getId() {
+        // Delegate to using accessor storage ID
+        return index.getStorageId();
+    }
+    
     @Override
     public boolean lock() {
-        return this.indexAccessor.writeLockAcquire();
+        return index.lockAcquire();
     }
-
 
     @Override
     public void unlock() throws IndexException {
-        this.indexAccessor.writeLockRelease();
+        index.lockRelease();
     }
 
 
     @Override
     public boolean lock(long timeout) {
-        return this.indexAccessor.writeLockAttempt(timeout);
+        return index.lockAttempt(timeout);
     }
-
 
     @Required
     public void setDocumentMapper(DocumentMapper documentMapper) {
         this.documentMapper = documentMapper;
     }
 
-
     @Required
-    public void setIndexAccessor(LuceneIndexManager indexAccessor) {
-        this.indexAccessor = indexAccessor;
-    }
-
-
-    @Override
-    public String getId() {
-        // Delegate to using accessor storage ID
-        return this.indexAccessor.getStorageId();
+    public void setIndexAccessor(IndexManager index) {
+        this.index = index;
     }
 
 }

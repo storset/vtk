@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, University of Oslo, Norway
+/* Copyright (c) 2014, University of Oslo, Norway
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,39 +32,45 @@
 package org.vortikal.repository.index;
 
 import java.io.IOException;
-
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.BooleanClause.Occur;
+import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.SearcherFactory;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopFieldDocs;
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.index.mapping.FieldNames;
+import org.vortikal.repository.index.mapping.PropertyFields;
+import org.vortikal.repository.index.mapping.ResourceFields;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.query.LuceneQueryBuilder;
 import org.vortikal.repository.search.query.PropertyExistsQuery;
 
 /**
- * Just warms up by static hard-coded queries and sortings ...
+ *
  */
-public class IndexReaderWarmupImpl implements IndexReaderWarmup {
+public class WarmupSearcherFactory extends SearcherFactory {
 
     private PropertyTypeDefinition lastModifiedPropDef;
     private PropertyTypeDefinition hiddenPropDef;
     private LuceneQueryBuilder luceneQueryBuilder;
 
     @Override
-    public void warmup(IndexReader reader) throws IOException {
+    public IndexSearcher newSearcher(IndexReader reader) throws IOException {
+        IndexSearcher searcher = super.newSearcher(reader);
+        warmup(searcher);
+        return searcher;
+    }
+
+    private void warmup(IndexSearcher searcher) throws IOException {
 
         // Do a simple warmup first with basic query
-        IndexSearcher searcher = new IndexSearcher(reader);
         Query luceneQuery = getWarmupQuery();
         Sort luceneSorting = getWarmupSorting();
         Filter luceneFilter = null;
@@ -77,31 +83,31 @@ public class IndexReaderWarmupImpl implements IndexReaderWarmup {
 
         // Implicitly warm up query builder internal filter caching for the new reader instance.
         // This should warm up:
-        // 0. Deleted docs filter cache
         // 1. Inverted hidden-prop existence query filter cache
         // 2. ACL filter cache for anonymous user
         // Enabling pre-building of all this caching should be very good for performance of new reader
         // after warmup.
+        
         Search search = new Search();
         search.setLimit(2500);
         PropertyExistsQuery peq = new PropertyExistsQuery(this.hiddenPropDef, true);
         search.setQuery(peq);
-        luceneQuery = this.luceneQueryBuilder.buildQuery(search.getQuery(), reader);
-        luceneFilter = this.luceneQueryBuilder.buildSearchFilter(null, search, reader);
+        luceneQuery = this.luceneQueryBuilder.buildQuery(search.getQuery(), searcher);
+        luceneFilter = this.luceneQueryBuilder.buildSearchFilter(null, search, searcher);
         searcher.search(luceneQuery, luceneFilter, search.getLimit());
     }
 
     private Query getWarmupQuery() {
         BooleanQuery bq = new BooleanQuery();
-        bq.add(new TermQuery(new Term(FieldNames.URI_ANCESTORS_FIELD_NAME, "/")), Occur.SHOULD);
-        bq.add(new TermQuery(new Term(FieldNames.RESOURCETYPE_FIELD_NAME, "collection")), Occur.SHOULD);
+        bq.add(new TermQuery(new Term(ResourceFields.URI_ANCESTORS_FIELD_NAME, "/")), BooleanClause.Occur.SHOULD);
+        bq.add(new TermQuery(new Term(ResourceFields.RESOURCETYPE_FIELD_NAME, "collection")), BooleanClause.Occur.SHOULD);
         return bq;
     }
 
     private Sort getWarmupSorting() {
         SortField[] fields = new SortField[2];
-        fields[0] = new SortField(FieldNames.getSearchFieldName(this.lastModifiedPropDef, false), SortField.STRING, true);
-        fields[1] = new SortField(FieldNames.URI_FIELD_NAME, SortField.STRING);
+        fields[0] = new SortField(PropertyFields.sortFieldName(this.lastModifiedPropDef), SortField.Type.STRING, true);
+        fields[1] = new SortField(ResourceFields.URI_SORT_FIELD_NAME, SortField.Type.STRING);
         return new Sort(fields);
     }
 
@@ -119,4 +125,5 @@ public class IndexReaderWarmupImpl implements IndexReaderWarmup {
     public void setLuceneQueryBuilder(LuceneQueryBuilder luceneQueryBuilder) {
         this.luceneQueryBuilder = luceneQueryBuilder;
     }
+    
 }

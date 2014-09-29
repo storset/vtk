@@ -31,14 +31,21 @@
 package org.vortikal.repository.search.query.filter;
 
 import java.io.IOException;
+import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.DocsEnum;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermDocs;
+import org.apache.lucene.index.Terms;
+import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.search.DocIdSet;
+import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.WildcardTermEnum;
-import org.apache.lucene.util.OpenBitSet;
+import org.apache.lucene.search.WildcardQuery;
+import org.apache.lucene.util.Bits;
+import org.apache.lucene.util.FixedBitSet;
+import org.apache.lucene.util.automaton.Automaton;
+import org.apache.lucene.util.automaton.CompiledAutomaton;
 
 /**
  * A Lucene <code>Filter</code> that filters on the given wildcard term.
@@ -62,37 +69,75 @@ import org.apache.lucene.util.OpenBitSet;
 public class WildcardTermFilter extends Filter {
 
     private static final long serialVersionUID = -6256371462543503386L;
-    private Term wildcardTerm;
+    private final Term wildcardTerm;
+    private final CompiledAutomaton wildcardStateMachine;
     
     public WildcardTermFilter(Term wildcardTerm) {
         this.wildcardTerm = wildcardTerm;
+        Automaton wildCardAutomaton = WildcardQuery.toAutomaton(wildcardTerm);
+        this.wildcardStateMachine = new CompiledAutomaton(wildCardAutomaton);
     }
 
+    /**
+     * Will be called multiple times by Lucene depending on number of segments
+     * in index.
+     * 
+     * @param context Atomic (single segment) reader context.
+     * @param acceptDocs provided by Lucene with bits for live (non-deleted) docs.
+     * @return matching doc ids
+     * @throws IOException 
+     */
     @Override
-    public DocIdSet getDocIdSet(IndexReader reader) throws IOException {
-        OpenBitSet docIdSet = new OpenBitSet(reader.maxDoc());
-        String fieldName = this.wildcardTerm.field();
-        WildcardTermEnum tenum = new WildcardTermEnum(reader, this.wildcardTerm);
-        TermDocs tdocs = reader.termDocs();
-        try {
-            do {
-                Term term = tenum.term();
-                if (term != null && term.field() == fieldName) { // interned string comparison
-                    tdocs.seek(tenum);
-
-                    while (tdocs.next()) {
-                        docIdSet.fastSet(tdocs.doc());
-                    }
-                } else {
-                    break;
-                }
-            } while (tenum.next());
-        } finally {
-            tenum.close();
-            tdocs.close();
+    public DocIdSet getDocIdSet(AtomicReaderContext context, Bits acceptDocs) throws IOException {
+        Terms terms = context.reader().terms(wildcardTerm.field());
+        if (terms == null) {
+            return null;
         }
-
-        return docIdSet;
+        
+        TermsEnum matchingTerms = wildcardStateMachine.getTermsEnum(terms);
+        if (matchingTerms.next() != null) {
+            FixedBitSet bits = new FixedBitSet(context.reader().maxDoc());
+            DocsEnum docsEnum = null;
+            do {
+                docsEnum = matchingTerms.docs(acceptDocs, docsEnum, DocsEnum.FLAG_NONE);
+                int docid;
+                while ((docid = docsEnum.nextDoc()) != DocIdSetIterator.NO_MORE_DOCS) {
+                    bits.set(docid);
+                }
+            } while (matchingTerms.next() != null);
+            
+            return bits;
+        }
+        
+        return null;
     }
+        
+
+// Old Lucene3-impl:
+//    public DocIdSet getDocIdSet(IndexReader reader) throws IOException {
+//        OpenBitSet docIdSet = new OpenBitSet(reader.maxDoc());
+//        String fieldName = this.wildcardTerm.field();
+//        WildcardTermEnum tenum = new WildcardTermEnum(reader, this.wildcardTerm);
+//        TermDocs tdocs = reader.termDocs();
+//        try {
+//            do {
+//                Term term = tenum.term();
+//                if (term != null && term.field() == fieldName) { // interned string comparison
+//                    tdocs.seek(tenum);
+//
+//                    while (tdocs.next()) {
+//                        docIdSet.fastSet(tdocs.doc());
+//                    }
+//                } else {
+//                    break;
+//                }
+//            } while (tenum.next());
+//        } finally {
+//            tenum.close();
+//            tdocs.close();
+//        }
+//
+//        return docIdSet;
+//    }
     
 }

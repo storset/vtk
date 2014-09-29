@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, University of Oslo, Norway
+/* Copyright (c) 2014, University of Oslo, Norway
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,18 +29,30 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.vortikal.repository.index;
+package org.vortikal.testing.mocktypes;
 
-import java.io.IOException;
-
-import org.apache.lucene.index.IndexReader;
+import java.util.List;
+import org.vortikal.repository.RepositoryException;
+import org.vortikal.security.InvalidPrincipalException;
+import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalFactory;
+import org.vortikal.security.PrincipalImpl;
 
 /**
- * TODO Lucene 3.5 has built-in interface for warming up readers. Use that after upgrade.
- * @see org.apache.lucene.index.IndexWriterConfig#setMergedSegmentWarmer(org.apache.lucene.index.IndexWriter.IndexReaderWarmer) 
+ *
  */
-public interface IndexReaderWarmup {
+public class MockPrincipalFactory extends PrincipalFactory {
 
-    void warmup(IndexReader reader) throws IOException;
+    @Override
+    public Principal getPrincipal(String id, Principal.Type type)
+            throws InvalidPrincipalException {
+        return new PrincipalImpl(id, type);
+    }
 
+    @Override
+    public List<Principal> search(String filter, Principal.Type type)
+            throws RepositoryException {
+        return null;
+    }
+    
 }

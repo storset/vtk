@@ -30,10 +30,60 @@
  */
 package org.vortikal.repository.search;
 
+import java.util.LinkedList;
 import java.util.List;
 
-public interface Sorting {
+/**
+ * Represents a query result sorting specification, with one or more sorting fields.
+ */
+public class Sorting {
 
-    public List<SortField> getSortFields();
+    private final List<SortField> sortFields;
+    
+    public Sorting() {
+        this.sortFields = new LinkedList<SortField>();
+    }
+    
+    public Sorting(List<SortField> sortFields) {
+        this.sortFields = sortFields;
+    }
+    
+    public void addSortField(SortField sortField) {
+        this.sortFields.add(sortField);
+    }
+    
+    public List<SortField> getSortFields() {
+        return this.sortFields;
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder(this.getClass().getName());
+        sb.append(": ").append(this.sortFields);
+        return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Sorting other = (Sorting) obj;
+        if (this.sortFields != other.sortFields && 
+                (this.sortFields == null || !this.sortFields.equals(other.sortFields))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 79 * hash + (this.sortFields != null ? this.sortFields.hashCode() : 0);
+        return hash;
+    }
 
 }

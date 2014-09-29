@@ -31,11 +31,10 @@
 
 package org.vortikal.repository.index.consistency;
 
-import java.util.Set;
+import org.vortikal.repository.Acl;
 
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySetImpl;
-import org.vortikal.security.Principal;
 
 /**
  *
@@ -46,9 +45,9 @@ public class InvalidResourceTypeInconsistency extends InvalidDataInconsistency {
     private String daoResourceType;
     
     public InvalidResourceTypeInconsistency(Path uri,
-            PropertySetImpl repositoryPropSet, Set<Principal> aclReadPrincipals,
+            PropertySetImpl repositoryPropSet, Acl acl,
             String indexResourceType, String daoResourceType) {
-        super(uri, repositoryPropSet, aclReadPrincipals);
+        super(uri, repositoryPropSet, acl);
         this.indexResourceType = indexResourceType;
         this.daoResourceType = daoResourceType;
     }

@@ -41,7 +41,7 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.SortFieldDirection;
-import org.vortikal.repository.search.SortingImpl;
+import org.vortikal.repository.search.Sorting;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.PropertyTermQuery;
 import org.vortikal.repository.search.query.TermOperator;
@@ -110,7 +110,7 @@ public class MyDocumentsReporter extends DocumentReporter {
 	        query.add(new UriPrefixQuery(currentResource.getURI().toString()));
 	        query.add(new PropertyTermQuery(this.createdByPropDef, currentUser.getQualifiedName(), TermOperator.EQ));
 
-	        SortingImpl sorting = new SortingImpl();
+	        Sorting sorting = new Sorting();
 	        sorting.addSortField(new PropertySortField(this.sortPropDef, this.sortOrder));
 	        
 	        /* Include unpublished */

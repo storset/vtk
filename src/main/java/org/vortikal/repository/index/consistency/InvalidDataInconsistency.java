@@ -30,15 +30,14 @@
  */
 package org.vortikal.repository.index.consistency;
 
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.index.IndexException;
 import org.vortikal.repository.index.PropertySetIndex;
-import org.vortikal.security.Principal;
 
 /**
  * General data inconsistency error when there is a mismatch between the property set data in the index
@@ -51,8 +50,8 @@ public class InvalidDataInconsistency extends RequireOriginalDataConsistencyErro
     private static final Log LOG = LogFactory.getLog(InvalidDataInconsistency.class);
     
     public InvalidDataInconsistency(Path uri, PropertySetImpl repositoryPropSet, 
-                                    Set<Principal> aclReadPrincipals) {
-        super(uri, repositoryPropSet, aclReadPrincipals);
+                                   Acl acl) {
+        super(uri, repositoryPropSet, acl);
     }
 
     @Override
@@ -68,6 +67,7 @@ public class InvalidDataInconsistency extends RequireOriginalDataConsistencyErro
 
     /**
      * Fix by deleting property set in index, and re-adding pristine repository copy
+     * @param index
      */
     @Override
     protected void repair(PropertySetIndex index) throws IndexException {
@@ -75,7 +75,7 @@ public class InvalidDataInconsistency extends RequireOriginalDataConsistencyErro
         LOG.info("Repairing invalid data for property set at URI '"
                 + getUri() + "'");
         
-        index.updatePropertySet(super.repositoryPropSet, super.repositoryAclReadPrincipals);
+        index.updatePropertySet(super.repositoryPropSet, super.acl);
     }
     
     @Override

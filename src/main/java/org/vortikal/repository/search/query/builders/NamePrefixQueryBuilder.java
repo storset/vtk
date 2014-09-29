@@ -35,51 +35,40 @@ import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.PrefixFilter;
 import org.apache.lucene.search.Query;
-import org.vortikal.repository.index.mapping.FieldNames;
+import org.vortikal.repository.index.mapping.ResourceFields;
+
 import org.vortikal.repository.search.query.NamePrefixQuery;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
-import org.vortikal.repository.search.query.filter.InversionFilter;
+import org.vortikal.repository.search.query.filter.FilterFactory;
 
 /**
- * XXX: Somewhat experimental, as it uses a constant-score query with a filter
- *      to do the actual prefix query. It has no upper limitation on the number
- *      of matches (we don't risk the BooleanQuery.TooManyClauses-exception).
- * 
- * @author oyviste
+ * Prefix-query on resource name.
  */
 public class NamePrefixQueryBuilder implements QueryBuilder {
 
     private NamePrefixQuery query;
-    private Filter deletedDocsFilter;
 
     public NamePrefixQueryBuilder(NamePrefixQuery query) {
         this.query = query;
     }
     
-    public NamePrefixQueryBuilder(NamePrefixQuery query, Filter deletedDocs) {
-        this(query);
-        this.deletedDocsFilter = deletedDocs;
-    }
-
     /* (non-Javadoc)
      * @see org.vortikal.repository.query.QueryBuilder#buildQuery()
      */
     @Override
     public Query buildQuery() throws QueryBuilderException {
         
-        Term prefixTerm = new Term(FieldNames.NAME_FIELD_NAME, 
+        Term prefixTerm = new Term(ResourceFields.NAME_FIELD_NAME, 
                                                         this.query.getTerm());
         
         Filter filter = new PrefixFilter(prefixTerm);
         
         if (query.isInverted()) {
-            filter = new InversionFilter(filter, this.deletedDocsFilter);
+            filter = FilterFactory.inversionFilter(filter);
         }
 
-        ConstantScoreQuery csq = new ConstantScoreQuery(filter);
-        
-        return csq;
+        return new ConstantScoreQuery(filter);
     }
 
 }

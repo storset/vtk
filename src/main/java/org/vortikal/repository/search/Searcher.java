@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.search;
 
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.PropertySet;
 
 
@@ -47,10 +48,33 @@ public interface Searcher {
         /**
          * Called once for each matching <code>PropertySet</code>.
          * 
-         * @param propertySet 
+         * @param result an instance of {@link MatchingResult} which encapsulates
+         * all properties for the match.
+         * 
          * @return Return <code>false</code> to stop matching iteration, <code>true</code> to continue.
+         * @throws java.lang.Exception any thrown exception from client code will stop the iteration.
          */
-        boolean matching(PropertySet propertySet) throws Exception;
+        boolean matching(MatchingResult result) throws Exception;
+    }
+    
+    /**
+     * This interface is used by {@link MatchCallback} interface
+     * for providing access to data for a single matching result.
+     */
+    public interface MatchingResult {
+        
+        /**
+         * Get the {@link PropertySet} of the matching result.
+         * @return the {@link PropertySet} of the matching result.
+         */
+        PropertySet propertySet();
+        
+        /**
+         * Get the {@link Acl} of the matching result.
+         * @return the {@link Acl} of the matching result, or <code>null</code>
+         * if ACLs have not been selected for loading or are otherwise unavailable.
+         */
+        Acl acl();
     }
     
     /**
@@ -70,7 +94,7 @@ public interface Searcher {
      * 
      * Note however that the following limitations do apply:
      * <ul>
-     *   <li>The iteration can support simple ASCENDING NON-LOCALE-SENSITIVE ordering on
+     *   <li>The iteration can support simple ASCENDING ordering on
      *       a single field/property only. If provided sorting specification violates
      *       these constraints, an exception will be thrown.
      * 

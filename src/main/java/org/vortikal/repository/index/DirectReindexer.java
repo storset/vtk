@@ -34,7 +34,9 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.index.mapping.AclFields;
 import org.vortikal.repository.store.IndexDao;
 import org.vortikal.repository.store.PropertySetHandler;
 import org.vortikal.security.Principal;
@@ -87,7 +89,7 @@ public class DirectReindexer implements PropertySetIndexReindexer {
         try {
 
             logger.info("Clearing index contents ..");
-            targetIndex.clearContents();
+            targetIndex.clear();
 
             logger.info("Starting re-indexing ..");
             AddAllPropertySetHandler handler = 
@@ -119,9 +121,9 @@ public class DirectReindexer implements PropertySetIndexReindexer {
         
         @Override
         public void handlePropertySet(PropertySet propertySet, 
-                                      Set<Principal> aclReadPrincipals) {
+                                      Acl acl) {
 
-            this.index.addPropertySet(propertySet, aclReadPrincipals);
+            this.index.addPropertySet(propertySet, acl);
 
             if (++count % 10000 == 0) {
                 DirectReindexer.this.logger.info("Reindexing progress: " + count + " resources indexed.");

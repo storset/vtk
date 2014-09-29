@@ -54,7 +54,6 @@ import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
 import org.vortikal.repository.search.Sorting;
-import org.vortikal.repository.search.SortingImpl;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.UriPrefixQuery;
@@ -328,7 +327,7 @@ public abstract class FilteredCollectionListingController implements Controller 
     }
 
     protected Sorting getSearchSorting(Resource collection) {
-        return new SortingImpl(defaultSearchSorting.getSortFields(collection));
+        return new Sorting(defaultSearchSorting.getSortFields(collection));
     }
 
     @Required

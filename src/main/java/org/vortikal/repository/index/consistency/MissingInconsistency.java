@@ -30,15 +30,14 @@
  */
 package org.vortikal.repository.index.consistency;
 
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.index.IndexException;
 import org.vortikal.repository.index.PropertySetIndex;
-import org.vortikal.security.Principal;
 
 /**
  * Consistency error where a property exists in the repository, but not in the index.
@@ -52,8 +51,8 @@ public class MissingInconsistency extends RequireOriginalDataConsistencyError {
 
     
     public MissingInconsistency(Path uri, PropertySetImpl repositoryPropSet,
-                                Set<Principal> aclReadPrincipals) {
-        super(uri, repositoryPropSet, aclReadPrincipals);
+                               Acl acl) {
+        super(uri, repositoryPropSet, acl);
     }
 
     @Override
@@ -73,13 +72,14 @@ public class MissingInconsistency extends RequireOriginalDataConsistencyError {
 
     /**
      * Fix by adding missing property set.
+     * @param index
      */
     @Override
     protected void repair(PropertySetIndex index) throws IndexException {
         LOG.info("Repairing missing inconsistency by adding property set at URI '" 
                 + getUri() + "'");
         
-        index.addPropertySet(super.repositoryPropSet, super.repositoryAclReadPrincipals);
+        index.addPropertySet(super.repositoryPropSet, super.acl);
     }
 
 }

@@ -32,12 +32,25 @@ package org.vortikal.repository.search;
 
 import java.util.Iterator;
 import java.util.List;
+import org.vortikal.repository.Acl;
 
 import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.Resource;
 
 /**
  * Contains the result set of a repository query.
  * 
+ * TODO consider converting interface to provide Resource instances
+ * instead of PropertySet instances. Issues to consider are if sparse
+ * resource representations should be allowed when not all index fields are
+ * loaded at query time (e.g. a Resource instance will not have all properties
+ * available in it), and some other aspects of resource objects not available
+ * in the search index.
+ * 
+ * Alternatively, consider introducing a new class for a single search result,
+ * which then encapsulates all aspects. Then consolidate with iteration-API, so the
+ * same result class is used in both places. (Iteration-API uses the Searcher.MatchingResult interface
+ * for similar purpose.)
  */
 public interface ResultSet extends Iterable<PropertySet> {
 
@@ -63,8 +76,6 @@ public interface ResultSet extends Iterable<PropertySet> {
      * 
      * @param index
      * @return <code>true</code> if a result is available for the given index
-     *      
-     * @throws QueryException
      */
     public boolean hasResult(int index);
     
@@ -114,8 +125,31 @@ public interface ResultSet extends Iterable<PropertySet> {
     public Iterator<PropertySet> iterator();
     
     /**
-     * Get total number of hits the actual query produced, regardless of the result set size or
-     * cursor+maxresults.
+     * Get total number of hits the actual query produced, regardless of the
+     * result set size or cursor+maxresults.
+     * @return number of search hits in total
      */
     public int getTotalHits();
+    
+    /**
+     * Get ACL object of a single result. 
+     * 
+     * @param index index of search result
+     * @return an {@link Acl ACL object}, or <code>null</code> if ACL has not been selected
+     * for loading or is otherwise unavailable for the result.
+     * 
+     * @see Resource#getAcl() 
+     */
+    public Acl getAcl(int index);
+    
+    /**
+     * Check if ACL for a search result is inherited by some ancestor resource.
+     * 
+     * @see Resource#isInheritedAcl() 
+     * @param index index of search result
+     * @return 
+     */
+    public boolean isInheritedAcl(int index);
+    
+    
 }

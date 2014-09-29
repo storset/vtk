@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, 2007, University of Oslo, Norway
+/* Copyright (c) 2009, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,36 +28,54 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.search;
+package org.vortikal.repository.search.query;
 
-import java.util.LinkedList;
-import java.util.List;
+import org.vortikal.repository.Path;
 
-public class SortingImpl implements Sorting {
+public class AclInheritedFromQuery extends AbstractAclQuery {
 
-    private List<SortField> sortFields;
-    
-    public SortingImpl() {
-        this.sortFields = new LinkedList<SortField>();
+    private final Path uri;
+
+    /**
+     * Construct a new ACL resource inheritance query node.
+     * 
+     * <p>The query shall match all resources which inherit their ACL from the
+     * resource identified by the provided URI. If the resource at <code>uri</code>
+     * does not have its own ACL, then the query will match nothing.
+     * 
+     * @param uri a resource path
+     */
+    public AclInheritedFromQuery(Path uri) {
+        super(false);
+        this.uri = uri;
+    }
+
+    /**
+     * See constructor {@link AclInheritedFromQuery(org.vortikal.repository.Path) }.
+     * @see AbstractAclQuery#isInverted() 
+     */
+    public AclInheritedFromQuery(Path uri, boolean inverted) {
+        super(inverted);
+        this.uri = uri;
     }
     
-    public SortingImpl(List<SortField> sortFields) {
-        this.sortFields = sortFields;
-    }
-    
-    public void addSortField(SortField sortField) {
-        this.sortFields.add(sortField);
+    public Path getUri() {
+        return this.uri;
     }
     
     @Override
-    public List<SortField> getSortFields() {
-        return this.sortFields;
+    public Object accept(QueryTreeVisitor visitor, Object data) {
+        return visitor.visit(this, data);
     }
     
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(this.getClass().getName());
-        sb.append(": ").append(this.sortFields);
+        if (super.inverted) {
+            sb.append(";uri!=").append(this.uri);
+        } else {
+            sb.append(";uri=").append(this.uri);
+        }
         return sb.toString();
     }
 
@@ -69,8 +87,11 @@ public class SortingImpl implements Sorting {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final SortingImpl other = (SortingImpl) obj;
-        if (this.sortFields != other.sortFields && (this.sortFields == null || !this.sortFields.equals(other.sortFields))) {
+        final AclInheritedFromQuery other = (AclInheritedFromQuery) obj;
+        if (this.uri != other.uri && (this.uri == null || !this.uri.equals(other.uri))) {
+            return false;
+        }
+        if (super.inverted != other.inverted) {
             return false;
         }
         return true;
@@ -78,10 +99,10 @@ public class SortingImpl implements Sorting {
 
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 79 * hash + (this.sortFields != null ? this.sortFields.hashCode() : 0);
+        int hash = 7;
+        hash = 47 * hash + (this.uri != null ? this.uri.hashCode() : 0);
+        hash = 47 * hash + (super.inverted ? 1 : 0);
         return hash;
     }
-    
-    
+
 }

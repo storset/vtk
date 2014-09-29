@@ -38,7 +38,7 @@ import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
 import org.vortikal.repository.search.SortFieldDirection;
-import org.vortikal.repository.search.SortingImpl;
+import org.vortikal.repository.search.Sorting;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Symbol;
@@ -74,7 +74,7 @@ public class SearchResultValueProvider extends Function {
         search.setQuery(query);
 
         if (args[1] != null && args[1].toString().equals("title")) {
-            SortingImpl sorting = new SortingImpl();
+            Sorting sorting = new Sorting();
             sorting.addSortField(new PropertySortField(titlePropDef, SortFieldDirection.ASC));
             search.setSorting(sorting);
         }

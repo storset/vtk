@@ -32,7 +32,7 @@ package org.vortikal.repository.search.query;
 
 /**
  * Query for URI depth.
- * Only equals is supported, and therefore assumed
+ * Only equals is supported and therefore assumed.
  * 
  */
 public class UriDepthQuery implements UriQuery {

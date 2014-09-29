@@ -1002,13 +1002,6 @@
        order by p.resource_id, p.extra_prop_entry_id
   </select>
 
-  <select id="getAclReadPrincipalNames" resultMap="Principal"
-                                        parameterClass="java.lang.Integer">
-    select user_or_group_name, is_user from acl_entry
-    where resource_id = #value#
-      and action_type_id in (1, 2, 3, 4, 7)
-  </select>
-  
   <delete id="removeChangelogEntriesByTempTable" parameterClass="java.lang.Integer">
     delete from changelog_entry 
       where changelog_entry_id in (select resource_id from vortex_tmp where session_id=#value#)

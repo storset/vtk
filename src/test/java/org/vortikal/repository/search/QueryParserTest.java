@@ -33,8 +33,8 @@ package org.vortikal.repository.search;
 import java.util.List;
 
 import org.vortikal.repository.Namespace;
-import org.vortikal.repository.search.query.ACLExistsQuery;
-import org.vortikal.repository.search.query.ACLReadForAllQuery;
+import org.vortikal.repository.search.query.AclExistsQuery;
+import org.vortikal.repository.search.query.AclReadForAllQuery;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.NameTermQuery;
 import org.vortikal.repository.search.query.OrQuery;
@@ -197,28 +197,28 @@ public class QueryParserTest {
     @Test
     public void aclQuery() {
         Query q = queryParser.parse("acl EXISTS");
-        assertTrue(q instanceof ACLExistsQuery);
-        assertFalse(((ACLExistsQuery)q).isInverted());
+        assertTrue(q instanceof AclExistsQuery);
+        assertFalse(((AclExistsQuery)q).isInverted());
 
         q = queryParser.parse("acl !EXISTS");
-        assertTrue(q instanceof ACLExistsQuery);
-        assertTrue(((ACLExistsQuery)q).isInverted());
+        assertTrue(q instanceof AclExistsQuery);
+        assertTrue(((AclExistsQuery)q).isInverted());
 
         q = queryParser.parse("acl NOT EXISTS");
-        assertTrue(q instanceof ACLExistsQuery);
-        assertTrue(((ACLExistsQuery)q).isInverted());
+        assertTrue(q instanceof AclExistsQuery);
+        assertTrue(((AclExistsQuery)q).isInverted());
         
         q = queryParser.parse("acl ALL");
-        assertTrue(q instanceof ACLReadForAllQuery);
-        assertFalse(((ACLReadForAllQuery)q).isInverted());
+        assertTrue(q instanceof AclReadForAllQuery);
+        assertFalse(((AclReadForAllQuery)q).isInverted());
 
         q = queryParser.parse("acl !ALL");
-        assertTrue(q instanceof ACLReadForAllQuery);
-        assertTrue(((ACLReadForAllQuery)q).isInverted());
+        assertTrue(q instanceof AclReadForAllQuery);
+        assertTrue(((AclReadForAllQuery)q).isInverted());
 
         q = queryParser.parse("acl NOT ALL");
-        assertTrue(q instanceof ACLReadForAllQuery);
-        assertTrue(((ACLReadForAllQuery)q).isInverted());
+        assertTrue(q instanceof AclReadForAllQuery);
+        assertTrue(((AclReadForAllQuery)q).isInverted());
     }
 
     @Test
@@ -299,8 +299,8 @@ public class QueryParserTest {
         assertEquals("bar.bing.bong", ptq.getComplexValueAttributeSpecifier());
         assertEquals(TermOperator.GE, ptq.getOperator());
 
-        assertTrue(aqTop.getQueries().get(4) instanceof ACLReadForAllQuery);
-        assertFalse(((ACLReadForAllQuery)aqTop.getQueries().get(4)).isInverted());
+        assertTrue(aqTop.getQueries().get(4) instanceof AclReadForAllQuery);
+        assertFalse(((AclReadForAllQuery)aqTop.getQueries().get(4)).isInverted());
         
         // Level 2, first top node
         AndQuery sub1 = (AndQuery) aqTop.getQueries().get(0);

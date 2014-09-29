@@ -36,6 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.Filter;
+import org.apache.lucene.search.IndexSearcher;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
@@ -59,7 +60,7 @@ public abstract class AbstractQueryAuthorizationFilterFactory implements
     
     
     @Override
-    public abstract Filter authorizationQueryFilter(String token, IndexReader reader);
+    public abstract Filter authorizationQueryFilter(String token, IndexSearcher searcher);
     
     protected Principal getPrincipal(String token) {
         return this.tokenManager.getPrincipal(token);

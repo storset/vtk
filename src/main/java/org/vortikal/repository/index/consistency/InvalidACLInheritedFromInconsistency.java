@@ -30,11 +30,10 @@
  */
 package org.vortikal.repository.index.consistency;
 
-import java.util.Set;
+import org.vortikal.repository.Acl;
 
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySetImpl;
-import org.vortikal.security.Principal;
 
 /**
  * Invalid ACL inconsistency.
@@ -44,29 +43,32 @@ import org.vortikal.security.Principal;
  */
 public class InvalidACLInheritedFromInconsistency extends InvalidDataInconsistency {
 
-    private int indexACL = -1;
-    private int daoACL = -1;
+    private int indexInheritedFrom = -1;
+    private int daoInheritedFrom = -1;
     
     public InvalidACLInheritedFromInconsistency(Path uri, PropertySetImpl daoPropSet, 
-                                                Set<Principal> aclReadPrincipals,
-                                                int indexACL, int daoACL) {
-        super(uri, daoPropSet, aclReadPrincipals);
-        this.indexACL = indexACL;
-        this.daoACL = daoACL;
+                                               Acl acl, int indexInheritedFrom, int daoInheritedFrom) {
+        super(uri, daoPropSet, acl);
+        this.indexInheritedFrom = indexInheritedFrom;
+        this.daoInheritedFrom = daoInheritedFrom;
     }
     
+    @Override
     public boolean canRepair() {
         return true;
     }
     
+    @Override
     public String getDescription() {
         return "Invalid ACL inherited from inconsistency for index property set at URI '"
-          + getUri() + "', indexACL = " + this.indexACL + ", daoACL = " + this.daoACL;
+          + getUri() + "', indexACL = " + this.indexInheritedFrom + ", daoACL = " 
+                + this.daoInheritedFrom;
     }
 
+    @Override
     public String toString() {
         return "InvalidACLInheritedFromInconsistency[URI='" + getUri() + "', indexACL = " 
-        + this.indexACL + ", daoACL = " + this.daoACL + "]"; 
+        + this.indexInheritedFrom + ", daoACL = " + this.daoInheritedFrom + "]"; 
     }
 
 }

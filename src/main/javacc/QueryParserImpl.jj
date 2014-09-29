@@ -34,8 +34,8 @@ import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.repository.search.query.UriTermQuery;
-import org.vortikal.repository.search.query.ACLExistsQuery;
-import org.vortikal.repository.search.query.ACLReadForAllQuery;
+import org.vortikal.repository.search.query.AclExistsQuery;
+import org.vortikal.repository.search.query.AclReadForAllQuery;
 import static org.vortikal.util.text.TextUtils.unescape;
 
 /**
@@ -307,13 +307,13 @@ Query ACLQuery() :
    Query q;
 }
 {
-    <ACL> (q=ACLExistsQuery() | q=ACLReadForAllQuery())
+    <ACL> (q=AclExistsQuery() | q=AclReadForAllQuery())
     {
       return q;
     }
 }
 
-Query ACLExistsQuery():
+Query AclExistsQuery():
 {
   Token ex=null;
 }
@@ -321,10 +321,10 @@ Query ACLExistsQuery():
     (ex=<EXISTS> | <NOTEXISTS>)
     {
       boolean inverted = (ex == null);
-      return new ACLExistsQuery(inverted);
+      return new AclExistsQuery(inverted);
     }
 }
-Query ACLReadForAllQuery():
+Query AclReadForAllQuery():
 {
   Token all=null;
 }
@@ -332,7 +332,7 @@ Query ACLReadForAllQuery():
     (all=<ALL> | <NOTALL>)
     {
       boolean inverted = (all == null);
-      return new ACLReadForAllQuery(inverted);
+      return new AclReadForAllQuery(inverted);
     }
 }
 

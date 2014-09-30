@@ -32,93 +32,113 @@
 package org.vortikal.repository.index;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SearcherFactory;
 import org.apache.lucene.search.Sort;
-import org.apache.lucene.search.SortField;
-import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopFieldDocs;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.index.mapping.PropertyFields;
-import org.vortikal.repository.index.mapping.ResourceFields;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.search.Parser;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.query.LuceneQueryBuilder;
-import org.vortikal.repository.search.query.PropertyExistsQuery;
+import org.vortikal.util.text.TextUtils;
 
 /**
  *
  */
-public class WarmupSearcherFactory extends SearcherFactory {
+public class WarmupSearcherFactory extends SearcherFactory implements InitializingBean {
 
-    private PropertyTypeDefinition lastModifiedPropDef;
-    private PropertyTypeDefinition hiddenPropDef;
     private LuceneQueryBuilder luceneQueryBuilder;
+    
+    private Parser searchParser;
+    
+    private List<Search> warmupSearches = Collections.emptyList();
+    
+    private List<String> warmupSearchSpecs = Collections.emptyList();
+    
+    private final Log logger = LogFactory.getLog(WarmupSearcherFactory.class.getName());
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        this.warmupSearches = buildWarmupSearches(warmupSearchSpecs);
+    }
+    
     @Override
     public IndexSearcher newSearcher(IndexReader reader) throws IOException {
         IndexSearcher searcher = super.newSearcher(reader);
-        warmup(searcher);
+        warmSearcher(searcher);
         return searcher;
     }
-
-    private void warmup(IndexSearcher searcher) throws IOException {
-
-        // Do a simple warmup first with basic query
-        Query luceneQuery = getWarmupQuery();
-        Sort luceneSorting = getWarmupSorting();
-        Filter luceneFilter = null;
-        TopFieldDocs docs = searcher.search(luceneQuery, luceneFilter, 2500, luceneSorting);
-        int max = Math.min(500, docs.scoreDocs.length);
-        for (int i = 0; i < max; i++) {
-            searcher.doc(docs.scoreDocs[i].doc);
+    
+    private List<Search> buildWarmupSearches(List<String> searchSpecs) throws Exception {
+        List<Search> searches = new ArrayList<Search>();
+        for (String spec: searchSpecs) {
+            String queryString = "";
+            String sortString = "";
+            String limitString = "";
+            String[] components = TextUtils.parseCsv(spec, ',', TextUtils.TRIM|TextUtils.IGNORE_INVALID_ESCAPE);
+            if (components.length >= 1) {
+                queryString = components[0];
+            }
+            if (components.length >= 2) {
+                sortString = components[1];
+            }
+            if (components.length >= 3) {
+                limitString = components[2];
+            }
+            
+            if (queryString.isEmpty()) {
+                throw new IllegalArgumentException("Invalid search spec, query part cannot be empty: " + spec);
+            }
+            
+            Search search  = new Search();
+            search.setQuery(searchParser.parse(queryString));
+            if (!sortString.isEmpty()) {
+                if ("null".equals(sortString)) {
+                    search.setSorting(null);
+                } else {
+                    search.setSorting(searchParser.parseSortString(sortString));
+                }
+            }
+            if (!limitString.isEmpty()) {
+                search.setLimit(Integer.parseInt(limitString));
+            }
+            
+            searches.add(search);
         }
-        docs = null; // Garbage
-
-        // Implicitly warm up query builder internal filter caching for the new reader instance.
-        // This should warm up:
-        // 1. Inverted hidden-prop existence query filter cache
-        // 2. ACL filter cache for anonymous user
-        // Enabling pre-building of all this caching should be very good for performance of new reader
-        // after warmup.
-        
-        Search search = new Search();
-        search.setLimit(2500);
-        PropertyExistsQuery peq = new PropertyExistsQuery(this.hiddenPropDef, true);
-        search.setQuery(peq);
-        luceneQuery = this.luceneQueryBuilder.buildQuery(search.getQuery(), searcher);
-        luceneFilter = this.luceneQueryBuilder.buildSearchFilter(null, search, searcher);
-        searcher.search(luceneQuery, luceneFilter, search.getLimit());
+        return searches;
     }
-
-    private Query getWarmupQuery() {
-        BooleanQuery bq = new BooleanQuery();
-        bq.add(new TermQuery(new Term(ResourceFields.URI_ANCESTORS_FIELD_NAME, "/")), BooleanClause.Occur.SHOULD);
-        bq.add(new TermQuery(new Term(ResourceFields.RESOURCETYPE_FIELD_NAME, "collection")), BooleanClause.Occur.SHOULD);
-        return bq;
-    }
-
-    private Sort getWarmupSorting() {
-        SortField[] fields = new SortField[2];
-        fields[0] = new SortField(PropertyFields.sortFieldName(this.lastModifiedPropDef), SortField.Type.STRING, true);
-        fields[1] = new SortField(ResourceFields.URI_SORT_FIELD_NAME, SortField.Type.STRING);
-        return new Sort(fields);
-    }
-
-    @Required
-    public void setLastModifiedPropDef(PropertyTypeDefinition lastModifiedPropDef) {
-        this.lastModifiedPropDef = lastModifiedPropDef;
-    }
-
-    @Required
-    public void setHiddenPropDef(PropertyTypeDefinition hiddenPropDef) {
-        this.hiddenPropDef = hiddenPropDef;
+    
+    private void warmSearcher(IndexSearcher searcher) throws IOException {
+        for (Search search : warmupSearches) {
+            Query luceneQuery = luceneQueryBuilder.buildQuery(search.getQuery(), searcher);
+            Sort luceneSorting = luceneQueryBuilder.buildSort(search.getSorting());
+            Filter luceneFilter = luceneQueryBuilder.buildSearchFilter(null, search, searcher);
+            int limit = search.getLimit();
+            
+            TopDocs docs;
+            if (luceneSorting != null) {
+                docs = searcher.search(luceneQuery, luceneFilter, limit, luceneSorting);
+            } else {
+                docs = searcher.search(luceneQuery, luceneFilter, limit);
+            }
+            if (logger.isDebugEnabled()) {
+                logger.debug("Search " + search + " matched " + docs.scoreDocs.length + " docs.");
+            }
+            int max = Math.min(500, docs.scoreDocs.length);
+            for (int i = 0; i < max; i++) {
+                searcher.doc(docs.scoreDocs[i].doc);
+            }
+        }
     }
 
     @Required
@@ -126,4 +146,21 @@ public class WarmupSearcherFactory extends SearcherFactory {
         this.luceneQueryBuilder = luceneQueryBuilder;
     }
     
+    @Required
+    public void setSearchParser(Parser searchParser) {
+        this.searchParser = searchParser;
+    }
+
+    /**
+     * Set warmup searches as a list of comma-separated values. Searches use
+     * the Vortikal syntax and are parsed by {@link Parser}.
+     * First value is query, second is sorting and third is limit.
+     * @param searchSpecs List of 3-part comma-separated tuples on the form
+     * "&lt;query&gt;, &lt;sort&gt;, &lt;limit&gt;". Use backslashes to escape
+     * commas inside values if necessary. Values for sort and limit are optional.
+     */
+    public void setWarmupSearchSpecs(List<String> searchSpecs) {
+        this.warmupSearchSpecs = searchSpecs;
+    }
+
 }

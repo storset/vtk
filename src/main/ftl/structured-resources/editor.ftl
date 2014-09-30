@@ -62,6 +62,7 @@
     window.onbeforeunload = unsavedChangesInEditorMessage;
 
     function performSave() {
+      // Ignore special JSON binary editor for course-schedule document
       var ok = vrtxEditor.editorForm.hasClass("vrtx-course-schedule") ? true : validTextLengthsInEditor(false);
       if(!ok) return false;
       datepickerEditor.prepareForSave(); // js/datepicker/datepicker-admin.js

@@ -62,8 +62,8 @@
     window.onbeforeunload = unsavedChangesInEditorMessage;
 
     function performSave() {
-      var ok = validTextLengthsInEditor(false);
-      if(!ok) return false; 
+      var ok = vrtxEditor.editorForm.hasClass("vrtx-course-schedule") ? true : validTextLengthsInEditor(false);
+      if(!ok) return false;
       datepickerEditor.prepareForSave(); // js/datepicker/datepicker-admin.js
       saveMultipleInputFields();
       

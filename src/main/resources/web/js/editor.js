@@ -794,7 +794,8 @@ function editorDetectChange(sessionId, o1, o2, isCK) {
 
 /* Validate length for 2048 bytes fields */
 function validTextLengthsInEditor(isOldEditor) {
-  var MAX_LENGTH = 1500, // Back-end limits it to 2048
+  var MAX_LENGTH = 1500, // Back-end limits is 2048
+  
     // NEW starts on wrapper and OLD starts on field (because of slightly different semantic/markup build-up)
     INPUT_NEW = ".vrtx-string:not(.vrtx-multiple), .vrtx-resource-ref, .vrtx-image-ref, .vrtx-media-ref",
     INPUT_OLD = "input[type=text]:not(.vrtx-multiple)", // RT# 1045040 (skip aggregate and manually approve hidden input-fields)

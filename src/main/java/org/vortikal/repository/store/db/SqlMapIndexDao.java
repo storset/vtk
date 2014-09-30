@@ -52,7 +52,11 @@ import org.vortikal.repository.store.PropertySetHandler;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 
+import static org.vortikal.repository.store.db.SqlMapDataAccessor.AclHolder;
+
 import com.ibatis.sqlmap.client.SqlMapExecutor;
+import java.util.ArrayList;
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 
@@ -177,57 +181,28 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
     }
     
     /**
-     * Fetch a set of principals (normal principals, pseudo-principals and groups) 
-     * which are allowed to read or read-processed the resource that the property set
-     * represents.
+     * Load full ACL for a property set from database. Returned ACL may be <code>null</code>
+     * if it no longer exists.
      * 
-     * @return <code>null</code> if the resource or the resource from which ACL is
-     *                           inherited could not be found. Otherwise 
-     *                           a <code>Set</code> of <code>Principal</code> instances. 
+     * @param resourceId the ID of the resource having the (non-inherited) ACL.
+     * @return an <code>Acl</code> instance, possibly {@link Acl#EMPTY_ACL} if the
+     * resource did not exist, but never <code>null</code>.
      */
-    Set<Principal> loadAclReadPrincipals(PropertySet propertySet)
-            throws org.vortikal.repository.store.DataAccessException {
+    Acl loadAcl(Integer resourceId) {
+        List<Integer> resourceIds = new ArrayList<Integer>(1);
+        resourceIds.add(resourceId);
         
-        // Cast to impl
-        PropertySetImpl propSetImpl = (PropertySetImpl)propertySet;
+        Map<Integer, AclHolder> aclMap = 
+                new HashMap<Integer, AclHolder>(1);
         
-        Set<Principal> aclReadPrincipals = new HashSet<Principal>();
+        this.sqlMapDataAccessor.loadAclBatch(resourceIds, aclMap);
         
-        // Now determine where to fetch the rest of the ACL information (either from self or an ancestor)
-        int aclResourceId = propSetImpl.isInheritedAcl() ? 
-                    propSetImpl.getAclInheritedFrom() : propSetImpl.getID();
-        
-        // Fetch ACL from database for the given resource/node
-        String statement = getSqlMap("getAclReadPrincipalNames");
-        SqlMapClientTemplate client = getSqlMapClientTemplate();
-        
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> principalAttributeList = 
-                                    client.queryForList(statement, aclResourceId);
-
-        if (principalAttributeList.isEmpty()) {
-            // Resource is gone, return null
-            return null;
-        } else {
-            for (Map<String, Object> principalAttributes: principalAttributeList) {
-                String name = (String) principalAttributes.get("name");
-                Boolean isUser = (Boolean) principalAttributes.get("isUser");
-                
-                Principal.Type type;
-                if (name.startsWith("pseudo:")) {
-                    type = Principal.Type.PSEUDO;
-                } else if (isUser.booleanValue()) {
-                    type = Principal.Type.USER;
-                } else {
-                    type = Principal.Type.GROUP;
-                }
-                
-                Principal principal = this.principalFactory.getPrincipal(name, type, false);
-                aclReadPrincipals.add(principal);
-            }
+        AclHolder aclHolder = aclMap.get(resourceId);
+        if (aclHolder == null) {
+            return Acl.EMPTY_ACL;
         }
         
-        return aclReadPrincipals;
+        return new Acl(aclHolder);
     }
     
     Property createProperty(SqlDaoUtils.PropHolder holder) {

@@ -83,25 +83,31 @@ void execute(context, args, out) {
     propList = args.get("properties");
     wildcard = propList != null && propList.contains("*");
 
-    for (r: rs.getAllResults()) {
+    for (i=0; i<rs.getSize(); i++) {
+        r = rs.getResult(i);
         out.println(r.getURI());
         if (propList != null) {
             if (wildcard) {
                 for (prop: r.getProperties()) {
                     printProp(prop, out);
                 }
+                printAcl(rs.getAcl(i), rs.isInheritedAcl(i), out);
             } else {
                 for (propName: propList) {
-                    p = propName;
-                    prefix = null;
-                
-                    if (p.contains(":")) {
-                        prefix = p.substring(0, p.indexOf(":"));
-                        p = p.substring(prefix.length() + 1);
+                    if ("acl".equals(propName)) {
+                        printAcl(rs.getAcl(i), rs.isInheritedAcl(i), out);
+                    } else {
+                        p = propName;
+                        prefix = null;
+
+                        if (p.contains(":")) {
+                            prefix = p.substring(0, p.indexOf(":"));
+                            p = p.substring(prefix.length() + 1);
+                        }
+                        prop = r.getPropertyByPrefix(prefix, p);
+                        if (prop == null) continue;
+                        printProp(prop, out);
                     }
-                    prop = r.getPropertyByPrefix(prefix, p);
-                    if (prop == null) continue;
-                    printProp(prop, out);
                 }
             }
         }
@@ -120,4 +126,8 @@ void printProp(prop, out) {
             out.println("  " + prop.getDefinition().getName() + ": " + prop.getValue());
         }
     }
+}
+
+void printAcl(acl, inherited, out) {
+  out.println("  " + acl.toString() + (inherited ? " (inherited)" : " (set on this resource)"));
 }

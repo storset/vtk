@@ -352,35 +352,52 @@ public class DumpQueryTreeVisitor implements QueryTreeVisitor {
     }
 
     @Override
-    public Object visit(ACLExistsQuery aclExistsQuery, Object prefix) {
+    public Object visit(AclExistsQuery aclExistsQuery, Object prefix) {
         if (prefix == null) prefix = "";
         StringBuilder buf = new StringBuilder((String)prefix);
         buf.append(aclExistsQuery.getClass().getName()).append("\n");
-        buf.append(prefix).append("Inverted: ").append(aclExistsQuery.isInverted()).append("\n");
+        buf.append(prefix).append("Inverted = ").append(aclExistsQuery.isInverted()).append("\n");
 
         return buf.toString();
     }
 
     @Override
-    public Object visit(ACLInheritedFromQuery aclIHFQuery, Object prefix) {
+    public Object visit(AclInheritedFromQuery aclIHFQuery, Object prefix) {
         if (prefix == null) prefix = "";
         StringBuilder buf = new StringBuilder((String)prefix);
         buf.append(aclIHFQuery.getClass().getName()).append("\n");
-        buf.append(prefix).append("Inverted: ").append(aclIHFQuery.isInverted()).append("\n");
+        buf.append(prefix).append("Inverted = ").append(aclIHFQuery.isInverted()).append("\n");
 
         return buf.toString();
     }
 
     @Override
-    public Object visit(ACLReadForAllQuery query, Object prefix) {
+    public Object visit(AclReadForAllQuery query, Object prefix) {
         if (prefix == null) prefix = "";
         StringBuilder buf = new StringBuilder((String)prefix);
         buf.append(query.getClass().getName()).append("\n");
-        buf.append(prefix).append("Inverted: ").append(query.isInverted()).append("\n");
+        buf.append(prefix).append("Inverted = ").append(query.isInverted()).append("\n");
 
         return buf.toString();
     }
 
+    @Override
+    public Object visit(AclPrivilegeQuery query, Object prefix) {
+        if (prefix == null) prefix = "";
+        StringBuilder buf = new StringBuilder((String)prefix);
+        buf.append(query.getClass().getName()).append("\n");
+        
+        String principalTerm = query.getQualifiedName()!= null ? query.getQualifiedName() : "*";
+        String privilegeTerm = query.getQualifiedName()!= null ? query.getPrivilege().getName() : "*";
+        
+        buf.append(prefix).append(", Privilege = ").append(privilegeTerm);
+        buf.append("UID = ").append(principalTerm);
+        buf.append("inverted = ").append(query.isInverted());
+        buf.append(", includeSuperPrivileges = ").append(query.isIncludeSuperPrivileges()).append("\n");
+        
+        return buf.toString();
+    }
+    
     @Override
     public Object visit(MatchAllQuery query, Object prefix) {
         if (prefix == null) prefix = "";

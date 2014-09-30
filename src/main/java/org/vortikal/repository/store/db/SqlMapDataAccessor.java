@@ -1067,7 +1067,15 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         return resultMap;
     }
 
-    private void loadAclBatch(List<Integer> resourceIds, Map<Integer, AclHolder> resultMap) {
+    /**
+     * Load batch of ACLs from list of resource ids. The caller must provide
+     * a map to populate with an AclHolder instance per resource id.
+     * @param resourceIds resource ids that have an ACL. Should not contain
+     * ids of resources that only inherit their ACL.
+     * 
+     * @param resultMap the map to populate with 
+     */
+    void loadAclBatch(List<Integer> resourceIds, Map<Integer, AclHolder> resultMap) {
         Map<String, Object> parameterMap = new HashMap<String, Object>();
         parameterMap.put("resourceIds", resourceIds);
 
@@ -1495,7 +1503,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
     }
 
     @SuppressWarnings("serial")
-    private static class AclHolder extends HashMap<Privilege, Set<Principal>> {
+    static class AclHolder extends HashMap<Privilege, Set<Principal>> {
 
         public void addEntry(Privilege action, Principal principal) {
             Set<Principal> set = this.get(action);

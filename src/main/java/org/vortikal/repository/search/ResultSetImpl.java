@@ -33,18 +33,17 @@ package org.vortikal.repository.search;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import org.vortikal.repository.Acl;
 
 import org.vortikal.repository.PropertySet;
 
 /**
  * Simple cached result set.
- * 
- * @author oyviste
  */
 public class ResultSetImpl implements ResultSet {
 
-    private List<PropertySet> results;
-    private int totalHits;
+    protected final List<PropertySet> results;
+    protected int totalHits;
 
     public ResultSetImpl() {
         this.results = new ArrayList<PropertySet>();
@@ -86,6 +85,10 @@ public class ResultSetImpl implements ResultSet {
         return this.results.size();
     }
 
+    /**
+     * Add a result to this result set.
+     * @param propSet any instance of {@link PropertySet}.
+     */
     public void addResult(PropertySet propSet) {
         this.results.add(propSet);
     }
@@ -111,4 +114,15 @@ public class ResultSetImpl implements ResultSet {
         sb.append(", totalHits=").append(this.totalHits).append("]");
         return sb.toString();
     }
+
+    @Override
+    public Acl getAcl(int index) {
+        return null; // ACLs not available through this simple impl
+    }
+
+    @Override
+    public boolean isInheritedAcl(int index) {
+        return false; // ACLs not available through this simple impl
+    }
+    
 }

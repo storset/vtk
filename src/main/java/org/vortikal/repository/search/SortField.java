@@ -32,9 +32,59 @@ package org.vortikal.repository.search;
 
 import java.util.Locale;
 
-public interface SortField {
+/**
+ * A sort field of some kind, with a direction and a locale. Specific sub-class
+ * implementations apply for further details.
+ */
+public abstract class SortField {
+
+    private SortFieldDirection direction = SortFieldDirection.ASC;
+
+    private Locale locale = Locale.getDefault();
+
+    public SortField() {}
+
+    public SortField(SortFieldDirection direction) {
+        this.direction = direction;
+    }
+
+    public SortField(SortFieldDirection direction, Locale locale) {
+        this.direction = direction;
+        this.locale = locale;
+    }
     
-    public SortFieldDirection getDirection();
+    public SortFieldDirection getDirection() {
+        return this.direction;
+    }
+
+    public Locale getLocale() {
+        return this.locale;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final SortField other = (SortField) obj;
+        if (this.direction != other.direction) {
+            return false;
+        }
+        if (this.locale != other.locale && (this.locale == null || !this.locale.equals(other.locale))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 97 * hash + (this.direction != null ? this.direction.hashCode() : 0);
+        hash = 97 * hash + (this.locale != null ? this.locale.hashCode() : 0);
+        return hash;
+    }
     
-    public Locale getLocale();
 }

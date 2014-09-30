@@ -30,25 +30,24 @@
  */
 package org.vortikal.repository.index.consistency;
 
-import java.util.Set;
+import org.vortikal.repository.Acl;
 
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.index.IndexException;
 import org.vortikal.repository.index.PropertySetIndex;
-import org.vortikal.security.Principal;
 
 public abstract class RequireOriginalDataConsistencyError extends
         AbstractConsistencyError {
 
     protected PropertySetImpl repositoryPropSet;
-    protected Set<Principal> repositoryAclReadPrincipals;
+    protected Acl acl;
     
     public RequireOriginalDataConsistencyError(Path uri, PropertySetImpl repositoryPropSet,
-                                            Set<Principal> repositoryAclReadPrincipals) {
+                                              Acl acl) {
         super(uri);
         this.repositoryPropSet = repositoryPropSet;
-        this.repositoryAclReadPrincipals = repositoryAclReadPrincipals;
+        this.acl = acl;
     }
     
     @Override

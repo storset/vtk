@@ -44,7 +44,6 @@ import java.util.Set;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertyImpl;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyType;
@@ -55,6 +54,7 @@ import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 
 import com.ibatis.sqlmap.client.event.RowHandler;
+import org.vortikal.repository.Acl;
 
 
 
@@ -76,14 +76,14 @@ class PropertySetRowHandler implements RowHandler {
     private final SqlMapIndexDao indexDao;
     private final PrincipalFactory principalFactory;
     
-    private final Map<Integer, Set<Principal>> aclReadPrincipalsCache
-            = new LinkedHashMap<Integer, Set<Principal>>() {
+    private final Map<Integer, Acl> aclCache
+            = new LinkedHashMap<Integer, Acl>() {
         @Override
-        protected boolean removeEldestEntry(Entry<Integer, Set<Principal>> eldest) {
+        protected boolean removeEldestEntry(Entry<Integer, Acl> eldest) {
             return size() > 2000;
         }
     };
-    
+
     private final Map<Path, List<Property>> inheritablePropertiesCache
             = new LinkedHashMap<Path, List<Property>>() {
         @Override
@@ -116,13 +116,9 @@ class PropertySetRowHandler implements RowHandler {
             // New property set encountered in row iteration, flush out current.
             PropertySetImpl propertySet = createPropertySet(this.rowValueBuffer);
             
-            // Get ACL read principals
-            Set<Principal> aclReadPrincipals = getAclReadPrincipals(propertySet);
-            
-            if (aclReadPrincipals != null) {
-                // Do client callback (only if we have ACL, which means the resource is present in the database)
-                this.clientHandler.handlePropertySet(propertySet, aclReadPrincipals);
-            }
+            // Get ACL 
+            Acl acl = getAcl(propertySet);
+            this.clientHandler.handlePropertySet(propertySet, acl);
             
             // Clear current row buffer
             this.rowValueBuffer.clear();
@@ -143,33 +139,33 @@ class PropertySetRowHandler implements RowHandler {
         
         PropertySetImpl propertySet = createPropertySet(this.rowValueBuffer);
         
-        // Get ACL read principals
-        Set<Principal> aclReadPrincipals = getAclReadPrincipals(propertySet);
+        // Get ACL
+        Acl acl = getAcl(propertySet);
         
-        if (aclReadPrincipals != null) {
-            // Do client callback (only if we have ACL, which means the resource is present in the database) 
-            this.clientHandler.handlePropertySet(propertySet, aclReadPrincipals);
-        } 
+        this.clientHandler.handlePropertySet(propertySet, acl);
     }
     
-    private Set<Principal> getAclReadPrincipals(PropertySetImpl propertySet) {
-        
-        Integer aclResourceId = propertySet.isInheritedAcl() ? 
+    /**
+     * Get ACL for a properrty set (may be inherited).
+     * 
+     * Note that returned ACL may be <code>null</code> due to database
+     * modification concurrency, so calling method must be prepared to handle that.
+     * 
+     * @param propertySet the property set to get the ACL for (may be an inherited ACL)
+     * @return an instance of <code>Acl</code>.
+     */
+    private Acl getAcl(PropertySetImpl propertySet) {
+        final Integer aclResourceId = propertySet.isInheritedAcl() ? 
                         propertySet.getAclInheritedFrom() : propertySet.getID();
                         
         // Try cache first:
-        Set<Principal> aclReadPrincipals = this.aclReadPrincipalsCache.get(aclResourceId);
-        
-        if (aclReadPrincipals == null) {
-            // Not found in cache
-            aclReadPrincipals = this.indexDao.loadAclReadPrincipals(propertySet);
-            
-            if (aclReadPrincipals != null) {
-                this.aclReadPrincipalsCache.put(aclResourceId, Collections.unmodifiableSet(aclReadPrincipals));
-            }
+        Acl acl = this.aclCache.get(aclResourceId);
+        if (acl == null) {
+            acl = this.indexDao.loadAcl(aclResourceId);
+            this.aclCache.put(aclResourceId, acl);
         }
         
-        return aclReadPrincipals;
+        return acl;
     }
 
     private Principal getPrincipal(String id, Principal.Type type) {

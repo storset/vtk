@@ -30,8 +30,8 @@
  */
 package org.vortikal.repository.search.query.security;
 
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.Filter;
+import org.apache.lucene.search.IndexSearcher;
 
 public interface QueryAuthorizationFilterFactory {
 
@@ -45,7 +45,7 @@ public interface QueryAuthorizationFilterFactory {
      * @return A <code>Filter</code>, or <code>null</code> if 
      *         no filter should be applied for the given token.
      */
-    public Filter authorizationQueryFilter(String token, IndexReader reader);
+    public Filter authorizationQueryFilter(String token, IndexSearcher searcher);
 
     /**
      * Return a filter which restricts matches to only documents that are
@@ -53,6 +53,6 @@ public interface QueryAuthorizationFilterFactory {
      * @param reader
      * @return 
      */
-    public Filter readForAllFilter(IndexReader reader);
+    public Filter readForAllFilter(IndexSearcher searcher);
     
 }

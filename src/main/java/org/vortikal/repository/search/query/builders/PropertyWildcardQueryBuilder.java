@@ -34,15 +34,14 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
-import org.vortikal.repository.index.mapping.FieldNames;
+import org.vortikal.repository.index.mapping.PropertyFields;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.query.PropertyWildcardQuery;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
 import org.vortikal.repository.search.query.TermOperator;
-import org.vortikal.repository.search.query.filter.InversionFilter;
-import org.vortikal.repository.search.query.filter.WildcardTermFilter;
+import org.vortikal.repository.search.query.filter.FilterFactory;
 
 /**
  * 
@@ -52,15 +51,9 @@ import org.vortikal.repository.search.query.filter.WildcardTermFilter;
 public class PropertyWildcardQueryBuilder implements QueryBuilder {
 
     private PropertyWildcardQuery query;
-    private Filter deletedDocsFilter;
     
     public PropertyWildcardQueryBuilder(PropertyWildcardQuery query) {
         this.query = query;
-    }
-
-    public PropertyWildcardQueryBuilder(PropertyWildcardQuery query, Filter deletedDocs) {
-        this(query);
-        this.deletedDocsFilter = deletedDocs;
     }
 
     @Override
@@ -83,17 +76,17 @@ public class PropertyWildcardQueryBuilder implements QueryBuilder {
         boolean ignorecase = (op == TermOperator.EQ_IGNORECASE || op == TermOperator.NE_IGNORECASE);
         boolean invert = (op == TermOperator.NE || op == TermOperator.NE_IGNORECASE);
         
-        String fieldName = FieldNames.getSearchFieldName(def, ignorecase);
+        String fieldName = PropertyFields.propertyFieldName(def, ignorecase);
         if (def.getType() == Type.JSON && query.getComplexValueAttributeSpecifier() != null) {
-            fieldName = FieldNames.getJsonSearchFieldName(def,
+            fieldName = PropertyFields.jsonFieldName(def,
                     query.getComplexValueAttributeSpecifier(), ignorecase);
         }
 
         Term wTerm = new Term(fieldName, (ignorecase ? wildcard.toLowerCase() : wildcard));
 
-        Filter filter = new WildcardTermFilter(wTerm);
+        Filter filter = FilterFactory.wildcardFilter(wTerm);
         if (invert) {
-            filter = new InversionFilter(filter, this.deletedDocsFilter);
+            filter = FilterFactory.inversionFilter(filter);
         }
         
         return new ConstantScoreQuery(filter);

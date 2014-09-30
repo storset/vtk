@@ -31,13 +31,13 @@
 
 package org.vortikal.repository.search.query.builders;
 
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
-import org.vortikal.repository.search.query.filter.InversionFilter;
+import org.vortikal.repository.search.query.filter.FilterFactory;
 import org.vortikal.repository.search.query.security.QueryAuthorizationFilterFactory;
 
 /**
@@ -45,28 +45,21 @@ import org.vortikal.repository.search.query.security.QueryAuthorizationFilterFac
  */
 public class ACLReadForAllQueryBuilder implements QueryBuilder {
 
-    private boolean inverted;
-    private Filter deletedDocsFilter;
-    private QueryAuthorizationFilterFactory qff;
-    private IndexReader reader;
+    private final boolean inverted;
+    private final QueryAuthorizationFilterFactory qff;
+    private final IndexSearcher searcher;
     
-    public ACLReadForAllQueryBuilder(boolean inverted, QueryAuthorizationFilterFactory qff, IndexReader reader) {
+    public ACLReadForAllQueryBuilder(boolean inverted, QueryAuthorizationFilterFactory qff, IndexSearcher searcher) {
         this.inverted = inverted;
         this.qff = qff;
-        this.reader = reader;
-    }
-    public ACLReadForAllQueryBuilder(boolean inverted, QueryAuthorizationFilterFactory qff, IndexReader reader, Filter deletedDocsFilter) {
-        this.inverted = inverted;
-        this.qff = qff;
-        this.deletedDocsFilter = deletedDocsFilter;
-        this.reader = reader;
+        this.searcher = searcher;
     }
     
     @Override
     public Query buildQuery() throws QueryBuilderException {
-        Filter f = this.qff.readForAllFilter(this.reader);
+        Filter f = this.qff.readForAllFilter(this.searcher);
         if (this.inverted) {
-            f = new InversionFilter(f, this.deletedDocsFilter);
+            f = FilterFactory.inversionFilter(f);
         }
         return new ConstantScoreQuery(f);
     }

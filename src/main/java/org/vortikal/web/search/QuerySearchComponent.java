@@ -49,7 +49,6 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.ConfigurablePropertySelect;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Sorting;
-import org.vortikal.repository.search.SortingImpl;
 import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.components.CollectionListingHelper;
@@ -85,9 +84,9 @@ public abstract class QuerySearchComponent implements SearchComponent {
         Sorting sorting = null;
         String[] sortingParams = request.getParameterValues(Listing.SORTING_PARAM);
         if (sortingParams != null && sortingParams.length > 0) {
-            sorting = new SortingImpl(searchSorting.getSortFieldsFromRequestParams(sortingParams));
+            sorting = new Sorting(searchSorting.getSortFieldsFromRequestParams(sortingParams));
         } else {
-            sorting = new SortingImpl(searchSorting.getSortFields(collection));
+            sorting = new Sorting(searchSorting.getSortFields(collection));
         }
 
         ConfigurablePropertySelect propertySelect = null;

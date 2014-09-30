@@ -31,6 +31,7 @@
 package org.vortikal.repository.index;
 
 import java.util.Set;
+import org.vortikal.repository.Acl;
 
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
@@ -46,15 +47,6 @@ import org.vortikal.repository.PropertySet;
  */
 public interface PropertySetIndexRandomAccessor {
    
-    /**
-     * Check if one or more property sets exists for the given URI.
-     * 
-     * @param uri
-     * @return
-     * @throws IndexException
-     */
-    public boolean exists(Path uri) throws IndexException;
-    
     /**
      * Count number of existing property set instances for the given URI. This can be used
      * to detect inconsistencies.
@@ -101,7 +93,7 @@ public interface PropertySetIndexRandomAccessor {
         Path getURI();
         String getResourceType();
         int getResourceId();
-        Set<String> getAclReadPrincipalNames();
+        Acl getAcl();
         int getAclInheritedFromId();
     }
 }

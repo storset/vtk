@@ -53,30 +53,34 @@
          initialized (because it modifies the resource type tree)
      -->
     <property name="resourceTypeTree" ref="resourceTypeTree"/>
-    <property name="fieldValueMapper" ref="fieldValueMapper"/>
+    <property name="principalFactory" ref="principalFactory" />
+    <property name="valueFactory" ref="valueFactory" />
+    <property name="locale" value="${view.defaultLocale}" />
   </bean>
 
-  <!-- Index field value mapper -->  
-  <bean id="fieldValueMapper" class="org.vortikal.repository.index.mapping.FieldValueMapper">
-    <property name="valueFactory" ref="valueFactory"/>
+  <bean id="searcherFactory" class="org.vortikal.repository.index.WarmupSearcherFactory">
+    <property name="luceneQueryBuilder" ref="queryBuilder" />
+    <property name="searchParser" ref="searchParser" />
+    <property name="warmupSearchSpecs">
+      <list>
+        <value>uri = /* OR type IN collection, lastModified DESC\,uri, 2500</value>
+        <value>navigation:hidden !EXISTS, title ASC, 5000</value>
+        <value>type IN structured-article OR type IN structured-event, publish-date DESC, 2500</value>
+        <value>acl EXISTS, null</value>
+      </list>
+    </property>
   </bean>
-
+  
   <!-- Primary Lucene index accessor instance. Manages low-level access. -->
-  <bean id="systemIndexAccessor" class="org.vortikal.repository.index.LuceneIndexManager">
+  <bean id="systemIndexAccessor" class="org.vortikal.repository.index.IndexManager">
     <property name="storageRootPath" value="${indexStorageRootPath}"/>
     <property name="storageId" value="property_index"/>
     <property name="forceUnlock" value="true"/>
     <property name="maxLockAcquireTimeOnShutdown" value="20"/>
-    <property name="maxReadOnlyReaders" value="${indexMaxReadOnlyReaders}" />
+<!--    <property name="maxReadOnlyReaders" value="${indexMaxReadOnlyReaders}" />
     <property name="maxAgingReadOnlyReaders" value="${indexMaxAgingReadOnlyReaders}" />
-    <property name="agingReadOnlyReaderThreshold" value="${indexAgingReadOnlyReaderThreshold}" />
-    <property name="indexReaderWarmup">
-      <bean class="org.vortikal.repository.index.IndexReaderWarmupImpl">
-        <property name="lastModifiedPropDef" ref="lastModifiedPropDef" />
-        <property name="hiddenPropDef" ref="hiddenPropDef" />
-        <property name="luceneQueryBuilder" ref="queryBuilder" />
-      </bean>
-    </property>
+    <property name="agingReadOnlyReaderThreshold" value="${indexAgingReadOnlyReaderThreshold}" />-->
+    <property name="searcherFactory" ref="searcherFactory"/>
   </bean>
 
   <!-- Property set index based on primary Lucene index accessor instance.  -->
@@ -86,13 +90,13 @@
   </bean>
 
   <!-- A Lucene index accessor (secondary instance, batch indexing tuned) -->
-  <bean id="secondarySystemIndexAccessor" class="org.vortikal.repository.index.LuceneIndexManager">
+  <bean id="secondarySystemIndexAccessor" class="org.vortikal.repository.index.IndexManager">
     <property name="storageRootPath" value="${indexStorageRootPath}"/>
     <property name="storageId" value="property_index.secondary"/>
     <property name="batchIndexingMode" value="true"/>
     <property name="forceUnlock" value="true"/>
     <property name="maxLockAcquireTimeOnShutdown" value="20"/>
-    <property name="closeAfterInitialization" value="true"/>
+    <property name="closeAfterInit" value="true"/>
   </bean>
 
   <!-- Secondary property set index instance -->
@@ -103,9 +107,9 @@
   
   <!-- Factory for building Lucene queries. -->
   <bean id="queryBuilder"
-        class="org.vortikal.repository.search.query.LuceneQueryBuilderImpl">
+        class="org.vortikal.repository.search.query.LuceneQueryBuilder">
     <property name="resourceTypeTree" ref="resourceTypeTree"/>
-    <property name="fieldValueMapper" ref="fieldValueMapper"/>
+    <property name="documentMapper" ref="documentMapper"/>
     <property name="queryAuthorizationFilterFactory" ref="queryAuthorizationFilterFactory"/>
     <property name="publishedPropDef" ref="publishedPropDef" />
     <property name="unpublishedCollectionPropDef" ref="unpublishedCollectionPropDef" />

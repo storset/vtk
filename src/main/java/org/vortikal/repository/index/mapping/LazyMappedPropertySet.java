@@ -35,43 +35,58 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.index.IndexableField;
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.search.PropertySelect;
 
 /**
  * Lazyily mapped
  * <code>PropertySet</code>. Does minimal work in constructor, and maps
- * on-demand requested props from internal Lucene fields.
+ * on-demand requested props and attributes from internal Lucene fields.
+ * 
+ * <p>Implements the {@link PropertySet} interface, and has additional methods
+ * for retrieving the ACL without requiring a full {@link Resource} instance.
  */
-class LazyMappedPropertySet implements PropertySet {
+public final class LazyMappedPropertySet implements PropertySet {
 
     private Path uri;
     private String resourceType;
-    private List<Fieldable> propFields;
-    private DocumentMapper mapper;
+    private List<IndexableField> propFields;
+    private List<IndexableField> aclFields;
+    private final DocumentMapper mapper;
 
     LazyMappedPropertySet(Document doc, DocumentMapper mapper) throws DocumentMappingException {
-        for (Fieldable f : doc.getFields()) {
-            if (FieldNames.URI_FIELD_NAME.equals(f.name())) {
+        for (IndexableField f : doc) {
+            if (ResourceFields.URI_FIELD_NAME.equals(f.name())) {
                 uri = Path.fromString(f.stringValue());
                 continue;
             }
 
-            if (FieldNames.RESOURCETYPE_FIELD_NAME.equals(f.name())) {
+            if (ResourceFields.RESOURCETYPE_FIELD_NAME.equals(f.name())) {
                 resourceType = f.stringValue();
                 continue;
             }
+            
+            if (AclFields.isAclField(f.name())) {
+                if (aclFields == null) {
+                    aclFields = new ArrayList<IndexableField>();
+                }
+                aclFields.add(f);
+                continue;
+            }
 
-            if (FieldNames.isReservedField(f.name())) {
+            if (!PropertyFields.isPropertyField(f.name())) {
                 continue;
             }
 
             if (propFields == null) {
-                propFields = new ArrayList<Fieldable>();
+                propFields = new ArrayList<IndexableField>();
             }
 
             propFields.add(f);
@@ -79,11 +94,11 @@ class LazyMappedPropertySet implements PropertySet {
 
         if (uri == null) {
             throw new DocumentMappingException("Document missing required field "
-                    + FieldNames.URI_FIELD_NAME + ": " + doc);
+                    + ResourceFields.URI_FIELD_NAME + ": " + doc);
         }
         if (resourceType == null) {
             throw new DocumentMappingException("Document missing required field "
-                    + FieldNames.RESOURCETYPE_FIELD_NAME + ": " + doc);
+                    + ResourceFields.RESOURCETYPE_FIELD_NAME + ": " + doc);
         }
         this.mapper = mapper;
     }
@@ -112,13 +127,13 @@ class LazyMappedPropertySet implements PropertySet {
         // Lucene guarantees stored field order to be same as when document was indexed
         final List<Property> props = new ArrayList<Property>(propFields.size());
         for (int i = 0; i < propFields.size(); i++) {
-            Fieldable f = propFields.get(i);
-            List<Fieldable> values = new ArrayList<Fieldable>();
+            IndexableField f = propFields.get(i);
+            List<IndexableField> values = new ArrayList<IndexableField>();
             values.add(f);
-            while (i < propFields.size() - 1 && f.name() == propFields.get(i + 1).name()) { // Interned string comparison OK
+            while (i < propFields.size() - 1 && f.name().equals(propFields.get(i + 1).name())) {
                 values.add(propFields.get(++i));
             }
-            props.add(mapper.getPropertyFromStoredFieldValues(f.name(), values));
+            props.add(mapper.propertyFromFields(f.name(), values));
         }
         return props;
     }
@@ -132,20 +147,20 @@ class LazyMappedPropertySet implements PropertySet {
         // Lucene guarantees stored field order to be same as when document was indexed
         final List<Property> props = new ArrayList<Property>();
         for (int i = 0; i < propFields.size(); i++) {
-            final Fieldable f = propFields.get(i);
-            List<Fieldable> values = null;
-            if (FieldNames.isStoredFieldInNamespace(f.name(), namespace)) {
-                values = new ArrayList<Fieldable>();
+            final IndexableField f = propFields.get(i);
+            List<IndexableField> values = null;
+            if (PropertyFields.isPropertyFieldInNamespace(f.name(), namespace)) {
+                values = new ArrayList<IndexableField>();
                 values.add(f);
             }
-            while (i < propFields.size() - 1 && f.name() == propFields.get(i + 1).name()) { // Interned string comparison OK
+            while (i < propFields.size() - 1 && f.name().equals(propFields.get(i + 1).name())) {
                 ++i;
                 if (values != null) {
                     values.add(propFields.get(i));
                 }
             }
             if (values != null) {
-                props.add(mapper.getPropertyFromStoredFieldValues(f.name(), values));
+                props.add(mapper.propertyFromFields(f.name(), values));
             }
         }
 
@@ -158,24 +173,24 @@ class LazyMappedPropertySet implements PropertySet {
     }
 
     @Override
-    public Property getProperty(Namespace namespace, String name) {
+    public Property getProperty(Namespace ns, String name) {
         if (propFields == null) {
             return null;
         }
 
         // Lucene guarantees stored field order to be same as when document was indexed
-        final String fieldName = FieldNames.getStoredFieldName(namespace, name);
-        List<Fieldable> values = null;
-        for (Fieldable f : propFields) {
+        final String fieldName = PropertyFields.propertyFieldName(name, ns.getPrefix(), false, false);
+        List<IndexableField> values = null;
+        for (IndexableField f : propFields) {
             if (fieldName.equals(f.name())) {
                 if (values == null) {
-                    values = new ArrayList<Fieldable>();
+                    values = new ArrayList<IndexableField>();
                 }
                 values.add(f);
             } else if (values != null) break; // All fields for property collected.
         }
 
-        return values != null ? mapper.getPropertyFromStoredFieldValues(fieldName, values) : null;
+        return values != null ? mapper.propertyFromFields(fieldName, values) : null;
     }
 
     @Override
@@ -185,23 +200,58 @@ class LazyMappedPropertySet implements PropertySet {
         }
 
         // Lucene guarantees stored field order to be same as when document was indexed
-        final String fieldName = FieldNames.getStoredFieldName(prefix, name);
-        List<Fieldable> values = null;
-        for (Fieldable f : propFields) {
+        final String fieldName = PropertyFields.propertyFieldName(name, prefix, false, false);
+        List<IndexableField> values = null;
+        for (IndexableField f : propFields) {
             if (fieldName.equals(f.name())) {
                 if (values == null) {
-                    values = new ArrayList<Fieldable>();
+                    values = new ArrayList<IndexableField>();
                 }
                 values.add(f);
             } else if (values != null) break; // All fields for property collected.
         }
 
-        return values != null ? mapper.getPropertyFromStoredFieldValues(fieldName, values) : null;
+        return values != null ? mapper.propertyFromFields(fieldName, values) : null;
     }
 
     @Override
     public Iterator<Property> iterator() {
         return getProperties().iterator();
+    }
+
+    /**
+     * Return resource ACL associated with the property set. Only available
+     * if ACL has been selected for loading.
+     * 
+     * @see PropertySelect#isIncludeAcl() 
+     * 
+     * @return an <code>Acl</code> instance.
+     */
+    public Acl getAcl() {
+        if (aclFields == null) {
+            return null;
+        }
+        
+        return mapper.getAclFields().fromFields(aclFields);
+    }
+
+    /**
+     * @return <code>true</code> if the ACL present for this property set is
+     * inherited from some ancestor property set.
+     */
+    public boolean isInheritedAcl() {
+        return getAclInheritedFrom() != PropertySetImpl.NULL_RESOURCE_ID;
+    }
+    
+    /**
+     * @return Returns id of resource that this property set inherits its ACL from.
+     */
+    public int getAclInheritedFrom() {
+        if (aclFields == null) {
+            return PropertySetImpl.NULL_RESOURCE_ID;
+        }
+
+        return AclFields.aclInheritedFrom(aclFields);
     }
     
     @Override

@@ -51,9 +51,9 @@ import org.vortikal.repository.store.IndexDao;
  */
 public class IndirectReindexer implements PropertySetIndexReindexer {
 
-    private IndexDao indexDao;
-    private PropertySetIndex targetIndex;
-    private PropertySetIndex temporaryIndex;
+    private final IndexDao indexDao;
+    private final PropertySetIndex targetIndex;
+    private final PropertySetIndex temporaryIndex;
     private static final Log LOG = LogFactory.getLog(IndirectReindexer.class);
     
     public IndirectReindexer(PropertySetIndex targetIndex, 
@@ -92,7 +92,7 @@ public class IndirectReindexer implements PropertySetIndexReindexer {
                 new DirectReindexer(this.temporaryIndex, this.indexDao).runWithExternalLocking();
             
             LOG.info("Clearing contents of target index '" + this.targetIndex.getId() + "' now");
-            this.targetIndex.clearContents();
+            this.targetIndex.clear();
             
             LOG.info("Adding contents of temporary index to target index now");
             this.targetIndex.addIndexContents(this.temporaryIndex);

@@ -41,7 +41,10 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
  * added {@link PropertyTypeDefinition property type definitions}.
  */
 public class ConfigurablePropertySelect implements PropertySelect {
-    private Set<PropertyTypeDefinition> properties = new HashSet<PropertyTypeDefinition>();
+        
+    private final Set<PropertyTypeDefinition> properties = new HashSet<PropertyTypeDefinition>();
+    
+    private boolean includeAcl = false;
     
     public ConfigurablePropertySelect() {
     }
@@ -62,7 +65,7 @@ public class ConfigurablePropertySelect implements PropertySelect {
 
     @Override
     public boolean isIncludedProperty(PropertyTypeDefinition def) {
-        return this.properties.contains(def);
+        return properties.contains(def);
     }
 
     @Override
@@ -93,6 +96,22 @@ public class ConfigurablePropertySelect implements PropertySelect {
         int hash = 7;
         hash = 97 * hash + (this.properties != null ? this.properties.hashCode() : 0);
         return hash;
+    }
+
+    /**
+     * Set if ACLs objects should be included for search results. Default value
+     * is <code>false</code>.
+     * 
+     * @param includeAcl <code>true</code> if ACLs should be loaded and included
+     * in search results.
+     */
+    public void setIncludeAcl(boolean includeAcl) {
+        this.includeAcl = includeAcl;
+    }
+
+    @Override
+    public boolean isIncludeAcl() {
+        return includeAcl;
     }
     
 }

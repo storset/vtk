@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006,2014 University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,7 @@ package org.vortikal.repository.index;
 
 import java.util.Iterator;
 import java.util.Set;
+import org.vortikal.repository.Acl;
 
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
@@ -56,7 +57,7 @@ import org.vortikal.security.Principal;
  * 
  * <p>
  * The {@link #lock()}, {@link #unlock()} and {@link #commit()} methods
- * should provide the possibility of executing a set
+ * should provide the possibility of executing a set of
  * operations that cannot be mixed with other write operations from other threads
  * at the same time. Any modifying operation will not be visible by
  * other index users/readers before {@link commit()} has been called, as long
@@ -74,11 +75,10 @@ public interface PropertySetIndex {
      * <em>Does not erasing any existing property sets at the same URI.</em>
      *  
      * @param propertySet
-     * @param aclReadPrincipals
+     * @param acl
      * @throws IndexException
      */
-    public void addPropertySet(PropertySet propertySet, 
-                               Set<Principal> aclReadPrincipals) throws IndexException;
+    public void addPropertySet(PropertySet propertySet, Acl acl) throws IndexException;
     
     
     /**
@@ -87,9 +87,11 @@ public interface PropertySetIndex {
      * 
      * This method will always erase any existing property sets at the same URI for
      * the property set to update.
+     * @param propertySet
+     * @param acl
      */
     public void updatePropertySet(PropertySet propertySet,
-                                  Set<Principal> aclReadPrincipals) throws IndexException;
+                                 Acl acl) throws IndexException;
     
     
     /**
@@ -108,9 +110,7 @@ public interface PropertySetIndex {
      * if there are any.
      * 
      * @param rootUri
-     * @return The number of deleted instances. If it's not 0 or 1, 
-     *         then something is very wrong with the implementation.
-     *         
+
      * @throws IndexException
      */
     public void deletePropertySetTree(Path rootUri) throws IndexException;
@@ -127,68 +127,19 @@ public interface PropertySetIndex {
     public PropertySetIndexRandomAccessor randomAccessor() throws IndexException;
     
     /**
-     * Get an {@link java.util.Iterator} over all existing URIs in index. 
+     * Get an {@link java.util.Iterator} over all existing URI paths in index. 
      * 
      * The iteration is ordered by URI lexicographically. Any URI-duplicates are included. 
      * 
-     * Note that calling this method will implicitly commit all changes made earlier
-     * using any of the methods for deleting, updating or adding property sets.
-     * 
-     * @return
+     * @return an iterator of paths 
      * @throws IndexException
      */
-    public Iterator<Object> orderedUriIterator() throws IndexException;
+    public Iterator<Path> orderedUriIterator() throws IndexException;
     
-    /**
-     * Get an un-ordered <code>Iterator</code> over all <code>PropertySet</code> instances
-     * in index. Any URI-duplicates are included.
-     * 
-     * Note that calling this method will implicitly commit all changes made earlier
-     * using any of the methods for deleting, updating or adding property sets.
-     * 
-     * @return
-     * @throws IndexException
-     */
-    public Iterator<Object> propertySetIterator() throws IndexException;
-    
-    /**
-     * Get an {@link java.util.Iterator} over all <code>PropertySet</code> instances
-     * in index.
-     * 
-     * The iteration is ordered by URI lexicographically. Any URI-duplicates are included, 
-     * and should <em>directly</em> follow each other because of the sorting.
-     * 
-     * Note that calling this method will implicitly commit all changes made earlier
-     * using any of the methods for deleting, updating or adding property sets.
-     * 
-     * @return
-     * @throws IndexException
-     */
-    public Iterator<Object> orderedPropertySetIterator() throws IndexException;
-    
-    /**
-     * Get an {@link java.util.Iterator} over all <code>PropertySet</code> instances
-     * in the sub-tree given by the root URI.
-     * 
-     * The iteration is ordered by URI lexicographically. Any duplicates are included
-     * and should <em>directly</em> follow each other because of the sorting.
-     * 
-     * Note that calling this method will implicitly commit all changes made earlier
-     * using any of the methods for deleting, updating or adding property sets.
-     * 
-     * @param rootUri
-     * @return
-     * @throws IndexException
-     */
-    public Iterator<Object> orderedSubtreePropertySetIterator(Path rootUri) throws IndexException;
-
     /**
      * Count all property set instances currently in index. This number includes any multiples
      * for a single URI.
      *  
-     * Note that calling this method will implicitly commit all changes made earlier
-     * using any of the methods for deleting, updating or adding property sets.
-     * 
      * @return
      * @throws IndexException
      */
@@ -200,14 +151,14 @@ public interface PropertySetIndex {
      * @param iterator
      * @throws IndexException
      */
-    public void close(Iterator<Object> iterator) throws IndexException;
+    public void close(Iterator<?> iterator) throws IndexException;
     
     /**
-     * Clear all contents of index.
+     * Clear all contents of index (create a new and empty index).
      * 
      * @throws IndexException
      */
-    public void clearContents() throws IndexException;
+    public void clear() throws IndexException;
     
     /**
      * Close down an index to free associated resources. 
@@ -219,6 +170,7 @@ public interface PropertySetIndex {
     
     /**
      * Determine if underlying index is closed for access or not. 
+     * @return <code>true</code> if underlying index is closed.
      */
     public boolean isClosed();
     
@@ -298,6 +250,7 @@ public interface PropertySetIndex {
     
     /**
      * Return a runtime ID for the index instance.
+     * @return id as a string
      */
     public String getId();
     

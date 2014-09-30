@@ -35,14 +35,14 @@ import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.PrefixFilter;
 import org.apache.lucene.search.Query;
-import org.vortikal.repository.index.mapping.FieldNames;
+import org.vortikal.repository.index.mapping.PropertyFields;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.query.PropertyPrefixQuery;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
 import org.vortikal.repository.search.query.TermOperator;
-import org.vortikal.repository.search.query.filter.InversionFilter;
+import org.vortikal.repository.search.query.filter.FilterFactory;
 
 /**
  * 
@@ -52,15 +52,9 @@ import org.vortikal.repository.search.query.filter.InversionFilter;
 public class PropertyPrefixQueryBuilder implements QueryBuilder {
 
     private PropertyPrefixQuery ppq;
-    private Filter deletedDocsFilter;
 
     public PropertyPrefixQueryBuilder(PropertyPrefixQuery ppq) {
         this.ppq = ppq;
-    }
-
-    public PropertyPrefixQueryBuilder(PropertyPrefixQuery ppq, Filter deletedDocs) {
-        this(ppq);
-        this.deletedDocsFilter = deletedDocs;
     }
 
     @Override
@@ -87,16 +81,16 @@ public class PropertyPrefixQueryBuilder implements QueryBuilder {
             term = term.toLowerCase();
         }
 
-        String fieldName = FieldNames.getSearchFieldName(def, ignorecase);
+        String fieldName = PropertyFields.propertyFieldName(def, ignorecase);
         if (def.getType() == Type.JSON && this.ppq.getComplexValueAttributeSpecifier() != null) {
-            fieldName = FieldNames.getJsonSearchFieldName(
+            fieldName = PropertyFields.jsonFieldName(
                     def, ppq.getComplexValueAttributeSpecifier(), ignorecase);
         }
 
         Filter filter = new PrefixFilter(new Term(fieldName, term));
 
         if (inverted) {
-            filter = new InversionFilter(filter, this.deletedDocsFilter);
+            filter = FilterFactory.inversionFilter(filter);
         }
         
         return new ConstantScoreQuery(filter);

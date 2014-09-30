@@ -57,7 +57,7 @@ import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.SortFieldDirection;
-import org.vortikal.repository.search.SortingImpl;
+import org.vortikal.repository.search.Sorting;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.Query;
@@ -112,7 +112,7 @@ public class ManuallyApproveResourcesSearcher {
         }
 
         // Sort on publish date
-        SortingImpl sorting = new SortingImpl();
+        Sorting sorting = new Sorting();
         sorting.addSortField(new PropertySortField(this.publishDatePropDef, SortFieldDirection.DESC));
 
         String resourceTypePointer = this.listingResourceTypeMappingPointers.get(collection.getResourceType());

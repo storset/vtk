@@ -59,6 +59,7 @@ import org.vortikal.repository.search.ConfigurablePropertySelect;
 import org.vortikal.repository.search.QueryException;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
+import org.vortikal.repository.search.Searcher.MatchingResult;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.Query;
@@ -113,7 +114,8 @@ public class TagsReportingComponent {
         private final Map<String, TagFrequency> tagFreqMap = new HashMap<String, TagFrequency>();
 
         @Override
-        public boolean matching(PropertySet propertySet) throws Exception {
+        public boolean matching(MatchingResult result) throws Exception {
+            PropertySet propertySet = result.propertySet();
             Property tags = propertySet.getProperty(tagsPropDef);
             if (tags != null) {
                 if (tagsPropDef.isMultiple()) {

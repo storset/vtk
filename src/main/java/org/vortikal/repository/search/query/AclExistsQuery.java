@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2009, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,26 +28,54 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.index.mapping;
+package org.vortikal.repository.search.query;
 
-public class FieldValueMappingException extends DocumentMappingException {
+/**
+ * TODO rename class to "AclNotInheritedQuery" (more precise)
+ * @author oyvind
+ */
+public class AclExistsQuery extends AbstractAclQuery {
 
-    private static final long serialVersionUID = 2989933317347109891L;
-
-    public FieldValueMappingException() {
-        super();
+    public AclExistsQuery() {
+        super(false);
+    }
+    
+    public AclExistsQuery(boolean inverted) {
+        super(inverted);
+    }
+    
+    @Override
+    public Object accept(QueryTreeVisitor visitor, Object data) {
+        return visitor.visit(this, data);
     }
 
-    public FieldValueMappingException(String message) {
-        super(message);
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder(this.getClass().getName());
+        sb.append(";inverted=").append(super.inverted);
+        return sb.toString();
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final AclExistsQuery other = (AclExistsQuery) obj;
+        if (super.inverted != other.inverted) {
+            return false;
+        }
+        return true;
     }
 
-    public FieldValueMappingException(String message, Throwable cause) {
-        super(message, cause);
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 59 * hash + (super.inverted ? 1 : 0);
+        return hash;
     }
-
-    public FieldValueMappingException(Throwable cause) {
-        super(cause);
-    }
-
+    
 }

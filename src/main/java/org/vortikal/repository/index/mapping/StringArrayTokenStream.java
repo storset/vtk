@@ -33,32 +33,52 @@ package org.vortikal.repository.index.mapping;
 import java.io.IOException;
 
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.tokenattributes.TermAttribute;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.apache.lucene.collation.ICUCollationAttributeFactory;
+
 
 /**
- * Simple {@link TokenStream} implementation with a <code>String</code> array
- * as input.
+ * {@link TokenStream} implementation with a <code>String</code> array
+ * as input and support for encoding terms as collation keys. (For locale-specific
+ * sorting).
  *
  * TODO Does not support token offset attributes, but that can be easily added if
  * necessary.
- * TODO fix deprecation of <code>TermAttribute</code> after upgrade to Lucene 3.5.
  * 
- * @author oyviste
- *
  */
 public final class StringArrayTokenStream extends TokenStream {
 
-    private String[] values;
+    private final String[] values;
     private int currentValueIndex;
-    private final TermAttribute termAttr;
-    
-    public StringArrayTokenStream(String[] values) {
+    private final CharTermAttribute termAttr;
+
+    /**
+     * Create a token stream from the provided string values, with no particular
+     * encoding. Each string becomes an index term as-is.
+     * 
+     * @param values sequence of term values/tokens
+     */
+    public StringArrayTokenStream(String... values) {
         super();
         this.values = values;
         this.currentValueIndex = 0;
-        this.termAttr = addAttribute(TermAttribute.class);
+        this.termAttr = addAttribute(CharTermAttribute.class);
     }
 
+    /**
+     * Create a token stream from the provided string values, and encode the terms
+     * as collation keys using the provided {@link ICUCollationAttributeFactory}.
+     * 
+     * @param caFactory the collated term attribute factory to use
+     * @param values sequence of term values/tokens
+     */
+    public StringArrayTokenStream(ICUCollationAttributeFactory caFactory, String... values) {
+        super(caFactory);
+        this.values = values;
+        this.currentValueIndex = 0;
+        this.termAttr = addAttribute(CharTermAttribute.class);
+    }
+    
     @Override
     public void reset() throws IOException {
         this.currentValueIndex = 0;
@@ -71,8 +91,9 @@ public final class StringArrayTokenStream extends TokenStream {
         }
 
         clearAttributes();
-
-        this.termAttr.setTermBuffer(this.values[this.currentValueIndex++]);
+        
+        this.termAttr.setEmpty();
+        this.termAttr.append(this.values[this.currentValueIndex++]);
 
         return true;
     }

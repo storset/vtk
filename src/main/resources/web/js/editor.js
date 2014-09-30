@@ -856,10 +856,13 @@ function validTextLengthsInEditorError(elm, isOldEditor) {
     } else {
       lbl = elm.find("label");
     }
-    if (lbl.length) {
-      var d = new VrtxMsgDialog({msg: tooLongFieldPre + lbl.text() + tooLongFieldPost, title: ""});
-      d.open();
+    if(lbl.length) {
+      lbl = lbl.text();
+    } else {
+      lbl = "<?>";
     }
+    var d = new VrtxMsgDialog({ msg: tooLongFieldPre + lbl + tooLongFieldPost, title: "" });
+    d.open();
   }
 }
 

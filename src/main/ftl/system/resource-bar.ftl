@@ -21,8 +21,12 @@
   <#if resourceContext.currentResource.lock.principal.URL?exists>
     <#assign lockedBy = resourceContext.currentResource.lock.principal.description />
   </#if>
+  <#assign owner = resourceContext.currentResource.lock.principal.qualifiedName />
+  <#assign currentPrincipal = resourceContext.principal.qualifiedName />
+  <span id="resource-locked-by-other" class="hidden-server-info"><#if owner?exists && owner != currentPrincipal>true<#else>false</#if></span>
   <span id="resource-locked-by" class="hidden-server-info">${lockedBy?html}</span>
 </#if>
+<span id="resource-can-edit" class="hidden-server-info"><#if writePermissionAtAll.permissionsQueryResult = 'true'>true<#else>false</#if></span>
 <script type="text/javascript"><!--
   if(vrtxAdmin.isIE7 || vrtxAdmin.isIETridentInComp) {
     if(vrtxAdmin.isIETridentInComp) {

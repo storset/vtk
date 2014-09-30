@@ -1431,6 +1431,12 @@
           <property name="considerLocks" value="true" />
         </bean>
         <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
+          <property name="modelName" value="writePermissionAtAll" />
+          <property name="permission" value="WRITE" />
+          <property name="anonymous" value="false" />
+          <property name="considerLocks" value="false" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
           <property name="modelName" value="unlockPermission" />
           <property name="permission" value="UNLOCK" />
           <property name="anonymous" value="false" />

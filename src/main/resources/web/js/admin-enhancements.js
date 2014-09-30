@@ -201,6 +201,23 @@ vrtxAdmin._$(document).ready(function () {
   if(isEmbedded) {
     $("html").addClass("embedded embedded-loading"); // Temporary solution
     if(onlySessionId) {
+      var canEdit = $("#resource-can-edit").text() === "true";
+      var lockedByOther = ($("#resource-locked-by-other").length && $("#resource-locked-by-other").text() == "true")
+                            ? $("#resource-locked-by").html()
+                            : "";
+      
+      var failHtml = "";
+      if(!canEdit) {
+        failHtml = "<h1>Du har ikke skriverettigheter til å redigere denne timeplanen.</h1>";
+      } else {
+        if(lockedByOther.length) {
+          failHtml = "<h1>Timeplanen er låst av en annen bruker: " + lockedByOther + ".</h1>";
+        }
+      }
+      if(failHtml != "") {
+        $("#contents").html(failHtml);
+      }
+      
       var free = $(window).height() - $("body").height();
       $("#editor").height(free);
     }

@@ -273,7 +273,7 @@ resourcetype course-description {
       ##
     }
 
-    semesters (hasBoxBelow) {
+    semesters {
       ##
       [def uri resource-prop("./", "uri")]
       [def semesters search('uri=' + uri + '/* && (type IN semester-page || type IN semester) && published=true', null)]
@@ -282,11 +282,7 @@ resourcetype course-description {
       [endif]
       [list semesters semester]
         [if _index = 0]
-          [if hasBoxBelow = "true"]
-            <div class="vrtx-frontpage-box grey-box vrtx-distach-bottom" id="vrtx-course-semesters">
-          [else]
-            <div class="vrtx-frontpage-box grey-box" id="vrtx-course-semesters">
-          [endif]
+          <div class="vrtx-frontpage-box white-box" id="vrtx-course-semesters">
           <h2>[localized 'semester-title']</h2>
           <p><strong>[localized 'semester']</strong></p>
           <ul>
@@ -362,43 +358,27 @@ resourcetype course-description {
 
     course-toc (document) {
       ##
-      [def put-dash null]
+      <ul>
       [def course-content document.properties.course-content]
       [if course-content != null && course-content != ""]
-        [def put-dash ""]
-        <a href="#course-content">[localized 'course-content']</a>
+        <li><a href="#course-content">[localized 'course-content']</a></li>
       [endif]
       [def learning-outcomes document.properties.learning-outcomes]
       [if learning-outcomes != null && learning-outcomes != ""]
-        [if put-dash != null]
-          -
-        [else]
-          [def put-dash ""]
-        [endif]
-        <a href="#learning-outcomes">[localized 'learning-outcomes']</a>
+        <li><a href="#learning-outcomes">[localized 'learning-outcomes']</a></li>
       [endif]
       [def opptak-og-adgang document.properties.opptak-og-adgang]
       [def opptak-og-adgang-text-field document.properties.opptak-og-adgang-text-field]
       [def ikke-privatist document.properties.ikke-privatist]
       [def ikke-privatist-text-field document.properties.ikke-privatist-text-field]
       [if (opptak-og-adgang-text-field != null && opptak-og-adgang-text-field != "") || (opptak-og-adgang != null && opptak-og-adgang != "") || (ikke-privatist-text-field != null && ikke-privatist-text-field != "") || (ikke-privatist != null && ikke-privatist != "")]
-        [if put-dash != null]
-          -
-        [else]
-          [def put-dash ""]
-        [endif]
-        <a href="#admission">[localized 'opptak-og-adgang-group']</a>
+        <li><a href="#admission">[localized 'opptak-og-adgang-group']</a></li>
       [endif]
       [def obligatoriske-forkunnskaper document.properties.obligatoriske-forkunnskaper]
       [def obligatoriske-forkunnskaper-text-field document.properties.obligatoriske-forkunnskaper-text-field]
       [def recommended-prerequisites-text-field document.properties.recommended-prerequisites-text-field]
       [if (obligatoriske-forkunnskaper-text-field != null && obligatoriske-forkunnskaper-text-field != "") || (obligatoriske-forkunnskaper != null && obligatoriske-forkunnskaper != "") || (recommended-prerequisites-text-field != null && recommended-prerequisites-text-field != "")]
-        [if put-dash != null]
-          -
-        [else]
-          [def put-dash ""]
-        [endif]
-        <a href="#prerequisites">[localized 'prerequisites-group']</a>
+        <li><a href="#prerequisites">[localized 'prerequisites-group']</a></li>
       [endif]
       [def overlapping-courses document.properties.overlapping-courses]
       [def overlapping-courses-text-field document.properties.overlapping-courses-text-field]
@@ -411,24 +391,14 @@ resourcetype course-description {
         [endlist]
       [endif]
       [if list-length != 0 || (overlapping-courses-text-field != null && overlapping-courses-text-field != "")]
-        [if put-dash != null]
-          -
-        [else]
-          [def put-dash ""]
-        [endif]
-        <a href="#overlapping-courses">[localized 'overlapping-courses-group']</a>
+        <li><a href="#overlapping-courses">[localized 'overlapping-courses-group']</a></li>
       [endif]
       [def teaching-text-field document.properties.teaching-text-field]
       [def forsikring document.properties.forsikring]
       [def adgang document.properties.adgang]
       [def adgang-text-field document.properties.adgang-text-field]
       [if (teaching-text-field != null && teaching-text-field != "") || (forsikring != null && forsikring != "")  || (adgang != null && adgang != "") || (adgang-text-field != null && adgang-text-field != "")]
-        [if put-dash != null]
-          -
-        [else]
-          [def put-dash ""]
-        [endif]
-        <a href="#teaching">[localized 'teaching-group']</a>
+        <li><a href="#teaching">[localized 'teaching-group']</a></li>
       [endif]
       [def assessment-and-grading document.properties.assessment-and-grading]
       [def hjelpemidler document.properties.hjelpemidler]
@@ -453,30 +423,18 @@ resourcetype course-description {
           (ny-utsatt-eksamen-text-field != null && ny-utsatt-eksamen-text-field != "") || (ny-utsatt-eksamen != null && ny-utsatt-eksamen != "") ||
           (antall-forsok-trekk-text-field != null && antall-forsok-trekk-text-field != "") || (antall-forsok-trekk != null && antall-forsok-trekk != "") || 
           (tilrettelagt-eksamen-text-field != null && tilrettelagt-eksamen-text-field != "") || (tilrettelagt-eksamen != null && tilrettelagt-eksamen != "")]
-        [if put-dash != null]
-          -
-        [else]
-          [def put-dash ""]
-        [endif]
-        <a href="#exam">[localized 'assessment-and-grading']</a>
+        <li><a href="#exam">[localized 'assessment-and-grading']</a></li>
       [endif]
       [def evaluering-av-emnet document.properties.evaluering-av-emnet]
       [def evaluering-av-emnet-text-field document.properties.evaluering-av-emnet-text-field]
       [if (evaluering-av-emnet-text-field != null && evaluering-av-emnet-text-field != "") || (evaluering-av-emnet != null && evaluering-av-emnet != "")]
-        [if put-dash != null]
-          -
-        [else]
-          [def put-dash ""]
-        [endif]
-        <a href="#evaluering-av-emnet">[localized 'evaluering-av-emnet-group']</a>
+        <li><a href="#evaluering-av-emnet">[localized 'evaluering-av-emnet-group']</a></li>
       [endif]
       [def other-text-field document.properties.other-text-field]
       [if other-text-field != null && evaluering-av-emnet-text-field != ""]
-        [if put-dash != null]
-          -
-        [endif]
-        <a href="#other">[localized 'other-text-field']</a>
+        <li><a href="#other">[localized 'other-text-field']</a></li>
       [endif]
+      </ul>
       ##
     }
 
@@ -725,27 +683,25 @@ resourcetype course-description {
       <body id="vrtx-course-description">
         <div id="vrtx-content">
           <div id="vrtx-main-content">
-            [call "comp:course-navigation"]
-            <h1>[if course-code != null][val course-code][endif][if course-code != null && course-name != null] - [endif][if course-name != null][val course-name][endif]</h1>
-            <div id="vrtx-course-toc">
-              [call "comp:course-toc" {"document" : document}]
+            <div id="vrtx-course-title-toc" class="vrtx-frontpage-box white-box">
+              [call "comp:course-navigation"]
+              <h1>[if course-code != null][val course-code][endif][if course-code != null && course-name != null] - [endif][if course-name != null][val course-name][endif]</h1>
+              <div id="vrtx-course-toc">
+                [call "comp:course-toc" {"document" : document}]
+              </div>
             </div>
-            [call "comp:course-content" {"document" : document}]
+            [call "comp:semesters"]
+            <div id="vrtx-course-title-toc" class="vrtx-frontpage-box white-box">
+              [call "comp:course-content" {"document" : document}]
+            </div>
           </div>
           <div id="vrtx-additional-content">
             [call "comp:facts" {"document" : document}]
             [if studinfo-kontakt != null && studinfo-kontakt != ""]
-              [call "comp:semesters" {"hasBoxBelow": "true"}]
               <div class="vrtx-frontpage-box[if related-content != null && related-content != ""] vrtx-distach-bottom[endif]">
                 <h2>[localized 'studinfo-kontakt']</h2>
                 [call "include:shared-text" {"propName":"studinfo-kontakt"}]
               </div>
-            [else]
-              [if related-content != null && related-content != ""]
-                [call "comp:semesters" {"hasBoxBelow": "true"}]
-              [else]
-                [call "comp:semesters" {"hasBoxBelow": "false"}]
-              [endif]
             [endif]
             [call "comp:related-content"]
           </div>
@@ -892,8 +848,8 @@ resourcetype course-description {
     term-more-toggle-show : (en : "Show previous semesters", no : "Vis tidligere semestre", nn : "Vis tidlegare semester"),
 
     administrated : (en : "Administrated by", no : "Tilbys ved", nn : "Tilbys ved"),
-    semester-title : (en : "Semester pages", no : "Semestersider", nn : "Semestersider"),
-    semester : (en : "Teaching schedule, syllabus, examination date", no : "Timeplan, pensum, eksamensdato", nn : "Timeplan, pensum, eksamensdato"),
+    semester-title : (en : "Course schedule, syllabus and examination data etc.", no : "Timeplan, pensum og eksamensdato m.m.", nn : "Timeplan, pensum og eksamensdato m.m."),
+    semester : (en : "Choose semester", no : "Velg semester", nn : "Velg semester"),
 
     opptak-og-adgang-text-field : (en : "Admission text", no : "Opptak og adgangsregulering fritekst", nn : "Opptak og tilgangsavgrensing fritekst"),
     opptak-og-adgang : (en : "Admission shared text", no : "Opptak og adgangsregulering fellestekst", nn : "Opptak og tilgangsavgrensing fellestekst"),

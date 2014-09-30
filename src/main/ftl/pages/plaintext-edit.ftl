@@ -11,7 +11,7 @@
   - Optional model data:
   -
   -->
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 <#if !plaintextEditForm?exists>
   <#stop "Unable to render model: required submodel
   'plaintextEditForm' missing">

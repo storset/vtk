@@ -9,7 +9,7 @@
   -   resource
   -
   -->
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 
 <#-- Introduction -->
 <#assign introduction = vrtx.propValue(resourceContext.currentResource, "introduction") />

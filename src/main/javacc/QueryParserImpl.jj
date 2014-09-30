@@ -10,38 +10,38 @@ options {
 
 PARSER_BEGIN(QueryParserImpl)
 
-package org.vortikal.repository.search;
+package vtk.repository.search;
 
 import java.io.StringReader;
 import java.util.Set;
 import java.util.HashSet;
 
-import org.vortikal.repository.ResourceTypeTree;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.search.query.AndQuery;
-import org.vortikal.repository.search.query.NamePrefixQuery;
-import org.vortikal.repository.search.query.NameWildcardQuery;
-import org.vortikal.repository.search.query.NameTermQuery;
-import org.vortikal.repository.search.query.OrQuery;
-import org.vortikal.repository.search.query.PropertyExistsQuery;
-import org.vortikal.repository.search.query.PropertyPrefixQuery;
-import org.vortikal.repository.search.query.PropertyWildcardQuery;
-import org.vortikal.repository.search.query.PropertyTermQuery;
-import org.vortikal.repository.search.query.Query;
-import org.vortikal.repository.search.query.UriSetQuery;
-import org.vortikal.repository.search.query.TermOperator;
-import org.vortikal.repository.search.query.TypeTermQuery;
-import org.vortikal.repository.search.query.UriDepthQuery;
-import org.vortikal.repository.search.query.UriPrefixQuery;
-import org.vortikal.repository.search.query.UriTermQuery;
-import org.vortikal.repository.search.query.AclExistsQuery;
-import org.vortikal.repository.search.query.AclReadForAllQuery;
-import static org.vortikal.util.text.TextUtils.unescape;
+import vtk.repository.ResourceTypeTree;
+import vtk.repository.resourcetype.PropertyTypeDefinition;
+import vtk.repository.search.query.AndQuery;
+import vtk.repository.search.query.NamePrefixQuery;
+import vtk.repository.search.query.NameWildcardQuery;
+import vtk.repository.search.query.NameTermQuery;
+import vtk.repository.search.query.OrQuery;
+import vtk.repository.search.query.PropertyExistsQuery;
+import vtk.repository.search.query.PropertyPrefixQuery;
+import vtk.repository.search.query.PropertyWildcardQuery;
+import vtk.repository.search.query.PropertyTermQuery;
+import vtk.repository.search.query.Query;
+import vtk.repository.search.query.UriSetQuery;
+import vtk.repository.search.query.TermOperator;
+import vtk.repository.search.query.TypeTermQuery;
+import vtk.repository.search.query.UriDepthQuery;
+import vtk.repository.search.query.UriPrefixQuery;
+import vtk.repository.search.query.UriTermQuery;
+import vtk.repository.search.query.AclExistsQuery;
+import vtk.repository.search.query.AclReadForAllQuery;
+import static vtk.util.text.TextUtils.unescape;
 
 /**
 * Partial implementation of a query parser based on javacc.
 * <p>Try the parser out with:
-* <p>java -cp target/classes org.vortikal.repository.search.QueryParserImpl "((pre:post=c AND s:s=s) OR ff=2211)"
+* <p>java -cp target/classes vtk.repository.search.QueryParserImpl "((pre:post=c AND s:s=s) OR ff=2211)"
 */
 @SuppressWarnings({"all", "warnings", "unchecked"})
 public class QueryParserImpl implements QueryParser {

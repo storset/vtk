@@ -7,7 +7,7 @@
   - of non-local media.
   -->
 
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 <#import "/layouts/media-player.ftl" as mediaPlayer />
 
 <#assign title = vrtx.propValue(mediaResource, "title" , "flattened") />

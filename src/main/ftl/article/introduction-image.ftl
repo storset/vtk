@@ -9,7 +9,7 @@
   -   resource
   -
   -->
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 <#import "/lib/view-utils.ftl" as viewutils />
 
 <#assign resource = resourceContext.currentResource />

@@ -1,5 +1,5 @@
 <#ftl strip_whitespace=true>
-<#import "../vortikal.ftl" as vrtx />
+<#import "../vtk.ftl" as vrtx />
 
 <#macro displayProjectsAlphabetical projectListing>
   <#list alpthabeticalOrdredResult?keys as key >

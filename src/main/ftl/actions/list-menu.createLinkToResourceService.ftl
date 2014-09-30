@@ -1,7 +1,7 @@
 <#ftl strip_whitespace=true>
 <#attempt>
 <#import "/spring.ftl" as spring />
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 
 ${prepend}<a href="javascript:updateParent('${editField}', '${browseURL}')">${item.title}</a>${append}
 

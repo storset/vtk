@@ -5,7 +5,7 @@
   - 
   - Description: A library for displaying and editing
   - resource properties. Property listing works with lists of
-  - org.vortikal.web.controller.properties.PropertyItem objects.
+  - vtk.web.controller.properties.PropertyItem objects.
   -
   - TODO: general documentation of this library.
   - 
@@ -13,11 +13,11 @@
   - 
   - Optional model data:
   -   form - an object of the class
-  -   org.vortikal.web.controller.properties.PropertyEditCommand
+  -   vtk.web.controller.properties.PropertyEditCommand
   -
   -->
 <#import "/spring.ftl" as spring />
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 
 <#assign defaultStringInputSize = 20 />
 
@@ -96,7 +96,7 @@
  * Example: <@propertyItemList items=[item1, item2] />
  *
  * @param items a list of
- *        org.vortikal.web.controller.properties.PropertyItem objects
+ *        vtk.web.controller.properties.PropertyItem objects
  * @param toggle [see documentation for propertyList]
  * @param displayMacro [see documentation for propertyList]
  * @param editWrapperMacro [see documentation for propertyList]
@@ -189,7 +189,7 @@
  * 
  * Example: <@editOrDisplayPropertyItem item=myPropertyItem />
  *
- * @param item an org.vortikal.web.controller.properties.PropertyItem object
+ * @param item an vtk.web.controller.properties.PropertyItem object
  * @param inputSize [see documentation for editOrDisplayProperty]
  * @param toggle [see documentation for propertyList]
  * @param displayMacro [see documentation for propertyList]
@@ -359,11 +359,11 @@
 <#--
  * propertyDisplay
  *
- * Display a org.vortikal.web.controller.properties.PropertyItem,
+ * Display a vtk.web.controller.properties.PropertyItem,
  * usually in this format: [propertyName]: [propertyValue] (editURL)
  * Example: <@propertyDisplay item=myItem />
  *
- * @param item a org.vortikal.web.controller.properties.PropertyItem
+ * @param item a vtk.web.controller.properties.PropertyItem
  *        representing a resource property
  * @param displayMacro (optional) name of a macro that takes parameters "name", "value"
  *        and "editURL", used to display the property.
@@ -441,9 +441,9 @@
  * propertyForm
  *
  * Display a form for editing a property contained in a
- * org.vortikal.web.controller.properties.PropertyItem object,
+ * vtk.web.controller.properties.PropertyItem object,
  *
- * @param item a org.vortikal.web.controller.properties.PropertyItem
+ * @param item a vtk.web.controller.properties.PropertyItem
  *        representing a resource property.
  * @param inputSize [see documentation for editOrDisplayProperty]
  * @param editWrapperMacro [see documentation for propertyList]
@@ -501,7 +501,7 @@
           <#list form.possibleValues as alternative>
             <#if alternative?has_content>
               <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
-              <#local label>${item.definition.valueFormatter.valueToString(constructor("org.vortikal.repository.resourcetype.Value", alternative, item.definition.type), "localized", springMacroRequestContext.locale)}</#local>
+              <#local label>${item.definition.valueFormatter.valueToString(constructor("vtk.repository.resourcetype.Value", alternative, item.definition.type), "localized", springMacroRequestContext.locale)}</#local>
               <option value="${alternative}" <#if form.value?has_content && form.value = alternative>selected="true"</#if> label="${label}">${label}</option>
             <#else>
               <#local defaultNotSet><@vrtx.msg code="resource.property.unset" default="Not set" /></#local>
@@ -610,7 +610,7 @@
  * Display a URL to edit a property item based on its name in the data
  * model. 
  *
- * @param item a org.vortikal.web.controller.properties.PropertyItem
+ * @param item a vtk.web.controller.properties.PropertyItem
  *        representing a resource property.
  * @param toggle (optional) whether to attempt to generate a toggle URL instead of
  *        a regular edit URL for the propery. Default is false.

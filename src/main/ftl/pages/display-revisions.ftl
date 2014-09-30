@@ -9,7 +9,7 @@
   - Optional model data:
   -
   -->
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 
 <#--
 <#macro changeAmount amount>

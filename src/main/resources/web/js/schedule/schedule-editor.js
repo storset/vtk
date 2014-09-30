@@ -465,7 +465,7 @@ function courseSchedule() {
       retrievedScheduleDeferred.resolve();
     },
     error: function(xhr, textStatus) {
-      if(textStatus === "parsererror") { // Running Vortikal or invalid JSON
+      if(textStatus === "parsererror") { // Running VTK or invalid JSON
         retrievedScheduleDeferred.resolve();
         vrtxAdmin.displayErrorMsg(textStatus);
       }

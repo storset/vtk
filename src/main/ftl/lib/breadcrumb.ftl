@@ -10,7 +10,7 @@
   - Optional model data:
   -   
   -->
-<#import "vortikal.ftl" as vrtx />
+<#import "vtk.ftl" as vrtx />
   
 <#macro breadCrumb crumbs downcase=false hidePrefix=false stopLevel=0 startLevel=1>
 

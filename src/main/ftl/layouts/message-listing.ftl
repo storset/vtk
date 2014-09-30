@@ -1,4 +1,4 @@
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 <#import "/lib/collections/view-message-listing.ftl" as messageListing />
 
 <div class="vrtx-messages-main-content-wrapper">

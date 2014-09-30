@@ -13,7 +13,7 @@
 
 <#import "/spring.ftl" as spring />
 <#import "dump.ftl" as dumper />
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 
 <#if !resourceContext?exists>
   <#stop "Unable to render model: required submodel

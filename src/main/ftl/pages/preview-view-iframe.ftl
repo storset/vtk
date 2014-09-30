@@ -23,7 +23,6 @@
   - Directly includes"/system/javascript.ftl" since this 
   - page is not part of admin and therefore not decorated
   -
-  - TODO: Hack based on Ny UiO web styles/structure with regard to visualizing broken links should ideally not be here in vortikal
   - 
   - Required model data:
   -   resourceReference
@@ -34,7 +33,7 @@
   -
   -->
 
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 
 <#if !resourceReference?exists>
   <#stop "Unable to render model: required submodel

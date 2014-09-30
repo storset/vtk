@@ -9,7 +9,7 @@
   -   commentsFeed
   -
   -->
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 <#assign linkTitle>
   <@vrtx.msg code="commenting.comments"
              args=[vrtx.propValue(resourceContext.currentResource, "title", "flattened")] />

@@ -1,4 +1,4 @@
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 
 <#macro publishMessage resourceContext>
 <#local resource = resourceContext.currentResource />

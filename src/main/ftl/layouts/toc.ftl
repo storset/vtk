@@ -6,7 +6,7 @@
   - 
   -->
 
-<#import "/lib/vortikal.ftl" as vrtx/>
+<#import "/lib/vtk.ftl" as vrtx/>
 
 <#if !url?exists>
   <#stop "Missing 'url' in model"/>

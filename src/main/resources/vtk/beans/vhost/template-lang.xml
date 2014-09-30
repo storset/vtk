@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <bean id="templateLanguage.toStringFunction" class="vtk.text.tl.expr.ToString">
+    <constructor-arg>
+      <bean class="vtk.text.tl.Symbol">
+        <constructor-arg  value="string" />
+      </bean>
+    </constructor-arg>
+  </bean>
+
+  <bean id="templateLanguage.toIntFunction" class="vtk.text.tl.expr.ToIntFunction">
+    <constructor-arg>
+      <bean class="vtk.text.tl.Symbol">
+        <constructor-arg  value="int" />
+      </bean>
+    </constructor-arg>
+  </bean>
+
+  <bean id="templateLanguage.concatFunction" class="vtk.text.tl.expr.Concat">
+    <constructor-arg>
+      <bean class="vtk.text.tl.Symbol">
+        <constructor-arg  value="concat" />
+      </bean>
+    </constructor-arg>
+  </bean>
+  
+  <bean id="templateLanguage.lengthFunction" class="vtk.text.tl.expr.Length">
+    <constructor-arg>
+      <bean class="vtk.text.tl.Symbol">
+        <constructor-arg  value="length" />
+      </bean>
+    </constructor-arg>
+  </bean>
+
+  <bean id="templateLanguage.getFunction" class="vtk.text.tl.expr.Get">
+    <constructor-arg>
+      <bean class="vtk.text.tl.Symbol">
+        <constructor-arg  value="get" />
+      </bean>
+    </constructor-arg>
+  </bean>
+
+  <bean id="templateLanguage.splitFunction" class="vtk.text.tl.expr.Split">
+    <constructor-arg>
+      <bean class="vtk.text.tl.Symbol">
+        <constructor-arg  value="split" />
+      </bean>
+    </constructor-arg>
+  </bean>
+
+  <bean id="templateLanguage.substringFunction" class="vtk.text.tl.expr.Substring">
+    <constructor-arg>
+      <bean class="vtk.text.tl.Symbol">
+        <constructor-arg  value="substring" />
+      </bean>
+    </constructor-arg>
+  </bean>
+
+  <bean id="templateLanguage.toLowerCaseFunction" class="vtk.text.tl.expr.ToLowerCase">
+    <constructor-arg>
+      <bean class="vtk.text.tl.Symbol">
+        <constructor-arg  value="toLowerCase" />
+      </bean>
+    </constructor-arg>
+  </bean>
+
+  <bean id="templateLanguage.toUpperCaseFunction" class="vtk.text.tl.expr.ToUpperCase">
+    <constructor-arg>
+      <bean class="vtk.text.tl.Symbol">
+        <constructor-arg  value="toUpperCase" />
+      </bean>
+    </constructor-arg>
+  </bean>
+  
+  <bean id="templateLanguage.ceilFunction" class="vtk.text.tl.expr.Ceil">
+    <constructor-arg>
+      <bean class="vtk.text.tl.Symbol">
+        <constructor-arg  value="ceil" />
+      </bean>
+    </constructor-arg>
+  </bean>
+  
+  <bean id="templateLanguage.replaceFunction" class="vtk.text.tl.expr.Replace">
+    <constructor-arg>
+      <bean class="vtk.text.tl.Symbol">
+        <constructor-arg  value="replace" />
+      </bean>
+    </constructor-arg>
+  </bean>
+
+</beans>

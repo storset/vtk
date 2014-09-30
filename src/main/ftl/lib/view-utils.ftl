@@ -6,7 +6,7 @@
   -   
   -->
 
-<#import "vortikal.ftl" as vrtx />
+<#import "vtk.ftl" as vrtx />
 
 <#--
  * Displays the introduction, if any, of a resource.

@@ -351,7 +351,7 @@ insert into action_type (action_type_id, name) values (7, 'read-write-unpublishe
 
 -- Property value types
 -- This data currently corresponds to definitions in 
--- org.vortikal.repository.resourcetype.PropertyType
+-- vtk.repository.resourcetype.PropertyType
 insert into prop_type (prop_type_id, prop_type_name) values (0, 'String');
 insert into prop_type (prop_type_id, prop_type_name) values (1, 'Integer');
 insert into prop_type (prop_type_id, prop_type_name) values (2, 'Long');

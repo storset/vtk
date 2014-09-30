@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <groupId>vortikal</groupId>
-  <artifactId>vortikal</artifactId>
+  <groupId>vtk</groupId>
+  <artifactId>vtk</artifactId>
   <version>59-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <name>The Vortikal Web Framework</name>
+  <name>The VTK Web Framework</name>
   <url>http://www.uio.no/tjenester/it/web/vortex/</url>
   <modelVersion>4.0.0</modelVersion>
   <prerequisites>
     <maven>3.0.4</maven>
   </prerequisites>
   <description>
-    The Vortikal Web Framework is an open source web publishing solution. It
+    The VTK Web Framework is an open source web publishing solution. It
     consists of two principal parts, a file repository for storing files and
     folders and a web framework allowing functionality to be added in a resource
     centric way. On top of this framework it provides both web based and webdav
@@ -70,9 +70,9 @@
     </mailingList>
   </mailingLists>
   <scm>
-    <connection>scm:git:ssh://git@utv.uio.no:7999/gpl/vortikal.git</connection>
-    <developerConnection>scm:git:ssh://git@utv.uio.no:7999/gpl/vortikal.git</developerConnection>
-    <url>https://utv.uio.no/stash/projects/GPL/repos/vortikal/browse</url>
+    <connection>scm:git:ssh://git@utv.uio.no:7999/gpl/vtk.git</connection>
+    <developerConnection>scm:git:ssh://git@utv.uio.no:7999/gpl/vtk.git</developerConnection>
+    <url>https://utv.uio.no/stash/projects/GPL/repos/vtk/browse</url>
   </scm>
   <licenses>
     <license>
@@ -142,14 +142,14 @@
         <excludes>
           <exclude>**/README</exclude>
         </excludes>
-        <targetPath>vortikal/ftl</targetPath>
+        <targetPath>vtk/ftl</targetPath>
       </resource>
       <resource>
         <directory>src/main/sql/</directory>
         <includes>
           <include>*-schema.sql</include>
         </includes>
-        <targetPath>vortikal/sql/</targetPath>
+        <targetPath>vtk/sql/</targetPath>
       </resource>
       <resource>
         <directory>src/main/ext/CKEditor/ckeditor-build</directory>
@@ -157,7 +157,7 @@
       </resource>
       <resource>
         <directory>src/main/version</directory>
-        <targetPath>org/vortikal/util</targetPath>
+        <targetPath>vtk/util</targetPath>
         <filtering>true</filtering>
       </resource>
     </resources>
@@ -328,14 +328,6 @@
         </dependencies>
       </plugin>
       
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-release-plugin</artifactId>
-        <version>2.5.1</version>
-        <configuration>
-          <tagBase>svn+ssh://svn.uio.no/svnroot/vortikal/tags</tagBase>
-        </configuration>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>

@@ -1,6 +1,6 @@
 <#ftl strip_whitespace=true>
 
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 
 <#assign numberofcolumns = (folders?size / resultSets)?ceiling>
 <#list folders?sort as folder>

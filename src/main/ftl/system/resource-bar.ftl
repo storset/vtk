@@ -1,6 +1,6 @@
 <#ftl strip_whitespace=true />
 <#import "/lib/menu/list-menu.ftl" as listMenu />
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 <#import "/lib/ping.ftl" as ping />
 
   

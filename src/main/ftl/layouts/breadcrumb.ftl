@@ -11,7 +11,7 @@
   - 
   -->
 
-<#import "/lib/vortikal.ftl" as vrtx/>
+<#import "/lib/vtk.ftl" as vrtx/>
 <#import "/lib/breadcrumb.ftl" as brdcrmb/>
 
 <#if !breadcrumb?exists>

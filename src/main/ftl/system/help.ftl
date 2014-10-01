@@ -1,5 +1,5 @@
 <#ftl strip_whitespace=true>
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 <#assign lang><@vrtx.requestLanguage/></#assign>
 <#assign url = helpURL />
 <#if .vars["helpURL." + lang]?exists>

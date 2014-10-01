@@ -16,7 +16,7 @@
   -
   -->
 
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 
 <#if !resourceReference?exists>
   <#stop "Unable to render model: required submodel

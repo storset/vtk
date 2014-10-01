@@ -5,7 +5,7 @@
   - Description: Library for actions
   -   
   -->
-<#import "vortikal.ftl" as vrtx />
+<#import "vtk.ftl" as vrtx />
 
 <#macro genOkCancelButtons nameOk nameCancel msgOk msgCancel>
   <div id="submitButtons">

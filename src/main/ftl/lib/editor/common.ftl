@@ -6,7 +6,7 @@
   -
   -->
   
-<#import "../vortikal.ftl" as vrtx />
+<#import "../vtk.ftl" as vrtx />
 
 <#macro addCkScripts>
   <link rel="stylesheet" type="text/css" href="${webResources?html}/jquery/plugins/jquery.autocomplete.css" />

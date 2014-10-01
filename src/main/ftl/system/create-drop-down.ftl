@@ -1,5 +1,5 @@
 <#ftl strip_whitespace=true>
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 
 <#if docUrl?exists && collUrl?exists && upUrl?exists>
   <#if docUrl.url?exists && collUrl.url?exists && upUrl.url?exists>

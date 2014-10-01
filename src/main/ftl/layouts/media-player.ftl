@@ -7,7 +7,7 @@
   -
   -->
 
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 <#import "/lib/media-player.ftl" as mpLib />
 
 <#macro mediaPlayer dateStr>

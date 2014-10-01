@@ -8,7 +8,7 @@
   -   resource
   -
   -->
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 <#assign published = vrtx.propValue(resourceContext.currentResource, "published-date") />
 <#if published != "">
   <span class="vrtx-published-date"><@vrtx.msg code="article.published" />&nbsp;${published}</span>

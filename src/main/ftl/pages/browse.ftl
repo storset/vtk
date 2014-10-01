@@ -14,7 +14,7 @@
   -
   -->
 
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 <#import "/lib/collectionlisting.ftl" as col />
 
 <#if !resourceContext?exists>

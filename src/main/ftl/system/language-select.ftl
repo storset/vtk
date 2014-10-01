@@ -8,7 +8,7 @@
   -  switchLocaleActions
   -
   -->
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 
 <#if switchLocaleActions?exists>
   <#compress>

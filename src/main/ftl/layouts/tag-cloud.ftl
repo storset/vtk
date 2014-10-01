@@ -5,11 +5,11 @@
   - Description: Simple rendering of a tag cloud as a list. Feel free to improve.
   - 
   - Required model data:
-  -     tagElements - List<org.vortikal.web.view.decorating.components.TagCloudComponent.TagElement>
+  -     tagElements - List<vtk.web.view.decorating.components.TagCloudComponent.TagElement>
   - 
   -->
   
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 
 <@createTagCloud />
 

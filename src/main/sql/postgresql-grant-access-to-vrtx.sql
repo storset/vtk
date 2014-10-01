@@ -9,7 +9,7 @@ where jdbcUsername and jdbcUsername are equal to the properties spesified in the
 
 * Create a database using the DDL in the 'src/sql/postgresql-schema.sql'. Example; 
 
-dbname=> \i /Users/evenh/vortikal/trunk/src/sql/postgresql-schema.sql
+dbname=> \i /Users/evenh/vtk/trunk/src/sql/postgresql-schema.sql
 
 * Change 'vrtx' to <jdbcUsername> in the following grant statement if they differ.
 */

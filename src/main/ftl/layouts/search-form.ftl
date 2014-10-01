@@ -8,7 +8,7 @@
   -   model
   -
   -->
-<#import "../lib/vortikal.ftl" as vrtx />
+<#import "../lib/vtk.ftl" as vrtx />
 
 <form method="get" action="${url.path?html}" class="vrtx-search-form">
    <fieldset>

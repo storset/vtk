@@ -13,7 +13,7 @@
   -
   -->
 <#import "/spring.ftl" as spring />
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 
 <#function filter_reason val>
   <#-- XXX: patterns must be in sync with those defined in preview.mixedModeService assertions -->

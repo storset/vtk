@@ -11,7 +11,7 @@
   -
   -->
 <#import "/spring.ftl" as spring />
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 <#import "/lib/propertyList.ftl" as propList />
 
 <#if !aboutItems?exists>

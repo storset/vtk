@@ -5,7 +5,7 @@
   - Description: Directory listing view component.
   -   Produces a table, with columns determined by the model variable
   -   'childInfoItems'. See Java class
-  -   'org.vortikal.web.referencedataprovider.CollectionListingProvider'
+  -   'vtk.web.referencedataprovider.CollectionListingProvider'
   -   for the model definition used
   - 
   - Required model data:
@@ -16,7 +16,7 @@
   -
   -->
 
-<#import "vortikal.ftl" as vrtx />
+<#import "vtk.ftl" as vrtx />
 
 <#macro listCollection withForm=false action="" submitActions={}>
 

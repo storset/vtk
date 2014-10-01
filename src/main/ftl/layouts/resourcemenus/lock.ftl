@@ -12,7 +12,7 @@
   -
   -->
 <#import "/spring.ftl" as spring />
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 
 <#assign lock=""/>
 <#if resourceContext.currentResource.lock?exists>

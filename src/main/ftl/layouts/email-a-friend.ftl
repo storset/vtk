@@ -6,7 +6,7 @@
   - 
   -->
 
-<#import "/lib/vortikal.ftl" as vrtx/>
+<#import "/lib/vtk.ftl" as vrtx/>
 
 <#if !emailLink?exists || !emailLink.url?exists>
   <#stop "Missing 'emailLink' entry in model"/>

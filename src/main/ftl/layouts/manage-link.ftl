@@ -12,7 +12,7 @@
   -   resourceContext
   -
   -->
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 
 <#if !manageLink?exists || !manageLink.url?exists>
   <#stop "Missing 'manageLink' entry in model"/>

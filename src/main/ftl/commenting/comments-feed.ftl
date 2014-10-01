@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title type="html">
     <#if resource.URI == '/'>

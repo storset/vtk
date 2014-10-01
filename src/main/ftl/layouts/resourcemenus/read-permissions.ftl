@@ -12,7 +12,7 @@
   -
   -->
 <#import "/spring.ftl" as spring />
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 
 <div class="read-permissions resource-menu">
   <h3>${vrtx.getMsg("collectionListing.permissions")}</h3>

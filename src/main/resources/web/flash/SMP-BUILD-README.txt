@@ -76,7 +76,7 @@ and set up by Flash Builder automatically. If not, you may need to adjust the
 
 6. Apply custom OSMF patches.
 Apply patches against the OSMF project. Patch files are located under
-'OSMF_2.0-patches/' in Vortikal source code.
+'OSMF_2.0-patches/' in VTK source code.
 
 Review each patch and check if it is necessary with the OSMF version you are
 building. One patch is Vortex specific and fixes thumbnail URLs for poster
@@ -94,5 +94,5 @@ Export release build" and select folder for export.
 On successful completion, the packaged StrobeMediaPlayback product should be
 present in the folder, typically named "bin-release" (resources, SWF files, etc.)
 
-Add the packaged version to Vortikal source code tree in a versioned directory
-name and update references in Vortikal code as necessary.
+Add the packaged version to VTK source code tree in a versioned directory
+name and update references in VTK code as necessary.

@@ -8,7 +8,7 @@
   -   resource
   -
   -->
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 <#if flatten?exists && flatten == 'true'>
   ${vrtx.propValue(resourceContext.currentResource, "userTitle" , "flattened")}
 <#else>

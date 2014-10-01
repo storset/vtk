@@ -8,8 +8,8 @@
 
 <#-- listMenu macro:
  * The objects used by this macro are
- * org.vortikal.web.view.component.menu.ListMenu (holding the entire
- * menu), and org.vortikal.web.view.component.menu.MenuItem,
+ * vtk.web.view.component.menu.ListMenu (holding the entire
+ * menu), and vtk.web.view.component.menu.MenuItem,
  * representing the individual menu items. Some menu items are
  * "active", meaning that they represent a URL to the current
  * service. In these cases a form, or some other rendering may take
@@ -20,7 +20,7 @@
  * menu list. 
  * 
  * TODO: Document the include-features
- * @param menu - a org.vortikal.web.view.component.menu.ListMenu object
+ * @param menu - a vtk.web.view.component.menu.ListMenu object
  * @param displayForms - whether or not to attempt to display a form
  *        for the active menu item below the menu list (default 'false')
  * @param prepend - an optional string which is prepended to each link
@@ -29,7 +29,7 @@
  *
 -->
 
-<#import "/lib/vortikal.ftl" as vrtx/>
+<#import "/lib/vtk.ftl" as vrtx/>
 
 <#macro listMenu menu displayForms=false prepend="" between="" append="">
 

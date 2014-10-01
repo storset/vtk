@@ -14,7 +14,7 @@
   -   htmlTitle
   -   title
   -->
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
   
 <#assign defaultTitle = ''/>
 <#if resourceContext?exists && resourceContext.currentResource?exists>

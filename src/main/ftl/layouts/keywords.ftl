@@ -10,7 +10,7 @@
   - 
   -->
 
-<#import "/lib/vortikal.ftl" as vrtx/>
+<#import "/lib/vtk.ftl" as vrtx/>
 
 <#if values?exists>
   <span class="vrtx-tags">

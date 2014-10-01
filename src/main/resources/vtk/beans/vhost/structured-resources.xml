@@ -1,0 +1,572 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <bean id="structuredResources.typeAssertion" class="vtk.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceTypeDefinition" ref="json.managedObjectResourceType" />
+  </bean>
+
+  <bean id="structuredResources.displayService" class="vtk.web.service.ServiceImpl">
+    <property name="parent" ref="displayResourceService" />
+    <property name="assertions">
+      <list>
+        <ref bean="structuredResources.typeAssertion" />
+      </list>
+    </property>
+    <property name="handler" ref="structuredResources.displayHandler" />
+  </bean>
+
+  <bean id="structuredResources.previewService" class="vtk.web.service.ServiceImpl">
+    <property name="parent" ref="previewService" />
+    <property name="assertions">
+      <list>
+        <ref bean="structuredResources.typeAssertion" />
+      </list>
+    </property>
+    <property name="handler" ref="previewAdminIframeHandler" />
+  </bean>
+
+  <bean id="previewPersonService" class="vtk.web.service.ServiceImpl">
+    <property name="parent" ref="structuredResources.previewService" />
+    <property name="assertions">
+      <ref bean="resourceTypeIsPerson" />
+    </property>
+    <property name="handlerInterceptors" ref="invalidUidServiceInterceptor" />
+  </bean>
+
+  <bean id="resourceTypeIsPerson" class="vtk.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceType" value="person" />
+  </bean>
+
+  <bean id="invalidUidServiceInterceptor" class="vtk.web.ReferenceDataProvidingHandlerInterceptor">
+    <property name="providers">
+      <list>
+        <ref bean="invalidUidMessageProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="invalidUidMessageProvider" class="vtk.web.referencedata.provider.InvalidUidMessageProvider">
+    <property name="modelName" value="tabMessage" />
+    <property name="localizationKey" value="preview.invalid.uid" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="principalFactory" ref="principalFactory" />
+  </bean>
+
+  <bean id="structuredResources.editService" class="vtk.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-9800" />
+    <property name="assertions">
+      <list>
+        <ref bean="structuredResources.typeAssertion" />
+        <ref bean="requiresWriteUnpublishedPermissionAssertion" />
+        <ref bean="editor.modeParameterAssertion" />
+        <ref bean="editor.parameterEqualsEdit" />
+        <ref bean="editableResourcesAssertion" />
+      </list>
+    </property>
+    <property name="categories">
+      <set>
+        <value>tabMenu</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="tabOrder">
+          <value type="java.lang.Integer">152</value>
+        </entry>
+        <entry key="ListMenu.titleResolver" value-ref="structuredResources.workingCopyTabTitle" />
+      </map>
+    </property>
+    <property name="handler" ref="structuredResources.editHandler" />
+    <property name="urlPostProcessors">
+      <list>
+        <ref bean="editor.urlPostProcessor" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="editableResourcesAssertion" class="vtk.web.service.AndAssertion">
+    <property name="assertions">
+      <list>
+        <ref bean="resourceTypeIsNotExam" />
+        <ref bean="resourceTypeIsNotSamletProgram" />
+        <ref bean="resourceTypeIsNotSamletRetning" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="resourceTypeIsNotExam" class="vtk.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceType" value="exam" />
+    <property name="invert" value="true" />
+  </bean>
+
+  <bean id="resourceTypeIsNotSamletProgram" class="vtk.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceType" value="samlet-program" />
+    <property name="invert" value="true" />
+  </bean>
+
+  <bean id="resourceTypeIsNotSamletRetning" class="vtk.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceType" value="samlet-retning" />
+    <property name="invert" value="true" />
+  </bean>
+
+  <bean id="resourceTypeIsNotCourseSchedule" class="vtk.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceType" value="course-schedule" />
+    <property name="invert" value="true" />
+  </bean>
+
+  <bean id="structuredResources.workingCopyTabTitle" class="vtk.web.view.components.menu.AssertionTitleResolver">
+    <property name="assertion">
+      <bean class="vtk.web.service.WorkingCopyAssertion" />
+    </property>
+    <property name="messageKey" value="tabs.editWorkingCopy" />
+  </bean>
+
+  <bean id="structuredResources.displayHandler" class="vtk.resourcemanagement.view.StructuredResourceDisplayController"
+    depends-on="structuredResource.parser">
+    <property name="viewName" value="structuredResources.displayView" />
+    <property name="resourceManager" ref="structuredResources.resourceManager" />
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="templateManager" ref="structuredResources.templateManager" />
+    <property name="resourceModelKey" value="structured-resource" />
+    <property name="postFilters">
+      <list>
+        <ref bean="decorating.ssiNodeFilter" />
+        <ref bean="linkCheck.htmlFilter" />
+      </list>
+    </property>
+    <property name="directiveHandlers" ref="structuredResources.directives" />
+    <property name="configProviders">
+      <list>
+        <bean class="vtk.web.referencedata.provider.FixedResourceServiceURLProvider">
+          <property name="uri" value="/" />
+          <property name="appendPath" value="${flash.baseURL}/audioplayer.swf" />
+          <property name="service" ref="viewService" />
+          <property name="modelName" value="flashPlayer" />
+          <property name="urlName" value="flashURL" />
+        </bean>
+        <bean class="vtk.web.referencedata.provider.FixedResourceServiceURLProvider">
+          <property name="uri" value="/" />
+          <property name="appendPath" value="${jsBaseURL}/audio-player.js" />
+          <property name="service" ref="viewService" />
+          <property name="modelName" value="flashPlayer" />
+          <property name="urlName" value="jsURL" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="structuredResources.templateManager" class="vtk.resourcemanagement.view.DecoratorTemplateManager">
+    <property name="templateFactory" ref="structuredResources.decoratorTemplateFactory" />
+    <property name="resourceManager" ref="structuredResources.resourceManager" />
+  </bean>
+
+  <bean id="structuredResources.decoratorTemplateFactory" class="vtk.web.decorating.SimpleDynamicDecoratorTemplateFactory">
+    <property name="directiveHandlers" ref="structuredResources.directives" />
+    <property name="componentResolver" ref="decorating.defaultComponentResolver" />
+    <property name="htmlParser" ref="decorating.htmlParser" />
+  </bean>
+
+  <bean id="structuredResources.directives" class="org.springframework.beans.factory.config.ListFactoryBean">
+    <property name="sourceList">
+      <list>
+        <ref bean="structuredResources.ifDirective" />
+        <ref bean="structuredResources.valDirective" />
+        <ref bean="structuredResources.listDirective" />
+        <ref bean="structuredResources.defDirective" />
+        <ref bean="structuredResources.captureDirective" />
+        <ref bean="structuredResources.resourcePropsDirective" />
+        <ref bean="structuredResources.localizedDirective" />
+        <ref bean="structuredResources.callDirective" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="structuredResources.ifDirective" class="vtk.text.tl.IfHandler">
+    <constructor-arg ref="structuredResources.tlFunctions" />
+  </bean>
+
+  <bean id="structuredResources.valDirective" class="vtk.text.tl.ValHandler">
+    <constructor-arg>
+      <map>
+        <entry>
+          <key>
+            <value type="java.lang.Class">vtk.repository.PropertyImpl</value>
+          </key>
+          <bean class="vtk.resourcemanagement.view.tl.PropertyValueFormatHandler">
+            <constructor-arg>
+              <ref bean="valueFormatterRegistry" />
+            </constructor-arg>
+          </bean>
+        </entry>
+        <entry>
+          <key>
+            <value type="java.lang.Class">vtk.repository.resourcetype.Value</value>
+          </key>
+          <bean class="vtk.resourcemanagement.view.tl.PropertyValueFormatHandler">
+            <constructor-arg ref="valueFormatterRegistry" />
+          </bean>
+        </entry>
+        <entry>
+          <key>
+            <value type="java.lang.Class">vtk.repository.resourcetype.Value[]</value>
+          </key>
+          <bean class="vtk.resourcemanagement.view.tl.PropertyValueFormatHandler">
+            <constructor-arg ref="valueFormatterRegistry" />
+          </bean>
+        </entry>
+      </map>
+    </constructor-arg>
+    <constructor-arg ref="structuredResources.tlFunctions" />
+  </bean>
+
+  <bean id="structuredResources.listDirective" class="vtk.text.tl.ListHandler">
+    <constructor-arg ref="structuredResources.tlFunctions" />
+  </bean>
+
+  <bean id="structuredResources.defDirective" class="vtk.text.tl.DefineHandler">
+    <constructor-arg ref="structuredResources.tlFunctions" />
+  </bean>
+
+  <bean id="structuredResources.captureDirective" class="vtk.text.tl.CaptureHandler" />
+
+  <bean id="structuredResources.resourcePropsDirective" class="vtk.resourcemanagement.view.tl.ResourcePropsNodeFactory">
+    <constructor-arg value="resource-props" />
+  </bean>
+
+  <bean id="structuredResources.localizedDirective" class="vtk.resourcemanagement.view.tl.LocalizationNodeFactory">
+    <constructor-arg value="structured-resource" />
+  </bean>
+
+  <bean id="structuredResources.callDirective" class="vtk.resourcemanagement.view.tl.ComponentInvokerNodeFactory">
+    <constructor-arg value="call" />
+    <constructor-arg>
+      <bean class="vtk.resourcemanagement.view.StructuredResourceDisplayController$ComponentSupport" />
+    </constructor-arg>
+    <constructor-arg ref="structuredResources.tlFunctions" />
+  </bean>
+
+
+
+  <bean id="structuredResources.tlFunctions" class="vtk.context.UnionFactoryBean">
+    <property name="elements1" ref="structuredResources.builtinFunctions" />
+    <property name="elements2" ref="structuredResources.customFunctions" />
+  </bean>
+
+  <bean id="structuredResources.builtinFunctions" class="org.springframework.beans.factory.config.SetFactoryBean">
+    <property name="sourceSet">
+      <set>
+        <ref bean="templateLanguage.toStringFunction" />
+        <ref bean="templateLanguage.concatFunction" />
+        <ref bean="templateLanguage.splitFunction" />
+        <ref bean="templateLanguage.substringFunction" />
+        <ref bean="templateLanguage.lengthFunction" />
+        <ref bean="templateLanguage.getFunction" />
+        <ref bean="templateLanguage.toLowerCaseFunction" />
+        <ref bean="templateLanguage.toUpperCaseFunction" />
+        <ref bean="templateLanguage.ceilFunction" />
+        <ref bean="templateLanguage.replaceFunction" />
+        <ref bean="structuredResources.requestContextFunction" />
+        <ref bean="structuredResources.resourceFunction" />
+        <ref bean="structuredResources.jsonResourceFunction" />
+        <ref bean="structuredResources.ResourceLocaleFunction" />
+        <ref bean="structuredResources.resourcePropFunction" />
+        <ref bean="structuredResources.resourcePropObjValFunction" />
+        <ref bean="structuredResources.structuredDocumentFunction" />
+        <ref bean="structuredResources.searchFunction" />
+        <ref bean="structuredResources.viewURLFunction" />
+        <ref bean="structuredResources.toDateFunction" />
+        <ref bean="structuredResources.localizedFunction" />
+        <ref bean="structuredResources.settingsFunction" />
+
+        <ref bean="structuredResources.urlJSONFunction" />
+      </set>
+    </property>
+  </bean>
+
+  <bean id="structuredResources.settingsFunction" class="vtk.text.tl.expr.ObjectProviderFunction">
+    <constructor-arg>
+      <bean class="vtk.text.tl.Symbol">
+        <constructor-arg value="settings" />
+      </bean>
+    </constructor-arg>
+    <constructor-arg>
+      <bean class="vtk.context.JSONFactoryBean">
+        <constructor-arg value="${structuredResources.settings}" />
+      </bean>
+    </constructor-arg>
+  </bean>
+
+
+  <bean id="structuredResources.urlJSONFunction" class="vtk.resourcemanagement.view.tl.CacheLookupFunction">
+    <constructor-arg>
+      <bean class="vtk.text.tl.Symbol">
+        <constructor-arg value="url-as-json" />
+      </bean>
+    </constructor-arg>
+    <constructor-arg>
+      <ref bean="structuredResources.jsonURLCache" />
+    </constructor-arg>
+  </bean>
+
+  <bean id="structuredResources.jsonURLCache" class="vtk.util.cache.ContentCacheImpl">
+    <property name="name" value="${repositoryID}.jsonURLCache" />
+    <property name="cacheLoader" ref="structuredResources.jsonURLCacheLoader" />
+    <property name="cacheSeconds" value="600" />
+    <property name="asynchronousRefresh" value="true" />
+    <property name="refreshInterval" value="30" />
+    <property name="maxItems" value="1000" />
+  </bean>
+
+  <bean id="structuredResources.jsonURLCacheLoader" class="vtk.util.cache.loaders.JSONCacheLoader">
+    <property name="connectTimeoutSeconds" value="1" />
+    <property name="readTimeoutSeconds" value="1" />
+  </bean>
+
+
+  <bean id="structuredResources.customFunctions" class="vtk.context.CategoryResolvingFactoryBean">
+    <property name="category" value="structuredResources.customFunction" />
+  </bean>
+
+  <bean id="structuredResources.requestContextFunction" class="vtk.resourcemanagement.view.tl.RequestContextFunction">
+    <constructor-arg>
+      <bean class="vtk.text.tl.Symbol">
+        <constructor-arg value="request-context" />
+      </bean>
+    </constructor-arg>
+  </bean>
+
+  <bean id="structuredResources.resourceFunction" class="vtk.resourcemanagement.view.tl.RetrieveHandler">
+    <constructor-arg>
+      <bean class="vtk.text.tl.Symbol">
+        <constructor-arg value="resource" />
+      </bean>
+    </constructor-arg>
+  </bean>
+
+  <bean id="structuredResources.jsonResourceFunction" class="vtk.resourcemanagement.view.tl.RetrieveJsonHandler">
+    <constructor-arg>
+      <bean class="vtk.text.tl.Symbol">
+        <constructor-arg value="json-resource" />
+      </bean>
+    </constructor-arg>
+  </bean>
+
+
+  <bean id="structuredResources.ResourceLocaleFunction" class="vtk.resourcemanagement.view.tl.ResourceLocaleFunction">
+    <constructor-arg>
+      <bean class="vtk.text.tl.Symbol">
+        <constructor-arg value="resource-locale" />
+      </bean>
+    </constructor-arg>
+  </bean>
+
+  <bean id="structuredResources.resourcePropFunction" class="vtk.resourcemanagement.view.tl.ResourcePropHandler">
+    <constructor-arg>
+      <bean class="vtk.text.tl.Symbol">
+        <constructor-arg value="resource-prop" />
+      </bean>
+    </constructor-arg>
+  </bean>
+
+  <bean id="structuredResources.resourcePropObjValFunction" class="vtk.resourcemanagement.view.tl.ResourcePropObjectValueHandler">
+    <constructor-arg>
+      <bean class="vtk.text.tl.Symbol">
+        <constructor-arg value="resource-prop-obj-val" />
+      </bean>
+    </constructor-arg>
+  </bean>
+
+  <bean id="structuredResources.structuredDocumentFunction" class="vtk.resourcemanagement.view.tl.JSONDocumentProvider">
+    <constructor-arg>
+      <bean class="vtk.text.tl.Symbol">
+        <constructor-arg value="structured-document" />
+      </bean>
+    </constructor-arg>
+  </bean>
+
+  <bean id="structuredResources.searchFunction" class="vtk.resourcemanagement.view.tl.SearchResultValueProvider">
+    <constructor-arg>
+      <bean class="vtk.text.tl.Symbol">
+        <constructor-arg value="search" />
+      </bean>
+    </constructor-arg>
+    <constructor-arg ref="searchParser" />
+    <constructor-arg ref="systemIndexSearcher" />
+    <property name="titlePropDef" ref="titlePropDef" />
+  </bean>
+
+  <bean id="structuredResources.viewURLFunction" class="vtk.resourcemanagement.view.tl.ViewURLValueProvider">
+    <constructor-arg>
+      <bean class="vtk.text.tl.Symbol">
+        <constructor-arg value="view-url" />
+      </bean>
+    </constructor-arg>
+    <constructor-arg ref="viewService" />
+  </bean>
+
+  <bean id="structuredResources.toDateFunction" class="vtk.resourcemanagement.view.tl.ToDateFunction">
+    <constructor-arg>
+      <bean class="vtk.text.tl.Symbol">
+        <constructor-arg value="to-date" />
+      </bean>
+    </constructor-arg>
+  </bean>
+
+  <bean id="structuredResources.localizedFunction" class="vtk.resourcemanagement.view.tl.LocalizationFunction">
+    <constructor-arg>
+      <bean class="vtk.text.tl.Symbol">
+        <constructor-arg value="localized" />
+      </bean>
+    </constructor-arg>
+    <constructor-arg value="structured-resource" />
+  </bean>
+
+
+
+
+  <bean id="structuredResources.componentNamespace" class="java.lang.String">
+    <constructor-arg type="java.lang.String" value="json" />
+  </bean>
+
+  <bean id="structuredResources.fieldSelectComponent" class="vtk.resourcemanagement.view.StructuredResourceFieldComponent">
+    <property name="namespace" ref="structuredResources.componentNamespace" />
+    <property name="name" value="field" />
+    <property name="resourceModelKey" value="structured-resource" />
+  </bean>
+
+  <bean id="structuredResources.editHandler" class="vtk.resourcemanagement.edit.StructuredResourceEditor">
+    <property name="safeHtmlFilter" ref="resourceManager.htmlPropsFilter" />
+    <property name="resourceManager" ref="structuredResources.resourceManager" />
+    <property name="formView" value="structuredResources.editView" />
+    <property name="successView" value="redirectToManage" />
+    <property name="listComponentsService" ref="jsonDocumentsComponentsService" />
+    <property name="defaultLocale" value="${view.defaultLocale}" />
+  </bean>
+
+  <bean id="structuredResources.viewResolver" parent="decoratorViewResolver">
+    <property name="views">
+      <map>
+        <entry key="structuredResources.displayView" value-ref="structuredResources.displayView" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="structuredResources.wrappingViewResolver" parent="adminViewResolver">
+    <property name="views">
+      <map>
+        <entry key="structuredResources.editView" value-ref="structuredResources.editView" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="structuredResources.displayView" class="vtk.web.decorating.TemplateView">
+    <property name="templateRef" value="structured-resources.template" />
+    <property name="templateManager" ref="article.templateManager" />
+  </bean>
+
+  <bean id="structuredResources.editView" parent="freemarkerView">
+    <property name="url" value="structured-resources/editor.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="helpURL" value="${helpURL}" />
+        <entry key="helpURL.no" value="${helpURL.no}" />
+        <entry key="helpURL.nn" value="${helpURL.nn}" />
+        <entry key="helpURL.en" value="${helpURL.en}" />
+        <entry key="helpURL.editor" value="${helpURL.editor}" />
+        <entry key="helpURL.editor.no" value="${helpURL.editor.no}" />
+        <entry key="helpURL.editor.nn" value="${helpURL.editor.nn}" />
+        <entry key="helpURL.editor.en" value="${helpURL.editor.en}" />
+      </map>
+    </property>
+    <property name="referenceDataProviders">
+      <list>
+        <bean class="vtk.resourcemanagement.studies.SharedTextProvider">
+          <property name="sharedTextResolver" ref="sharedTextResolver" />
+        </bean>
+        <ref bean="resourceContextProvider" />
+        <bean class="vtk.web.referencedata.provider.StaticURIServiceURLProvider">
+          <property name="service" ref="staticResourceService" />
+          <property name="path" value="${editor.fck.resourcesURL}" />
+          <property name="modelName" value="fckeditorBase" />
+        </bean>
+        <bean class="vtk.web.referencedata.provider.StaticURIServiceURLProvider">
+          <property name="service" ref="editor.browseService" />
+          <property name="path" value="${editor.fck.browseURL}" />
+          <property name="modelName" value="fckBrowse" />
+        </bean>
+        <bean class="vtk.web.referencedata.provider.ResourceServiceURLProvider">
+          <property name="service" ref="viewService" />
+          <property name="modelName" value="fckeditorBase" />
+          <property name="urlName" value="documentURL" />
+          <property name="staticURLProtocol" value="${webProtocolRestricted}" />
+        </bean>
+        <bean class="vtk.web.referencedata.provider.ResourceServiceURLProvider">
+          <property name="service" ref="decorating.viewUnpublishedService" />
+          <property name="modelName" value="versioning" />
+          <property name="urlName" value="currentVersionURL" />
+        </bean>
+
+        <bean class="vtk.web.referencedata.provider.StaticModelDataProvider">
+          <property name="modelDataMap">
+            <map>
+              <entry key="cssURLs" value-ref="structuredResources.editCSSURLs" />
+              <entry key="jsBaseURL" value="${jsBaseURL}" />
+              <entry key="webResources" value="${webResources.baseURL}" />
+              <entry key="fckEditorAreaCSSURL" value-ref="editor.fckEditorAreaCSSURL" />
+              <entry key="themeBaseURL" value="${themeBaseURL}" />
+              <entry key="jQueryUiVersion" value="${jquery.ui.version}" />
+            </map>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="structuredResources.editCSSURLs" class="java.util.ArrayList">
+    <constructor-arg>
+      <list>
+        <value>${jquery.baseURL}/plugins/ui/jquery-ui-${jquery.ui.version}.custom/css/smoothness/jquery-ui-${jquery.ui.version}.custom.min.css
+        </value>
+        <value>${themeBaseURL}/default.css</value>
+        <value>${themeBaseURL}/structured-resources/editor.css</value>
+      </list>
+    </constructor-arg>
+  </bean>
+
+  <bean id="resourceTypeIsOrganizationalUnit" class="vtk.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceType" value="organizational-unit" />
+  </bean>
+
+  <bean id="resourceTypeIsOrganizationalUnitPublications" class="vtk.web.service.ResourceTypeAssertion"
+    parent="repositoryAware">
+    <property name="resourceType" value="unit-publications" />
+  </bean>
+
+  <!-- ### SHARED TEXT ### -->
+  <bean id="sharedTextResolver" class="vtk.resourcemanagement.studies.SharedTextResolver">
+    <property name="repository" ref="repository" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="safeHtmlFilter" ref="sharedTextResolver.filter" />
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="localeResolver" ref="viewServiceResourceAwareLocaleResolver" />
+  </bean>
+
+  <bean id="sharedTextResolver.filter" class="vtk.text.html.SimpleHtmlPageFilter">
+    <property name="illegalElements" ref="safeHtml.illegalElementSet" />
+    <property name="checkValidElements" value="false" />
+  </bean>
+
+  <bean id="sharedTextComponent" class="vtk.resourcemanagement.studies.SharedTextComponent">
+    <property name="namespace" ref="decorating.includeNamespace" />
+    <property name="name" value="shared-text" />
+    <property name="sharedTextResolver" ref="sharedTextResolver" />
+    <property name="view" ref="decorating.sharedTextComponent.view" />
+  </bean>
+
+  <bean id="decorating.sharedTextComponent.view" parent="freemarkerView">
+    <property name="url" value="studies/shared-text.ftl" />
+  </bean>
+
+</beans>

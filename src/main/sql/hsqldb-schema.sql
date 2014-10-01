@@ -257,7 +257,7 @@ INSERT INTO action_type (action_type_id, name) VALUES (5, 'bind');
 
 -- Property value types
 -- This data currently corresponds to definitions in 
--- org.vortikal.repository.resourcetype.PropertyType
+-- vtk.repository.resourcetype.PropertyType
 INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (0, 'String');
 INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (1, 'Integer');
 INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (2, 'Long');

@@ -1,7 +1,7 @@
 <#ftl strip_whitespace=true>
 <#attempt>
 <#import "/spring.ftl" as spring />
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 
 <#assign titleMsg = vrtx.getMsg("actions.expandArchive.title") />
 <#assign actionURL = item.url />

@@ -5,7 +5,7 @@
   - Description: Simple rendering of a tags as a list. Feel free to improve.
   - 
   - Required model data:
-  -     tagElements - List<org.vortikal.web.view.decorating.components.TagCloudComponent.TagElement>
+  -     tagElements - List<vtk.web.view.decorating.components.TagCloudComponent.TagElement>
   - 
   -->
 

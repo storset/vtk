@@ -1,4 +1,4 @@
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 
 <#if !fckeditorBase?exists>
   <#stop "fckeditorBase attribute must exist in model" />

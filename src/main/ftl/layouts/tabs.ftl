@@ -8,7 +8,7 @@
   -   tabs
   - NOTE: this template wll be deprecated by list-menu.ftl
   -->
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 
 <#if !tabs?exists>
   <#stop "Unable to render model: required submodel 'tabs' missing">

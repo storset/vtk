@@ -14,7 +14,7 @@
   -   principal
   - 
   -->
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 <#import "/ckeditor/ckeditor-textarea.ftl" as ck />
 
 <#if !comments?exists || !config?exists>

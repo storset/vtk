@@ -1,6 +1,6 @@
 <#ftl strip_whitespace=true>
 <#attempt>
-<#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/vtk.ftl" as vrtx />
 <#import "/lib/actions.ftl" as actionsLib />
 
 <#if command?exists && !command.done>

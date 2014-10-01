@@ -4144,7 +4144,7 @@ VrtxAdmin.prototype.wrap = function wrap(node, cls, html) {
 };
 
 /**
- * jQuery outerHTML (because FF don't support regular outerHTML) 
+ * jQuery outerHTML (because FF <11 don't support regular outerHTML) 
  *
  * @this {VrtxAdmin}
  * @param {string} selector Context selector

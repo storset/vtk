@@ -4154,12 +4154,13 @@ VrtxAdmin.prototype.wrap = function wrap(node, cls, html) {
 VrtxAdmin.prototype.outerHTML = function outerHTML(selector, subselector) {
   var _$ = this._$;
   
-  var wrp = _$(selector)
-  if (wrp.find(subselector).length) {
-    if (typeof wrp.find(subselector)[0].outerHTML !== "undefined") {
-      return _$.parseHTML(wrp.find(subselector)[0].outerHTML);
+  var wrp = _$(selector);
+  var elm = wrp.find(subselector);
+  if (elm.length) {
+    if (typeof elm[0].outerHTML !== "undefined") {
+      return _$.parseHTML(elm[0].outerHTML);
     } else {
-      return _$.parseHTML(_$('<div>').append(wrp.find(subselector).clone()).html());
+      return _$.parseHTML(_$('<div>').append(elm.clone()).html());
     }
   }
 };

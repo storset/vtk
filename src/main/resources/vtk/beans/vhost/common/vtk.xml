@@ -13,7 +13,7 @@
       <list>
         <value>classpath:/vtk/beans/vtk.properties</value>
         <value>classpath:vtk-custom.properties</value>
-        <value>classpath:/vtk/util/version.properties</value>
+        <value>classpath:/vtk/util/vtk_version.properties</value>
         <value>file://${user.home}/*vtk.properties</value>
         <value>file://${user.home}/*vtk.properties</value>
         <value>file://${user.home}/*.vrtx.properties</value>

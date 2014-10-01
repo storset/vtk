@@ -57,7 +57,7 @@ public class Version {
     static {
         Package p = Version.class.getPackage();
         String versionFileLocation =
-            p.getName().replace('.', '/') + "/" + "version.properties";
+            p.getName().replace('.', '/') + "/" + "vtk_version.properties";
 
         ClassLoader classLoader = Version.class.getClassLoader();
         InputStream is = classLoader.getResourceAsStream(versionFileLocation);
@@ -71,21 +71,21 @@ public class Version {
             t.printStackTrace();
         }
         
-        if (props.containsKey("framework.version")) {
-            frameworkVersion = props.getProperty("framework.version");
+        if (props.containsKey("vtk.framework.version")) {
+            frameworkVersion = props.getProperty("vtk.framework.version");
         }
         
-        if (props.containsKey("build.revision")) {
-            buildRevision = props.getProperty("build.revision");
+        if (props.containsKey("vtk.build.revision")) {
+            buildRevision = props.getProperty("vtk.build.revision");
         }
         
-        if (props.containsKey("build.branch")) {
-            buildBranch = props.getProperty("build.branch");
+        if (props.containsKey("vtk.build.branch")) {
+            buildBranch = props.getProperty("vtk.build.branch");
         }
         
-        if (props.containsKey("build.date")) {
+        if (props.containsKey("vtk.build.date")) {
 
-            String dateStr = props.getProperty("build.date");
+            String dateStr = props.getProperty("vtk.build.date");
             try {
                 SimpleDateFormat df = new SimpleDateFormat(BUILD_DATE_PARSE_FORMAT);
                 df.setTimeZone(new SimpleTimeZone(0, "UTC"));
@@ -97,24 +97,24 @@ public class Version {
             }
         }
         
-        if (props.containsKey("build.host")) {
-            buildHost = props.getProperty("build.host");
+        if (props.containsKey("vtk.build.host")) {
+            buildHost = props.getProperty("vtk.build.host");
         }
 
-        if (props.containsKey("vendor.name")) {
-            buildVendor = props.getProperty("vendor.name");
+        if (props.containsKey("vtk.vendor.name")) {
+            buildVendor = props.getProperty("vtk.vendor.name");
         }
 
-        if (props.containsKey("vendor.url")) {
-            vendorURL = props.getProperty("vendor.url");
+        if (props.containsKey("vtk.vendor.url")) {
+            vendorURL = props.getProperty("vtk.vendor.url");
         }
 
-        if (props.containsKey("framework.title")) {
-            frameworkTitle = props.getProperty("framework.title");
+        if (props.containsKey("vtk.framework.title")) {
+            frameworkTitle = props.getProperty("vtk.framework.title");
         }
         
-        if (props.containsKey("framework.version")) {
-            frameworkVersion = props.getProperty("framework.version");
+        if (props.containsKey("vtk.framework.version")) {
+            frameworkVersion = props.getProperty("vtk.framework.version");
         }
     }
 

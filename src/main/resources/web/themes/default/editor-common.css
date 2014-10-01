@@ -184,11 +184,6 @@ h2 {
   padding-top: 9px;
 }
 
-#vrtx-editor-title-submit-buttons h2 {
-  margin: 0;
-  background: none;
-}
-
 #app-content .submit-extra-buttons {
   clear: none;
   float: right;
@@ -257,25 +252,8 @@ html.embedded #editor-loading {
   color: #5e5e5e;
 }
 
-.vrtx-close-dialog-editor {
-  background: url("/vrtx/__vrtx/static-resources/themes/default/images/thickbox-close.png") no-repeat scroll center center transparent;
-  display: block;
-  width: 20px;
-  height: 20px;
-  float: right;
-  margin-top: 2px;
-}
-
-html.embedded .vrtx-close-dialog-editor {
-  margin-top: 5px;
-}
-
 html.embedded #vrtx-editor #app-content #editor {
   padding-top: 15px;
-}
-
-html.embedded #vrtx-editor-title-submit-buttons h2 {
-  padding-bottom: 5px;
 }
 
 html.embedded #vrtx-editor-title-submit-buttons-inner-wrapper {

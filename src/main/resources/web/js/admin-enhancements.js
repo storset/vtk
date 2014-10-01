@@ -205,21 +205,37 @@ vrtxAdmin._$(document).ready(function () {
       var lockedByOther = ($("#resource-locked-by-other").length && $("#resource-locked-by-other").text() == "true")
                             ? $("#resource-locked-by").html()
                             : "";
-      
-      var failHtml = "";
-      if(!canEdit) {
-        failHtml = "<h1>Du har ikke skriverettigheter til å redigere denne timeplanen.</h1>";
-      } else {
-        if(lockedByOther.length) {
-          failHtml = "<h1>Timeplanen er låst av en annen bruker: " + lockedByOther + ".</h1>";
+
+      // Choose proper fail message (we know these sends you to preview)
+      if(!canEdit || lockedByOther.length) {
+        var csTitle = vrtxAdm.lang === "en" ? "Edit activity"
+                                            : "Rediger aktivitet";
+        if(!canEdit) {
+          var csFail = vrtxAdm.lang === "en" ? "You don't have write permissions to edit the course schedule."
+                                             : "Du har ikke skriverettigheter til å redigere denne timeplanen.";
+        } else {
+          var csFail = vrtxAdm.lang === "en" ? "The course schedule is locked by other user: " + lockedByOther
+                                             : "Timeplanen er låst av en annen bruker: " + lockedByOther;
         }
+        var failHtml = "<p id='editor-fail'>" + csFail + "</p>";
+        
+        $("body").addClass("embedded-editor-fail");
+
+        // Add embedded editor fail HTML
+        var titleHtml = '<div id="vrtx-editor-title-submit-buttons"><div id="vrtx-editor-title-submit-buttons-inner-wrapper"><h2>' + csTitle + '<a href="javascript:void(0)" class="vrtx-close-dialog-editor"></a></h2></div></div>';
+        var buttonsHtml = '<div class="submit submitButtons"><input class="vrtx-focus-button vrtx-embedded-button" id="vrtx-embedded-cancel-button" type="submit" value="Ok" /></div>';
+        $("#contents").html(titleHtml + failHtml + buttonsHtml);
+        
+        // Ok / 'X' goes back to view
+        $(document).on("click", "#vrtx-embedded-cancel-button, .vrtx-close-dialog-editor", function(e) {
+          location.href = $("#global-menu-leave-admin a").attr("href");
+          e.stopPropagation();
+          e.preventDefault();
+        });
+      } else {
+        var free = $(window).height() - $("body").height();
+        $("#editor").height(free);
       }
-      if(failHtml != "") {
-        $("#contents").html(failHtml);
-      }
-      
-      var free = $(window).height() - $("body").height();
-      $("#editor").height(free);
     }
   }
 

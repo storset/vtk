@@ -3188,6 +3188,43 @@ body#vrtx-preview .tabMessage-big {
 
 /* Embedding */
 
+.vrtx-close-dialog-editor {
+  background: url("/vrtx/__vrtx/static-resources/themes/default/images/thickbox-close.png") no-repeat scroll center center transparent;
+  display: block;
+  width: 20px;
+  height: 20px;
+  float: right;
+  margin-top: 2px;
+}
+
+html.embedded .vrtx-close-dialog-editor {
+  margin-top: 5px;
+}
+
+#vrtx-editor-title-submit-buttons h2 {
+  margin: 0;
+  background: none;
+}
+
+html.embedded #vrtx-editor-title-submit-buttons h2 {
+  padding-bottom: 5px;
+}
+
+html.embedded .embedded-editor-fail #contents {
+  height: auto !important;
+}
+
+html.embedded .embedded-editor-fail #app-content {
+  width: 450px;
+}
+
+#editor-fail {
+  background: transparent url("images/line-dotted.gif") repeat-x left top;
+  padding-top: 15px;
+  margin-top: 0;
+  display: block;
+}
+
 html.embedded {
   overflow-y: scroll;
 }
@@ -3211,6 +3248,10 @@ html.embedded #app-content #main {
   padding: 0;
   border: none;
   background: none;
+}
+
+html.embedded #app-content #main {
+  padding-top: 0 !important;
 }
 
 html.embedded #app-content {

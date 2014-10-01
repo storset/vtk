@@ -80,7 +80,8 @@ public class DynamicComponentLibrary {
         try {
             compile();
         } catch (Exception e) {
-            logger.warn("Failed to compile component(s) in " + inputSource, e);
+            logger.warn("Failed to compile component(s) in " + inputSource + ": " 
+                    + e.getClass().getSimpleName() + ": " + e.getMessage());
         }
     }
 

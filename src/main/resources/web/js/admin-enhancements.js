@@ -949,7 +949,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
             vrtxAdm.removeMsg("error");
             // Redirect after save
             if(vrtxAdm.editorSaveIsRedirectPreview) {
-              vrtxEditor.needToConfirm = false;
+              if(typeof vrtxEditor != "undefined") vrtxEditor.needToConfirm = false;
               var isCollection = _$("#resource-title.true").length;
               if(isCollection) {
                 window.location.href = "./?vrtx=admin&action=preview";
@@ -957,9 +957,11 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
                 window.location.href = window.location.pathname + "?vrtx=admin";
               }
             } else {
-              storeInitPropValues($("#app-content > form, #contents"));
-              if(typeof CKEDITOR != "undefined" && typeof vrtxEditor != "undefined") {
-                vrtxEditor.richtextEditorFacade.resetChanged();
+              if(typeof vrtxEditor != "undefined") {
+                storeInitPropValues($("#app-content > form, #contents"));
+                if(typeof CKEDITOR != "undefined") {
+                  vrtxEditor.richtextEditorFacade.resetChanged();
+                }
               }
             }
           }).fail(handleAjaxSaveErrors);
@@ -2874,7 +2876,7 @@ function ajaxSaveAsCopy() {
           vrtxAdm.clientLastModified = vrtxAdm.serverLastModified; // Make sure we can proceed
           ajaxSave();
           _$.when(vrtxAdm.asyncEditorSavedDeferred).done(function () {
-            vrtxEditor.needToConfirm = false;
+            if(typeof vrtxEditor != "undefined") vrtxEditor.needToConfirm = false;
             if(!vrtxAdm.editorSaveIsRedirectPreview) {
               window.location.href = copyEditUri;
             } else {

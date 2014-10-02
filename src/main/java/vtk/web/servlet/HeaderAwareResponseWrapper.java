@@ -42,6 +42,8 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * A servlet response wrapper that is aware of the HTTP headers passed
  * through it.
+ * 
+ * <p>Used for logging which response headers we explicitly set throughout request processing.
  */
 public class HeaderAwareResponseWrapper extends StatusAwareResponseWrapper {
 
@@ -102,10 +104,7 @@ public class HeaderAwareResponseWrapper extends StatusAwareResponseWrapper {
     public void setContentLength(int length) {
         addHeaderInternal("Content-Length", String.valueOf(length), true);
         // Avoid bug in current Resin 4: http://bugs.caucho.com/view.php?id=5807
-        // TODO remove this workaround when fix becomes available in our Resin version.
-        if (length > -1) {
-            super.setHeader("Content-Length", String.valueOf(length));
-        }
+        // by not calling setHeader in addition to setContentLength.
         super.setContentLength(length);
     }
     

@@ -250,7 +250,6 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
                     this.response.setHeader("Vary", "Cookie");
             }
             this.response.setHeader(name, value);
-            super.setHeader(name, value);
         }
 
         @Override
@@ -288,8 +287,9 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
         @Override
         public void setContentLength(int length) {
             if (!DROPPED_HEADERS.contains("Content-Length")) {
+                // Avoid bug in Resin 4 (http://bugs.caucho.com/view.php?id=5807)
+                // by not calling setHeader in addition to setContentLength.
                 this.response.setContentLength(length);
-                setHeader("Content-Length", String.valueOf(length));
             }
         }
         

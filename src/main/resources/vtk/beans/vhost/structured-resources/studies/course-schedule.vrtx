@@ -19,18 +19,10 @@ resourcetype course-schedule {
       <head>
         <title>[call "resource:contextual-title-new"]</title>
         <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/include-jquery.js"></script>
-        <script type="text/javascript"><!--
-          var scheduleI18n = {
-            "showMore": "[localized 'showMore']",
-            "hideMore": "[localized 'hideMore']"
-          };
-        // -->
-        </script>
       </head>
       <body id="vrtx-course-schedule">
         <h1>[call "resource:property" {"id":"title"}]</h1>
         [call "resource:course-schedule"]
-        <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/schedule/schedule.js"></script>
       </body>
     </html>
     ##
@@ -39,9 +31,7 @@ resourcetype course-schedule {
   localization {
     schedule : (en : "Schedule", no : "Timeplan", nn : "Timeplan"),
     title : (en : "Title", no : "Tittel", nn : "Tittel"),
-    header : (en : "Edit course schedule", no : "Rediger emnetimeplan", nn : "Rediger emnetimeplan"),
-    showMore : (en : "Show more", no : "Vis mer", nn : "Vis meir"),
-    hideMore : (en : "Hide more", no : "Skjul mer", nn : "Skjul meir")
+    header : (en : "Edit course schedule", no : "Rediger emnetimeplan", nn : "Rediger emnetimeplan")
   }
   
 }

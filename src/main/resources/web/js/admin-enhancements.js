@@ -48,7 +48,7 @@ function VrtxAdmin() {
   this.isIPhone = /iphone/.test(this.ua);
   this.isIPad = /ipad/.test(this.ua);
   this.isIOS = this.isIPhone || this.isIPad;
-  this.isNotIos6 = this.isIOS && this.ua.match(/os (2|3|4|5)_/) != null;
+  this.isIOS5 = this.isIOS && this.ua.match(/os (2|3|4|5)_/) != null;
   this.isAndroid = /android/.test(this.ua); // http://www.gtrifonov.com/2011/04/15/google-android-user-agent-strings-2/
   this.isMobileWebkitDevice = (this.isIPhone || this.isIPad || this.isAndroid);
   this.isTouchDevice = window.ontouchstart !== undefined;
@@ -100,8 +100,8 @@ function VrtxAdmin() {
   // Transitions
   this.transitionPropSpeed = this.isMobileWebkitDevice ? 0 : 100;
   this.transitionDropdownSpeed = this.isMobileWebkitDevice ? 0 : 100;
-  this.transitionEasingSlideDown = (!(this.isIE && this.browserVersion < 10) && !this.isMobileWebkitDevice) ? "easeOutQuad" : "linear";
-  this.transitionEasingSlideUp = (!(this.isIE && this.browserVersion < 10) && !this.isMobileWebkitDevice) ? "easeInQuad" : "linear";
+  this.transitionEasingSlideDown = (!this.isIE9 && !this.isMobileWebkitDevice) ? "easeOutQuad" : "linear";
+  this.transitionEasingSlideUp = (!this.isIE9 && !this.isMobileWebkitDevice) ? "easeInQuad" : "linear";
 
   // Throttle / debounced listeners
   this.windowResizeScrollDebounceRate = 20;
@@ -191,52 +191,12 @@ var VrtxAnimation = function(opts) {
 
 var isEmbedded = window.location.href.indexOf("&embed") !== -1;
 var onlySessionId = gup("sessionid", window.location.href);
+
 vrtxAdmin._$(document).ready(function () {
   var startReadyTime = getNowTime(), vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
   
   if(typeof datePickerLang === "string") {
-     vrtxAdm.lang = datePickerLang;
-  }
-  
-  if(isEmbedded) {
-    $("html").addClass("embedded embedded-loading"); // Temporary solution
-    if(onlySessionId) {
-      var canEdit = $("#resource-can-edit").text() === "true";
-      var lockedByOther = ($("#resource-locked-by-other").length && $("#resource-locked-by-other").text() == "true")
-                            ? $("#resource-locked-by").html()
-                            : "";
-
-      // Choose proper fail message (we know these sends you to preview)
-      if(!canEdit || lockedByOther.length) {
-        var csTitle = vrtxAdm.lang === "en" ? "Edit activity"
-                                            : "Rediger aktivitet";
-        if(!canEdit) {
-          var csFail = vrtxAdm.lang === "en" ? "You don't have write permissions to edit the course schedule."
-                                             : "Du har ikke skriverettigheter til å redigere denne timeplanen.";
-        } else {
-          var csFail = vrtxAdm.lang === "en" ? "The course schedule is locked by other user: " + lockedByOther
-                                             : "Timeplanen er låst av en annen bruker: " + lockedByOther;
-        }
-        var failHtml = "<p id='editor-fail'>" + csFail + "</p>";
-        
-        $("body").addClass("embedded-editor-fail");
-
-        // Add embedded editor fail HTML
-        var titleHtml = '<div id="vrtx-editor-title-submit-buttons"><div id="vrtx-editor-title-submit-buttons-inner-wrapper"><h2>' + csTitle + '<a href="javascript:void(0)" class="vrtx-close-dialog-editor"></a></h2></div></div>';
-        var buttonsHtml = '<div class="submit submitButtons"><input class="vrtx-focus-button vrtx-embedded-button" id="vrtx-embedded-cancel-button" type="submit" value="Ok" /></div>';
-        $("#contents").html(titleHtml + failHtml + buttonsHtml);
-        
-        // Ok / 'X' goes back to view
-        $(document).on("click", "#vrtx-embedded-cancel-button, .vrtx-close-dialog-editor", function(e) {
-          location.href = $("#global-menu-leave-admin a").attr("href");
-          e.stopPropagation();
-          e.preventDefault();
-        });
-      } else {
-        var free = $(window).height() - $("body").height();
-        $("#editor").height(free);
-      }
-    }
+    vrtxAdm.lang = datePickerLang;
   }
 
   vrtxAdm.cacheDOMNodesForReuse();
@@ -245,6 +205,7 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.cachedBody.addClass("js");
   if(vrtxAdm.isIE8) vrtxAdm.cachedBody.addClass("ie8");
   
+  vrtxAdm.embeddedView();
   
   // Show message in IE6, IE7 and IETrident in compability mode
   if ((vrtxAdm.isIE7 || vrtxAdm.isIETridentInComp) && typeof outdatedBrowserText === "string") {
@@ -651,6 +612,55 @@ VrtxAdmin.prototype.globalAsyncComplete = function globalAsyncComplete() {
   vrtxAdm.updateCollectionListingInteraction();
 };
 
+/**
+ * Embedded view (editor)
+ *
+ * @this {VrtxAdmin}
+ */
+VrtxAdmin.prototype.embeddedView = function embeddedView() {
+  if(!isEmbedded) return;
+  
+  $("html").addClass("embedded embedded-loading");
+  
+  if(onlySessionId) { // Also handles when locked or no write permissions (goes to preview)
+    var canEdit = $("#resource-can-edit").text() === "true";
+    var lockedByOtherElm = $("#resource-locked-by-other");
+    var lockedByOther = (lockedByOtherElm.length && lockedByOtherElm.text() == "true")
+                          ? $("#resource-locked-by").html()
+                          : "";
+
+    // Choose proper fail message (we know these sends you to preview)
+    if(!canEdit || lockedByOther.length) {
+      var csTitle = vrtxAdm.lang === "en" ? "Edit activity"
+                                          : "Rediger aktivitet";
+      if(!canEdit) {
+        var csFail = vrtxAdm.lang === "en" ? "You don't have write permissions to edit the course schedule."
+                                           : "Du har ikke skriverettigheter til å redigere denne timeplanen.";
+      } else {
+        var csFail = vrtxAdm.lang === "en" ? "The course schedule is locked by other user: " + lockedByOther
+                                           : "Timeplanen er låst av en annen bruker: " + lockedByOther;
+      }
+      var failHtml = "<p id='editor-fail'>" + csFail + "</p>";
+      
+      this.cachedBody.addClass("embedded-editor-fail");
+
+      // Add embedded editor fail HTML
+      var titleHtml = '<div id="vrtx-editor-title-submit-buttons"><div id="vrtx-editor-title-submit-buttons-inner-wrapper"><h2>' + csTitle + '<a href="javascript:void(0)" class="vrtx-close-dialog-editor"></a></h2></div></div>';
+      var buttonsHtml = '<div class="submit submitButtons"><input class="vrtx-focus-button vrtx-embedded-button" id="vrtx-embedded-cancel-button" type="submit" value="Ok" /></div>';
+      this.cachedContent.html(titleHtml + failHtml + buttonsHtml);
+      
+      // Ok / 'X' goes back to view
+      this.cachedDoc.on("click", "#vrtx-embedded-cancel-button, .vrtx-close-dialog-editor", function(e) {
+        location.href = $("#global-menu-leave-admin a").attr("href");
+        e.stopPropagation();
+        e.preventDefault();
+      });
+    } else {
+      $("#editor").height($(window).height() - $("body").height());
+    }
+  }
+}
+
 /*
  * Domains init
  *
@@ -692,7 +702,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
               }
             });
           } else {
-            if (vrtxAdm.isNotIos6) { // TODO: feature detection
+            if (vrtxAdm.isIOS5) { // TODO: feature detection
               _$("ul#tabMenuRight li." + tabMenuServices[i]).remove();
             } else {
               vrtxAdm.getFormAsync({

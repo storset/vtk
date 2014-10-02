@@ -97,11 +97,15 @@ public class HeaderAwareResponseWrapper extends StatusAwareResponseWrapper {
     public List<Object> getHeaderValues(String name) {
         return this.headers.get(name);
     }
-
+    
     @Override
     public void setContentLength(int length) {
         addHeaderInternal("Content-Length", String.valueOf(length), true);
-        super.setHeader("Content-Length", String.valueOf(length));
+        // Avoid bug in current Resin 4: http://bugs.caucho.com/view.php?id=5807
+        // TODO remove this workaround when fix becomes available in our Resin version.
+        if (length > -1) {
+            super.setHeader("Content-Length", String.valueOf(length));
+        }
         super.setContentLength(length);
     }
     

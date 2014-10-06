@@ -38,6 +38,7 @@
     </script>
   
     <@viewutils.displayDropdown type title titleLink false titleLinkTip>
+      <ul>
       <#list options?keys as opt>
         <#if (opt_index > 0)>
           <#assign classes = "" />
@@ -68,6 +69,7 @@
           </li>
         </#if>
       </#list>
+      </ul>
     </@viewutils.displayDropdown>
     
   <#else>

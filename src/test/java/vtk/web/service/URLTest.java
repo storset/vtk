@@ -30,14 +30,25 @@
  */
 package vtk.web.service;
 
+import java.util.List;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 
 import static org.junit.Assert.*;
+import org.junit.Before;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
 import vtk.repository.Path;
 
 public class URLTest {
-
+    
+    private URL immutableUrl;
+    
+    @Before
+    public void before() {
+        immutableUrl = URL.parse("http://host/path/?foo=bar&foo=baz&a=b").setImmutable();
+    }
+    
     @Test
     public void parse() {
         try {
@@ -283,6 +294,91 @@ public class URLTest {
         assertTrue(URL.isEncoded("%25"));
     }
     
+    @Test
+    public void parameterEmptyValues() throws Exception {
+        URL url = URL.parse("http://host/path?foo&foo");
+        List<String> values = url.getParameters("foo");
+        assertEquals("", values.get(0));
+        assertEquals("", values.get(1));
+    }
+    
+    @Test
+    public void parameterOrderInCopy() throws Exception {
+        URL url = URL.parse("http://host/path?foo=1&foo=2&foo=3&bar=baz");
+        URL copy = new URL(url);
+        assertEquals(url.toString(), copy.toString());
+    }
+    
+    @Test
+    public void createFromRequestWithNonstandardEncoding() throws Exception {
+        HttpServletRequest r = new MockHttpServletRequest("GET", "/using/iso/8859/%F8");
+        URL url = URL.create(r, "iso8859-1");
+        assertEquals("/using/iso/8859/ø", url.getPath().toString());
+    }
+    
+    @Test
+    public void parametersDeepCopiedOnCopy() throws Exception {
+        URL url = URL.parse("http://host/?foo=bar&foo=baz&a=b");
+        
+        URL copy = new URL(url);
+        copy.getParameters("foo").clear();
+        
+        assertEquals(2, url.getParameters("foo").size());
+    }
+    
+    @Test
+    public void cannotMutateParametersAfterSetImmutable() {
+        List<String> fooValues = immutableUrl.getParameters("foo");
+        try {
+            fooValues.clear();
+        } catch (Exception e) {
+            // ok if read-only list
+        }
+        
+        fooValues = immutableUrl.getParameters("foo");
+        assertEquals(2, fooValues.size());
+        
+        try {
+            immutableUrl.addParameter("foo", "baz");
+            fail("Could add parameter after setImmutable");
+        } catch (IllegalStateException i) {}
+        try {
+            immutableUrl.removeParameter("foo");
+            fail("Could remove parameter after setImmutable");
+        } catch (IllegalStateException i) {}
+    }
+    
+    @Test (expected = IllegalStateException.class)
+    public void cannotMutateCharachterEncodingAfterSetImmutable () {
+        immutableUrl.setCharacterEncoding("utf-8");
+    }
+
+    @Test (expected = IllegalStateException.class)
+    public void cannotMutateHostAfterSetImmutable () {
+        immutableUrl.setHost("hostb");
+    }
+    
+    @Test (expected = IllegalStateException.class)
+    public void cannotMutatePathAfterSetImmutable () {
+        immutableUrl.setPath(Path.ROOT);
+    }
+    
+    @Test (expected = IllegalStateException.class)
+    public void cannotMutateCollectionAfterSetImmutable () {
+        immutableUrl.setCollection(false);
+    }
+    
+    @Test (expected = IllegalStateException.class)
+    public void cannotMutatePathOnlyAfterSetImmutable () {
+        immutableUrl.setPathOnly(true);
+    }
+    
+    @Test
+    public void getPathRepresentation() {
+        URL url = URL.parse("http://host/%C3%B8/yvind/?foo=a%20value%20with%20spaces");
+        assertEquals("/%C3%B8/yvind/?foo=a%20value%20with%20spaces", url.getPathRepresentation());
+    }
+
     @Test
     public void protocolRelative() {
         URL url = URL.parse("http://domain.com/img/logo.png");

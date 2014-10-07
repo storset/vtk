@@ -36,7 +36,6 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -70,8 +69,8 @@ public class URL implements Serializable {
 
     private boolean immutable = false;
 
-    private static final Integer PORT_80 = Integer.valueOf(80);
-    private static final Integer PORT_443 = Integer.valueOf(443);
+    private static final Integer PORT_80 = 80;
+    private static final Integer PORT_443 = 443;
 
     private static final String PROTOCOL_HTTP = "http";
     private static final String PROTOCOL_HTTPS = "https";
@@ -101,28 +100,31 @@ public class URL implements Serializable {
         for (Map.Entry<String, List<String>> entry : original.parameters.entrySet()) {
             String key = entry.getKey();
             List<String> values = entry.getValue();
-
-            List<String> copiedValues = new ArrayList<String>(values.size());
-            for (String value : values) {
-                copiedValues.add(value);
-            }
-            this.parameters.put(key, copiedValues);
+            this.parameters.put(key, new ArrayList<String>(values));
         }
     }
 
     public URL(String protocol, String host, Path path) {
+        if (protocol == null) {
+            throw new IllegalArgumentException("Protocol cannot be null");
+        }
+        if (host == null) {
+            throw new IllegalArgumentException("Host cannot be null");
+        }
+        if (path == null) {
+            throw new IllegalArgumentException("Path cannot be null");
+        }
+        protocol = protocol.trim();
+        host = host.trim();
         if (!(PROTOCOLS.contains(protocol))) {
             throw new IllegalArgumentException("Unknown protocol: '" + protocol + "'");
         }
-        if (host == null || "".equals(host.trim())) {
-            throw new IllegalArgumentException("Invalid hostname: '" + host + "'");
-        }
-        if (path == null) {
-            throw new IllegalArgumentException("Path argument cannot be NULL");
+        if (host.isEmpty()) {
+            throw new IllegalArgumentException("Host cannot be empty");
         }
 
-        this.protocol = protocol.trim();
-        this.host = host.trim();
+        this.protocol = protocol;
+        this.host = host;
         this.path = path;
     }
 
@@ -138,9 +140,8 @@ public class URL implements Serializable {
      * @return this URL
      */
     public URL setProtocol(String protocol) {
-        if (this.immutable) {
-            throw new IllegalStateException("This URL is immutable");
-        }
+        checkNotImmutable();
+        
         if (protocol != null) {
             protocol = protocol.trim();
         }
@@ -170,9 +171,7 @@ public class URL implements Serializable {
      * @return this URL
      */
     public URL setHost(String host) {
-        if (this.immutable) {
-            throw new IllegalStateException("This URL is immutable");
-        }
+        checkNotImmutable();
         if (host == null || "".equals(host.trim())) {
             throw new IllegalArgumentException("Invalid hostname: '" + host + "'");
         }
@@ -192,11 +191,9 @@ public class URL implements Serializable {
      * @return this URL
      */
     public URL setPort(Integer port) {
-        if (this.immutable) {
-            throw new IllegalStateException("This URL is immutable");
-        }
-        if (port != null && port.intValue() <= 0) {
-            throw new IllegalArgumentException("Invalid port number: " + port.intValue());
+        checkNotImmutable();
+        if (port != null && port <= 0) {
+            throw new IllegalArgumentException("Invalid port number: " + port);
         }
         this.port = port;
         return this;
@@ -215,9 +212,7 @@ public class URL implements Serializable {
      * @return this URL
      */
     public URL setPathOnly(boolean pathOnly) {
-        if (this.immutable) {
-            throw new IllegalStateException("This URL is immutable");
-        }
+        checkNotImmutable();
         this.pathOnly = pathOnly;
         return this;
     }
@@ -234,11 +229,9 @@ public class URL implements Serializable {
      * @return this URL
      */
     public URL setPath(Path path) {
-        if (this.immutable) {
-            throw new IllegalStateException("This URL is immutable");
-        }
+        checkNotImmutable();
         if (path == null) {
-            throw new IllegalArgumentException("Path cannot be NULL");
+            throw new IllegalArgumentException("Path cannot be null");
         }
         this.path = path;
         return this;
@@ -252,9 +245,7 @@ public class URL implements Serializable {
      * @return this URL
      */
     public URL setCollection(boolean collection) {
-        if (this.immutable) {
-            throw new IllegalStateException("This URL is immutable");
-        }
+        checkNotImmutable();
         this.collection = collection;
         return this;
     }
@@ -275,12 +266,10 @@ public class URL implements Serializable {
      * @return this URL
      */
     public URL addParameter(String name, String value) {
-        if (this.immutable) {
-            throw new IllegalStateException("This URL is immutable");
-        }
+        checkNotImmutable();
         List<String> values = this.parameters.get(name);
         if (values == null) {
-            values = new ArrayList<String>();
+            values = new ArrayList<String>(2);
             this.parameters.put(name, values);
         }
         values.add(value);
@@ -298,15 +287,17 @@ public class URL implements Serializable {
      * @return this URL
      */
     public URL setParameter(String name, String value) {
-        if (this.immutable) {
-            throw new IllegalStateException("This URL is immutable");
+        checkNotImmutable();
+        
+        List<String> values = this.parameters.get(name);
+        if (values == null) {
+            values = new ArrayList<String>(2);
+            this.parameters.put(name, values);
+        } else {
+            values.clear();
         }
-        if (this.parameters.containsKey(name)) {
-            this.parameters.remove(name);
-        }
-        List<String> values = new ArrayList<String>();
+        
         values.add(value);
-        this.parameters.put(name, values);
         return this;
     }
 
@@ -318,9 +309,7 @@ public class URL implements Serializable {
      * @return this URL
      */
     public URL removeParameter(String name) {
-        if (this.immutable) {
-            throw new IllegalStateException("This URL is immutable");
-        }
+        checkNotImmutable();
         this.parameters.remove(name);
         return this;
     }
@@ -331,10 +320,8 @@ public class URL implements Serializable {
      * @return this URL
      */
     public URL clearParameters() {
-        if (this.immutable) {
-            throw new IllegalStateException("This URL is immutable");
-        }
-        this.parameters = new LinkedHashMap<String, List<String>>();
+        checkNotImmutable();
+        this.parameters.clear();
         return this;
     }
 
@@ -352,10 +339,16 @@ public class URL implements Serializable {
     public boolean isImmutable() {
         return this.immutable;
     }
+    
+    private void checkNotImmutable() throws IllegalStateException {
+        if (this.immutable) {
+            throw new IllegalStateException("This URL is immutable");
+        }
+    }
 
     public String getParameter(String parameterName) {
         List<String> values = this.parameters.get(parameterName);
-        if (values == null || values.size() == 0) {
+        if (values == null || values.isEmpty()) {
             return null;
         }
         return values.get(0);
@@ -363,14 +356,14 @@ public class URL implements Serializable {
 
     public List<String> getParameters(String parameterName) {
         List<String> values = this.parameters.get(parameterName);
-        if (values == null || values.size() == 0) {
+        if (values == null || values.isEmpty()) {
             return null;
         }
-        return Collections.list(Collections.enumeration(values));
+        return new ArrayList<String>(values);
     }
 
     public List<String> getParameterNames() {
-        return Collections.list(Collections.enumeration(this.parameters.keySet()));
+        return new ArrayList<String>(this.parameters.keySet());
     }
 
     public String getQueryString() {
@@ -418,9 +411,7 @@ public class URL implements Serializable {
      * @return this URL
      */
     public URL setCharacterEncoding(String characterEncoding) {
-        if (this.immutable) {
-            throw new IllegalStateException("This URL is immutable");
-        }
+        checkNotImmutable();
         if (characterEncoding == null) {
             throw new IllegalArgumentException("Character encoding must be specified");
         }
@@ -572,15 +563,15 @@ public class URL implements Serializable {
     /**
      * Generates an "absolute path" representation of this URL (a string
      * starting with '/', without protocol, hostname and port information), but
-     * including query string parameters.
+     * including query string parameters and ref.
      */
     public String getPathRepresentation() {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb;
         try {
             Path encodedPath = encode(this.path, this.characterEncoding);
-            sb.append(encodedPath);
+            sb = new StringBuilder(encodedPath.toString());
         } catch (java.io.UnsupportedEncodingException e) {
-            // Ignore, this.characterEncoding is supposed to be valid.
+            sb = new StringBuilder();
         }
 
         if (this.collection && !this.path.isRoot()) {
@@ -631,7 +622,7 @@ public class URL implements Serializable {
      *             if an error occurred while parsing the URL
      */
     public static URL create(HttpServletRequest request, String encoding) throws Exception {
-        URL url = parse(request.getRequestURL().toString());
+        URL url = parse(request.getRequestURL().toString(), encoding);
         if (request.isSecure()) {
             url.setProtocol(PROTOCOL_HTTPS);
         }
@@ -673,7 +664,7 @@ public class URL implements Serializable {
     
     /**
      * Parses a URL from a string representation. Also attempts to decode the
-     * URL using a supplied encoding.
+     * URL using a supplied encoding and normlize path segments.
      * 
      * @param url the string representation
      * @param encoding the character encoding to use
@@ -681,16 +672,16 @@ public class URL implements Serializable {
      */
     public static URL parse(String url, String encoding) {
         if (url == null) {
-            throw new IllegalArgumentException("Argument is NULL");
+            throw new IllegalArgumentException("Argument is null");
         }
         url = url.trim();
         if (url.isEmpty()) {
             throw new IllegalArgumentException("Malformed (empty) URL");
         }
 
-        StringBuilder protocol = new StringBuilder();
+        StringBuilder protocol = new StringBuilder(5);
         StringBuilder host = new StringBuilder();
-        StringBuilder port = new StringBuilder();
+        StringBuilder port = new StringBuilder(5);
         StringBuilder path = new StringBuilder();
         StringBuilder query = new StringBuilder();
         StringBuilder ref = new StringBuilder();
@@ -809,7 +800,7 @@ public class URL implements Serializable {
             String decoded = decode(elements.get(i), encoding);
             if (i == elements.size() - 1) {
                 // Special case: remove last element if it is '%20'
-                if ("".equals(decoded.trim())) {
+                if (decoded.trim().isEmpty()) {
                     break;
                 }
             }
@@ -981,7 +972,7 @@ public class URL implements Serializable {
     }
 
     private static final Pattern AMP_PATTERN = Pattern.compile("&");
-
+    
     /**
      * Splits a query string into a map of (String, String[]). NOTE: neither
      * keys nor values are URL-decoded.
@@ -992,34 +983,29 @@ public class URL implements Serializable {
             if (queryString.startsWith("?")) {
                 queryString = queryString.substring(1);
             }
-            String[] pairs = AMP_PATTERN.split(queryString);
-            for (int i = 0; i < pairs.length; i++) {
-                if (pairs[i].length() == 0) {
+            String[] params = AMP_PATTERN.split(queryString);
+            for (String param : params) {
+                if (param.length() == 0) {
                     continue;
                 }
-                int equalsIdx = pairs[i].indexOf("=");
+                String key;
+                String value;
+                int equalsIdx = param.indexOf("=");
                 if (equalsIdx == -1) {
-                    String[] existing = queryMap.get(pairs[i]);
-                    if (existing == null) {
-                        queryMap.put(pairs[i], new String[] { "" });
-                    } else {
-                        String[] newVal = new String[existing.length + 1];
-                        System.arraycopy(existing, 0, newVal, 0, existing.length);
-                        newVal[existing.length] = "";
-                        queryMap.put(pairs[i], newVal);
-                    }
+                    key = param;
+                    value = "";
                 } else {
-                    String key = pairs[i].substring(0, equalsIdx);
-                    String value = pairs[i].substring(equalsIdx + 1);
-                    String[] existing = queryMap.get(key);
-                    if (existing == null) {
-                        queryMap.put(key, new String[] { value });
-                    } else {
-                        String[] newVal = new String[existing.length + 1];
-                        System.arraycopy(existing, 0, newVal, 0, existing.length);
-                        newVal[existing.length] = value;
-                        queryMap.put(key, newVal);
-                    }
+                    key = param.substring(0, equalsIdx);
+                    value = param.substring(equalsIdx + 1);
+                }
+                String[] existing = queryMap.get(key);
+                if (existing == null) {
+                    queryMap.put(key, new String[]{value});
+                } else {
+                    String[] newVal = new String[existing.length + 1];
+                    System.arraycopy(existing, 0, newVal, 0, existing.length);
+                    newVal[existing.length] = value;
+                    queryMap.put(key, newVal);
                 }
             }
         }
@@ -1109,9 +1095,6 @@ public class URL implements Serializable {
     /**
      * URL decodes the elements of a path using a specified character encoding.
      * 
-     * @param value
-     *            a string
-     * @return the decoded string
      * @throws UnsupportedEncodingException
      *             if the specified character encoding is not supported on this
      *             system
@@ -1238,7 +1221,4 @@ public class URL implements Serializable {
         return cur;
     }
 
-    public static Path toPath(HttpServletRequest request) {
-        return create(request).getPath();
-    }
 }

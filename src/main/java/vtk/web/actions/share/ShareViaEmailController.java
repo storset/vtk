@@ -51,7 +51,6 @@ import vtk.util.mail.MailHelper;
 import vtk.util.mail.MailTemplateProvider;
 import vtk.web.RequestContext;
 import vtk.web.service.Service;
-import vtk.web.service.URL;
 
 public class ShareViaEmailController implements Controller {
     private String viewName;
@@ -66,7 +65,7 @@ public class ShareViaEmailController implements Controller {
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
-        Path uri = URL.toPath(request);
+        Path uri = requestContext.getResourceURI();
         
         Resource resource = repository.retrieve(token, uri, true);
         if (resource == null) {

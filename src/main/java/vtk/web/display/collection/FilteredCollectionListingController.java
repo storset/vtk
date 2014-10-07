@@ -44,6 +44,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import vtk.repository.Namespace;
+import vtk.repository.Path;
 import vtk.repository.Property;
 import vtk.repository.Repository;
 import vtk.repository.Resource;
@@ -143,9 +144,11 @@ public abstract class FilteredCollectionListingController implements Controller 
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        Repository repository = RequestContext.getRequestContext().getRepository();
-        String token = RequestContext.getRequestContext().getSecurityToken();
-        Resource collection = repository.retrieve(token, URL.toPath(request), false);
+        final RequestContext rc = RequestContext.getRequestContext();
+        Repository repository = rc.getRepository();
+        String token = rc.getSecurityToken();
+        Path uri = rc.getResourceURI();
+        Resource collection = repository.retrieve(token, uri, false);
 
         Map<String, Object> model = new HashMap<String, Object>();
         Map<String, Object> collectionSpecificValues = getCollectionSpecificValues(collection);

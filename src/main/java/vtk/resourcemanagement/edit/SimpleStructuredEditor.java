@@ -51,9 +51,9 @@ public class SimpleStructuredEditor implements Controller {
 
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
+        Path uri = requestContext.getResourceURI();
         Repository repository = requestContext.getRepository();
 
-        Path uri = URL.toPath(request);
         model.put("url", URL.create(request));
 
         Resource currentResource = repository.retrieve(token, uri, false);

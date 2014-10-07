@@ -11,3 +11,10 @@ body {
   margin: 0;
   padding: 0;
 }
+
+/* Placeholder and play-button when no flash */
+.vrtx-media-player-no-flash,
+.vrtx-media-player-no-flash img { width: 100%; height: 100%; }
+.vrtx-media-player-no-flash .playbutton { 
+  top: 46%; left: 46%;
+}

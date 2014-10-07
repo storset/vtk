@@ -41,6 +41,7 @@
           <list>
             <value>${webResources.baseURL}/jquery/include-jquery.js</value>
             <value>${jsBaseURL}/frameworks/dejavu.js</value>
+            <value>${jsBaseURL}/vrtx-simple-dialogs.js</value>
             <value>${webResources.baseURL}/js/admin-enhancements.js</value>
           </list>
         </entry>

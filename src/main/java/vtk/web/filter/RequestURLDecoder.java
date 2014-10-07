@@ -83,7 +83,7 @@ public class RequestURLDecoder extends AbstractRequestFilter implements Initiali
             super(request);
             try {
                 URL url = URL.create(request, characterEncoding);
-                if (url.isCollection() && !Path.ROOT.equals(url.getPath())) {
+                if (url.isCollection() && !url.getPath().isRoot()) {
                     this.uri = url.getPath().toString() + "/";
                 } else {
                     this.uri = url.getPath().toString();

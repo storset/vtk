@@ -243,10 +243,10 @@
              <button class="vrtx-button vrtx-remove-button" title="">${vrtx.getMsg("editor.remove")}</button>
        	     <#if !cssClass?contains("vrtx-multiple-immovable")>
                <#if (counter > 0) >
-                 <button class="vrtx-button vrtx-move-up-button" title="${vrtx.getMsg("editor.move-up")}"><img src='/vrtx/__vrtx/static-resources/themes/default/images/multiple-move-up.png' alt='' /></button>
+                 <button class="vrtx-button vrtx-move-up-button" title="${vrtx.getMsg("editor.move-up")}"><span class='moveup-arrow'></span></button>
                </#if>
                <#if map_has_next >
-                 <button class="vrtx-button vrtx-move-down-button" title="${vrtx.getMsg("editor.move-down")}"><img src='/vrtx/__vrtx/static-resources/themes/default/images/multiple-move-down.png' alt='' /></button>
+                 <button class="vrtx-button vrtx-move-down-button" title="${vrtx.getMsg("editor.move-down")}"><span class='movedown-arrow'></span></button>
                </#if>
              </#if>
            </div>

@@ -155,6 +155,54 @@ h2 {
   padding-right: 11px;
 }
 
+.vrtx-multipleinputfield .vrtx-button.moveup span,
+.vrtx-multipleinputfield .vrtx-button.movedown span,
+.vrtx-json .vrtx-json-element .vrtx-move-up-button span,
+.vrtx-json .vrtx-json-element .vrtx-move-down-button span {
+  display: block;
+  height: 16px;
+  width: 11px;
+}
+
+.vrtx-multipleinputfields .vrtx-button.add span,
+.vrtx-add-button span {
+  display: block;
+  height: 13px;
+  width: 13px;
+  background: url("images/multiple-add.png") no-repeat center center;
+}
+
+.vrtx-multipleinputfields .vrtx-button.add:hover span,
+.vrtx-add-button:hover span,
+.vrtx-multipleinputfields .vrtx-button.add:focus span,
+.vrtx-add-button:focus span {
+  background-image: url("images/multiple-add-rollover.png");
+}
+
+.vrtx-multipleinputfield .vrtx-button.moveup span,
+.vrtx-json .vrtx-json-element .vrtx-move-up-button span {
+  background: url("images/multiple-move-up.png") no-repeat center center;
+}
+
+.vrtx-multipleinputfield .vrtx-button.movedown span,
+.vrtx-json .vrtx-json-element .vrtx-move-down-button span {
+  background: url("images/multiple-move-down.png") no-repeat center center;
+}
+
+.vrtx-multipleinputfield .vrtx-button.moveup:hover span,
+.vrtx-json .vrtx-json-element .vrtx-move-up-button:hover span,
+.vrtx-multipleinputfield .vrtx-button.moveup:focus span,
+.vrtx-json .vrtx-json-element .vrtx-move-up-button:focus span {
+  background-image: url("images/multiple-move-up-rollover.png");
+}
+
+.vrtx-multipleinputfield .vrtx-button.movedown:hover span,
+.vrtx-json .vrtx-json-element .vrtx-move-down-button:hover span,
+.vrtx-multipleinputfield .vrtx-button.movedown:focus span,
+.vrtx-json .vrtx-json-element .vrtx-move-down-button:focus span {
+  background-image: url("images/multiple-move-down-rollover.png");
+}
+
 /* Sticky title and editor save/cancel buttons */
 
 .properties > *:first-child,

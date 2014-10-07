@@ -1325,10 +1325,10 @@ function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown
   removeButton = vrtxEditor.htmlFacade.getMultipleInputfieldsInteractionsButton("remove", " " + name, idstr, "", vrtxAdmin.multipleFormGroupingMessages.remove);
   if (isMovable) {
     if (i > 1 && len > 0) {
-      moveUpButton = vrtxEditor.htmlFacade.getMultipleInputfieldsInteractionsButton("moveup", "", idstr, vrtxAdmin.multipleFormGroupingMessages.moveUp, "<img src='/vrtx/__vrtx/static-resources/themes/default/images/multiple-move-up.png' alt='' />");
+      moveUpButton = vrtxEditor.htmlFacade.getMultipleInputfieldsInteractionsButton("moveup", "", idstr, vrtxAdmin.multipleFormGroupingMessages.moveUp, "<span class='moveup-arrow'></span>");
     }
     if (i < len) {
-      moveDownButton = vrtxEditor.htmlFacade.getMultipleInputfieldsInteractionsButton("movedown", "", idstr, vrtxAdmin.multipleFormGroupingMessages.moveDown, "<img src='/vrtx/__vrtx/static-resources/themes/default/images/multiple-move-down.png' alt='' />");
+      moveDownButton = vrtxEditor.htmlFacade.getMultipleInputfieldsInteractionsButton("movedown", "", idstr, vrtxAdmin.multipleFormGroupingMessages.moveDown, "<span class='movedown-arrow'></span>");
     }
   }
   if (isBrowsable) {
@@ -1355,7 +1355,7 @@ function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown
     if (len > 0 && isMovable) {
       var last = fields.filter(":last");
       if (!last.find("button.movedown").length) {
-        moveDownButton = vrtxEditor.htmlFacade.getMultipleInputfieldsInteractionsButton("movedown", "", idstr, vrtxAdmin.multipleFormGroupingMessages.moveDown, "<img src='/vrtx/__vrtx/static-resources/themes/default/images/multiple-move-down.png' alt='' />");
+        moveDownButton = vrtxEditor.htmlFacade.getMultipleInputfieldsInteractionsButton("movedown", "", idstr, vrtxAdmin.multipleFormGroupingMessages.moveDown, "<span class='movedown-arrow'></span>");
         last.append(moveDownButton);
       }
     }
@@ -1474,7 +1474,7 @@ function initJsonMovableElements() {
     for (var i = 0, len = vrtxEditor.multipleBoxesTemplatesContract.length; i < len; i++) {
       var jsonName = vrtxEditor.multipleBoxesTemplatesContract[i].name;
       var jsonElm = $("#" + jsonName);
-      jsonElm.append(vrtxEditor.htmlFacade.getJsonBoxesInteractionsButton("add", vrtxAdmin.multipleFormGroupingMessages.add, "<img src='/vrtx/__vrtx/static-resources/themes/default/images/multiple-add.png' alt='' />"))
+      jsonElm.append(vrtxEditor.htmlFacade.getJsonBoxesInteractionsButton("add", vrtxAdmin.multipleFormGroupingMessages.add, "<span class='add-arrow'></span>"))
         .find(".vrtx-add-button").data({
         'number': i
       });
@@ -1549,7 +1549,7 @@ function addJsonField(btn) {
   var newElementId = "vrtx-json-element-" + j.name + "-" + vrtxEditor.multipleFieldsBoxes[j.name].counter;
   var newElementHtml = htmlTemplate + "<input type=\"hidden\" class=\"id\" value=\"" + vrtxEditor.multipleFieldsBoxes[j.name].counter + "\" \/>" + removeButton;
   if (!isImmovable && numOfElements > 0) {
-    var moveUpButton = vrtxEditor.htmlFacade.getJsonBoxesInteractionsButton('move-up', vrtxAdmin.multipleFormGroupingMessages.moveUp, "<img src='/vrtx/__vrtx/static-resources/themes/default/images/multiple-move-up.png' alt='' />");
+    var moveUpButton = vrtxEditor.htmlFacade.getJsonBoxesInteractionsButton('move-up', vrtxAdmin.multipleFormGroupingMessages.moveUp, "<span class='moveup-arrow'></span>");
     newElementHtml += moveUpButton;
   }
   newElementHtml = "<div class='vrtx-json-element last' id='" + newElementId + "'>" + newElementHtml + "<\/div>";
@@ -1565,7 +1565,7 @@ function addJsonField(btn) {
   var hasAccordion = accordionWrapper.length;
 
   if (!isImmovable && numOfElements > 0 && oldLast.length) {
-    var moveDownButton = vrtxEditor.htmlFacade.getJsonBoxesInteractionsButton('move-down', vrtxAdmin.multipleFormGroupingMessages.moveDown, "<img src='/vrtx/__vrtx/static-resources/themes/default/images/multiple-move-down.png' alt='' />");
+    var moveDownButton = vrtxEditor.htmlFacade.getJsonBoxesInteractionsButton('move-down', vrtxAdmin.multipleFormGroupingMessages.moveDown, "<span class='movedown-arrow'></span>");
     if (hasAccordion) {
       oldLast.find("> div.ui-accordion-content").append(moveDownButton);
     } else {
@@ -1953,7 +1953,7 @@ VrtxEditor.prototype.htmlFacade = {
       isMovable: isMovable,
       isDropdown: isDropdown,
       title: vrtxAdmin.multipleFormGroupingMessages.add,
-      buttonText: "<img src='/vrtx/__vrtx/static-resources/themes/default/images/multiple-add.png' alt='' />",
+      buttonText: "<span class='add-arrow'></span>",
       json: json
     });
   },

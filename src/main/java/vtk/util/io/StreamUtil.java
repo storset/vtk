@@ -1,4 +1,4 @@
-/* Copyright (c) 2004,2010 University of Oslo, Norway
+/* Copyright (c) 2004,2010,2014 University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -45,21 +45,30 @@ import java.util.Arrays;
 
 public abstract class StreamUtil {
 
+    public static final String TEMP_FILE_PREFIX = "StreamUtil-tmpfile";
+    
     public static final int NIO_CHANNEL_CHUNK_SIZE = 4*1024*1024;
     
     /**
      * Reads an input stream into a byte array. Closes the stream
      * after the data has been read.
-     *
-     * Buffer allocations are kept to a minimum by using multiple read buffers as
+     * 
+     * <p>Buffer allocations are kept to a minimum by using multiple read buffers as
      * needed and avoiding buffer copy+throw-away when growing. This provides better
      * performance mainly because of reduced copying and allocations. It creates
      * less garbage than the traditional ByteArrayOutputStream approach.
      *
+     * <p>This method may require a lot of memory.
+     * Care should be taken when the input stream can potentially be very large.
+     * In any case, the limit to number of bytes this method can return is
+     * {@link Integer#MAX_VALUE}, and during processing it may require up to
+     * double this amount of JVM heap space.
+     *
      * @param content an <code>InputStream</code> value
      * @return a <code>byte[]</code> containg the read data.
      *         Length is exactly the number of bytes read from the input stream.
-     * @exception IOException if an error occurs
+     * @exception IOException if an error occurs or stream exceeds {@link Integer#MAX_VALUE max
+     * number of bytes}
      */
     public static byte[] readInputStream(InputStream content)
         throws IOException {
@@ -69,6 +78,10 @@ public abstract class StreamUtil {
             buffers[0] = currentbuf;
             int n, pos = 0, total = 0, bufcount = 1;
             while ((n = content.read(currentbuf, pos, currentbuf.length - pos)) > 0) {
+                if (total + n < total) {
+                    throw new IOException("Stream exceeded maximum length of " + Integer.MAX_VALUE + " bytes.");
+                }
+                
                 pos += n;
                 total += n;
                 if (pos == currentbuf.length) {
@@ -76,7 +89,9 @@ public abstract class StreamUtil {
                         // Allocate for more buffers
                         buffers = Arrays.copyOf(buffers, buffers.length << 1);
                     }
-                    byte[] newbuffer = new byte[currentbuf.length << 1]; // Double size of next buffer
+                    
+                    // Double size of new buffer, but keep roof at 64MiB
+                    byte[] newbuffer = new byte[Math.min(0x4000000, currentbuf.length << 1)];
                     buffers[bufcount++] = newbuffer;
                     currentbuf = newbuffer;
                     pos = 0;
@@ -91,6 +106,7 @@ public abstract class StreamUtil {
                 int copycount = Math.min(buf.length, remaining);
                 System.arraycopy(buf, 0, returnbuf, total - remaining, copycount);
                 remaining -= copycount;
+                buffers[i] = null; // GC as soon as possible
             }
 
             return returnbuf;
@@ -136,7 +152,8 @@ public abstract class StreamUtil {
                         // Allocate for more buffers
                         buffers = Arrays.copyOf(buffers, buffers.length << 1);
                     }
-                    byte[] newbuffer = new byte[currentbuf.length << 1];
+                    // Double size of new buffer, but keep roof at 64MiB
+                    byte[] newbuffer = new byte[Math.min(0x4000000, currentbuf.length << 1)];
                     buffers[bufcount++] = newbuffer;
                     currentbuf = newbuffer;
                     pos = 0;
@@ -160,6 +177,7 @@ public abstract class StreamUtil {
                 int copycount = Math.min(buf.length, remaining);
                 System.arraycopy(buf, 0, returnbuf, total - remaining, copycount);
                 remaining -= copycount;
+                buffers[i] = null; // GC as soon as possible
             }
 
             return returnbuf;
@@ -450,7 +468,7 @@ public abstract class StreamUtil {
             tempDir = new File(System.getProperty("java.io.tmpdir"));
         }
         ReadableByteChannel src = Channels.newChannel(stream);
-        File tempFile = File.createTempFile("StreamUtil-tmpfile", suffix, tempDir);
+        File tempFile = File.createTempFile(TEMP_FILE_PREFIX, suffix, tempDir);
         FileChannel dest = new FileOutputStream(tempFile).getChannel();
         long pos = 0;
         try {

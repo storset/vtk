@@ -48,6 +48,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 
@@ -97,6 +98,14 @@ public class StreamUtilTest {
         assertTrue(buffersEqual(data, resultData));
         assertEquals(data.length, piped);
         
+    }
+    
+    // Don't run this one normally, since it requires a lot of memory for the
+    // JVM executing it.
+    @Ignore
+    @Test(expected = IOException.class)
+    public void streamLimit() throws Exception {
+        StreamUtil.readInputStream(new DevZeroInputStream());
     }
 
     @Test
@@ -487,6 +496,16 @@ public class StreamUtilTest {
         return data;
     }
 
+}
+
+// Input stream which provides an unlimited amount of zero bytes.
+class DevZeroInputStream extends InputStream {
+
+    @Override
+    public int read() throws IOException {
+        return 0;
+    }
+    
 }
 
 // Simulate an input stream that only reads small chunks of random size at a time.

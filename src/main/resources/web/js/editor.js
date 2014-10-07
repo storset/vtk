@@ -1806,7 +1806,7 @@ VrtxEditor.prototype.htmlFacade = {
                   var propsLen = propsArr.length;
                   for(var j = 0; j < propsLen; j++) {
                     if(propsLen > 1) propsVal += "<li>";
-                    propsVal += "<a href='" + val[i].folderUrl + "/" + propsArr[j].name + "'>" + propsArr[j].title + "</a>";
+                    propsVal += "<a href='" + propsArr[j].url + "'>" + propsArr[j].title + "</a>";
                     if(propsLen > 1) propsVal += "</li>";
                   }
                   if(propsLen > 1) {
@@ -1820,7 +1820,7 @@ VrtxEditor.prototype.htmlFacade = {
                 var propsLen = propsArr.length;
                 for(var j = 0; j < propsLen; j++) {
                   if(propsLen > 1) propsVal += "<li>";
-                  propsVal += "<a href='" + val.folderUrl + "/" + propsArr[j].name + "'>" + propsArr[j].title + "</a>";
+                  propsVal += "<a href='" + propsArr[j].url + "'>" + propsArr[j].title + "</a>";
                   if(propsLen > 1) propsVal += "</li>";
                 }
                 if(propsLen > 1) {

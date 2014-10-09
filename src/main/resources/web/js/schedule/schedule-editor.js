@@ -328,10 +328,13 @@ function courseSchedule() {
                        ((prevId || nextId) ? "</div>" : ""),
         sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, id, session, this.retrievedScheduleData.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
 
+     var rawOrigTP = jQuery.extend(true, {}, session);
+
      this.deleteUnwantedSessionProps(session);
 
      this.sessionsLookup[id][sessionId] = {
        rawPtr: session,
+       rawOrigTP: rawOrigTP,
        rawOrig: jQuery.extend(true, {}, session), // Copy object
        descsPtr: descs,
        multiples: sessionContent.multiples,
@@ -442,10 +445,11 @@ function courseSchedule() {
     }
   };
   this.deleteUnwantedSessionProps = function(session) {
-    if(session.dtStart) delete session.dtStart;
-    if(session.dtEnd) delete session.dtEnd;
-    if(session.weekNr) delete session.weekNr;
-    if(session.rooms) delete session.rooms;
+    for(var prop in session) {
+      if(!/^vrtx/.test(prop) && prop != "id") {
+        delete session[prop];
+      }
+    }
   };
   this.checkUnsavedChanges = function() {
     this.saveLastSession();
@@ -468,10 +472,11 @@ function courseSchedule() {
 
     var sessionLookup = this.sessionsLookup[id][sessionId];
     var rawOrig = sessionLookup.rawOrig;
+    var rawOrigTP = sessionLookup.rawOrigTP;
     var rawPtr = sessionLookup.rawPtr;
     var descsPtr = sessionLookup.descsPtr;
 
-    sessionLookup.hasChanges = vrtxEditor.htmlFacade.htmlToJson(sessionElms, sessionId, descsPtr, rawOrig, rawPtr);
+    sessionLookup.hasChanges = vrtxEditor.htmlFacade.htmlToJson(sessionElms, sessionId, descsPtr, rawOrig, rawOrigTP, rawPtr);
   };
   this.saved = function(isSaveView) {
     for(var type in this.sessionsLookup) {

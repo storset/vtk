@@ -68,7 +68,7 @@
     </h2>
   </div>
   
-  <@generateFilters report.filters />
+  <@reportLib.generateFilters report.filters />
 
   <#if report.result?has_content>
     <#--

@@ -65,8 +65,9 @@ function courseSchedule() {
         var sequence = dt.sequences[j];
         var fixedResources = sequence.vrtxResourcesFixed;
         if(fixedResources) {
-          sequences[sequence.id] = fixedResources;
+          sequences[sequence.id] = jQuery.extend(true, {}, fixedResources);
         }
+        delete sequence.vrtxResourcesFixed;
         sessions = sessions.concat(sequence.sessions);
       }
       
@@ -136,9 +137,9 @@ function courseSchedule() {
         sessionsHtml = "";
         sessions = [];
       }
-      
-      delete descsTmp;
     }
+    
+    delete this.retrievedScheduleData[type].vrtxEditableDescription;
 
     return html;
   };
@@ -193,9 +194,10 @@ function courseSchedule() {
         for(var j = 0, len = dt.sequences.length; j < len; j++) {
           var sequence = dt.sequences[j];
           var fixedResources = sequence.vrtxResourcesFixed;
-          if(fixedResources) {           
-            sequences[sequence.id] = fixedResources;
+          if(fixedResources) {
+            sequences[sequence.id] = jQuery.extend(true, {}, fixedResources);
           }
+          delete sequence.vrtxResourcesFixed;
           sessions = sessions.concat(sequence.sessions);
         }
         if(!isPlenary || (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod)) {

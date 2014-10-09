@@ -20,6 +20,7 @@ function courseSchedule() {
 
   // Data / lookup
   this.retrievedScheduleData = null;
+  this.descs = {};
   this.sessionsLookup = {};
   this.i18n = scheduleI18n;
   
@@ -31,9 +32,12 @@ function courseSchedule() {
   // Get HTML for type ("plenary" or "group")
   this.getActivitiesForTypeHtml = function(type, isPlenary) {
     if(!this.retrievedScheduleData[type]) return "";
-    var descs = this.retrievedScheduleData[type].vrtxEditableDescription,
+    var descsTmp = this.retrievedScheduleData[type].vrtxEditableDescription,
         data = this.retrievedScheduleData[type].activities;
-    if(!descs || !data) return "";
+    if(!descsTmp || !data) return "";
+    
+    this.descs[type] = descsTmp;
+    var descs = this.descs[type];
         
     var dataLen = data.length;
     if(!dataLen) return "";
@@ -133,7 +137,9 @@ function courseSchedule() {
         sessions = [];
       }
     }
-     
+    
+    delete descsTmp;
+
     return html;
   };
   // Get HTML for single session
@@ -142,7 +148,13 @@ function courseSchedule() {
     if(!sessionData) return null;
     
     var session = sessionData.session;
-    var descs = this.retrievedScheduleData[sessionData.type].vrtxEditableDescription;
+    var descsTmp = this.retrievedScheduleData[sessionData.type].vrtxEditableDescription;
+    
+    if(!descsTmp) return null;
+    
+    this.descs[type] = descsTmp;
+    var descs = this.descs[type];
+    
     if(!this.sessionsLookup["single"]) {
       this.sessionsLookup["single"] = {};
     }
@@ -152,6 +164,8 @@ function courseSchedule() {
     this.lastElm = $(".properties"); 
     this.lastId = "single";
     this.lastSessionId = "one";
+    
+    this.deleteUnwantedProps();
                                                     
     return { id: "single", isPlenary: sessionData.isPlenary, teachingMethod: sessionData.teachingMethod, html: sessionHtml.html, title: sessionHtml.title };
   };
@@ -314,7 +328,7 @@ function courseSchedule() {
                        ((prevId || nextId) ? "</div>" : ""),
         sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, id, session, this.retrievedScheduleData.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
 
-     this.deleteUnwantedProps(session);
+     this.deleteUnwantedSessionProps(session);
 
      this.sessionsLookup[id][sessionId] = {
        rawPtr: session,
@@ -407,7 +421,27 @@ function courseSchedule() {
       }
     }
   };
-  this.deleteUnwantedProps = function(session) {
+  this.deleteUnwantedProps = function() {
+    for(var type in this.retrievedScheduleData) {
+      if(!this.retrievedScheduleData[type]) continue;
+      var data = this.retrievedScheduleData[type].activities;
+      if(!data) continue;
+      var dataLen = data.length;
+      if(!dataLen) continue;
+      for(var i = 0; i < dataLen; i++) {
+        var dt = data[i];
+        var seqs = dt.sequences || [];
+        for(var j = 0, seqsLen = seqs.length; j < seqsLen; j++) {
+          var sessions = seqs.sessions || [];
+          for(var k = 0, sessLen = sessions.length; k < sessLen; k++) {
+            this.deleteUnwantedSessionProps(sessions[k]);
+          }
+        }
+      }
+      delete this.retrievedScheduleData[type].vrtxEditableDescription;
+    }
+  };
+  this.deleteUnwantedSessionProps = function(session) {
     if(session.dtStart) delete session.dtStart;
     if(session.dtEnd) delete session.dtEnd;
     if(session.weekNr) delete session.weekNr;

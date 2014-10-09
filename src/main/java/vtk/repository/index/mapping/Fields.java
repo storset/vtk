@@ -50,6 +50,7 @@ import org.apache.lucene.index.FieldInfo;
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.util.BytesRef;
+import org.apache.lucene.util.BytesRefBuilder;
 import org.apache.lucene.util.NumericUtils;
 import vtk.repository.resourcetype.ValueFormatException;
 import vtk.util.cache.ReusableObjectArrayStackCache;
@@ -329,9 +330,9 @@ public abstract class Fields {
         
         // Finally, create encoded index field representation of the parsed
         // date.
-        BytesRef bytes = new BytesRef();
+        BytesRefBuilder bytes = new BytesRefBuilder();
         NumericUtils.longToPrefixCoded(longValue, 0, bytes);
-        return bytes;
+        return bytes.get();
     }
     
     private BytesRef integerValueToIndexTerm(Object value) {
@@ -347,9 +348,9 @@ public abstract class Fields {
                         + "to index field value representation: " + nfe.getMessage());
             }
         }
-        BytesRef bytes = new BytesRef();
+        BytesRefBuilder bytes = new BytesRefBuilder();
         NumericUtils.intToPrefixCoded(intValue, 0, bytes);
-        return bytes;
+        return bytes.get();
     }
     
     private BytesRef longValueToIndexTerm(Object value) {
@@ -365,10 +366,9 @@ public abstract class Fields {
                         + "to index field value representation: " + nfe.getMessage());
             }
         }
-        BytesRef bytes = new BytesRef();
+        BytesRefBuilder bytes = new BytesRefBuilder();
         NumericUtils.longToPrefixCoded(longValue, 0, bytes);
-        return bytes;
+        return bytes.get();
     }
-    
-    
+
 }

@@ -58,6 +58,9 @@
     <property name="locale" value="${view.defaultLocale}" />
   </bean>
 
+  <!-- Factory to create new index searchers. This factory warms up Lucene
+  internal caching before the index searcher is made available for use.
+  Configure common or general queries and sortings to warm up useful parts. -->
   <bean id="searcherFactory" class="vtk.repository.index.WarmupSearcherFactory">
     <property name="luceneQueryBuilder" ref="queryBuilder" />
     <property name="searchParser" ref="searchParser" />

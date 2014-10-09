@@ -1,0 +1,28 @@
+{
+	"resourcetype": "person",
+	"properties": {
+		"tags": [
+			"funtime",
+			"musikk",
+			"java"
+		],
+		"getExternalPersonInfo": "true",
+		"getExternalScientificInformation": "true",
+		"picture": "/images/jordbaer.jpg",
+		"alternativeCellPhone": "98567235",
+		"projects": [
+			{
+				"projectName": "Historieprosjekt",
+				"projectUrl": "http://www.hf.uio.no"
+			},
+			{
+				"projectName": "Biologiprosjekt",
+				"projectUrl": "http://www.mn.uio.no/bio"
+			}
+		],
+		"username": "foobar",
+		"selectedPublications": "<p>En utvalgt publikasjon<\/p>\n",
+		"getRelatedGroups": "true",
+		"getRelatedProjects": "true"
+	}
+}

@@ -1,0 +1,19 @@
+{
+	"resourcetype": "structured-event",
+	"properties": {
+		"tags": [
+			"event",
+			"fun"
+		],
+		"end-date": "2014-10-09 14:00",
+		"showAdditionalContent": "true",
+		"location": "Oslo",
+		"hidePicture": "false",
+		"picture": "/images/flowers/flower.jpg",
+		"content": "<p>Event content.<br />\n&nbsp;<\/p>\n",
+		"title": "Structured Event",
+		"start-date": "2014-10-09 12:00",
+		"related-content": "<p>Right column.<\/p>\n",
+		"introduction": "<p>Introduction<\/p>\n"
+	}
+}

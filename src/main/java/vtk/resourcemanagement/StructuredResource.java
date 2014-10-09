@@ -41,13 +41,16 @@ import java.util.Locale;
 import java.util.Map;
 
 import net.sf.json.JSONObject;
-
 import vtk.resourcemanagement.property.PropertyDescription;
 import vtk.resourcemanagement.property.SimplePropertyDescription;
-import vtk.util.io.StreamUtil;
 import vtk.util.text.JSON;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class StructuredResource {
+
+    // Is thread safe
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private StructuredResourceDescription desc;
     private Map<String, Object> properties;
@@ -59,11 +62,10 @@ public class StructuredResource {
         this.desc = desc;
         this.properties = properties;
     }
-    
+
     @SuppressWarnings("unchecked")
     static StructuredResource create(StructuredResourceDescription desc, InputStream source) throws Exception {
-        String str = StreamUtil.streamToString(source, "utf-8");
-        JSONObject json = JSONObject.fromObject(str);
+        JSONObject json = MAPPER.readValue(source, JSONObject.class);
         ValidationResult validation = validateInternal(desc, json);
         if (!validation.isValid()) {
             throw new RuntimeException("Invalid document: " + validation.getErrors());
@@ -81,7 +83,7 @@ public class StructuredResource {
         try {
             ValidationResult validation = validateInternal(this.desc, document);
             return validation.isValid();
-        } catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
     }

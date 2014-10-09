@@ -276,12 +276,17 @@ td.vrtx-report-broken-links li {
   float: left;
 }
 
-#vrtx-report-filters ul.vrtx-report-filter-last#vrtx-report-filter-my-documents {
+#vrtx-report-filters ul#vrtx-report-filter-least-most {
   background: none;
 }
 
+#vrtx-report-filters ul#vrtx-report-filter-least-most,
 #vrtx-report-filters ul#vrtx-report-filter-my-documents {
   margin-top: -12px;
+}
+
+#vrtx-report-filter-least-most ul.rtx-report-filter-last {
+  background: none;
 }
 
 /* Remove "Other:" */

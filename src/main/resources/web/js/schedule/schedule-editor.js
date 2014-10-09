@@ -432,7 +432,7 @@ function courseSchedule() {
         var dt = data[i];
         var seqs = dt.sequences || [];
         for(var j = 0, seqsLen = seqs.length; j < seqsLen; j++) {
-          var sessions = seqs.sessions || [];
+          var sessions = seqs[j].sessions || [];
           for(var k = 0, sessLen = sessions.length; k < sessLen; k++) {
             this.deleteUnwantedSessionProps(sessions[k]);
           }

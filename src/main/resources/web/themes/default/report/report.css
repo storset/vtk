@@ -285,10 +285,6 @@ td.vrtx-report-broken-links li {
   margin-top: -12px;
 }
 
-#vrtx-report-filter-least-most ul.rtx-report-filter-last {
-  background: none;
-}
-
 /* Remove "Other:" */
 #vrtx-report-filters ul li#vrtx-report-filter-link-type-other {
   display: none;

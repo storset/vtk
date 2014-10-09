@@ -65,7 +65,7 @@ function courseSchedule() {
         var sequence = dt.sequences[j];
         var fixedResources = sequence.vrtxResourcesFixed;
         if(fixedResources) {
-          sequences[sequence.id] = jQuery.extend(true, {}, fixedResources);
+          sequences[sequence.id] = jQuery.extend(true, [], fixedResources);
         }
         delete sequence.vrtxResourcesFixed;
         sessions = sessions.concat(sequence.sessions);
@@ -195,7 +195,7 @@ function courseSchedule() {
           var sequence = dt.sequences[j];
           var fixedResources = sequence.vrtxResourcesFixed;
           if(fixedResources) {
-            sequences[sequence.id] = jQuery.extend(true, {}, fixedResources);
+            sequences[sequence.id] = jQuery.extend(true, [], fixedResources);
           }
           delete sequence.vrtxResourcesFixed;
           sessions = sessions.concat(sequence.sessions);

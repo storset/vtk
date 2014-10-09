@@ -407,7 +407,7 @@ function courseSchedule() {
       }
     }
   };
-  this.deleteUnwantedProps(session) {
+  this.deleteUnwantedProps = function(session) {
     if(session.dtStart) delete session.dtStart;
     if(session.dtEnd) delete session.dtEnd;
     if(session.weekNr) delete session.weekNr;

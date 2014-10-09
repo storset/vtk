@@ -408,10 +408,10 @@ function courseSchedule() {
     }
   };
   this.deleteUnwantedProps(session) {
-    delete session.rooms;
-    delete session.weekNr;
-    delete session.dtStart;
-    delete session.dtEnd;
+    if(session.dtStart) delete session.dtStart;
+    if(session.dtEnd) delete session.dtEnd;
+    if(session.weekNr) delete session.weekNr;
+    if(session.rooms) delete session.rooms;
   };
   this.checkUnsavedChanges = function() {
     this.saveLastSession();

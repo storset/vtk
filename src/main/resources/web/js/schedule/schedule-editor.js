@@ -314,6 +314,8 @@ function courseSchedule() {
                        ((prevId || nextId) ? "</div>" : ""),
         sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, id, session, this.retrievedScheduleData.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
 
+     this.deleteUnwantedProps(session);
+
      this.sessionsLookup[id][sessionId] = {
        rawPtr: session,
        rawOrig: jQuery.extend(true, {}, session), // Copy object
@@ -331,7 +333,6 @@ function courseSchedule() {
   };
   
   /* Dates */
-  
   this.parseDate = function(dateString) {
     var m = /^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})\.([0-9]{3})([+-])([0-9]{2}):([0-9]{2})$/.exec(dateString);
     return { year: m[1], month: m[2], date: m[3], hh: m[4], mm: m[5], tzhh: m[9], tzmm: m[10] };
@@ -405,6 +406,12 @@ function courseSchedule() {
         }
       }
     }
+  };
+  this.deleteUnwantedProps(session) {
+    delete session.rooms;
+    delete session.weekNr;
+    delete session.dtStart;
+    delete session.dtEnd;
   };
   this.checkUnsavedChanges = function() {
     this.saveLastSession();

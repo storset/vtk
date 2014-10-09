@@ -136,9 +136,9 @@ function courseSchedule() {
         sessionsHtml = "";
         sessions = [];
       }
+      
+      delete descsTmp;
     }
-    
-    delete descsTmp;
 
     return html;
   };
@@ -152,8 +152,8 @@ function courseSchedule() {
     
     if(!descsTmp) return null;
     
-    this.descs[type] = descsTmp;
-    var descs = this.descs[type];
+    this.descs[sessionData.type] = descsTmp;
+    var descs = this.descs[sessionData.type];
     
     if(!this.sessionsLookup["single"]) {
       this.sessionsLookup["single"] = {};

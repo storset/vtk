@@ -1,6 +1,7 @@
 <#ftl strip_whitespace=true>
 <#import "/lib/vtk.ftl" as vrtx />
 <#import "/lib/report.ftl" as reportLib />
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -204,35 +205,6 @@
   <#else>
     <p id="vrtx-report-broken-links-info"><@vrtx.msg code="report.${report.reportname}.info.web-pages.none-found" /> ${linkTypeLocalization?lower_case}.<span class="vrtx-report-broken-links-info-number">&nbsp;</span></p>
   </#if>
-
-  <#macro generateFilters filters>
-    <#if filters?exists && (filters?size > 0)>
-      <div id="vrtx-report-filters">
-        <#list report.filters?keys as filterKey>
-          <#local filterOpts = filters[filterKey] />
-          <#if (filterOpts?size > 0)>
-            <#if (filterKey_index == (filters?size - 1))>
-              <ul class="vrtx-report-filter vrtx-report-filter-last" id="vrtx-report-filter-${filterKey}">
-            <#else>
-              <ul class="vrtx-report-filter" id="vrtx-report-filter-${filterKey}">
-            </#if>
-              <#list filterOpts as filterOpt>
-                <#local filterID = "vrtx-report-filter-" + filterKey + "-" + filterOpt.name />
-                <#if filterOpt.active>
-                  <li class="active-filter" id="${filterID}">
-                    <span><@vrtx.msg code="report.${report.reportname}.filters.${filterKey}.${filterOpt.name}" /></span>
-                <#else>
-                  <li id="${filterID}">
-                    <a href="${filterOpt.URL?html}"><@vrtx.msg code="report.${report.reportname}.filters.${filterKey}.${filterOpt.name}" /></a>
-                </#if>
-                  </li>
-              </#list>
-            </ul>
-          </#if>
-        </#list>
-      </div>
-    </#if>
-  </#macro>
 
   <#macro displayPaging>
     <#if report.prev?exists || report.next?exists>

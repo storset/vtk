@@ -16,3 +16,32 @@
     <label for="is-${alternativeName?html}"><@vrtx.msg code=alternativeLabelText /></label>
   </div>
 </#macro>
+
+<#macro generateFilters filters>
+    <#if filters?exists && (filters?size > 0)>
+      <div id="vrtx-report-filters">
+        <#list report.filters?keys as filterKey>
+          <#local filterOpts = filters[filterKey] />
+          <#if (filterOpts?size > 0)>
+            <#if (filterKey_index == (filters?size - 1))>
+              <ul class="vrtx-report-filter vrtx-report-filter-last" id="vrtx-report-filter-${filterKey}">
+            <#else>
+              <ul class="vrtx-report-filter" id="vrtx-report-filter-${filterKey}">
+            </#if>
+              <#list filterOpts as filterOpt>
+                <#local filterID = "vrtx-report-filter-" + filterKey + "-" + filterOpt.name />
+                <#if filterOpt.active>
+                  <li class="active-filter" id="${filterID}">
+                    <span><@vrtx.msg code="report.${report.reportname}.filters.${filterKey}.${filterOpt.name}" /></span>
+                <#else>
+                  <li id="${filterID}">
+                    <a href="${filterOpt.URL?html}"><@vrtx.msg code="report.${report.reportname}.filters.${filterKey}.${filterOpt.name}" /></a>
+                </#if>
+                  </li>
+              </#list>
+            </ul>
+          </#if>
+        </#list>
+      </div>
+    </#if>
+ </#macro>

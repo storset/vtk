@@ -288,7 +288,7 @@ resourcetype course-description {
           <ul class="thirds-left">
         [endif]
         [if _index = 4]
-          </ul><ul>
+          </ul><ul id="vrtx-course-more-semesters">
           <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/include-jquery.js"></script>
           <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/toggle.js"></script>
           <script type="text/javascript"><!--

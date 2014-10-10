@@ -32,8 +32,8 @@ cd src/main/ext/CKeditor
 wget http://.../CKeditor_<version>.tar.gz
 tar -zxvf CKeditor_<version>.tar.gz
 mv ckeditor ckeditor-org/ckeditor-<version>
-rsync -r --exclude .svn\*  --delete -ptv ckeditor-org/ckeditor-<version>/ ckeditor-build
-rsync -r --exclude .svn\*  -ptv ckeditor-modifications/ ckeditor-build
+rsync -r --delete -ptv ckeditor-org/ckeditor-<version>/ ckeditor-build
+rsync -r -ptv ckeditor-modifications/ ckeditor-build
 
 If it don't work (which can mean the language-files have been updated in new version)
 you have to copy mediaembed{} from the language-files en.js and no.js: 

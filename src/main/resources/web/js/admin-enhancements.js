@@ -664,7 +664,7 @@ VrtxAdmin.prototype.embeddedView = function embeddedView() {
 /*
  * Domains init
  *
- * TODO: Too big and complex (HV: 6322, CC: 22)
+ * TODO: Too big and complex (HV: ?, CC: ?)
  *
  * * is based on id of body-tag
  *
@@ -736,55 +736,17 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
         "collectionListing.action.move-resources": "moveToSelectedFolderService",
         "collectionListing.action.copy-resources": "copyToSelectedFolderService"
       };
+      
+      // Mark resources for copy / move
       for (i = tabMenuServices.length; i--;) {
         vrtxAdm.completeSimpleFormAsync({
           selector: "input#" + tabMenuServices[i],
           useClickVal: true,
-          fnComplete: function(resultElm, form, url, link) {
-            var li = "li." + tabMenuServicesInjectMap[link.attr("id")];
-            var resourceMenuRight = $("#resourceMenuRight");
-            var copyMoveExists = "";
-            for (var key in tabMenuServicesInjectMap) {
-              var copyMove = resourceMenuRight.find("li." + tabMenuServicesInjectMap[key]);
-              if (copyMove.length) {
-                copyMoveExists = copyMove;
-                break;
-              }
-            }
-            var copyMoveAfter = function() {
-              resourceMenuRight.html(resultElm.find("#resourceMenuRight").html());
-              vrtxAdm.displayInfoMsg(resultElm.find(".infomessage").html());
-            };
-            if (copyMoveExists !== "") {
-              var copyMoveAnimation = new VrtxAnimation({
-                elem: copyMoveExists,
-                outerWrapperElem: resourceMenuRight,
-                useCSSAnim: true,
-                after: function() {
-                  copyMoveExists.remove();
-                  copyMoveAfter();
-                  copyMoveAnimation.update({
-                    elem: resourceMenuRight.find(li),
-                    useCSSAnim: true,
-                    outerWrapperElem: resourceMenuRight
-                  })
-                  copyMoveAnimation.rightIn();
-                }
-              });
-              copyMoveAnimation.leftOut();
-            } else {
-              copyMoveAfter();
-              var copyMoveAnimation = new VrtxAnimation({
-                elem: resourceMenuRight.find(li),
-                useCSSAnim: true,
-                outerWrapperElem: resourceMenuRight
-              });
-              copyMoveAnimation.rightIn();
-            }
-          }
+          fnComplete: markResourcesCopyMove
         });
       }
-
+ 
+      // Copy / move resources
       for (i = resourceMenuServices.length; i--;) {
         vrtxAdm.completeSimpleFormAsync({
           selector: "#resourceMenuRight li." + resourceMenuServices[i] + " button",
@@ -797,55 +759,7 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
               _$("<span class='vrtx-show-processing' />").insertBefore(form.find(".vrtx-cancel-link"));
             }
           },
-          fnComplete: function(resultElm, form, url, link) {
-            var cancelFn = function() {
-              form.find(".vrtx-button-small").show();
-              form.find(".vrtx-cancel-link").show();
-              form.find(".vrtx-show-processing").remove();
-              vrtxAdm.uploadCopyMoveSkippedFiles = {};
-            };
-            var li = form.closest("li");
-            var existingFilenamesField = resultElm.find("#copy-move-existing-filenames");
-            var moveToSameFolder = resultElm.find("#move-to-same-folder");
-            if(moveToSameFolder.length) {
-              cancelFn();
-              vrtxAdm.displayErrorMsg(vrtxAdm.messages.move.existing.sameFolder);
-            } else if(existingFilenamesField.length) {
-              var existingFilenames = existingFilenamesField.text().split("#");
-              var numberOfFiles = parseInt(resultElm.find("#copy-move-number-of-files").text(), 10);
-              userProcessExistingFiles({
-                filenames: existingFilenames,
-                filenamesFixed: null,
-                numberOfFiles: numberOfFiles, 
-                completeFn: function() {
-                  var skippedFiles = "";
-                  for(key in vrtxAdm.uploadCopyMoveSkippedFiles) {
-                    skippedFiles += key + ",";
-                  }
-                  form.find("#existing-skipped-files").remove();
-                  form.append("<input id='existing-skipped-files' name='existing-skipped-files' type='hidden' value='" + skippedFiles + "' />");
-                  cancelFn();
-                  link.click();
-                },
-                cancelFn: cancelFn,
-                isAllSkippedEqualComplete: true
-              });
-            } else {
-              form.find("#existing-skipped-files").remove();
-              var copyMoveAnimation = new VrtxAnimation({
-                elem: li,
-                outerWrapperElem: $("#resourceMenuRight"),
-                useCSSAnim: true,
-                after: function() {
-                  vrtxAdm.displayErrorMsg(resultElm.find(".errormessage").html());
-                  vrtxAdm.cachedContent.html(resultElm.find("#contents").html());
-                  vrtxAdm.updateCollectionListingInteraction();
-                  li.remove();
-                }
-              });
-              copyMoveAnimation.leftOut();
-            }
-          }
+          fnComplete: resourcesCopyMove
         });
       }
 
@@ -1223,6 +1137,106 @@ VrtxAdmin.prototype.initDomainsInstant = function initDomainsInstant() {
       break;
   }
 };
+
+/*
+ * Copy / move
+ */
+function markResourcesCopyMove(resultElm, form, url, link) {
+  var vrtxAdm = vrtxAdmin;
+
+  var li = "li." + tabMenuServicesInjectMap[link.attr("id")];
+  var resourceMenuRight = $("#resourceMenuRight");
+  var copyMoveExists = "";
+  for (var key in tabMenuServicesInjectMap) {
+    var copyMove = resourceMenuRight.find("li." + tabMenuServicesInjectMap[key]);
+    if (copyMove.length) {
+      copyMoveExists = copyMove;
+      break;
+    }
+  }
+  var copyMoveAfter = function() {
+    resourceMenuRight.html(resultElm.find("#resourceMenuRight").html());
+    vrtxAdm.displayInfoMsg(resultElm.find(".infomessage").html());
+  };
+  if (copyMoveExists !== "") {
+    var copyMoveAnimation = new VrtxAnimation({
+      elem: copyMoveExists,
+      outerWrapperElem: resourceMenuRight,
+      useCSSAnim: true,
+      after: function() {
+        copyMoveExists.remove();
+        copyMoveAfter();
+        copyMoveAnimation.update({
+          elem: resourceMenuRight.find(li),
+          useCSSAnim: true,
+          outerWrapperElem: resourceMenuRight
+        })
+        copyMoveAnimation.rightIn();
+      }
+    });
+    copyMoveAnimation.leftOut();
+  } else {
+    copyMoveAfter();
+    var copyMoveAnimation = new VrtxAnimation({
+      elem: resourceMenuRight.find(li),
+      useCSSAnim: true,
+      outerWrapperElem: resourceMenuRight
+    });
+    copyMoveAnimation.rightIn();
+  }
+}
+
+function resourcesCopyMove(resultElm, form, url, link) {
+  var vrtxAdm = vrtxAdmin;
+
+  var cancelFn = function() {
+    form.find(".vrtx-button-small").show();
+    form.find(".vrtx-cancel-link").show();
+    form.find(".vrtx-show-processing").remove();
+    vrtxAdm.uploadCopyMoveSkippedFiles = {};
+  };
+  var li = form.closest("li");
+  var existingFilenamesField = resultElm.find("#copy-move-existing-filenames");
+  var moveToSameFolder = resultElm.find("#move-to-same-folder");
+  if(moveToSameFolder.length) {
+    cancelFn();
+    vrtxAdm.displayErrorMsg(vrtxAdm.messages.move.existing.sameFolder);
+  } else if(existingFilenamesField.length) {
+    var existingFilenames = existingFilenamesField.text().split("#");
+    var numberOfFiles = parseInt(resultElm.find("#copy-move-number-of-files").text(), 10);
+    userProcessExistingFiles({
+      filenames: existingFilenames,
+      filenamesFixed: null,
+      numberOfFiles: numberOfFiles, 
+      completeFn: function() {
+        var skippedFiles = "";
+        for(key in vrtxAdm.uploadCopyMoveSkippedFiles) {
+          skippedFiles += key + ",";
+        }
+        form.find("#existing-skipped-files").remove();
+        form.append("<input id='existing-skipped-files' name='existing-skipped-files' type='hidden' value='" + skippedFiles + "' />");
+        cancelFn();
+        link.click();
+      },
+      cancelFn: cancelFn,
+      isAllSkippedEqualComplete: true
+    });
+  } else {
+    form.find("#existing-skipped-files").remove();
+    var copyMoveAnimation = new VrtxAnimation({
+      elem: li,
+      outerWrapperElem: $("#resourceMenuRight"),
+      useCSSAnim: true,
+      after: function() {
+        vrtxAdm.displayErrorMsg(resultElm.find(".errormessage").html());
+        vrtxAdm.cachedContent.html(resultElm.find("#contents").html());
+        vrtxAdm.updateCollectionListingInteraction();
+        li.remove();
+      }
+    });
+    copyMoveAnimation.leftOut();
+  }
+}
 
 /**
  * Initialize dropdowns
@@ -2363,11 +2377,7 @@ VrtxAdmin.prototype.initializeCheckUncheckAll = function initializeCheckUncheckA
   }
   
   vrtxAdm.cachedDirectoryListing.on("focusin focusout", "td a, td input", function (e) {
-    if(e.type == "focusin") {
-      $(this).closest("tr").addClass("focus");
-    } else {
-      $(this).closest("tr").removeClass("focus");
-    }
+    $(this).closest("tr")[(e.type == "focusin" ? "add" : "remove") + "Class"]("focus");
   });
   
   // Check / uncheck all

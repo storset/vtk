@@ -33,12 +33,13 @@ package vtk.repository;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Required;
+
 import vtk.repository.ChangeLogEntry.Operation;
 import vtk.repository.store.ChangeLogDAO;
 import vtk.security.PrincipalFactory;
 
 
-public class ProcessedContentEventDumperOpen extends AbstractRepositoryEventDumper {
+public class ProcessedContentEventDumperOpen extends AbstractDBEventDumper {
 
     private ChangeLogDAO changeLogDAO;
 
@@ -59,6 +60,12 @@ public class ProcessedContentEventDumperOpen extends AbstractRepositoryEventDump
                 resourceId, collection, new Date());
         
         this.changeLogDAO.addChangeLogEntry(entry, false);
+    }
+
+    @Override
+    public void moved(Resource resource, Resource from, int fromId) {
+        created(resource);
+        deleted(from.getURI(), fromId, from.isCollection());
     }
 
     @Override

@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2014, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,45 +28,43 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package vtk.repository.event;
+package vtk.repository;
 
-import vtk.repository.Path;
-import vtk.repository.Repository;
-import vtk.repository.Resource;
+import java.util.Date;
 
-public class ResourceDeletionEvent extends RepositoryEvent {
+import org.springframework.beans.factory.annotation.Required;
+import vtk.repository.ChangeLogEntry.Operation;
 
-    private static final long serialVersionUID = 4121138047560921652L;
+public abstract class AbstractDBEventDumper extends AbstractRepositoryEventDumper {
 
-    private Resource resource;
+    protected int loggerId = -1;
+    protected int loggerType = -1;
 
-    public ResourceDeletionEvent(Repository source, Resource resource) {
-        super(source);
-        this.resource = resource;
-    }
+    @Required
+    public void setLoggerId(int loggerId) {
+        this.loggerId = loggerId;
+    }      
 
-    @Override
-    public Path getURI() {
-        return this.resource.getURI();
-    }
+    @Required
+    public void setLoggerType(int loggerType) {
+        this.loggerType = loggerType;
+    }      
+    
+    protected ChangeLogEntry changeLogEntry(int loggerId, int loggerType,
+            Path uri, Operation operation, int resourceId,
+            boolean collection, Date timestamp) {
 
-    public int getResourceId() {
-        return this.resource.getID();
+        ChangeLogEntry entry = new ChangeLogEntry();
+        entry.setLoggerId(loggerId);
+        entry.setLoggerType(loggerType);
+        entry.setUri(uri);
+        entry.setOperation(operation);
+        entry.setResourceId(resourceId);
+        entry.setCollection(collection);
+        entry.setTimestamp(timestamp);
+
+        return entry;
     }
     
-    public boolean isCollection() {
-        return this.resource.isCollection();
-    }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder(getClass().getName());
-        sb.append("[");
-        sb.append("source=").append(this.source);
-        sb.append(";uri=").append(this.resource.getURI());
-        sb.append(";resourceId=").append(this.resource.getID());
-        sb.append(";collection=").append(this.resource.isCollection());
-        sb.append("]");
-        return sb.toString();
-    }
 }

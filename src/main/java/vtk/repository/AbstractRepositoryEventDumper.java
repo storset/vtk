@@ -34,6 +34,7 @@ import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationListener;
+
 import vtk.repository.ChangeLogEntry.Operation;
 import vtk.repository.event.ACLModificationEvent;
 import vtk.repository.event.ContentModificationEvent;
@@ -42,6 +43,7 @@ import vtk.repository.event.RepositoryEvent;
 import vtk.repository.event.ResourceCreationEvent;
 import vtk.repository.event.ResourceDeletionEvent;
 import vtk.repository.event.ResourceModificationEvent;
+import vtk.repository.event.ResourceMovedEvent;
 
 
 /**
@@ -49,20 +51,8 @@ import vtk.repository.event.ResourceModificationEvent;
  */
 public abstract class AbstractRepositoryEventDumper implements ApplicationListener<RepositoryEvent> {
 
-    protected int loggerId = -1;
-    protected int loggerType = -1;
     protected Repository repository;
 
-    @Required
-    public void setLoggerId(int loggerId) {
-        this.loggerId = loggerId;
-    }      
-
-    @Required
-    public void setLoggerType(int loggerType) {
-        this.loggerType = loggerType;
-    }      
-    
     @Required
     public void setRepository(Repository repository)  {
         this.repository = repository;
@@ -83,6 +73,10 @@ public abstract class AbstractRepositoryEventDumper implements ApplicationListen
             deleted(((ResourceDeletionEvent) event).getURI(),
                     ((ResourceDeletionEvent) event).getResourceId(),
                     ((ResourceDeletionEvent) event).isCollection());
+        } else if (event instanceof ResourceMovedEvent) {
+            moved(((ResourceMovedEvent) event).getResource(),
+                    ((ResourceMovedEvent) event).getFrom(),
+                    ((ResourceMovedEvent) event).getFrom().getID());
         } else if (event instanceof ResourceModificationEvent) {
             final Resource resource = ((ResourceModificationEvent)event).getResource();
             final Resource original = ((ResourceModificationEvent)event).getOriginal();
@@ -107,6 +101,8 @@ public abstract class AbstractRepositoryEventDumper implements ApplicationListen
 
     public abstract void deleted(Path uri, int resourceId, boolean collection);
 
+    public abstract void moved(Resource resource, Resource from, int fromId);
+    
     public abstract void modified(Resource resource, Resource originalResource);
     
     public abstract void modifiedInheritableProperties(Resource resource, Resource originalResource);

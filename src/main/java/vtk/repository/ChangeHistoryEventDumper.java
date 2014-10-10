@@ -33,6 +33,7 @@ package vtk.repository;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Required;
+
 import vtk.security.Principal;
 import vtk.security.SecurityContext;
 
@@ -42,7 +43,7 @@ import vtk.security.SecurityContext;
  * Otherwise only events thought to be important from a security perspective are logged
  * ..
  */
-public class ChangeHistoryEventDumper extends AbstractRepositoryEventDumper {
+public class ChangeHistoryEventDumper extends AbstractDBEventDumper {
 
     protected final static int propertiesLastModifiedThreshold = 30;
     protected boolean reportAll = true;
@@ -60,7 +61,7 @@ public class ChangeHistoryEventDumper extends AbstractRepositoryEventDumper {
                     "", resource.isCollection(), changer);
         }
     }
-
+    
     @Override
     public void deleted(Path uri, int resourceId, boolean collection) {
         if (reportAll) {
@@ -68,6 +69,12 @@ public class ChangeHistoryEventDumper extends AbstractRepositoryEventDumper {
             logVersioningEvent("DELETED", false, uri, 
                     "", collection, changer);
         }
+    }
+
+    @Override
+    public void moved(Resource resource, Resource from, int fromId) {
+        created(resource);
+        deleted(from.getURI(), fromId, from.isCollection());
     }
 
     @Override
@@ -151,4 +158,5 @@ public class ChangeHistoryEventDumper extends AbstractRepositoryEventDumper {
         ChangeHistoryLog.change(operation, security, uri, description, collection, principal);
 
     }
+
 }

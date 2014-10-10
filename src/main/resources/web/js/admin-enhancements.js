@@ -3820,18 +3820,6 @@ VrtxAdmin.prototype.serverFacade = {
     this.post(url, params, callbacks, "json", "text/plain;charset=utf-8");
   },
   /**
-   * POST JSON (application/json)
-   *
-   * @this {serverFacade}
-   * @param {string} url The URL
-   * @param {string} params The data
-   * @param {object} callbacks The callback functions
-   * @param {string} csrfHeader CSRF as HTTP header
-   */
-  postJSONA: function (url, params, callbacks, csrfHeader) {
-    this.post(url, params, callbacks, "json", "application/json;charset=utf-8", csrfHeader);
-  },
-  /**
    * GET Ajax <data type>
    *
    * @this {serverFacade}
@@ -3875,7 +3863,7 @@ VrtxAdmin.prototype.serverFacade = {
    * @param {string} contentType The content type
    * @param {string} csrfHeader CSRF as HTTP header
    */
-  post: function (url, params, callbacks, type, contentType, csrfHeader) {
+  post: function (url, params, callbacks, type, contentType) {
     var opts = {
       type: "POST",
       url: url,
@@ -3900,11 +3888,6 @@ VrtxAdmin.prototype.serverFacade = {
         }
       }
     };
-    if(typeof csrfHeader === "string") {
-      opts.beforeSend = function(xhr) {
-        xhr.setRequestHeader("X-CSRF-Token", csrfHeader);
-      };
-    }
     vrtxAdmin._$.ajax(opts);
   },
   /**

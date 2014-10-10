@@ -106,6 +106,11 @@ public class ResourceWrapper implements Resource {
         }
         return null;
     }
+    
+    @Override
+    public int getID() {
+        return this.resource.getID();
+    }
 
     @Override
     public Locale getContentLocale() {

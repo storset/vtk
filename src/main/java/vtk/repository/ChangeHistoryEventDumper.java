@@ -63,18 +63,18 @@ public class ChangeHistoryEventDumper extends AbstractDBEventDumper {
     }
     
     @Override
-    public void deleted(Path uri, int resourceId, boolean collection) {
+    public void deleted(Resource resource) {
         if (reportAll) {
             Principal changer = SecurityContext.getSecurityContext().getPrincipal();
-            logVersioningEvent("DELETED", false, uri, 
-                    "", collection, changer);
+            logVersioningEvent("DELETED", false, resource.getURI(), 
+                    "", resource.isCollection(), changer);
         }
     }
 
     @Override
-    public void moved(Resource resource, Resource from, int fromId) {
+    public void moved(Resource resource, Resource from) {
         created(resource);
-        deleted(from.getURI(), fromId, from.isCollection());
+        deleted(from);
     }
 
     @Override
@@ -146,8 +146,7 @@ public class ChangeHistoryEventDumper extends AbstractDBEventDumper {
     }
 
     @Override
-    public void aclModified(Resource resource, Resource originalResource,
-            Acl newACL, Acl originalACL) {
+    public void aclModified(Resource resource, Resource originalResource) {
         Principal changer = SecurityContext.getSecurityContext().getPrincipal();
         logVersioningEvent("MODIFIED_ACL", true, resource.getURI(),
                 "", resource.isCollection(), changer);

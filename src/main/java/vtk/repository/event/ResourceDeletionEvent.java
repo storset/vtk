@@ -49,13 +49,9 @@ public class ResourceDeletionEvent extends RepositoryEvent {
     public Path getURI() {
         return this.resource.getURI();
     }
-
-    public int getResourceId() {
-        return this.resource.getID();
-    }
     
-    public boolean isCollection() {
-        return this.resource.isCollection();
+    public Resource getResource() {
+        return this.resource;
     }
 
     @Override
@@ -63,9 +59,7 @@ public class ResourceDeletionEvent extends RepositoryEvent {
         StringBuilder sb = new StringBuilder(getClass().getName());
         sb.append("[");
         sb.append("source=").append(this.source);
-        sb.append(";uri=").append(this.resource.getURI());
-        sb.append(";resourceId=").append(this.resource.getID());
-        sb.append(";collection=").append(this.resource.isCollection());
+        sb.append(";resource=").append(this.resource);
         sb.append("]");
         return sb.toString();
     }

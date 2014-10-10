@@ -30,12 +30,9 @@
  */
 package vtk.repository;
 
-import java.util.Date;
-
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationListener;
 
-import vtk.repository.ChangeLogEntry.Operation;
 import vtk.repository.event.ACLModificationEvent;
 import vtk.repository.event.ContentModificationEvent;
 import vtk.repository.event.InheritablePropertiesModificationEvent;
@@ -70,13 +67,10 @@ public abstract class AbstractRepositoryEventDumper implements ApplicationListen
         if (event instanceof ResourceCreationEvent) {
             created(((ResourceCreationEvent) event).getResource());
         } else if (event instanceof ResourceDeletionEvent) {
-            deleted(((ResourceDeletionEvent) event).getURI(),
-                    ((ResourceDeletionEvent) event).getResourceId(),
-                    ((ResourceDeletionEvent) event).isCollection());
+            deleted(((ResourceDeletionEvent) event).getResource());
         } else if (event instanceof ResourceMovedEvent) {
             moved(((ResourceMovedEvent) event).getResource(),
-                    ((ResourceMovedEvent) event).getFrom(),
-                    ((ResourceMovedEvent) event).getFrom().getID());
+                    ((ResourceMovedEvent) event).getFrom());
         } else if (event instanceof ResourceModificationEvent) {
             final Resource resource = ((ResourceModificationEvent)event).getResource();
             final Resource original = ((ResourceModificationEvent)event).getOriginal();
@@ -90,18 +84,15 @@ public abstract class AbstractRepositoryEventDumper implements ApplicationListen
                             ((ContentModificationEvent) event).getOriginal());
         } else if (event instanceof ACLModificationEvent) {
             aclModified(((ACLModificationEvent)event).getResource(),
-                        ((ACLModificationEvent)event).getOriginalResource(),
-                        ((ACLModificationEvent)event).getACL(),
-                        ((ACLModificationEvent)event).getOriginalACL());
+                        ((ACLModificationEvent)event).getOriginalResource());
         }
-        
     }
 
     public abstract void created(Resource resource);
 
-    public abstract void deleted(Path uri, int resourceId, boolean collection);
+    public abstract void deleted(Resource resource);
 
-    public abstract void moved(Resource resource, Resource from, int fromId);
+    public abstract void moved(Resource resource, Resource from);
     
     public abstract void modified(Resource resource, Resource originalResource);
     
@@ -109,23 +100,6 @@ public abstract class AbstractRepositoryEventDumper implements ApplicationListen
 
     public abstract void contentModified(Resource resource, Resource original);
 
-    public abstract void aclModified(Resource resource, Resource originalResource,
-                                     Acl acl, Acl originalAcl);
+    public abstract void aclModified(Resource resource, Resource originalResource);
 
-    protected ChangeLogEntry changeLogEntry(int loggerId, int loggerType,
-            Path uri, Operation operation, int resourceId,
-            boolean collection, Date timestamp) {
-
-        ChangeLogEntry entry = new ChangeLogEntry();
-        entry.setLoggerId(loggerId);
-        entry.setLoggerType(loggerType);
-        entry.setUri(uri);
-        entry.setOperation(operation);
-        entry.setResourceId(resourceId);
-        entry.setCollection(collection);
-        entry.setTimestamp(timestamp);
-
-        return entry;
-    }
-    
 }

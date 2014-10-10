@@ -22,6 +22,7 @@ function courseSchedule() {
   this.retrievedScheduleData = null;
   this.descs = {};
   this.sessionsLookup = {};
+  this.vrtxResourcesFixedUrl = "";
   this.i18n = scheduleI18n;
   
   // Last edited sessions
@@ -328,7 +329,7 @@ function courseSchedule() {
                        (prevId ? "<a class='prev' href='" + window.location.protocol + "//" + window.location.host + window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + prevId + "'>" + this.i18n.prev + "</a>" : "") +
                        (nextId ? "<a class='next' href='" + window.location.protocol + "//" + window.location.host + window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + nextId + "'>" + this.i18n.next + "</a>" : "") +
                        ((prevId || nextId) ? "</div>" : ""),
-        sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, id, session, this.retrievedScheduleData.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
+        sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, id, session, this.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
 
      var rawOrigTP = jQuery.extend(true, {}, session);
 
@@ -539,7 +540,7 @@ function courseSchedule() {
     var collectionTitle = (sessionDisciplines ? sessionDisciplines.join(", ") + " - " : "") + sessionTitle + " - " + sequenceId;
     var collectionName = replaceInvalidChar((sessionDisciplines ? sessionDisciplines.join("-") + "-" : "") + sessionTitle + "-" + sequenceId, fileTitleSubstitutions, false);
     
-    var collectionBaseUrl = cs.retrievedScheduleData.vrtxResourcesFixedUrl;
+    var collectionBaseUrl = cs.vrtxResourcesFixedUrl;
     if(!/\/$/.test(collectionBaseUrl)) { // Add last '/' if missing
       collectionBaseUrl += "/";
     }
@@ -637,6 +638,9 @@ function courseSchedule() {
     
     // Remove - TODO: don't generate
     $(".vrtx-json").remove();
+    
+    this.vrtxResourcesFixedUrl = this.retrievedScheduleData.vrtxResourcesFixedUrl;
+    delete this.retrievedScheduleData.vrtxResourcesFixedUrl;
 
     if(onlySessionId) {
       onlySessionId = decodeURIComponent(onlySessionId);

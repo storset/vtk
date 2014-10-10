@@ -19,7 +19,7 @@ void execute(context, args, out) {
     }
 
     r = repo.retrieve(token, uri, true);
-
+    out.println("id: " + r.getID());
     out.println("type: " + r.getResourceType());
 
     out.println("");

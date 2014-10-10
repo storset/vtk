@@ -36,6 +36,7 @@ import java.util.List;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexableField;
+
 import vtk.repository.Acl;
 import vtk.repository.Namespace;
 import vtk.repository.Path;
@@ -56,6 +57,7 @@ import vtk.repository.search.PropertySelect;
 public final class LazyMappedPropertySet implements PropertySet {
 
     private Path uri;
+    private int id = -1;
     private String resourceType;
     private List<IndexableField> propFields;
     private List<IndexableField> aclFields;
@@ -63,6 +65,10 @@ public final class LazyMappedPropertySet implements PropertySet {
 
     LazyMappedPropertySet(Document doc, DocumentMapper mapper) throws DocumentMappingException {
         for (IndexableField f : doc) {
+            if (ResourceFields.ID_FIELD_NAME.equals(f.name())) {
+                id = Integer.parseInt(f.stringValue());
+            }
+            
             if (ResourceFields.URI_FIELD_NAME.equals(f.name())) {
                 uri = Path.fromString(f.stringValue());
                 continue;
@@ -106,6 +112,11 @@ public final class LazyMappedPropertySet implements PropertySet {
     @Override
     public Path getURI() {
         return this.uri;
+    }
+    
+    @Override
+    public int getID() {
+        return this.id;
     }
 
     @Override

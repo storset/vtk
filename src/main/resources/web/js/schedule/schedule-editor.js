@@ -639,8 +639,8 @@ function courseSchedule() {
     // Remove - TODO: don't generate
     $(".vrtx-json").remove();
     
-    this.vrtxResourcesFixedUrl = this.retrievedScheduleData.vrtxResourcesFixedUrl;
-    delete this.retrievedScheduleData.vrtxResourcesFixedUrl;
+    csRef.vrtxResourcesFixedUrl = csRef.retrievedScheduleData.vrtxResourcesFixedUrl;
+    delete csRef.retrievedScheduleData.vrtxResourcesFixedUrl;
 
     if(onlySessionId) {
       onlySessionId = decodeURIComponent(onlySessionId);

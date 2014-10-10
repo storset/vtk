@@ -35,6 +35,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Required;
+
 import vtk.repository.ChangeLogEntry.Operation;
 import vtk.repository.store.ChangeLogDAO;
 import vtk.repository.store.DataAccessException;
@@ -43,7 +44,7 @@ import vtk.security.Principal;
 import vtk.security.PrincipalFactory;
 
 
-public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
+public class ProcessedContentEventDumper extends AbstractDBEventDumper {
 
     private DataAccessor dataAccessor;
     private ChangeLogDAO changeLogDAO;
@@ -83,6 +84,12 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
                 resourceId, collection, new Date());
         
         this.changeLogDAO.addChangeLogEntry(entry, false);
+    }
+
+    @Override
+    public void moved(Resource resource, Resource from, int fromId) {
+        created(resource);
+        deleted(from.getURI(), fromId, from.isCollection());
     }
 
     @Override

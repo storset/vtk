@@ -46,13 +46,13 @@ public class ACLModificationEvent extends RepositoryEvent {
     private Acl originalACL = null;
 
     public ACLModificationEvent(Repository source,
-                                Resource resource, Resource original,
-                                Acl acl, Acl originalACL) {
+                                Resource resource, Resource original) {
         super(source);
         this.resource = resource;
         this.original = original;
-        this.acl = acl;
-        this.originalACL = originalACL;
+        this.acl = resource.getAcl();
+        this.originalACL = original.getAcl();
+        if (acl.equals(originalACL)) throw new IllegalStateException("XXX");
     }
 
     public Resource getResource() {

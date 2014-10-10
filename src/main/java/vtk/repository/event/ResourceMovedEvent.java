@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2014, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -34,39 +34,41 @@ import vtk.repository.Path;
 import vtk.repository.Repository;
 import vtk.repository.Resource;
 
-public class ResourceDeletionEvent extends RepositoryEvent {
 
-    private static final long serialVersionUID = 4121138047560921652L;
+public class ResourceMovedEvent extends RepositoryEvent {
 
-    private Resource resource;
+    private static final long serialVersionUID = -2209180759512818018L;
+    private Resource destination = null;
+    private Resource from = null;
 
-    public ResourceDeletionEvent(Repository source, Resource resource) {
+    public ResourceMovedEvent(Repository source, Resource destination, Resource from) {
         super(source);
-        this.resource = resource;
+        this.destination = destination;
+        this.from = from;
+    }
+
+    public Resource getResource() {
+        return this.destination;
     }
 
     @Override
     public Path getURI() {
-        return this.resource.getURI();
-    }
-
-    public int getResourceId() {
-        return this.resource.getID();
+        return this.destination.getURI();
     }
     
-    public boolean isCollection() {
-        return this.resource.isCollection();
+    public Resource getFrom() {
+        return this.from;
     }
-
+    
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(getClass().getName());
         sb.append("[");
-        sb.append("source=").append(this.source);
-        sb.append(";uri=").append(this.resource.getURI());
-        sb.append(";resourceId=").append(this.resource.getID());
-        sb.append(";collection=").append(this.resource.isCollection());
+        sb.append("source=").append(this.from);
+        sb.append(";resource=").append(this.destination);
+        sb.append(";from=").append(this.from);
         sb.append("]");
         return sb.toString();
     }
+
 }

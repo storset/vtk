@@ -61,6 +61,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
+
 import vtk.repository.Revision.Type;
 import vtk.repository.content.ContentImpl;
 import vtk.repository.content.ContentRepresentationRegistry;
@@ -70,6 +71,7 @@ import vtk.repository.event.InheritablePropertiesModificationEvent;
 import vtk.repository.event.ResourceCreationEvent;
 import vtk.repository.event.ResourceDeletionEvent;
 import vtk.repository.event.ResourceModificationEvent;
+import vtk.repository.event.ResourceMovedEvent;
 import vtk.repository.hooks.TypeHandlerHookException;
 import vtk.repository.hooks.TypeHandlerHooks;
 import vtk.repository.hooks.TypeHandlerHooksHelper;
@@ -547,7 +549,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if (dest != null) {
             this.dao.delete(dest);
             this.contentStore.deleteResource(dest.getURI());
-            this.context.publishEvent(new ResourceDeletionEvent(this, dest.getURI(), dest.getID(), dest.isCollection()));
+            this.context.publishEvent(new ResourceDeletionEvent(this, dest));
         }
 
         try {
@@ -647,8 +649,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if (dest != null) {
             this.dao.delete(dest);
             this.contentStore.deleteResource(dest.getURI());
-            this.context.publishEvent(new ResourceDeletionEvent(this, dest.getURI(), 
-                    dest.getID(), dest.isCollection()));
+            this.context.publishEvent(new ResourceDeletionEvent(this, dest));
         }
 
         try {
@@ -693,8 +694,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             newResource = this.dao.move(src, newResource);
             this.contentStore.move(src.getURI(), newResource.getURI());
 
-            this.context.publishEvent(new ResourceCreationEvent(this, (Resource) newResource.clone()));
-            this.context.publishEvent(new ResourceDeletionEvent(this, srcUri, src.getID(), src.isCollection()));
+            this.context.publishEvent(new ResourceMovedEvent(
+                    this, (Resource) newResource.clone(), (Resource) src.clone()));
+            
+            //this.context.publishEvent(new ResourceCreationEvent(this, (Resource) newResource.clone()));
+            //this.context.publishEvent(new ResourceDeletionEvent(this, srcUri, src.getID(), src.isCollection()));
         } catch (CloneNotSupportedException e) {
             throw new IOException("Failed to clone object", e);
         }
@@ -765,8 +769,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             this.contentStore.deleteResource(resourceToDelete.getURI());
         }
 
-        ResourceDeletionEvent event = new ResourceDeletionEvent(this, uri, resourceToDelete.getID(),
-                resourceToDelete.isCollection());
+        ResourceDeletionEvent event = new ResourceDeletionEvent(this, resourceToDelete);
         this.context.publishEvent(event);
     }
 
@@ -1421,8 +1424,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             newResource = (ResourceImpl) newResource.clone(); // Clone for event
                                                               // publishing
 
-            ACLModificationEvent event = new ACLModificationEvent(this, newResource, original, newResource.getAcl(),
-                    original.getAcl());
+            ACLModificationEvent event = new ACLModificationEvent(this, newResource, original);
 
             this.context.publishEvent(event);
 
@@ -1468,8 +1470,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             newResource = (ResourceImpl) newResource.clone(); // clone for event
                                                               // publish
 
-            ACLModificationEvent event = new ACLModificationEvent(this, newResource, original, newResource.getAcl(),
-                    original.getAcl());
+            ACLModificationEvent event = new ACLModificationEvent(this, newResource, original);
 
             this.context.publishEvent(event);
 

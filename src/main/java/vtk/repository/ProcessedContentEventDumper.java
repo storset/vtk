@@ -78,18 +78,18 @@ public class ProcessedContentEventDumper extends AbstractDBEventDumper {
     }
 
     @Override
-    public void deleted(Path uri, int resourceId, boolean collection) {
-        ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, uri, 
+    public void deleted(Resource resource) {
+        ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, resource.getURI(), 
                 Operation.DELETED,
-                resourceId, collection, new Date());
+                resource.getID(), resource.isCollection(), new Date());
         
         this.changeLogDAO.addChangeLogEntry(entry, false);
     }
 
     @Override
-    public void moved(Resource resource, Resource from, int fromId) {
+    public void moved(Resource resource, Resource from) {
         created(resource);
-        deleted(from.getURI(), fromId, from.isCollection());
+        deleted(resource);
     }
 
     @Override
@@ -119,9 +119,8 @@ public class ProcessedContentEventDumper extends AbstractDBEventDumper {
 
 
     @Override
-    public void aclModified(Resource resource, Resource originalResource,
-                            Acl newACL, Acl originalACL) {
-        
+    public void aclModified(Resource resource, Resource originalResource) {
+        Acl newACL = resource.getAcl(), originalACL = originalResource.getAcl();
         if (originalACL.equals(newACL)) {
             return;
         }

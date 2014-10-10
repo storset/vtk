@@ -53,18 +53,18 @@ public class ProcessedContentEventDumperAll extends AbstractDBEventDumper {
     }
 
     @Override
-    public void deleted(Path uri, int resourceId, boolean collection) {
-        ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, uri, 
+    public void deleted(Resource resource) {
+        ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, resource.getURI(), 
                 Operation.DELETED,
-                resourceId, collection, new Date());
+                resource.getID(), resource.isCollection(), new Date());
         
         this.changeLogDAO.addChangeLogEntry(entry, false);
     }
 
     @Override
-    public void moved(Resource resource, Resource from, int fromId) {
+    public void moved(Resource resource, Resource from) {
         created(resource);
-        deleted(from.getURI(), fromId, from.isCollection());
+        deleted(from);
     }
 
     @Override
@@ -96,9 +96,8 @@ public class ProcessedContentEventDumperAll extends AbstractDBEventDumper {
 
 
     @Override
-    public void aclModified(Resource resource, Resource originalResource,
-                            Acl newACL, Acl originalACL) {
-        
+    public void aclModified(Resource resource, Resource originalResource) {
+        Acl newACL = resource.getAcl(), originalACL = originalResource.getAcl();        
         // XXX: ACL inheritance concern moved into Resource class, so a change of the
         //     inheritance property should perhaps be a new log event type (ACL_INHERITANCE_MODIFIED)
         if (newACL.equals(originalACL) && 

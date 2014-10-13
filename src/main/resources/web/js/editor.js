@@ -1803,7 +1803,7 @@ VrtxEditor.prototype.htmlFacade = {
               if(val.length == undefined) { // Object
                 html += this.jsonFixedResourcesToHtml(val.folderUrl, val.resources, i18n);
               } else { // Array
-                for(var i = 0, len = val.length; i < len; i++) {
+                for(i = 0, len = val.length; i < len; i++) {
                   html += this.jsonFixedResourcesToHtml(val[i].folderUrl, val[i].resources, i18n);
                 }
               }

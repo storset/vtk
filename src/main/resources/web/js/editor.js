@@ -1801,22 +1801,11 @@ VrtxEditor.prototype.htmlFacade = {
               html += buttons;
             } else { // Admin
               if(val.length == undefined) { // Object
-                val = [val]; // To array with length=1
-              }
-              for(var i = 0, len = val.length; i < len; i++) {
-                var propsArr = val[i].resources;
-                var propsLen = propsArr.length;
-                propsVal = "";
-                for(var j = 0; j < propsLen; j++) {
-                  if(propsLen > 1) propsVal += "<li>";
-                  propsVal += "<a href='" + propsArr[j].url + "'>" + propsArr[j].title + "</a>";
-                  if(propsLen > 1) propsVal += "</li>";
+                html += this.jsonFixedResourcesToHtml(val.folderUrl, val.resources, i18n);
+              } else { // Array
+                for(var i = 0, len = val.length; i < len; i++) {
+                  html += this.jsonFixedResourcesToHtml(val[i].folderUrl, val[i].resources, i18n);
                 }
-                if(propsLen > 1) {
-                  propsVal = "<ul>" + propsVal + "</ul>";
-                }
-                var buttons = "<a class='vrtx-button admin-fixed-resources-folder' href='" + val[i].folderUrl + "?vrtx=admin&displaymsg=yes'>" + i18n[name + "UploadAdminFolder"] + "</a>";
-                html += "<div class='preview-html'>" + propsVal + "</div>" + buttons;
               }
             }
             html += "</div>";
@@ -1850,8 +1839,20 @@ VrtxEditor.prototype.htmlFacade = {
     }
     return { html: html, multiples: multiples, rtEditors: rtEditors };
   },
-  jsonFixedResourcesToHtml: function() {
-  
+  jsonFixedResourcesToHtml: function(folderUrl, resources, i18n) {
+     var fixedResourcesHtml = "";
+     for(var i = 0, resourcesLen = resources.length; i < resourcesLen; i++) {
+       if(resourcesLen > 1) fixedResourcesHtml += "<li>";
+       fixedResourcesHtml += "<a href='" + resources[i].url + "'>" + resources[i].title + "</a>";
+       if(resourcesLen > 1) fixedResourcesHtml += "</li>";
+     }
+     var html = "<div class='preview-html'>";
+     if(resourcesLen > 1) html += "<ul>"
+     html += fixedResourcesHtml;
+     if(resourcesLen > 1) html += "</ul>";
+     html += "</div>";
+     html += "<a class='vrtx-button admin-fixed-resources-folder' href='" +  + "?vrtx=admin&displaymsg=yes'>" + i18n[name + "UploadAdminFolder"] + "</a>";
+     return html;
   },
  /* 
   * Turn a block of HTML/DOM into JSON (Only working for Schedule per. 14.08.2014)

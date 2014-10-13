@@ -1800,24 +1800,13 @@ VrtxEditor.prototype.htmlFacade = {
               var buttons = "<a class='vrtx-button create-fixed-resources-folder' id='create-fixed-resources-folder-" + idForLookup + "SID" + sessionId + "' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a>";
               html += buttons;
             } else { // Admin
-              if(val.length != undefined) {
-                for(var i = 0, len = val.length; i < len; i++) {
-                  var propsArr = val[i].resources;
-                  var propsLen = propsArr.length;
-                  for(var j = 0; j < propsLen; j++) {
-                    if(propsLen > 1) propsVal += "<li>";
-                    propsVal += "<a href='" + propsArr[j].url + "'>" + propsArr[j].title + "</a>";
-                    if(propsLen > 1) propsVal += "</li>";
-                  }
-                  if(propsLen > 1) {
-                    propsVal = "<ul>" + propsVal + "</ul>";
-                  }
-                  var buttons = "<a class='vrtx-button admin-fixed-resources-folder' href='" + val[i].folderUrl + "?vrtx=admin&displaymsg=yes'>" + i18n[name + "UploadAdminFolder"] + "</a>";
-                  html += "<div class='preview-html'>" + propsVal + "</div>" + buttons;
-                }
-              } else { // Object
-                var propsArr = val.resources;
+              if(val.length == undefined) { // Object
+                val = [val]; // To array with length=1
+              }
+              for(var i = 0, len = val.length; i < len; i++) {
+                var propsArr = val[i].resources;
                 var propsLen = propsArr.length;
+                propsVal = "";
                 for(var j = 0; j < propsLen; j++) {
                   if(propsLen > 1) propsVal += "<li>";
                   propsVal += "<a href='" + propsArr[j].url + "'>" + propsArr[j].title + "</a>";
@@ -1826,7 +1815,7 @@ VrtxEditor.prototype.htmlFacade = {
                 if(propsLen > 1) {
                   propsVal = "<ul>" + propsVal + "</ul>";
                 }
-                var buttons = "<a class='vrtx-button admin-fixed-resources-folder' href='" + val.folderUrl + "?vrtx=admin&displaymsg=yes'>" + i18n[name + "UploadAdminFolder"] + "</a>";
+                var buttons = "<a class='vrtx-button admin-fixed-resources-folder' href='" + val[i].folderUrl + "?vrtx=admin&displaymsg=yes'>" + i18n[name + "UploadAdminFolder"] + "</a>";
                 html += "<div class='preview-html'>" + propsVal + "</div>" + buttons;
               }
             }
@@ -1860,6 +1849,9 @@ VrtxEditor.prototype.htmlFacade = {
       }
     }
     return { html: html, multiples: multiples, rtEditors: rtEditors };
+  },
+  jsonFixedResourcesToHtml: function() {
+  
   },
  /* 
   * Turn a block of HTML/DOM into JSON (Only working for Schedule per. 14.08.2014)

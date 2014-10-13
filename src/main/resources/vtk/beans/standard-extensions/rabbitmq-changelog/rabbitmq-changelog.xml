@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xsi:schemaLocation="http://www.springframework.org/schema/rabbit
+           http://www.springframework.org/schema/rabbit/spring-rabbit.xsd
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <rabbit:connection-factory id="rabbitmq.connectionFactory"
+        channel-cache-size="1" host="${changelog.rabbitmq.host}"
+        port="5672" />
+
+    <rabbit:template id="rabbitmq.amqpTemplate"
+                     connection-factory="rabbitmq.connectionFactory"
+                     exchange="vortex_changelog_exchange"
+                     routing-key="vortex.changelog" />
+
+    <rabbit:admin connection-factory="rabbitmq.connectionFactory"/>
+
+    <rabbit:queue name="${changelog.rabbitmq.queue}"/>
+
+    <rabbit:topic-exchange name="vortex_changelog_exchange">
+      <rabbit:bindings>
+        <rabbit:binding queue="${changelog.rabbitmq.queue}" pattern="vortex.*" />
+      </rabbit:bindings>
+    </rabbit:topic-exchange>
+
+    <bean id="rabbitmq.eventDumper.defaultSerializer"
+          class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+      <property name="staticField" value="vtk.repository.AMQPEventDumper.DEFAULT_PROPERTY_SERIALIZER" />
+    </bean>
+
+    <bean id="rabbitmq.eventDumper.linksSerializer"
+          class="vtk.repository.AMQPEventDumper.SimplifiedLinksSerializer" />
+
+    <bean id="rabbitmq.eventDumper" class="vtk.repository.AMQPEventDumper">
+      <property name="repository" ref="repository" />
+      <constructor-arg ref="rabbitmq.amqpTemplate" />
+      <constructor-arg ref="viewService" />
+      <constructor-arg>
+        <map>
+          <entry key="name" value-ref="rabbitmq.eventDumper.defaultSerializer" />
+          <entry key="title" value-ref="rabbitmq.eventDumper.defaultSerializer" />
+          <entry key="lastModified" value-ref="rabbitmq.eventDumper.defaultSerializer" />
+          <entry key="modifiedBy" value-ref="rabbitmq.eventDumper.defaultSerializer" />
+          <entry key="published" value-ref="rabbitmq.eventDumper.defaultSerializer" />
+          <entry key="links" value-ref="rabbitmq.eventDumper.linksSerializer" />
+        </map>
+      </constructor-arg>
+    </bean>
+
+</beans>
+

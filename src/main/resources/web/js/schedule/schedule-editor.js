@@ -427,6 +427,9 @@ function courseSchedule() {
       }
     }
   };
+  /*
+   * DELETE vrtxEditableDescription, vrtxResourceFixed and !(vrtx-props + id) from sessions
+   */
   this.deleteUnwantedProps = function() {
     for(var type in this.retrievedScheduleData) {
       if(!this.retrievedScheduleData[type]) continue;
@@ -451,6 +454,9 @@ function courseSchedule() {
       delete this.retrievedScheduleData[type].vrtxEditableDescription;
     }
   };
+  /*
+   * DELETE !(vrtx-props + id) from session
+   */
   this.deleteUnwantedSessionProps = function(session) {
     for(var prop in session) {
       if(!/^vrtx/.test(prop) && prop != "id") {

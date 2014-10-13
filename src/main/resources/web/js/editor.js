@@ -276,11 +276,11 @@ VrtxEditor.prototype.richtextEditorFacade = {
       config.filebrowserFlashBrowseUrl = opts.flashBrowseUrl;
       if(opts.requiresStudyRefPlugin) {
     	// Temporarily remove before new plugins are tested
-    	// config.extraPlugins = 'mediaembed,studyreferencecomponent,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal,lineutils,widget,image2';
-    	config.extraPlugins = 'mediaembed,studyreferencecomponent,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal';
+    	config.extraPlugins = 'mediaembed,studyreferencecomponent,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal,lineutils,widget,image2,mathjax';
+    	// config.extraPlugins = 'mediaembed,studyreferencecomponent,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal';
       } else {
-        // config.extraPlugins = 'mediaembed,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal,lineutils,widget,image2';
-        config.extraPlugins = 'mediaembed,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal';
+        config.extraPlugins = 'mediaembed,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal,lineutils,widget,image2,mathjax';
+        // config.extraPlugins = 'mediaembed,htmlbuttons,button-h2,button-h3,button-h4,button-h5,button-h6,button-normal';
       }
       config.stylesSet = this.divContainerStylesSet;
       if (opts.isSimple) { // XHTML
@@ -487,8 +487,8 @@ vrtxEditor.richtextEditorFacade.toolbars.commentsToolbar = [
 ];
 
 vrtxEditor.richtextEditorFacade.toolbars.completeToolbar = [
-  ['About', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'], ['Replace'], ['Link', 'Unlink', 'Anchor'],
-  ['Image', 'CreateDiv', 'MediaEmbed', 'Table', 'HorizontalRule', 'SpecialChar'],
+  ['PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'], ['Replace'], ['Link', 'Unlink', 'Anchor'],
+  ['Image', 'CreateDiv', 'MediaEmbed', 'Table', 'HorizontalRule', 'Mathjax', 'SpecialChar'],
   ['Maximize'], ['Source'], '/', ['Format'], 
   ['Bold', 'Italic', 'Strike', 'Subscript', 'Superscript', 'TextColor', '-', 'RemoveFormat'],
   ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote']

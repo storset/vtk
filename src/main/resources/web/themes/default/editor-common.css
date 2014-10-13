@@ -141,20 +141,6 @@ h2 {
   padding-right: 10px;
 }
 
-.vrtx-multipleinputfields .vrtx-button.add,
-.vrtx-json .vrtx-add-button {
-  padding-left: 10px;
-  padding-right: 10px;
-}
-
-.vrtx-multipleinputfields .vrtx-button.add:hover,
-.vrtx-multipleinputfields .vrtx-button.add:focus,
-.vrtx-json .vrtx-add-button:hover,
-.vrtx-json .vrtx-add-button:focus {
-  padding-left: 11px;
-  padding-right: 11px;
-}
-
 .vrtx-multipleinputfield .vrtx-button.moveup span,
 .vrtx-multipleinputfield .vrtx-button.movedown span,
 .vrtx-json .vrtx-json-element .vrtx-move-up-button span,
@@ -162,21 +148,6 @@ h2 {
   display: block;
   height: 16px;
   width: 11px;
-}
-
-.vrtx-multipleinputfields .vrtx-button.add span,
-.vrtx-add-button span {
-  display: block;
-  height: 13px;
-  width: 13px;
-  background: url("images/multiple-add.png") no-repeat center center;
-}
-
-.vrtx-multipleinputfields .vrtx-button.add:hover span,
-.vrtx-add-button:hover span,
-.vrtx-multipleinputfields .vrtx-button.add:focus span,
-.vrtx-add-button:focus span {
-  background-image: url("images/multiple-add-rollover.png");
 }
 
 .vrtx-multipleinputfield .vrtx-button.moveup span,

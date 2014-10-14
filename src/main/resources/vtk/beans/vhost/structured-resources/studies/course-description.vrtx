@@ -282,7 +282,7 @@ resourcetype course-description {
       [endif]
       [list semesters semester]
         [if _index = 0]
-          <div class="vrtx-frontpage-box white-box" id="vrtx-course-semesters">
+          <div class="vrtx-frontpage-box grey-box" id="vrtx-course-semesters">
           <h2>[localized 'semester-title']</h2>
           <p><strong>[localized 'semester']</strong></p>
           <ul class="thirds-left">

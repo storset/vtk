@@ -1851,7 +1851,7 @@ VrtxEditor.prototype.htmlFacade = {
      html += fixedResourcesHtml;
      if(resourcesLen > 1) html += "</ul>";
      html += "</div>";
-     html += "<a class='vrtx-button admin-fixed-resources-folder' href='" +  + "?vrtx=admin&displaymsg=yes'>" + i18n[name + "UploadAdminFolder"] + "</a>";
+     html += "<a class='vrtx-button admin-fixed-resources-folder' href='" + folderUrl + "?vrtx=admin&displaymsg=yes'>" + i18n[name + "UploadAdminFolder"] + "</a>";
      return html;
   },
  /* 

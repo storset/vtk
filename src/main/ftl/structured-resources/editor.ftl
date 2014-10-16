@@ -51,7 +51,7 @@
       vrtxAdm.mapShortcut("#vrtx-send-to-approval-shortcut", "#vrtx-send-to-approval");
       
       // Cancel action
-      _$("#editor").on("click", "#cancelAction", function(e) {
+      _$("#editor").on("click", "#cancelAction, #saveWorkingCopyAction, #makePublicVersionAction, #deleteWorkingCopyAction", function(e) {
         vrtxEditor.needToConfirm = false;
       });
     });

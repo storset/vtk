@@ -33,6 +33,7 @@ package vtk.web.decorating.components;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 
@@ -49,6 +50,7 @@ import vtk.util.text.TextUtils;
 import vtk.web.RequestContext;
 import vtk.web.decorating.DecoratorRequest;
 import vtk.web.decorating.DecoratorResponse;
+import vtk.web.service.URL;
 
 public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecoratorComponent {
 
@@ -96,16 +98,16 @@ public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecorato
             for (Value value : values) {
                 String s = value.getStringValue();
                 valueList.add(s);
-                urlList.add(getUrl(s, serviceURL));
+                urlList.add(getUrl(s, serviceURL, requestContext.getRequestURL(), request.getLocale()));
             }
         } else {
             String value = prop.getValue().getStringValue();
-            urlList.add(getUrl(value, serviceURL));
+            urlList.add(getUrl(value, serviceURL, requestContext.getRequestURL(), request.getLocale()));
             valueList.add(value);
         }
     }
 
-    private String getUrl(String value, String serviceUrl) {
+    protected String getUrl(String value, String serviceUrl, URL requestURL, Locale locale) {
         if (value == null) {
             throw new IllegalArgumentException("Value is NULL");
         }

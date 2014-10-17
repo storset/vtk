@@ -33,24 +33,22 @@ package vtk.web.decorating.components;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 
-import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.annotation.Required;
+
 import vtk.repository.Namespace;
 import vtk.repository.Path;
 import vtk.repository.Property;
 import vtk.repository.Repository;
 import vtk.repository.Resource;
-import vtk.repository.resourcetype.PropertyType;
 import vtk.repository.resourcetype.PropertyTypeDefinition;
 import vtk.repository.resourcetype.Value;
 import vtk.util.text.TextUtils;
 import vtk.web.RequestContext;
 import vtk.web.decorating.DecoratorRequest;
 import vtk.web.decorating.DecoratorResponse;
-import vtk.web.service.URL;
 
 public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecoratorComponent {
 
@@ -98,16 +96,16 @@ public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecorato
             for (Value value : values) {
                 String s = value.getStringValue();
                 valueList.add(s);
-                urlList.add(getUrl(s, serviceURL, requestContext.getRequestURL(), request.getLocale()));
+                urlList.add(getUrl(s, serviceURL));
             }
         } else {
             String value = prop.getValue().getStringValue();
-            urlList.add(getUrl(value, serviceURL, requestContext.getRequestURL(), request.getLocale()));
+            urlList.add(getUrl(value, serviceURL));
             valueList.add(value);
         }
     }
 
-    protected String getUrl(String value, String serviceUrl, URL requestURL, Locale locale) {
+    private String getUrl(String value, String serviceUrl) {
         if (value == null) {
             throw new IllegalArgumentException("Value is NULL");
         }
@@ -124,21 +122,6 @@ public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecorato
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
-        super.afterPropertiesSet();
-        if (this.propertyTypeDefinition == null) {
-            throw new BeanInitializationException("JavaBean property 'propertyTypeDefinition' not set");
-        }
-        if (this.propertyTypeDefinition.getType() != PropertyType.Type.STRING) {
-            throw new BeanInitializationException("JavaBean property 'propertyTypeDefinition' not of required type "
-                    + "PropertyType.Type.STRING");
-        }
-        if (this.defaultURLpattern == null) {
-            throw new BeanInitializationException("JavaBean property 'defaultURLpattern' not set");
-        }
-    }
-
-    @Override
     protected Map<String, String> getParameterDescriptionsInternal() {
         Map<String, String> map = new HashMap<String, String>();
         map.put(PARAMETER_TITLE, PARAMETER_TITLE_DESC);
@@ -151,16 +134,19 @@ public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecorato
         return DESCRIPTION;
     }
 
+    @Required
     public void setPropertyTypeDefinition(PropertyTypeDefinition propertyTypeDefinition) {
         this.propertyTypeDefinition = propertyTypeDefinition;
     }
 
+    @Required
     public void setDefaultURLpattern(String defaultURLpattern) {
         this.defaultURLpattern = defaultURLpattern;
     }
 
+    @Required
     public void setForProcessing(boolean forProcessing) {
         this.forProcessing = forProcessing;
     }
-    
+
 }

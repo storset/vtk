@@ -146,7 +146,6 @@ public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecorato
         this.defaultURLpattern = defaultURLpattern;
     }
 
-    @Required
     public void setForProcessing(boolean forProcessing) {
         this.forProcessing = forProcessing;
     }

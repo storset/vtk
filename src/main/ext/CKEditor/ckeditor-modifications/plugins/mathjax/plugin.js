@@ -11,7 +11,7 @@
 
 ( function() {
 
-	var cdn = '\/vrtx\/__vrtx\/static-resources\/mathjax/MathJax.js?config=TeX-AMS_HTML';
+	var cdn = '\/vrtx\/__vrtx\/static-resources\/mathjax/MathJax.js?config=TeX-AMS_HTML,local/local';
 
 	CKEDITOR.plugins.add( 'mathjax', {
 		lang: 'ar,ca,cs,cy,de,el,en,en-gb,eo,es,fa,fi,fr,gl,he,hr,hu,it,ja,km,nb,nl,no,pl,pt,pt-br,ro,ru,sk,sl,sv,tr,tt,uk,vi,zh,zh-cn', // %REMOVE_LINE_CORE%

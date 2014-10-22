@@ -333,8 +333,10 @@ function courseSchedule() {
 
      var rawOrigTP = jQuery.extend(true, {}, session);
 
-     this.deleteUnwantedSessionProps(session);
-
+     if(!session.vrtxOrphan) {
+       this.deleteUnwantedSessionProps(session);
+     }
+     
      this.sessionsLookup[id][sessionId] = {
        rawPtr: session,
        rawOrigTP: rawOrigTP,
@@ -447,7 +449,9 @@ function courseSchedule() {
           
           var sessions = sequence.sessions || [];
           for(var k = 0, sessLen = sessions.length; k < sessLen; k++) {
-            this.deleteUnwantedSessionProps(sessions[k]);
+            if(!sessions[k].vrtxOrphan) {
+              this.deleteUnwantedSessionProps(sessions[k]);
+            }
           }
         }
       }

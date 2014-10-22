@@ -872,7 +872,7 @@ resourcetype course-description {
     term-more-toggle-show : (en : "Show previous semesters", no : "Vis tidligere semestre", nn : "Vis tidlegare semester"),
 
     administrated : (en : "Administrated by", no : "Tilbys ved", nn : "Tilbys ved"),
-    semester-title : (en : "Course schedule, syllabus and examination date etc.", no : "Timeplan, pensum og eksamensdato m.m.", nn : "Timeplan, pensum og eksamensdato m.m."),
+    semester-title : (en : "Schedule, syllabus and examination date", no : "Timeplan, pensum og eksamensdato", nn : "Timeplan, pensum og eksamensdato"),
     semester : (en : "Choose semester", no : "Velg semester", nn : "Velg semester"),
 
     opptak-og-adgang-text-field : (en : "Admission text", no : "Opptak og adgangsregulering fritekst", nn : "Opptak og tilgangsavgrensing fritekst"),

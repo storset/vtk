@@ -11,7 +11,8 @@
 
 ( function() {
 
-	var cdn = location.protocol + '\/\/cdn.mathjax.org\/mathjax\/2.2-latest\/MathJax.js?config=TeX-AMS_HTML';
+	var cdn = '/vrtx/decorating/resources/dist/script/mathjax/MathJax.js?config=TeX-AMS_HTML';
+	//location.protocol + '\/\/cdn.mathjax.org\/mathjax\/2.2-latest\/MathJax.js?config=TeX-AMS_HTML';
 
 	CKEDITOR.plugins.add( 'mathjax', {
 		lang: 'ar,ca,cs,cy,de,el,en,en-gb,eo,es,fa,fi,fr,gl,he,hr,hu,it,ja,km,nb,nl,no,pl,pt,pt-br,ro,ru,sk,sl,sv,tr,tt,uk,vi,zh,zh-cn', // %REMOVE_LINE_CORE%
@@ -306,7 +307,8 @@
 									// MathJax configuration, disable messages.
 									'MathJax.Hub.Config( {' +
 										'showMathMenu: false,' +
-										'messageStyle: "none"' +
+										'messageStyle: "none",' +
+										'imageFont: null'
 									'} );' +
 
 									// Get main CKEDITOR form parent.

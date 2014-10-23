@@ -37,10 +37,11 @@ function VrtxAdmin() {
 
   // Browser info/capabilities: used for e.g. progressive enhancement and performance scaling based on knowledge of current JS-engine
   this.ua = window.navigator.userAgent.toLowerCase();
+  
+  /* IE */
   this.isIE = /(msie) ([\w.]+)/.test(this.ua);
   var ieVersion = /(msie) ([\w.]+)/.exec(this.ua);
   this.browserVersion = (ieVersion != null) ? ieVersion[2] : "0";
-  /* IE */
   this.isIE9 = this.isIE && this.browserVersion <= 9;
   this.isIE8 = this.isIE && this.browserVersion <= 8;
   this.isIE7 = this.isIE && this.browserVersion <= 7;

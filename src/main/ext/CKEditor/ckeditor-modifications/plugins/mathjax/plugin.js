@@ -308,7 +308,7 @@
 									'MathJax.Hub.Config( {' +
 										'showMathMenu: false,' +
 										'messageStyle: "none",' +
-										'imageFont: null'
+										'imageFont: null' +
 									'} );' +
 
 									// Get main CKEDITOR form parent.

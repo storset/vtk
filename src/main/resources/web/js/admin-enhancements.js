@@ -47,7 +47,7 @@ function VrtxAdmin() {
   this.isIE7 = this.isIE && this.browserVersion <= 7;
   this.isIE6 = this.isIE && this.browserVersion <= 6;
   this.isIETridentInComp = this.isIE7 && /trident/.test(this.ua);
-  /* Mobile */
+  /* Mobile - iOS and Android */
   this.isIPhone = /iphone/.test(this.ua);
   this.isIPad = /ipad/.test(this.ua);
   this.isIOS = this.isIPhone || this.isIPad;

@@ -40,11 +40,13 @@ function VrtxAdmin() {
   this.isIE = /(msie) ([\w.]+)/.test(this.ua);
   var ieVersion = /(msie) ([\w.]+)/.exec(this.ua);
   this.browserVersion = (ieVersion != null) ? ieVersion[2] : "0";
+  /* IE */
   this.isIE9 = this.isIE && this.browserVersion <= 9;
   this.isIE8 = this.isIE && this.browserVersion <= 8;
   this.isIE7 = this.isIE && this.browserVersion <= 7;
   this.isIE6 = this.isIE && this.browserVersion <= 6;
   this.isIETridentInComp = this.isIE7 && /trident/.test(this.ua);
+  /* Mobile */
   this.isIPhone = /iphone/.test(this.ua);
   this.isIPad = /ipad/.test(this.ua);
   this.isIOS = this.isIPhone || this.isIPad;
@@ -52,6 +54,7 @@ function VrtxAdmin() {
   this.isAndroid = /android/.test(this.ua); // http://www.gtrifonov.com/2011/04/15/google-android-user-agent-strings-2/
   this.isMobileWebkitDevice = (this.isIPhone || this.isIPad || this.isAndroid);
   this.isTouchDevice = window.ontouchstart !== undefined;
+  /* Windows */
   this.isWin = ((this.ua.indexOf("win") != -1) || (this.ua.indexOf("16bit") != -1));
   
   this.supportsFileList = window.FileList;

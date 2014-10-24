@@ -61,19 +61,17 @@ import org.json.simple.JSONValue;
  */
 public class JsonStreamer {
     
-    private enum State {
-        INITIAL, ARRAY, OBJECT, KEY_VALUE
-    }
+    private static final int INITIAL=0, ARRAY=1, OBJECT=2, KEY_VALUE=3;
     
     private static final class Context {
-        State state;
+        int state;
         boolean empty;
-        Context(JsonStreamer.State state) {
+        Context(int state) {
             this.state = state;
             this.empty = true;
         }
     }
-    
+
     private final Deque<Context> contexts = new LinkedList<>();
     private final Writer w;
 
@@ -83,7 +81,7 @@ public class JsonStreamer {
      */
     public JsonStreamer(Writer w) {
         this.w = w;
-        contexts.offerFirst(new Context(State.INITIAL));
+        contexts.offerFirst(new Context(INITIAL));
     }
 
     /**
@@ -94,14 +92,14 @@ public class JsonStreamer {
      */
     public JsonStreamer beginArray() throws IOException {
         Context ctx = contexts.peek();
-        if (ctx.state == State.OBJECT) {
-            throw new IllegalStateException("Cannot begin array in current stream state " + ctx.state);
+        if (ctx.state == OBJECT) {
+            throw new IllegalStateException("Cannot begin array without key in object state");
         }
-        if (!ctx.empty && ctx.state != State.KEY_VALUE) {
+        if (!ctx.empty && ctx.state != KEY_VALUE) {
             w.write(',');
         }
         
-        contexts.offerFirst(new Context(State.ARRAY));
+        contexts.offerFirst(new Context(ARRAY));
         w.write('[');
         return this;
     }
@@ -114,16 +112,16 @@ public class JsonStreamer {
      */
     public JsonStreamer endArray() throws IOException {
         Context ctx = contexts.poll();
-        if (ctx.state != State.ARRAY) {
-            throw new IllegalStateException("Cannot end array in current stream state " + ctx.state);
+        if (ctx.state != ARRAY) {
+            throw new IllegalStateException("Cannot end array when not in array state");
         }
         
         w.write(']');
         
         Context enclosing = contexts.peek();
         enclosing.empty = false;
-        if (enclosing.state == State.KEY_VALUE) {
-            enclosing.state = State.OBJECT;
+        if (enclosing.state == KEY_VALUE) {
+            enclosing.state = OBJECT;
         }
         return this;
     }
@@ -137,15 +135,15 @@ public class JsonStreamer {
      */
     public JsonStreamer beginObject() throws IOException {
         Context ctx = contexts.peek();
-        if (ctx.state == State.OBJECT){
-            throw new IllegalStateException("Cannot begin object in current stream state " + ctx.state);
+        if (ctx.state == OBJECT){
+            throw new IllegalStateException("Cannot begin object without key in object state");
         }
         
-        if (!ctx.empty && ctx.state != State.KEY_VALUE) {
+        if (!ctx.empty && ctx.state != KEY_VALUE) {
             w.write(',');
         }
         
-        contexts.offerFirst(new Context(State.OBJECT));
+        contexts.offerFirst(new Context(OBJECT));
         w.write('{');
         return this;
     }
@@ -158,16 +156,16 @@ public class JsonStreamer {
      */
     public JsonStreamer endObject() throws IOException {
         Context objCtx = contexts.poll();
-        if (objCtx.state != State.OBJECT) {
-            throw new IllegalStateException("Cannot end object in current stream state " + objCtx.state);
+        if (objCtx.state != OBJECT) {
+            throw new IllegalStateException("Cannot end object when not in object state");
         }
         
         w.write('}');
         
         Context up = contexts.peek();
         up.empty = false;
-        if (up.state == State.KEY_VALUE) {
-            up.state = State.OBJECT;
+        if (up.state == KEY_VALUE) {
+            up.state = OBJECT;
         }
         return this;
     }
@@ -184,8 +182,8 @@ public class JsonStreamer {
             throw new IllegalArgumentException("key cannot be null");
         }
         Context ctx = contexts.peek();
-        if (ctx.state != State.OBJECT) {
-            throw new IllegalStateException("Cannot start key in current stream state " + ctx.state);
+        if (ctx.state != OBJECT) {
+            throw new IllegalStateException("Cannot start key when not in object state");
         }
         
         if (!ctx.empty) {
@@ -193,7 +191,7 @@ public class JsonStreamer {
         }
         JSONValue.writeJSONString(key, w);
         w.write(':');
-        ctx.state = State.KEY_VALUE;
+        ctx.state = KEY_VALUE;
         return this;
     }
 
@@ -207,18 +205,18 @@ public class JsonStreamer {
      */
     public JsonStreamer value(Object object) throws IOException {
         Context ctx = contexts.peek();
-        if (ctx.state == State.OBJECT) {
-            throw new IllegalStateException("Cannot insert value in current stream state " + ctx.state);
+        if (ctx.state == OBJECT) {
+            throw new IllegalStateException("Cannot insert value without key when in object state");
         }
 
-        if (!ctx.empty && ctx.state != State.KEY_VALUE) {
+        if (!ctx.empty && ctx.state != KEY_VALUE) {
             w.write(',');
         }
         
         JSONValue.writeJSONString(object, w);
 
-        if (ctx.state == State.KEY_VALUE) {
-            ctx.state = State.OBJECT;
+        if (ctx.state == KEY_VALUE) {
+            ctx.state = OBJECT;
         }
         ctx.empty = false;
         return this;
@@ -234,17 +232,17 @@ public class JsonStreamer {
      */
     public JsonStreamer object(Map<String, Object> map) throws IOException {
         Context ctx = contexts.peek();
-        if (ctx.state == State.OBJECT) {
-            throw new IllegalStateException("Cannot insert object in current stream state " + ctx.state);
+        if (ctx.state == OBJECT) {
+            throw new IllegalStateException("Cannot insert object without key when in object state");
         }
 
-        if (!ctx.empty && ctx.state != State.KEY_VALUE) {
+        if (!ctx.empty && ctx.state != KEY_VALUE) {
             w.write(',');
         }
         
         JSONObject.writeJSONString(map, w);
-        if (ctx.state == State.KEY_VALUE) {
-            ctx.state = State.OBJECT;
+        if (ctx.state == KEY_VALUE) {
+            ctx.state = OBJECT;
         }
         ctx.empty = false;
         return this;
@@ -260,8 +258,8 @@ public class JsonStreamer {
      */
     public JsonStreamer member(String key, Object value) throws IOException {
         Context ctx = contexts.peek();
-        if (ctx.state != State.OBJECT) {
-            throw new IllegalStateException("Cannot insert member in non-object stream state " + ctx.state);
+        if (ctx.state != OBJECT) {
+            throw new IllegalStateException("Cannot insert member when not in object state");
         }
 
         if (!ctx.empty) {
@@ -315,7 +313,7 @@ public class JsonStreamer {
                     break;
                 case KEY_VALUE:
                     if (previous == null) {
-                        throw new IllegalStateException("Cannot end stream in state " + ctx.state);
+                        throw new IllegalStateException("Cannot end stream in key-value state without a value");
                     } else {
                         w.write('}');
                     }

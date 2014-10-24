@@ -67,6 +67,12 @@ var VrtxAccordion = dejavu.Class.declare({
           duration: accordion.__opts.animationSpeed
         };
       }
+      if(accordion.__opts.animateClose) {
+        initOpts.animateClose = accordion.__opts.animateClose;
+      }
+      if(accordion.__opts.animateOpen) {
+        initOpts.animateOpen = accordion.__opts.animateOpen;
+      }
       accordion.__opts.elem.accordion(initOpts);
     });
   },

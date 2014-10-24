@@ -11,7 +11,7 @@
 
 ( function() {
 
-	var cdn = location.protocol + "//" + location.hostname.replace("-adm", "") + "/vrtx/decorating/resources/dist/script/mathjax/MathJax.js?config=TeX-AMS_HTML";
+	var cdn = "/vrtx/__vrtx/static-resources/js/mathjax/MathJax.js?config=TeX-AMS_HTML";
 	//location.protocol + '\/\/cdn.mathjax.org\/mathjax\/2.2-latest\/MathJax.js?config=TeX-AMS_HTML';
 	
 	CKEDITOR.plugins.add( 'mathjax', {

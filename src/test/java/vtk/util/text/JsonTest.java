@@ -124,17 +124,15 @@ public class JsonTest {
         assertEquals(10, last.arrayValue("numbers").size());
         }
     
-    // Compare performance between net.sf.json and Json (json-simple+comment-stripping).
+    // Compare performance between vtk.util.text.JSON and vtk.util.text.Json
     @Ignore
     @Test
     public void testPerformance() {
-        
         int count=10;
-        
         Object r1=null, r2=null;
         for (int i=0; i<count; i++) {
-            r1 = net.sf.json.JSONSerializer.toJSON(jsonTestText);
-            r2=Json.parse(jsonTestText);
+            r1 = vtk.util.text.JSON.parse(jsonTestText);
+            r2 = Json.parse(jsonTestText);
         }
         System.out.println("Warmup complete.");
         
@@ -142,22 +140,21 @@ public class JsonTest {
         List<Object> l2 = (List<Object>)r2;
         System.out.println("Elements in l1: " + l1.size());
         System.out.println("Elements in l2: " + l2.size());
-        
-        assertTrue(l1.equals(l2));
 
+        assertEquals(l1.size(), l2.size());
+        
         long start = System.currentTimeMillis();
         for (int i=0; i<count; i++) {
-            net.sf.json.JSONSerializer.toJSON(jsonTestText);
+            vtk.util.text.JSON.parse(jsonTestText);
         }
         long end = System.currentTimeMillis();
-        System.out.println("net.sf.json.JSONSerializer.toJSON(String) took " + (end-start) + "ms");
+        System.out.println("vtk.util.text.JSON.parse(String) took " + (end-start) + "ms");
         
         start = System.currentTimeMillis();
         for (int i=0; i<count; i++) {
             Json.parse(jsonTestText);
         }
         end = System.currentTimeMillis();
-        System.out.println("Json.parse(String) took " + (end-start) + "ms");
+        System.out.println("vtk.util.text.Json.parse(String) took " + (end-start) + "ms");
     }
- 
 }

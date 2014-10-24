@@ -1801,10 +1801,10 @@ VrtxEditor.prototype.htmlFacade = {
               html += buttons;
             } else { // Admin
               if(val.length == undefined) { // Object
-                html += this.jsonFixedResourcesToHtml(val.folderUrl, val.resources, i18n);
+                html += this.jsonFixedResourcesToHtml(val.folderUrl, val.resources, name, i18n);
               } else { // Array
                 for(i = 0, len = val.length; i < len; i++) {
-                  html += this.jsonFixedResourcesToHtml(val[i].folderUrl, val[i].resources, i18n);
+                  html += this.jsonFixedResourcesToHtml(val[i].folderUrl, val[i].resources, name, i18n);
                 }
               }
             }
@@ -1839,7 +1839,7 @@ VrtxEditor.prototype.htmlFacade = {
     }
     return { html: html, multiples: multiples, rtEditors: rtEditors };
   },
-  jsonFixedResourcesToHtml: function(folderUrl, resources, i18n) {
+  jsonFixedResourcesToHtml: function(folderUrl, resources, name, i18n) {
      var fixedResourcesHtml = "";
      for(var i = 0, resourcesLen = resources.length; i < resourcesLen; i++) {
        if(resourcesLen > 1) fixedResourcesHtml += "<li>";

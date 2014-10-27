@@ -632,7 +632,7 @@ VrtxAdmin.prototype.embeddedView = function embeddedView() {
     var lockedByOther = (lockedByOtherElm.length && lockedByOtherElm.text() == "true")
                           ? $("#resource-locked-by").html()
                           : "";
-
+                          
     // Choose proper fail message (we know these sends you to preview)
     if(!canEdit || lockedByOther.length) {
       var csTitle = vrtxAdm.lang === "en" ? "Edit activity"

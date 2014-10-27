@@ -29,6 +29,7 @@ function courseSchedule() {
   this.lastId = "";
   this.lastSessionId = "";
   this.lastElm = null;
+  this.returnSectionHash = "";
 
   // Get HTML for type ("plenary" or "group")
   this.getActivitiesForTypeHtml = function(type, isPlenary) {
@@ -242,6 +243,7 @@ function courseSchedule() {
                 break;
               }
               if(findSessionId === sessionId) {
+                this.returnSectionHash = "#" + teachingMethod.toUpperCase();
                 foundObj = { prevId: prevId, session: session, sessionDateTime: sessionDateTime, sequences: sequences, type: type, isPlenary: isPlenary, teachingMethod: teachingMethod };
               } else {
                 prevId = sessionId;
@@ -274,6 +276,7 @@ function courseSchedule() {
                     break;
                   }
                   if(findSessionId === sessionId) {
+                    this.returnSectionHash = "#" + groupSessions.groupNr;
                     foundObj = { prevId: prevId, session: session, sessionDateTime: sessionDateTime, sequences: sequences, type: type, isPlenary: isPlenary, teachingMethod: groupSessions.teachingMethod };
                   } else {
                     prevId = sessionId;
@@ -509,7 +512,7 @@ function courseSchedule() {
   };
   this.sessionOnlyWindowClose = function(isSaveView) {
     if(onlySessionId && isSaveView) {
-      window.location.href = $("#global-menu-leave-admin a").attr("href");
+      window.location.href = $("#global-menu-leave-admin a").attr("href") + this.returnSectionHash;
     }
   };
 

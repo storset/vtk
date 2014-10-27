@@ -1746,7 +1746,7 @@ VrtxEditor.prototype.htmlFacade = {
     for(var name in descs) {
       var desc = descs[name],
           descProps = jQuery.extend(true, [], desc.props),
-          val = session[name] || fixedResources[name],
+          val = session[name] != undefined ? session[name] : fixedResources[name],
           origVal = "",
           propsVal = "",
           browsable = false,
@@ -1756,7 +1756,7 @@ VrtxEditor.prototype.htmlFacade = {
       if(origName) {
         var origVal = session[origName.toLowerCase()];
         if(origVal && origVal != "") {
-          if(!val || !val.length) {
+          if(val == undefined) {
             val = origVal;
           }
           hasOrig = true;
@@ -1770,7 +1770,7 @@ VrtxEditor.prototype.htmlFacade = {
               browsable = true;
             }
           }
-          if(val) {
+          if(val && val.length) {
             for(var j = 0, propsLen = val.length; j < propsLen; j++) {
               for(i = 0; i < descPropsLen; i++) {
                 propsVal += (val[j][descProps[i].name] || "") + "###";

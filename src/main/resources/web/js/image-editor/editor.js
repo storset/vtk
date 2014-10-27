@@ -149,9 +149,12 @@ VrtxImageEditor.prototype.init = function init(imageURL, imageSupported) {
         editor.resetCropPlugin();
         $("#vrtx-image-crop-coordinates").remove();
         $(this).val(startCropText + "...");
-        $("#vrtx-image-editor").resizable("option", "maxWidth", editor.cropWidth);  
-        $("#vrtx-image-editor").resizable("option", "maxHeight", editor.cropHeight);  
-        $("#vrtx-image-editor").resizable("enable");  
+        
+        var imageEditor = $("#vrtx-image-editor");
+        
+        imageEditor.resizable("option", "maxWidth", editor.cropWidth);  
+        imageEditor.resizable("option", "maxHeight", editor.cropHeight);  
+        imageEditor.resizable("enable");  
 
         editor.hasCropBeenInitialized = false;
       } else {

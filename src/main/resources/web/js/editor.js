@@ -1369,6 +1369,7 @@ function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown
       fields.filter(":first").addClass("first");
     }
     
+    // Setup autocomplete on username fields
     autocompleteUsername(".vrtx-autocomplete-username", idstr + i);
     autocompleteUsername(".vrtx-autocomplete-username", idstr + "id-" + i); // JSON name='id' fix
     
@@ -1393,6 +1394,7 @@ function removeFormField(input) {
   var name = parent.data("name");
   field.remove();
 
+  // Find and set focus on first field
   var fields = parent.find(".vrtx-multipleinputfield");
   var firstField = fields.filter(":first");
   if(firstField.length) {
@@ -1796,10 +1798,10 @@ VrtxEditor.prototype.htmlFacade = {
         case "json-fixed":
           if(fixedResourcesUrl) {
             html += "<div class='vrtx-simple-html'><label>" + i18n[name] + "<abbr tabindex='0' class='tooltips label-tooltips' title='" + i18n.vrtxResourcesFixedInfo + "'></abbr></label>";
-            if(!val) { // Create
+            if(!val) { // Create fixed resources folder
               var buttons = "<a class='vrtx-button create-fixed-resources-folder' id='create-fixed-resources-folder-" + idForLookup + "SID" + sessionId + "' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a>";
               html += buttons;
-            } else { // Admin
+            } else { // Admin fixed resources folder
               if(val.length == undefined) { // Object
                 html += this.jsonFixedResourcesToHtml(val.folderUrl, val.resources, name, i18n);
               } else { // Array
@@ -1907,20 +1909,23 @@ VrtxEditor.prototype.htmlFacade = {
       }
 
       // Changes in Vortex properties
-      if(val && val.length) {
-        // If changes in Vortex properties and differs from TP/UIOWS-data
+      
+      if(val && val.length) { // If changes in Vortex properties and differs from TP/UIOWS-data
         if(editorDetectChangeFunc(sessionId, val, rawOrig[name], name === "vrtxResourcesText") &&
            editorDetectChangeFunc(sessionId, val, rawOrigTP[name.split("vrtx")[1].toLowerCase()], name === "vrtxResourcesText")) {
           vrtxAdmin.log({msg: "ADD / CHANGE " + name + (typeof val === "string" ? " " + val : "")});
           rawPtr[name] = val;
           hasChanges = true;
         }
-      } else {
-        // If removed in Vortex properties
-        if(rawOrig[name]) {
+      } else if(name !== "vrtxStaff") {
+        if(rawOrig[name]) { // If removed in Vortex properties and not is vrtxStaff
           vrtxAdmin.log({msg: "DEL " + name});
           delete rawPtr[name];
           hasChanges = true;
+        }
+      } else {
+        if(rawOrigTP[name.split("vrtx")[1].toLowerCase()]) {
+          rawPtr[name] = [];
         }
       }
     }
@@ -2145,7 +2150,6 @@ VrtxEditor.prototype.accordionGroupedInit = function accordionGroupedInit(subGro
 
 function accordionJsonInit() {
   accordionContentSplitHeaderPopulators(true);
-
   accordionJsonRefresh($(".vrtx-json-accordion .fieldset"), false);
 
   // Because accordion needs one content wrapper
@@ -2182,7 +2186,7 @@ function accordionJsonRefresh(elem, active) {
   });
 }
 
-// XXX: avoid hardcoded enhanced fields
+// XXX: avoid hardcoded enhanced fields..
 function accordionContentSplitHeaderPopulators(init) {
   var sharedTextItems = $("#editor.vrtx-shared-text #shared-text-box .vrtx-json-element");
   var semesterResourceLinksItems = $("#editor.vrtx-semester-page .vrtx-grouped[class*=link-box]");

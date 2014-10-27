@@ -191,7 +191,7 @@ function courseSchedule() {
       for(var i = 0; i < dataLen; i++) {
         var dt = data[i],
             teachingMethod = dt.teachingMethod.toLowerCase(),
-            id = teachingMethod,
+            id = dt.id,
             groupNumber = ((dt.party && dt.party.name) ? parseInt(dt.party.name, 10) : 0)
         for(var j = 0, len = dt.sequences.length; j < len; j++) {
           var sequence = dt.sequences[j];
@@ -251,7 +251,7 @@ function courseSchedule() {
             }
             sessions = [];
           } else {
-            groupsSessions.push({ "teachingMethod": teachingMethod, "groupNr": groupNumber, "sessions": sessions, "map": map, "sessionsProcessed": sessionsProcessed });
+            groupsSessions.push({ "teachingMethod": teachingMethod, "id": id, "groupNr": groupNumber, "sessions": sessions, "map": map, "sessionsProcessed": sessionsProcessed });
             sessions = [];
             if(!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod) {
               // Sort group code and group number if equal
@@ -276,7 +276,7 @@ function courseSchedule() {
                     break;
                   }
                   if(findSessionId === sessionId) {
-                    this.returnSectionHash = "#" + groupSessions.groupNr;
+                    this.returnSectionHash = "#" + groupSessions.id;
                     foundObj = { prevId: prevId, session: session, sessionDateTime: sessionDateTime, sequences: sequences, type: type, isPlenary: isPlenary, teachingMethod: groupSessions.teachingMethod };
                   } else {
                     prevId = sessionId;

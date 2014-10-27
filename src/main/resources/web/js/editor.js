@@ -1742,6 +1742,7 @@ VrtxEditor.prototype.htmlFacade = {
     var multiples = [];
     var rtEditors = [];
     var vrtxEdit = vrtxEditor;
+    
     for(var name in descs) {
       var desc = descs[name],
           descProps = jQuery.extend(true, [], desc.props),
@@ -1863,6 +1864,7 @@ VrtxEditor.prototype.htmlFacade = {
     var vrtxEdit = vrtxEditor;
     var hasChanges = false;
     var editorDetectChangeFunc = editorDetectChange;
+    
     for(var name in descs) {
       var desc = descs[name],
           val = "";

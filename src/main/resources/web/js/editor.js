@@ -1919,13 +1919,13 @@ VrtxEditor.prototype.htmlFacade = {
         }
       } else if(name !== "vrtxStaff") {
         if(rawOrig[name]) { // If removed in Vortex properties and not is vrtxStaff
-          vrtxAdmin.log({msg: "DEL " + name});
+          vrtxAdmin.log({msg: "DEL " + name + (typeof val === "string" ? " " + val : "")});
           delete rawPtr[name];
           hasChanges = true;
         }
       } else {
-        if(rawOrigTP[name.split("vrtx")[1].toLowerCase()]) {
-          vrtxAdmin.log({msg: "DEL EMPTY " + name});
+        if(rawOrigTP[name.split("vrtx")[1].toLowerCase()]) { // If removed in Vortex properties and is vrtxStaff
+          vrtxAdmin.log({msg: "DEL EMPTY " + name + (typeof val === "string" ? " " + val : "")});
           rawPtr[name] = [];
           hasChanges = true;
         }

@@ -1925,7 +1925,9 @@ VrtxEditor.prototype.htmlFacade = {
         }
       } else {
         if(rawOrigTP[name.split("vrtx")[1].toLowerCase()]) {
+          vrtxAdmin.log({msg: "DEL EMPTY " + name});
           rawPtr[name] = [];
+          hasChanges = true;
         }
       }
     }

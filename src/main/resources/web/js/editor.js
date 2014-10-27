@@ -1925,8 +1925,8 @@ VrtxEditor.prototype.htmlFacade = {
           delete rawPtr[name];
           hasChanges = true;
         }
-      } else {
-        if(rawOrigTP[name.split("vrtx")[1].toLowerCase()]) { // If removed in Vortex properties and is vrtxStaff
+      } else { // If removed in Vortex properties and is vrtxStaff and not already blanked
+        if(rawOrigTP[name.split("vrtx")[1].toLowerCase()] && (rawPtr[name] == undefined || rawPtr[name].length > 0)) {
           vrtxAdmin.log({msg: "DEL EMPTY " + name + (typeof val === "string" ? " " + val : "")});
           rawPtr[name] = [];
           hasChanges = true;

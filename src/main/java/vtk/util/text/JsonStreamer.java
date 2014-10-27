@@ -34,15 +34,15 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 
 /**
- * Generate JSON directly to a stream using a stream friendly API. The stream
- * generator is stateful with regard to validation and should prevent client
+ * Serialize generic data structures to JSON with a stream-friendly API.
+ * 
+ * The stream generator is stateful with regard to validation and should prevent client
  * code from creating invalid JSON. It handles comma-separators, value
- * serializing and proper closing of JSON structures.
+ * serializing, proper closing of JSON structure and optional pretty printing.
  *
  * <p>
  * Client code invokes methods to add data forming a logical JSON structure. The
@@ -52,11 +52,16 @@ import org.json.simple.JSONValue;
  * prevent writing invalid JSON. This condition generally indicates an error in
  * the calling code.
  *
+ * <p>Note: There is currently no built-in protection against stack overflow
+ * error if you try to serialize self-referencing container structures (maps/lists
+ * containing directl or indirect reference cycles)
+ * TODO add simple checking to detect ref-cycles between lists/maps on recursive
+ * calls.
+ * 
  * <p>
- * It uses {@link org.json.simple.JSONObject} and
- * {@link org.json.simple.JSONValue} internally for printing JSON values and
- * escaping strings.
- *
+ * This class is not thread safe. You should not share instances of this class
+ * without external synchronization.
+ * 
  * @author oyvind
  */
 public class JsonStreamer {
@@ -66,22 +71,142 @@ public class JsonStreamer {
     private static final class Context {
         int state;
         boolean empty;
-        Context(int state) {
-            this.state = state;
+        int level;
+        Context(int state, int level) {
             this.empty = true;
+            this.state = state;
+            this.level = level;
         }
     }
-
+    
     private final Deque<Context> contexts = new LinkedList<>();
-    private final Writer w;
+    private final Formatter formatter;
 
     /**
      * Construct instance writing JSON data to the provided writer.
-     * @param w writer stream to write data to
+     * 
+     * <p>No pretty printing.
+     * 
+     * @param writer writer stream to write data to
      */
-    public JsonStreamer(Writer w) {
-        this.w = w;
-        contexts.offerFirst(new Context(INITIAL));
+    public JsonStreamer(Writer writer) {
+        this(writer, -1, false);
+    }
+    
+    /**
+     * Construct instance writing JSON data to the provided writer.
+     * Control escaping of slash chars.
+     * 
+     * <p>No pretty printing.
+     * 
+     * @param writer
+     * @param escapeSlashes whether to escape forward-slashes with back-slashes in output.
+     * The need for this depends on the context of consumer (JavaScript may require this.)
+     */
+    public JsonStreamer(Writer writer, boolean escapeSlashes) {
+        this(writer, -1, escapeSlashes);
+    }
+
+    /**
+     * Construct instance writing JSON data to the provided writer with
+     * pretty printing support.
+     * 
+     * @param writer the writer stream to write data to
+     * @param indent number of spaces to indent data per level of JSON nesting.
+     * if less then zero, then pretty printing is disabled
+     */
+    public JsonStreamer(Writer writer, int indent) {
+        this(writer, indent, false);
+    }
+    
+    /**
+     * Construct instance writing JSON data to the provided writer with
+     * pretty printing support.
+     * 
+     * @param writer the writer stream to write data to
+     * @param indent number of spaces to indent data per level of JSON nesting.
+     * if less then zero, then pretty printing is disabled
+     * @param escapeSlashes whether to escape forward-slashes with back-slashes in output.
+     * The need for this depends on the context of usage (JavaScript requires this.)
+     */
+    public JsonStreamer(Writer writer, int indent, boolean escapeSlashes) {
+        if (indent >= 0) {
+            this.formatter = new PrettyFormatter(writer, escapeSlashes, indent, ' ');
+        } else {
+            this.formatter = new Formatter(writer, escapeSlashes);
+        }
+        this.contexts.offerFirst(new Context(INITIAL, 0));
+    }
+    
+    /**
+     * Utility method for non-streaming usage. Serialize an object value to a JSON
+     * string value and return it. No pretty printing.
+     * 
+     * <p>Object may be a container type ({@code Map<String,Object>, List<Object>})
+     * or primitive value.
+     * 
+     * @param value The value to serialize.
+     * @return a string with JSON data.
+     */
+    public static String toJson(Object value) {
+        return toJson(value, -1, false);
+    }
+    
+    /**
+     * Utility method for non-streaming usage. Serialize an object value to a JSON
+     * string value and return it.
+     * 
+     * <p>Object may be a container type ({@code Map<String,Object>, List<Object>})
+     * or primitive value.
+     * 
+     * @param value The value to serialize.
+     * @param indent number of spaces to indent data per level of JSON nesting (pretty printing).
+     * if less then zero, then pretty printing is disabled
+     * @return a string with JSON data.
+     */
+    public static String toJson(Object value, int indent) {
+        return toJson(value, indent, false);
+    }
+
+    /**
+     * Utility method for non-streaming usage. Serialize an object value to a JSON
+     * string value and return it.
+     * 
+     * <p>Object may be a container type ({@code Map<String,Object>, List<Object>})
+     * or primitive value.
+     * 
+     * @param value The value to serialize.
+     * @return a string with JSON data.
+     * @param escapeSlashes whether to escape forward-slashes with back-slashes in output.
+     * The need for this depends on the context of usage (JavaScript requires this.)
+     */
+    public static String toJson(Object value, boolean escapeSlashes) {
+        return toJson(value, -1, escapeSlashes);
+    }
+    
+    /**
+     * Utility method for non-streaming usage. Serialize an object value to a JSON
+     * string value and return it.
+     * 
+     * <p>Object may be a container type ({@code Map<String,Object>, List<Object>})
+     * or primitive value.
+     * 
+     * @param value the value to serialize
+     * @param escapeSlashes whether to escape forward-slashes with back-slashes in output.
+     * The need for this depends on the context of usage (JavaScript requires this.)
+     * @param indent number of spaces to indent data per level of JSON nesting.
+     * if less then zero, then pretty printing is disabled
+     * @return a string with JSON data.
+     */
+    public static String toJson(Object value, int indent, boolean escapeSlashes) {
+        StringBuilder buffer = new StringBuilder();
+        Writer w = writerForBuffer(buffer); // Thin adapter for Writer API
+        try {
+            new JsonStreamer(w, indent, escapeSlashes).value(value).endJson();
+        } catch (IOException io) {
+            // Won't happen
+        }
+        return buffer.toString();
     }
 
     /**
@@ -96,11 +221,12 @@ public class JsonStreamer {
             throw new IllegalStateException("Cannot begin array without key in object state");
         }
         if (!ctx.empty && ctx.state != KEY_VALUE) {
-            w.write(',');
+            formatter.writeValueSeparator(ctx.level);
         }
         
-        contexts.offerFirst(new Context(ARRAY));
-        w.write('[');
+        formatter.writeBeginArray(ctx.state == KEY_VALUE, ctx.level);
+        
+        contexts.offerFirst(new Context(ARRAY, ctx.level+1));
         return this;
     }
 
@@ -116,13 +242,14 @@ public class JsonStreamer {
             throw new IllegalStateException("Cannot end array when not in array state");
         }
         
-        w.write(']');
-        
         Context enclosing = contexts.peek();
         enclosing.empty = false;
         if (enclosing.state == KEY_VALUE) {
             enclosing.state = OBJECT;
         }
+
+        formatter.writeEndArray(ctx.empty, enclosing.level);
+        
         return this;
     }
 
@@ -140,11 +267,11 @@ public class JsonStreamer {
         }
         
         if (!ctx.empty && ctx.state != KEY_VALUE) {
-            w.write(',');
+            formatter.writeValueSeparator(ctx.level);
         }
+        formatter.writeBeginObject(ctx.state == KEY_VALUE, ctx.level);
         
-        contexts.offerFirst(new Context(OBJECT));
-        w.write('{');
+        contexts.offerFirst(new Context(OBJECT, ctx.level+1));
         return this;
     }
 
@@ -155,18 +282,19 @@ public class JsonStreamer {
      * @throws IllegalStateException if current state is not an object.
      */
     public JsonStreamer endObject() throws IOException {
-        Context objCtx = contexts.poll();
-        if (objCtx.state != OBJECT) {
+        Context ctx = contexts.poll();
+        if (ctx.state != OBJECT) {
             throw new IllegalStateException("Cannot end object when not in object state");
         }
         
-        w.write('}');
-        
-        Context up = contexts.peek();
-        up.empty = false;
-        if (up.state == KEY_VALUE) {
-            up.state = OBJECT;
+        Context enclosing = contexts.peek();
+        enclosing.empty = false;
+        if (enclosing.state == KEY_VALUE) {
+            enclosing.state = OBJECT;
         }
+
+        formatter.writeEndObject(ctx.empty, enclosing.level);
+
         return this;
     }
 
@@ -187,10 +315,10 @@ public class JsonStreamer {
         }
         
         if (!ctx.empty) {
-            w.write(',');
+            formatter.writeValueSeparator(ctx.level);
         }
-        JSONValue.writeJSONString(key, w);
-        w.write(':');
+        formatter.writeMemberKeyAndColon(key, ctx.level);
+        
         ctx.state = KEY_VALUE;
         return this;
     }
@@ -208,17 +336,42 @@ public class JsonStreamer {
         if (ctx.state == OBJECT) {
             throw new IllegalStateException("Cannot insert value without key when in object state");
         }
+        
+        if (object instanceof Map) {
+            return object((Map<String,Object>)object);
+        }
+        if (object instanceof List) {
+            return array((List<Object>)object);
+        }
 
         if (!ctx.empty && ctx.state != KEY_VALUE) {
-            w.write(',');
+            formatter.writeValueSeparator(ctx.level);
         }
         
-        JSONValue.writeJSONString(object, w);
-
         if (ctx.state == KEY_VALUE) {
             ctx.state = OBJECT;
+            formatter.writePrimitiveMemberValue(object, ctx.level);
+        } else {
+            formatter.writePrimitiveArrayValue(object, ctx.level);
         }
         ctx.empty = false;
+        return this;
+    }
+
+    /**
+     * Write an array.
+     * @param values
+     * @return
+     * @throws IOException 
+     * 
+     * TODO prevent infinite recursion if structure contains reference cycles.
+     */
+    public JsonStreamer array(List<Object> values) throws IOException {
+        beginArray();
+        for (Object v: values) {
+            value(v);
+        }
+        endArray();
         return this;
     }
 
@@ -229,22 +382,15 @@ public class JsonStreamer {
      * @return this <code>JsonStreamer</code> instance.
      * @throws IOException if writing to stream fails
      * @throws IllegalStateException if current state is object with no specified key.
+     * 
+     * TODO prevent infinite recursion if structure contains reference cycles.
      */
     public JsonStreamer object(Map<String, Object> map) throws IOException {
-        Context ctx = contexts.peek();
-        if (ctx.state == OBJECT) {
-            throw new IllegalStateException("Cannot insert object without key when in object state");
+        beginObject();
+        for (Map.Entry<String,Object> entry: map.entrySet()) {
+            member(entry.getKey(), entry.getValue());
         }
-
-        if (!ctx.empty && ctx.state != KEY_VALUE) {
-            w.write(',');
-        }
-        
-        JSONObject.writeJSONString(map, w);
-        if (ctx.state == KEY_VALUE) {
-            ctx.state = OBJECT;
-        }
-        ctx.empty = false;
+        endObject();
         return this;
     }
 
@@ -257,20 +403,8 @@ public class JsonStreamer {
      * @throws IllegalStateException if current state is not an object
      */
     public JsonStreamer member(String key, Object value) throws IOException {
-        Context ctx = contexts.peek();
-        if (ctx.state != OBJECT) {
-            throw new IllegalStateException("Cannot insert member when not in object state");
-        }
-
-        if (!ctx.empty) {
-            w.write(',');
-        }
-        
-        JSONValue.writeJSONString(key, w);
-        w.write(':');
-        JSONValue.writeJSONString(value, w);
-
-        ctx.empty = false;
+        key(key);
+        value(value);
         return this;
     }
     
@@ -306,16 +440,16 @@ public class JsonStreamer {
         while ((ctx = contexts.poll()) != null) {
             switch (ctx.state) {
                 case ARRAY:
-                    w.write(']');
+                    formatter.writeEndArray(ctx.empty, ctx.level-1);
                     break;
                 case OBJECT:
-                    w.write('}');
+                    formatter.writeEndObject(ctx.empty, ctx.level-1);
                     break;
                 case KEY_VALUE:
                     if (previous == null) {
                         throw new IllegalStateException("Cannot end stream in key-value state without a value");
                     } else {
-                        w.write('}');
+                        formatter.writeEndObject(false, ctx.level-1);
                     }
                     break;
                 case INITIAL:
@@ -325,4 +459,216 @@ public class JsonStreamer {
             previous = ctx;
         }
     }
+
+    // Default serializer/formatter for JSON output
+    private static class Formatter {
+        
+        private final boolean escapeSlashes;
+        protected final Writer w;
+        
+        Formatter(Writer writer, boolean escapeSlashes) {
+            this.escapeSlashes = escapeSlashes;
+            this.w = writer;
+        }
+        
+        void writeBeginObject(boolean asKeyValue, int level) throws IOException {
+            w.write('{');
+        }
+        
+        void writeEndObject(boolean empty, int level) throws IOException {
+            w.write('}');
+        }
+        
+        void writeBeginArray(boolean asKeyValue, int level) throws IOException {
+            w.write('[');
+        }
+        
+        void writeEndArray(boolean empty, int level) throws IOException {
+            w.write(']');
+        }
+        
+        void writeValueSeparator(int level) throws IOException {
+            w.write(',');
+        }
+        
+        void writeMemberKeyAndColon(String key, int level) throws IOException {
+            writeEscapedStringValue(key);
+            w.write(':');
+        }
+        
+        void writePrimitiveArrayValue(Object value, int level) throws IOException {
+            writePrimitiveValue(value);
+        }
+        
+        void writePrimitiveMemberValue(Object value, int level) throws IOException {
+            writePrimitiveValue(value);
+        }
+        
+        private void writePrimitiveValue(Object value) throws IOException {
+            if (value == null) {
+                w.write("null");
+            } else if (value instanceof String) {
+                writeEscapedStringValue((String)value);
+            } else if (value instanceof Number) {
+                if (value instanceof Double) {
+                    Double dbl = (Double)value;
+                    if (dbl.isInfinite() || dbl.isNaN()) {
+                        w.write("null");
+                    } else {
+                        w.write(dbl.toString());
+                    }
+                } else if (value instanceof Float) {
+                    Float flt = (Float)value;
+                    if (flt.isInfinite() || flt.isNaN()) {
+                        w.write("null");
+                    } else {
+                        w.write(flt.toString());
+                    }
+                } else {
+                    w.write(value.toString());
+                }
+            } else if (value instanceof Boolean) {
+                w.write(value.toString());
+            } else {
+                writeEscapedStringValue(value.toString());
+            }
+        }
+
+        private void writeEscapedStringValue(final String value) throws IOException {
+            w.write('\"');
+            final int len = value.length();
+            for (int i=0; i<len; i++) {
+                final char c = value.charAt(i);
+                switch (c) {
+                    case '\"': w.write("\\\""); break;
+                    case '\\': w.write("\\\\"); break;
+                    case '\b': w.write("\\b"); break;
+                    case '\f': w.write("\\f"); break;
+                    case '\n': w.write("\\n"); break;
+                    case '\r': w.write("\\r"); break;
+                    case '\t': w.write("\\t"); break;
+                        
+                    case '/': 
+                        w.write(escapeSlashes ? "\\/" : "/");
+                        break;
+                    
+                    default:
+                        if ((c >= 0 && c <= 0x1F)
+                                || (c >= 0x7F && c <= 0x9F)
+                                || (c >= 0x2000 && c <= 0x20FF)) { // Some unicode control stuff
+                            w.write(TextUtils.toUnicodeEscape(c));
+                        } else {
+                            w.write(c);
+                        }
+                }
+            }
+            w.write('\"');
+        }
+    }
+    
+    // Pretty printing serializer/formatter for JSON output
+    private static final class PrettyFormatter extends Formatter {
+
+        private char[] indentLevel;
+        
+        PrettyFormatter(Writer w, boolean escapeSlashes, int indent, char indentChar) {
+            super(w, escapeSlashes);
+            if (indent >= 0){
+                indentLevel = new char[indent];
+                for (int i=0; i<indent; i++) {
+                    indentLevel[i] = indentChar;
+                }
+            } 
+        }
+        
+        private void writeNewLine(int level) throws IOException {
+            w.write('\n');
+            for (int i=0; i<level; i++) {
+                w.write(indentLevel);
+            }
+        }
+
+        @Override
+        void writePrimitiveMemberValue(Object value, int level) throws IOException {
+            super.writePrimitiveMemberValue(value, level);
+        }
+
+        @Override
+        void writePrimitiveArrayValue(Object value, int level) throws IOException {
+            writeNewLine(level);
+            super.writePrimitiveArrayValue(value, level);
+        }
+
+        @Override
+        void writeMemberKeyAndColon(String key, int level) throws IOException {
+            writeNewLine(level);
+            super.writeMemberKeyAndColon(key, level);
+            w.write(' ');
+        }
+
+        @Override
+        void writeBeginArray(boolean asKeyValue, int level) throws IOException {
+            if (!asKeyValue) {
+                writeNewLine(level);
+            }
+            super.writeBeginArray(asKeyValue, level);
+        }
+
+        @Override
+        void writeBeginObject(boolean asKeyValue, int level) throws IOException {
+            if (!asKeyValue) {
+                writeNewLine(level);
+            }
+            super.writeBeginObject(asKeyValue, level);
+        }
+        
+        @Override
+        void writeEndArray(boolean empty, int level) throws IOException {
+            if (!empty)  {
+                writeNewLine(level);
+            }
+            super.writeEndArray(empty, level);
+        }
+
+        @Override
+        void writeEndObject(boolean empty, int level) throws IOException {
+            if (!empty) {
+                writeNewLine(level);
+            }
+            super.writeEndObject(empty, level);
+        }
+    }
+    
+    // Return a Writer instance backed by a string builder buffer. Will never throw IOException.
+    private static Writer writerForBuffer(final StringBuilder buffer) {
+        return new Writer() {
+            @Override
+            public void write(String str, int off, int len) throws IOException {
+                buffer.append(str, off, off+len);
+            }
+            @Override
+            public void write(String str) throws IOException {
+                buffer.append(str);
+            }
+            @Override
+            public void write(char[] cbuf) throws IOException {
+                buffer.append(cbuf);
+            }
+            @Override
+            public void write(int c) throws IOException {
+                buffer.append((char)c);
+            }
+            @Override
+            public void write(char[] cbuf, int off, int len) throws IOException {
+                buffer.append(cbuf, off, len);
+            }
+            @Override
+            public void flush() throws IOException {
+            }
+            @Override
+            public void close() throws IOException {
+            }
+        };
+    }
+    
 }

@@ -32,11 +32,15 @@ package vtk.util.text;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import static org.junit.Assert.*;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -124,15 +128,80 @@ public class JsonStreamerTest {
     
     @Test
     public void objectValue() throws IOException {
-        String expect = "{\"a\":\"b\",\"x\":\"y\",\"z\":{}}";
+        String expect = "{\"a\":\"b\",\"x\":\"y\",\"z\":{},\"l\":[1,2,3],\"emptyList\":[]}";
         Map<String,Object> object = new LinkedHashMap<>();
         object.put("a", "b");
         object.put("x", "y");
         object.put("z", new HashMap<String,Object>());
         
+        List<Object> l = new ArrayList<Object>();
+        l.add(1); l.add(2); l.add(3);
+        object.put("l", l);
+        object.put("emptyList", Collections.EMPTY_LIST);
+        
         js.value(object);
         
         assertEquals(expect, sw.toString());
+    }
+    
+    // This test will fail until support for cycle detection is implemented.
+    // Keep it disabled.
+    @Test
+    @Ignore
+    public void noInfiniteRecursionOnSelfReferencingStructure() throws IOException {
+        Map<String,Object> m = new HashMap<>();
+        m.put("self", m);
+        js.object(m);
+        assertEquals("{\"self\":null}", sw.toString());
+    }
+    
+    @Test
+    public void booleanValues() throws IOException {
+        js.beginArray().value(true).value(false).endArray();
+        assertEquals("[true,false]", sw.toString());
+    }
+    
+    @Test
+    public void stringEscapes() throws IOException {
+        js.beginObject();
+        js.member("\nlines\nin\nkey", "a\tb\tc, Ø. \u0000\u0001\u2001 100\u2126");
+        js.endJson();
+        assertEquals("{\"\\nlines\\nin\\nkey\":\"a\\tb\\tc, Ø. \\u0000\\u0001\\u2001 100\u2126\"}", sw.toString());
+    }
+    
+    @Test
+    public void numericValues() throws IOException {
+        js.beginArray()
+          .value(0)
+          .value(-1)
+          .value(Math.PI)
+          .value(Double.NaN)
+          .value(1/0d)
+          .value(Double.MAX_VALUE)
+          .value(Double.MIN_VALUE)
+          .value(Float.MAX_VALUE)
+          .value(Float.MIN_VALUE)
+          .value(Integer.MIN_VALUE)
+          .value(Integer.MAX_VALUE)
+          .value(Long.MIN_VALUE)
+          .value(Long.MAX_VALUE)
+        .endArray();
+        
+        assertEquals(
+                "[0,"
+                + "-1,"
+                + "3.141592653589793,"
+                + "null," // NaN not representable in JSON
+                + "null," // Inf not representable in JSON
+                + "1.7976931348623157E308," 
+                + "4.9E-324,"
+                + "3.4028235E38,"
+                + "1.4E-45,"
+                + "-2147483648,"
+                + "2147483647,"
+                + "-9223372036854775808,"
+                + "9223372036854775807]",
+                sw.toString());
     }
     
     @Test
@@ -149,6 +218,18 @@ public class JsonStreamerTest {
     }
     
     @Test
+    public void objectWithNullValues() throws IOException {
+        js.beginObject().member("a", null).key("b").value(null).endObject();
+        assertEquals("{\"a\":null,\"b\":null}", sw.toString());
+    }
+    
+    @Test
+    public void arrayWithNullValues() throws IOException {
+        js.beginArray().value(null).value(null).endArray();
+        assertEquals("[null,null]", sw.toString());
+    }
+    
+    @Test
     public void arrayOfObjects() throws IOException {
         js.beginArray()
                 .beginObject().member("id", 1).endObject()
@@ -160,15 +241,15 @@ public class JsonStreamerTest {
     }
     
     @Test
-    public void nullValue() throws IOException {
-        js.value(null);
-        assertEquals("null", sw.toString());
+    public void stringValue() throws IOException {
+        js.value("foo");
+        assertEquals("\"foo\"", sw.toString());
     }
     
     @Test
-    public void floatValue() throws IOException {
-        js.value(1.5f);
-        assertEquals("1.5", sw.toString());
+    public void nullValue() throws IOException {
+        js.value(null);
+        assertEquals("null", sw.toString());
     }
     
     @Test
@@ -182,6 +263,32 @@ public class JsonStreamerTest {
           .endArray();
         
         assertEquals("[[1,[2]],[],[[3,4]]]", sw.toString());
+    }
+    
+    @Test
+    public void toJson() {
+        assertEquals("true", JsonStreamer.toJson(true));
+        assertEquals("false", JsonStreamer.toJson(false));
+        assertEquals("1", JsonStreamer.toJson(1));
+        
+        Map<String,Object> m = new HashMap<>();
+        m.put("a", "b");
+        assertEquals("{\"a\":\"b\"}", JsonStreamer.toJson(m));
+    }
+    
+    
+    @Test
+    public void escapeSlashesOn() throws IOException {
+        js = new JsonStreamer(sw, true);
+        js.beginArray().value("/").endJson();
+        assertEquals("[\"\\/\"]", sw.toString());
+    }
+    
+    @Test
+    public void escapeSlashesOff() throws IOException {
+        js = new JsonStreamer(sw, false);
+        js.beginArray().value("/").endJson();
+        assertEquals("[\"/\"]", sw.toString());
     }
     
     @Test

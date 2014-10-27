@@ -80,9 +80,24 @@ public class TextUtils {
     public static final int UNESCAPE_INVALID_ESCAPE = 0x10;
     
     /**
+     * Encode a single char in Unicde BMP as a Java Unicode escape sequence.
+     * @param c input char
+     * @return string on the form <code>"\\uXXXX"</code>, where XXXX are hexadecimal
+     * digits, always zero-padded.
+     */
+    public static String toUnicodeEscape(char c) {
+        char[] result = {'\\', 'u', 0, 0, 0, 0};
+        result[2] = HEX[(c >>> 12) & 0xF];
+        result[3] = HEX[(c >>> 8) & 0xF];
+        result[4] = HEX[(c >>> 4) & 0xF];
+        result[5] = HEX[c & 0xF];
+        return new String(result);
+    }
+    
+    /**
      * Render a byte array into a string of hexadecimal numbers.
      * @param buffer containing the bytes to convert
-     * @return a character array with hexadecimal digits representing the bytes.
+     * @return a character array of length 2 with hexadecimal digits representing the bytes.
      */
     public static char[] toHex(byte[] buffer) {
         char[] result = new char[buffer.length * 2];

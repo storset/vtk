@@ -384,6 +384,13 @@ public class TextUtilsTest {
         String[] strings = {};
         assertEquals("join result", "", TextUtils.join(strings, ", "));
     }
+    
+    @Test
+    public void toUnicodeEscape() {
+        assertEquals("\\u0000", TextUtils.toUnicodeEscape((char)0));
+        assertEquals("\\u007f", TextUtils.toUnicodeEscape((char)0x7f));
+        assertEquals("\\u2000", TextUtils.toUnicodeEscape('\u2000'));
+    }
 
     @Test
     public void testJoinSingleDoesNotUseSeparator() {

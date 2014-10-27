@@ -166,7 +166,8 @@ public class JsonStreamerTest {
         js.beginObject();
         js.member("\nlines\nin\nkey", "a\tb\tc, Ø. \u0000\u0001\u2001 100\u2126");
         js.endJson();
-        assertEquals("{\"\\nlines\\nin\\nkey\":\"a\\tb\\tc, Ø. \\u0000\\u0001\\u2001 100\u2126\"}", sw.toString());
+        assertEquals("{\"\\nlines\\nin\\nkey\":\"a\\tb\\tc, Ø. \\u0000\\u0001\\u2001 100\u2126\"}", 
+                sw.toString());
     }
     
     @Test

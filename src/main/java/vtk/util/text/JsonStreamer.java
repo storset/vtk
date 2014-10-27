@@ -199,14 +199,11 @@ public class JsonStreamer {
      * @return a string with JSON data.
      */
     public static String toJson(Object value, int indent, boolean escapeSlashes) {
-        StringBuilder buffer = new StringBuilder();
-        Writer w = writerForBuffer(buffer); // Thin adapter for Writer API
+        StringBuilderWriter w = new StringBuilderWriter(); // Thin StringBuilder adapter for Writer API
         try {
             new JsonStreamer(w, indent, escapeSlashes).value(value).endJson();
-        } catch (IOException io) {
-            // Won't happen
-        }
-        return buffer.toString();
+        } catch (IOException io) {} // Won't happen.
+        return w.writtenCharsToString();
     }
 
     /**
@@ -639,36 +636,69 @@ public class JsonStreamer {
         }
     }
     
-    // Return a Writer instance backed by a string builder buffer. Will never throw IOException.
-    private static Writer writerForBuffer(final StringBuilder buffer) {
-        return new Writer() {
-            @Override
-            public void write(String str, int off, int len) throws IOException {
-                buffer.append(str, off, off+len);
-            }
-            @Override
-            public void write(String str) throws IOException {
-                buffer.append(str);
-            }
-            @Override
-            public void write(char[] cbuf) throws IOException {
-                buffer.append(cbuf);
-            }
-            @Override
-            public void write(int c) throws IOException {
-                buffer.append((char)c);
-            }
-            @Override
-            public void write(char[] cbuf, int off, int len) throws IOException {
-                buffer.append(cbuf, off, len);
-            }
-            @Override
-            public void flush() throws IOException {
-            }
-            @Override
-            public void close() throws IOException {
-            }
-        };
+    /**
+     * String writer using a <code>StringBuilder</code> internally. Can be used
+     * to build JSON strings using streaming API methods, by passing an instance
+     * of this class to <code>JsonStreamer</code>. Essentially the same as {@link java.io.StringWriter
+     * }, but doesn't use <code>StringBuffer</code> internally.
+     */
+    public static final class StringBuilderWriter extends Writer {
+
+        private final StringBuilder buffer = new StringBuilder(); 
+        
+        @Override
+        public void write(String str, int off, int len) {
+            buffer.append(str, off, off + len);
+        }
+
+        @Override
+        public void write(String str) {
+            buffer.append(str);
+        }
+
+        @Override
+        public void write(char[] cbuf) {
+            buffer.append(cbuf);
+        }
+
+        @Override
+        public void write(int c) {
+            buffer.append((char) c);
+        }
+
+        @Override
+        public void write(char[] cbuf, int off, int len) {
+            buffer.append(cbuf, off, len);
+        }
+
+        @Override
+        public void flush() {
+        }
+
+        @Override
+        public void close() {
+        }
+        
+        /**
+         * Get internal <code>StringBuilder</code> buffer.
+         * @return 
+         */
+        public StringBuilder buffer() {
+            return buffer;
+        }
+        
+        /**
+         * Get string of chars written so far.
+         * @return 
+         */
+        public String writtenCharsToString() {
+            return buffer.toString();
+        }
+
+        @Override
+        public String toString() {
+            return writtenCharsToString();
+        }
     }
     
 }

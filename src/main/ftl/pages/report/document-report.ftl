@@ -27,7 +27,22 @@
         <a id="vrtx-report-view-other" title="${vrtx.getMsg('manage.choose-location.choose-collection')}" href="${viewReportServiceURL?html}"><@vrtx.msg code="report.view-other-link" default="View other folder" />...</a>
       </#if>
     </h2>
-    
+  
+  <#if (report.subtype?exists && report.subtype?size > 0)>
+    <div id="vrtx-report-filters">
+      <ul class="vrtx-report-filter vrtx-report-filter-last" id="vrtx-report-filter-${report.reportname}">
+        <#list report.subtype as subtype>
+          <#assign subTitle = vrtx.getMsg("report.${report.reportname}.subtype.${subtype.name}", "Critera: ${subtype.name}") />
+          <#if subtype.active>
+            <li id="vrtx-report-filter-${report.reportname}" class="active-filter"><span>${subTitle}</span></li>
+          <#else>
+            <li id="vrtx-report-filter-${report.reportname}-${subtype.name}"><a href="${subtype.url}">${subTitle}</a></li>
+          </#if>
+        </#list>
+      </ul>
+    </div>  
+  </#if>
+  
   <#if (report.result?exists && report.result?size > 0)>
     <p id="vrtx-report-info-paging-top">
       <@vrtx.msg code="report.${report.reportname}.about"

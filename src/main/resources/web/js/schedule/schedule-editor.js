@@ -399,12 +399,13 @@ function courseSchedule() {
       var enhanceMultipleInputFieldsFunc = enhanceMultipleInputFields;
       for(var i = multiples.length; i--;) {
         var m = multiples[i];
-        enhanceMultipleInputFieldsFunc(m.name + "-" + sessionId, m.movable, m.browsable, 50, m.json);
+        enhanceMultipleInputFieldsFunc(m.name + "-" + sessionId, m.movable, m.browsable, 50, m.json, m.readOnly);
       }
       var rtEditors = session.rtEditors;
       for(i = rtEditors.length; i--;) {
         vrtxEditor.richtextEditorFacade.setup({
-          name: rtEditors[i],
+          name: rtEditors[i].name,
+          isReadOnly: rtEditors[i].readOnly, 
           isCompleteEditor: false,
           isWithoutSubSuper: false,
           defaultLanguage: vrtxAdmin.lang,

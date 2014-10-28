@@ -220,6 +220,7 @@ VrtxEditor.prototype.richtextEditorFacade = {
     // Initialize
     this.init({
       name: opts.name,
+      isReadOnly: opts.isReadOnly || false,
       linkBrowseUrl: linkBrowseUrl,
       imageBrowseUrl: classification.isMain ? imageBrowseUrl : null,
       flashBrowseUrl: classification.isMain ? flashBrowseUrl : null,
@@ -244,6 +245,7 @@ VrtxEditor.prototype.richtextEditorFacade = {
    * @this {richtextEditorFacade}
    * @param {object} opts The config
    * @param {string} opts.name Name of textarea
+   * @param {string} opts.isReadOnly Make it read only
    * @param {string} opts.linkBrowseUrl Link browse integration URL
    * @param {string} opts.imageBrowseUrl Image browse integration URL
    * @param {string} opts.flashBrowseUrl Flash browse integration URL
@@ -265,6 +267,10 @@ VrtxEditor.prototype.richtextEditorFacade = {
     config.baseHref = opts.baseDocumentUrl;
     config.contentsCss = opts.cssFileList;
     config.entities = false;
+    
+    if(opts.isReadOnly) {
+      config.readOnly = true;
+    }
     
     if (opts.linkBrowseUrl) {
       config.filebrowserBrowseUrl = opts.linkBrowseUrl;
@@ -1268,7 +1274,7 @@ function initMultipleInputFields() {
   });
 }
 
-function enhanceMultipleInputFields(name, isMovable, isBrowsable, limit, json) { // TODO: simplify
+function enhanceMultipleInputFields(name, isMovable, isBrowsable, limit, json, isReadOnly) { // TODO: simplify
   var inputField = $("." + name + " input[type='text']");
   if (!inputField.length || vrtxAdmin.isIE7 || vrtxAdmin.isIETridentInComp) return;
 
@@ -1295,7 +1301,7 @@ function enhanceMultipleInputFields(name, isMovable, isBrowsable, limit, json) {
 
   var addFormFieldFunc = addFormField, html = "";
   for (var i = 0, len = formFields.length; i < len; i++) {
-    html += addFormFieldFunc(name, len, $.trim(formFields[i]), size, isBrowsable, isMovable, isDropdown, true, json);
+    html += addFormFieldFunc(name, len, $.trim(formFields[i]), size, isBrowsable, isMovable, isDropdown, true, json, isReadOnly);
   }
   html = $.parseHTML(html, document, true);
   $(html).insertBefore("#vrtx-" + name + "-add");
@@ -1311,7 +1317,7 @@ function enhanceMultipleInputFields(name, isMovable, isBrowsable, limit, json) {
   autocompleteUsernames(".vrtx-autocomplete-username");
 }
 
-function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown, init, json) {
+function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown, init, json, isReadOnly) {
   var fields = $("." + name + " div.vrtx-multipleinputfield"),
     idstr = "vrtx-" + name + "-",
     i = vrtxEditor.multipleFieldsBoxes[name].counter,
@@ -1347,7 +1353,7 @@ function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown
       json[prop].val = "";
     }
   }
-  var html = vrtxEditor.htmlFacade.getMultipleInputfield(name, idstr, i, value, size, browseButton, removeButton, moveUpButton, moveDownButton, isDropdown, json);
+  var html = vrtxEditor.htmlFacade.getMultipleInputfield(name, idstr, i, value, size, browseButton, removeButton, moveUpButton, moveDownButton, isDropdown, json, isReadOnly);
 
   vrtxEditor.multipleFieldsBoxes[name].counter++;
 
@@ -1749,6 +1755,7 @@ VrtxEditor.prototype.htmlFacade = {
           val = session[name] != undefined ? session[name] : fixedResources[name],
           origVal = "",
           propsVal = "",
+          readOnly = session.vrtxOrphan,
           browsable = false,
           hasOrig = false;
     
@@ -1786,14 +1793,16 @@ VrtxEditor.prototype.htmlFacade = {
               name: name,
               json: descProps ? descProps : null, 
               movable: desc.multiple.movable,
-              browsable: browsable
+              browsable: browsable,
+              readOnly: readOnly
             });
           }
           html += vrtxEdit.htmlFacade.getStringField({ title: i18n[name],
                                                        name: (desc.autocomplete ? "vrtx-autocomplete-" + desc.autocomplete + " " : "") + name + "-" + sessionId,
                                                        id: name + "-" + sessionId,
                                                        val: val,
-                                                       size: desc.size
+                                                       size: desc.size,
+                                                       readOnly: readOnly
                                                      }, name);
           break;
         case "json-fixed":
@@ -1820,7 +1829,7 @@ VrtxEditor.prototype.htmlFacade = {
                                                            id: name + "-" + sessionId,
                                                            val: val
                                                          }, name + "-" + sessionId);
-          rtEditors.push(name + "-" + sessionId);
+          rtEditors.push({ name: name + "-" + sessionId, readOnly: readOnly });
           break;
         case "checkbox":
           if(!session.vrtxOrphan) {
@@ -1978,7 +1987,7 @@ VrtxEditor.prototype.htmlFacade = {
   /* 
    * Type / fields 
    */
-  getMultipleInputfield: function (name, idstr, i, value, size, browseButton, removeButton, moveUpButton, moveDownButton, isDropdown, json) {
+  getMultipleInputfield: function (name, idstr, i, value, size, browseButton, removeButton, moveUpButton, moveDownButton, isDropdown, json, isReadOnly) {
     return vrtxAdmin.templateEngineFacade.render(vrtxEditor.multipleFieldsBoxesTemplates["multiple-inputfield"], {
       idstr: idstr,
       i: i,
@@ -1990,7 +1999,8 @@ VrtxEditor.prototype.htmlFacade = {
       moveDownButton: moveDownButton,
       isDropdown: isDropdown,
       dropdownArray: "dropdown" + name,
-      json: json
+      json: json,
+      isReadOnly: isReadOnly
     });
   },
   getTypeHtml: function (elem, inputFieldName) {
@@ -2016,7 +2026,8 @@ VrtxEditor.prototype.htmlFacade = {
         elemId: elem.id || inputFieldName,
         elemVal: elem.val,
         elemSize: elem.size || 40,
-        elemPlaceholder: elem.placeholder
+        elemPlaceholder: elem.placeholder,
+        elemReadOnly: elem.readOnly
       });
     }
   },

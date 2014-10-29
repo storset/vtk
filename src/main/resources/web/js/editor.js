@@ -1935,7 +1935,7 @@ VrtxEditor.prototype.htmlFacade = {
         }
       } else { // If removed in Vortex properties
         if(name === "vrtxStaff" && rawOrigTP[name.split("vrtx")[1].toLowerCase()]) { // If is "vrtxStaff" and has "staff" set to []
-		  if(rawPtr[name] == undefined || rawPtr[name].length > 0)) {
+		  if(rawPtr[name] == undefined || rawPtr[name].length > 0) {
             vrtxAdmin.log({msg: "DEL EMPTY " + name + (typeof val === "string" ? " " + val : "")});
             rawPtr[name] = [];
             hasChanges = true;

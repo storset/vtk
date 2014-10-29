@@ -167,6 +167,7 @@
     <property name="reportService" ref="reportService" />
     <property name="viewName" value="documentReport" />
     <property name="resolvePrincipalLink" value="true" />
+    <property name="aclTooltipHelper" ref="aclTooltipHelper" />
   </bean>
 
   <bean id="lastModifiedReporter" class="vtk.web.report.LastModifiedReporter" parent="documentReporter">

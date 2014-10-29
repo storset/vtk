@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, University of Oslo, Norway
+/* Copyright (c) 2010,2014, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -44,6 +44,7 @@ import vtk.repository.PropertySet;
 import vtk.repository.Resource;
 import vtk.repository.search.ResultSet;
 import vtk.repository.search.Search;
+import vtk.web.ACLTooltipHelper;
 import vtk.web.service.Service;
 import vtk.web.service.URL;
 
@@ -54,6 +55,7 @@ public abstract class DocumentReporter extends AbstractReporter {
     private int pageSize = DEFAULT_SEARCH_LIMIT;
     private Service manageService, reportService;
     private String backReportName;
+    private ACLTooltipHelper aclTooltipHelper;
 
     protected abstract Search getSearch(String token, Resource currentResource, HttpServletRequest request);
 
@@ -99,6 +101,7 @@ public abstract class DocumentReporter extends AbstractReporter {
         boolean[] isReadRestricted = new boolean[rs.getSize()];
         boolean[] isInheritedAcl = new boolean[rs.getSize()];
         URL[] viewURLs = new URL[rs.getSize()];
+        String[] permissionTooltips = new String[rs.getSize()];
         List<PropertySet> list = new ArrayList<PropertySet>();
         int i = 0;
         for (PropertySet propSet : rs.getAllResults()) {
@@ -111,6 +114,9 @@ public abstract class DocumentReporter extends AbstractReporter {
                 if (manageService != null) {
                     viewURLs[i] = manageService.constructURL(path).setProtocol("http");
                 }
+                if (aclTooltipHelper != null) {
+                    permissionTooltips[i] = aclTooltipHelper.generateTitle(res, request);
+                }
                 handleResult(res, result);
             } catch (Exception e) {
                 logger.error("Exception while preparing report. Offending resource: " + path + ": " + e.getMessage());
@@ -122,6 +128,7 @@ public abstract class DocumentReporter extends AbstractReporter {
         result.put("isReadRestricted", isReadRestricted);
         result.put("isInheritedAcl", isInheritedAcl);
         result.put("viewURLs", viewURLs);
+        result.put("permissionTooltips", permissionTooltips);
         return result;
     }
 
@@ -147,6 +154,10 @@ public abstract class DocumentReporter extends AbstractReporter {
 
     public void setPageSize(int pageSize) {
         this.pageSize = pageSize;
+    }
+
+    public void setAclTooltipHelper(ACLTooltipHelper aclTooltipHelper) {
+        this.aclTooltipHelper = aclTooltipHelper;
     }
 
     private static class Position {

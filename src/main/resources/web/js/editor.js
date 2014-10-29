@@ -1920,7 +1920,6 @@ VrtxEditor.prototype.htmlFacade = {
       }
 
       // Changes in Vortex properties
-      
       if(val && val.length) { // If changes in Vortex properties and differs from TP/UIOWS-data
         if(editorDetectChangeFunc(sessionId, val, rawOrig[name], name === "vrtxResourcesText") &&
            editorDetectChangeFunc(sessionId, val, rawOrigTP[name.split("vrtx")[1].toLowerCase()], name === "vrtxResourcesText")) {
@@ -1928,18 +1927,20 @@ VrtxEditor.prototype.htmlFacade = {
           rawPtr[name] = val;
           hasChanges = true;
         }
-      } else if(name !== "vrtxStaff") {
-        if(rawOrig[name]) { // If removed in Vortex properties and not is vrtxStaff
-          vrtxAdmin.log({msg: "DEL " + name + (typeof val === "string" ? " " + val : "")});
-          delete rawPtr[name];
-          hasChanges = true;
-        }
-      } else { // If removed in Vortex properties and is vrtxStaff and not already blanked
-        if(rawOrigTP[name.split("vrtx")[1].toLowerCase()] && (rawPtr[name] == undefined || rawPtr[name].length > 0)) {
-          vrtxAdmin.log({msg: "DEL EMPTY " + name + (typeof val === "string" ? " " + val : "")});
-          rawPtr[name] = [];
-          hasChanges = true;
-        }
+      } else { // If removed in Vortex properties
+        if(name === "vrtxStaff" && rawOrigTP[name.split("vrtx")[1].toLowerCase()]) { // If is "vrtxStaff" and has "staff" set to []
+		  if(rawPtr[name] == undefined || rawPtr[name].length > 0)) {
+            vrtxAdmin.log({msg: "DEL EMPTY " + name + (typeof val === "string" ? " " + val : "")});
+            rawPtr[name] = [];
+            hasChanges = true;
+		  }
+        } else {
+		  if(rawOrig[name] != undefined) {
+            vrtxAdmin.log({msg: "DEL " + name + (typeof val === "string" ? " " + val : "")});
+            delete rawPtr[name];
+            hasChanges = true;
+		  }
+		}
       }
     }
     return hasChanges;

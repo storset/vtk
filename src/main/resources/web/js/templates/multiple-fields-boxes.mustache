@@ -2,7 +2,7 @@
 
 <div class="{{ classes }}">
   <label for="{{ elemId  }}">{{ elemTitle }}</label>
-  <input class="vrtx-textfield inputfield" size="{{ elemSize }}" type="text" name="{{ inputFieldName }}" value="{{ elemVal }}"{{#elemReadOnly}} disabled="disabled"{{/elemReadOnly}}{{#elemPlaceholder}} placeholder="{{ elemPlaceholder }}"{{/elemPlaceholder}} id="{{ elemId }}" />
+  <input class="vrtx-textfield inputfield" size="{{ elemSize }}" type="text" name="{{ inputFieldName }}" value="{{ elemVal }}"{{#elemReadOnly}} readonly="readonly"{{/elemReadOnly}}{{#elemPlaceholder}} placeholder="{{ elemPlaceholder }}"{{/elemPlaceholder}} id="{{ elemId }}" />
 </div>
 
 ### {{! HTML }}
@@ -137,12 +137,12 @@
       {{./}}
         <div class="vrtx-multipleinputfield-json-wrapper">
           <label for="{{ idstr }}{{name}}-{{ i }}">{{ title }}</label>
-          <input class="vrtx-textfield vrtx-multipleinputfield-field {{ type }}" value="{{ val }}" type="text" size="{{ size }}" id="{{ idstr }}{{name}}-{{ i }}"{{#isReadOnly}} disabled="disabled"{{/isReadOnly}} />
+          <input class="vrtx-textfield vrtx-multipleinputfield-field {{ type }}" value="{{ val }}" type="text" size="{{ size }}" id="{{ idstr }}{{name}}-{{ i }}"{{#isReadOnly}} readonly="readonly"{{/isReadOnly}} />
         </div>
       {{./}}
     {{/json}}
     {{^json}}
-      <input class="vrtx-textfield vrtx-multipleinputfield-field {{ idstr }}{{ i }}" value="{{ value }}" type="text" size="{{ size }}" id="{{ idstr }}{{ i }}"{{#isReadOnly}} disabled="disabled"{{/isReadOnly}} />
+      <input class="vrtx-textfield vrtx-multipleinputfield-field {{ idstr }}{{ i }}" value="{{ value }}" type="text" size="{{ size }}" id="{{ idstr }}{{ i }}"{{#isReadOnly}} readonly="readonly"{{/isReadOnly}} />
     {{/json}}
   {{/isDropdown}}
   

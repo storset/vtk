@@ -57,7 +57,7 @@ resourcetype web-page : structured-document {
         [call "resource:comments-feed-link"]
         <title>[call "comp:title"]</title>
       </head>
-      <body id="vrtx-structured-article">
+      <body id="vrtx-web-page">
         <div id="vrtx-content">
         [def document structured-document()]
         [def theShowAdditionalContent document.properties.showAdditionalContent]
@@ -103,6 +103,6 @@ resourcetype web-page : structured-document {
     showAdditionalContent : (en : "Show in right-column", no : "Vis i høyrekolonne", nn : "Vis i høgrekolonne"),
     related-content : (en : "Content", no : "Innhold", nn : "Innhold"),
     relatedContent : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
-    header : (en : "Edit article", no : "Rediger artikkel", nn : "Rediger artikkel")
+    header : (en : "Edit web page", no : "Rediger nettside", nn : "Rediger nettside")
   }
 }

@@ -2,7 +2,7 @@
 
 <div class="{{ classes }}">
   <label for="{{ elemId  }}">{{ elemTitle }}</label>
-  <input class="vrtx-textfield inputfield" size="{{ elemSize }}" type="text" name="{{ inputFieldName }}" value="{{ elemVal }}"{{#elemPlaceholder}} disabled="disabled"{{/elemPlaceholder}}{{#elemPlaceholder}} placeholder="{{ elemPlaceholder }}"{{/elemPlaceholder}} id="{{ elemId }}" />
+  <input class="vrtx-textfield inputfield" size="{{ elemSize }}" type="text" name="{{ inputFieldName }}" value="{{ elemVal }}"{{#elemReadOnly}} disabled="disabled"{{/elemReadOnly}}{{#elemPlaceholder}} placeholder="{{ elemPlaceholder }}"{{/elemPlaceholder}} id="{{ elemId }}" />
 </div>
 
 ### {{! HTML }}

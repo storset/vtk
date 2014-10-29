@@ -40,6 +40,8 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import vtk.util.io.StreamUtil;
+import vtk.util.text.Json.Container;
+import vtk.util.text.Json.MapContainer;
 
 /**
  * Test {@link vtk.util.text.Json}.
@@ -91,6 +93,17 @@ public class JsonTest {
         assertEquals(Long.valueOf(4000), last.get("id"));
         assertEquals("Indonesia", last.get("country"));
         assertEquals(10, ((List<Object>)last.get("numbers")).size());
+    }
+    
+    @Test
+    public void parseObjectWithDuplicateKeys() {
+        // We want value of latest key occurence to be final value in this parser.
+        // (No conversion to array with value accumulation, like net.sf.json.JSONObject does
+        // when parsing.)
+        Container c = Json.parseToContainer("{\"a\":1, \"b\":2, \"a\":3}");
+        assertFalse(c.isArray());
+        assertEquals(2, c.size());
+        assertEquals((Integer)3, c.asObject().intValue("a"));
     }
     
     @Test

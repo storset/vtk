@@ -42,6 +42,7 @@ import vtk.repository.search.PropertySortField;
 import vtk.repository.search.Search;
 import vtk.repository.search.SortFieldDirection;
 import vtk.repository.search.Sorting;
+import vtk.repository.search.query.AclExistsQuery;
 import vtk.repository.search.query.AclPrivilegeQuery;
 import vtk.repository.search.query.AndQuery;
 import vtk.repository.search.query.PropertyTermQuery;
@@ -112,6 +113,7 @@ public class MyDocumentsReporter extends DocumentReporter {
             query.add(new PropertyTermQuery(this.createdByPropDef, currentUser.getQualifiedName(), TermOperator.EQ));
             break;
         case DirectAcl:
+            query.add(new AclExistsQuery());
             query.add(new AclPrivilegeQuery(null, currentUser));
             break;
         default:

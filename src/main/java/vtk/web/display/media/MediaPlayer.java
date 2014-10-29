@@ -231,6 +231,14 @@ public class MediaPlayer {
             poster = createUrl(posterImageProp.getStringValue());
         } else if (thumbnail != null) {
             poster = thumbnailService.constructURL(mediaResource);
+            // Work-around for SelectiveProtocolManager URL post-processing which sets
+            // URL protocol to "http" for open resources, but this causes mixed-mode
+            // in secure page context, since this URL points to an inline element (image).
+            if (RequestContext.exists()) {
+                if (RequestContext.getRequestContext().getServletRequest().isSecure()) {
+                    poster.setProtocol("https");
+                }
+            }
         }
 
         if (poster != null) {

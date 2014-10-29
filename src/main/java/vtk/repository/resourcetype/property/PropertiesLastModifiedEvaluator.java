@@ -40,7 +40,8 @@ public class PropertiesLastModifiedEvaluator implements PropertyEvaluator {
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
         PropertyEvaluationContext.Type type = ctx.getEvaluationType();
         if (type == PropertyEvaluationContext.Type.PropertiesChange
-                || type == PropertyEvaluationContext.Type.Create) {
+                || type == PropertyEvaluationContext.Type.Create
+                || type == PropertyEvaluationContext.Type.InheritablePropertiesChange) {
             property.setDateValue(ctx.getTime());
         }
         return true;

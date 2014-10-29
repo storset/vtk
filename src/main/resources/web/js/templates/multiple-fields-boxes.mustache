@@ -146,8 +146,11 @@
     {{/json}}
   {{/isDropdown}}
   
-  {{{ browseButton }}}
-  {{{ removeButton }}}
+  {{^isReadOnly}}
+    {{{ browseButton }}}
+    {{{ removeButton }}}
+  {{/isReadOnly}}
+  
   {{{ moveUpButton }}}
   {{{ moveDownButton }}}
 </div>

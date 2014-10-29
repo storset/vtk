@@ -1307,10 +1307,13 @@ function enhanceMultipleInputFields(name, isMovable, isBrowsable, limit, json, i
   $(html).insertBefore("#vrtx-" + name + "-add");
   inputFieldParent.find(".vrtx-multipleinputfield:first").addClass("first");
   
-  // Hide add button if limit is reached or gone over
-  if(len >= vrtxEditor.multipleFieldsBoxes[name].limit) {
+  // Hide add button if limit is reached / gone over or isReadOnly
+  var isLimitReached = len >= vrtxEditor.multipleFieldsBoxes[name].limit;
+  if(isLimitReached || isReadOnly) {
     var moreBtn = $("#vrtx-" + name + "-add");
-    $("<p class='vrtx-" + name + "-limit-reached'>" + vrtxAdmin.multipleFormGroupingMessages.limitReached + "</p>").insertBefore(moreBtn);
+    if(isLimitReached) {
+   	  $("<p class='vrtx-" + name + "-limit-reached'>" + vrtxAdmin.multipleFormGroupingMessages.limitReached + "</p>").insertBefore(moreBtn);
+	}
     moreBtn.hide();
   }
 
@@ -1385,9 +1388,12 @@ function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown
     }
 
     // Hide add button if limit is reached
-    if((len == (vrtxEditor.multipleFieldsBoxes[name].limit - 1))) {
-      $("<p class='vrtx-" + name + "-limit-reached'>" + vrtxAdmin.multipleFormGroupingMessages.limitReached + "</p>").insertBefore(moreBtn);
-      moreBtn.hide();
+	var isLimitReached = (len == (vrtxEditor.multipleFieldsBoxes[name].limit - 1));
+    if(isLimitReached || isReadOnly) {
+      if(isLimitReached) {
+	    $("<p class='vrtx-" + name + "-limit-reached'>" + vrtxAdmin.multipleFormGroupingMessages.limitReached + "</p>").insertBefore(moreBtn);
+      }
+	  moreBtn.hide();
     }
   } else {
     return html;

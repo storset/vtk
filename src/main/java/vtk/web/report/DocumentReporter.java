@@ -108,7 +108,6 @@ public abstract class DocumentReporter extends AbstractReporter {
             Path path = propSet.getURI();
             try {
                 Resource res = repository.retrieve(token, path, true);
-                propSet = res; // fresh copy of resource
                 isReadRestricted[i] = res.isReadRestricted();
                 isInheritedAcl[i] = res.isInheritedAcl();
                 if (manageService != null) {

@@ -287,22 +287,30 @@
 
 .forms-new .vrtx-button[disabled],
 .forms-new .vrtx-focus-button[disabled],
-.forms-new .vrtx-button-small[disabled] {
+.forms-new .vrtx-button-small[disabled],
+.forms-new .vrtx-button[readonly],
+.forms-new .vrtx-focus-button[readonly],
+.forms-new .vrtx-button-small[readonly] {
   background: #efefef;
-  border: 1px solid #ddd;
+  border: 1px solid #ccc;
   color: #888;
 }
 
 .forms-new .vrtx-button[disabled]:hover,
 .forms-new .vrtx-focus-button[disabled]:hover,
-.forms-new .vrtx-button-small[disabled]:hover {
+.forms-new .vrtx-button-small[disabled]:hover,
+.forms-new .vrtx-button[readonly]:hover,
+.forms-new .vrtx-focus-button[readonly]:hover,
+.forms-new .vrtx-button-small[readonly]:hover {
   border: none;
   cursor: default;
 }
 
 .forms-new .vrtx-textfield[disabled],
-.forms-new .vrtx-textfield-big[disabled] {
-  border: 1px solid #ddd;
+.forms-new .vrtx-textfield-big[disabled],
+.forms-new .vrtx-textfield[readonly],
+.forms-new .vrtx-textfield-big[readonly] {
+  border: 1px solid #ccc;
   color: #888;
 }
 

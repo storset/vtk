@@ -1202,6 +1202,10 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   display: none;
 }
 
+.tip.property-label {
+  font-size: 1em;
+}
+
 .tip h4 {
   margin-top: 0px;
   font-weight: normal;

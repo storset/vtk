@@ -338,7 +338,7 @@
       
       <div id="vrtx-resource.${name}" class="${name} property-item">
       <#if displayLabel>
-        <div class="resource.${name} property-label">${localizedName}<#if name == "fs-program-codes"> <abbr tabindex="0" class="tooltips" title="${vrtx.getMsg('proptype.name.program.fs-program-codes.info')}"></abbr></#if></div>
+        <div class="resource.${name} property-label">${localizedName}<#if name == "fs-program-codes"> <abbr tabindex="0" class="tooltips label-tooltips" title="${vrtx.getMsg('proptype.name.program.fs-program-codes.info')}"></abbr></#if></div>
       </#if>
       
       <#if type = 'HTML' && name != 'userTitle' && name != 'title' && name != 'caption'>

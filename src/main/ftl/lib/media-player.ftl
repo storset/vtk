@@ -34,9 +34,9 @@
     <#local alt = vrtx.getMsg("article.audio-file") />
   </#if>
 
-  <#if clientSupportsHlsStreaming?? && clientSupportsHlsStreaming>
+  <#if clientSupportsHlsStreaming?? && clientSupportsHlsStreaming &&  mediaResource?? && mediaResource.resourceType == "videoref">
     <div id="mediaspiller-${dateStr}">
-      <video src="${url}" controls width="${width}" height="${height}" poster="${poster?html}"></video>
+      <video src="${url}" controls width="${width}" height="${height}" poster="<#if poster?exists>${poster?html}<#else>/vrtx/__vrtx/static-resources/themes/default/icons/${imgSrc}</#if>"></video>
     </div>
   <#else>
     <@genPlayButtonCSS showPlayButton />

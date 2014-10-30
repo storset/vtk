@@ -131,7 +131,7 @@
                 <#assign permissionClass = "allowed-for-all" />
               </#if>
               <span class="${permissionClass}<#if hasTooltip> permission-tooltips</#if>"><#if hasTooltip><a href='javascript:void(0);' title='${report.permissionTooltips[res_index]}'></#if>${isReadRestricted?html}<#if hasTooltip></a></#if></span>
-              <#if !report.isInheritedAcl[res_index]><span class="inherited-permission">&bull;</span></#if>
+              <#if !report.isInheritedAcl[res_index]><span class="own-permission">&bull;</span></#if>
             </td>
             <#if report.reportname != "unpublished">
               <td class="vrtx-report-published">${publishedStatus?html}</td>

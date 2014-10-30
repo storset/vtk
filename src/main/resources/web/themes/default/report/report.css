@@ -1,3 +1,4 @@
+
 /*
  * Vortex - Reports
  *
@@ -276,14 +277,14 @@ td.vrtx-report-broken-links li {
   float: left;
 }
 
-#vrtx-report-filters ul#vrtx-report-filter-least-most {
-  background: none;
-  margin-bottom: 0;
-}
-
 #vrtx-report-filters ul#vrtx-report-filter-least-most,
 #vrtx-report-filters ul#vrtx-report-filter-my-documents {
+  background: none;
   margin-top: -12px;
+}
+
+#vrtx-report-filters ul#vrtx-report-filter-least-most {
+  margin-bottom: 0;
 }
 
 /* Remove "Other:" */

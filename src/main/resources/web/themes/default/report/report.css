@@ -277,13 +277,13 @@ td.vrtx-report-broken-links li {
   float: left;
 }
 
-#vrtx-report-filters ul#vrtx-report-filter-least-most,
+#vrtx-report-filters ul#vrtx-report-filter-visit-type,
 #vrtx-report-filters ul#vrtx-report-filter-my-documents {
   background: none;
   margin-top: -12px;
 }
 
-#vrtx-report-filters ul#vrtx-report-filter-least-most {
+#vrtx-report-filters ul#vrtx-report-filter-visit-type {
   margin-bottom: 0;
 }
 

@@ -33,19 +33,26 @@
     <#local height = "82" />
     <#local alt = vrtx.getMsg("article.audio-file") />
   </#if>
-  
-  <@genPlayButtonCSS showPlayButton />
-  
-  <div id="mediaspiller-${dateStr}-print" class="vrtx-media-player-print<#if showPlayButton> vrtx-media-player-no-flash</#if>">
-    <img src="<#if poster?exists>${poster?html}<#else>/vrtx/__vrtx/static-resources/themes/default/icons/${imgSrc}</#if>" width="${width}" height="${height}" alt="${alt}"/>
-    <#if showPlayButton><a class="playbutton" href="${url}"></a></#if>
-  </div>
-  <div id="mediaspiller-${dateStr}"<#if showPlayButton> class="vrtx-media-player-no-flash"</#if>>
-    <a class="vrtx-media" href="${url}">
-	  <img src="<#if poster?exists>${poster?html}<#else>/vrtx/__vrtx/static-resources/themes/default/icons/${imgSrc}</#if>" width="${width}" height="${height}" alt="${alt}"/>
-      <#if showPlayButton><span class="playbutton"></span></#if>
-    </a>
-  </div>
+
+  <#if clientSupportsHlsStreaming?? && clientSupportsHlsStreaming>
+    <div id="mediaspiller-${dateStr}">
+      <video src="${url}" controls width="${width}" height="${height}" poster="${poster?html}"></video>
+    </div>
+  <#else>
+    <@genPlayButtonCSS showPlayButton />
+
+    <div id="mediaspiller-${dateStr}-print" class="vrtx-media-player-print<#if showPlayButton> vrtx-media-player-no-flash</#if>">
+      <img src="<#if poster?exists>${poster?html}<#else>/vrtx/__vrtx/static-resources/themes/default/icons/${imgSrc}</#if>" width="${width}" height="${height}" alt="${alt}"/>
+      <#if showPlayButton><a class="playbutton" href="${url}"></a></#if>
+    </div>
+    <div id="mediaspiller-${dateStr}"<#if showPlayButton> class="vrtx-media-player-no-flash"</#if>>
+      <a class="vrtx-media" href="${url}">
+        <img src="<#if poster?exists>${poster?html}<#else>/vrtx/__vrtx/static-resources/themes/default/icons/${imgSrc}</#if>" width="${width}" height="${height}" alt="${alt}"/>
+        <#if showPlayButton><span class="playbutton"></span></#if>
+      </a>
+    </div>
+  </#if>
+
 </#macro>
 
 <#--

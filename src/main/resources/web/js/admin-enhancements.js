@@ -630,9 +630,7 @@ VrtxAdmin.prototype.embeddedView = function embeddedView() {
   if(onlySessionId) { // Also handles when locked or no write permissions (goes to preview)
     var canEdit = $("#resource-can-edit").text() === "true";
     var lockedByOtherElm = $("#resource-locked-by-other");
-    var lockedByOther = (lockedByOtherElm.length && lockedByOtherElm.text() == "true")
-                          ? $("#resource-locked-by").html()
-                          : "";
+    var lockedByOther = (lockedByOtherElm.length && lockedByOtherElm.text() == "true") ? $("#resource-locked-by").html() : "";
                           
     // Choose proper fail message (we know these sends you to preview)
     var vrtxAdm = vrtxAdmin;

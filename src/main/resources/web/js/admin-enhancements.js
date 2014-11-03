@@ -4255,7 +4255,7 @@ VrtxAdmin.prototype.zebraTables = function zebraTables(selector) {
   var _$ = this._$;
   var table = _$("table" + selector);
   if (!table.length) return;
-  if ((vrtxAdmin.isIE && vrtxAdmin.browserVersion < 9)) { // http://www.quirksmode.org/css/contents.html
+  if (this.isIE8) { // http://www.quirksmode.org/css/contents.html
     table.find("tbody tr:odd").addClass("even"); // hmm.. somehow even is odd and odd is even
     table.find("tbody tr:first-child").addClass("first");
   }

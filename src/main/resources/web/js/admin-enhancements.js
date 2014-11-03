@@ -577,6 +577,7 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
     }
   });
   
+  // Validation of dates
   var generateDateObjForValidation = function(dialog, idInfix) {
     var date = dialog.find("#" + idInfix + "-date").val();
     if(!date.length) {
@@ -634,6 +635,7 @@ VrtxAdmin.prototype.embeddedView = function embeddedView() {
                           : "";
                           
     // Choose proper fail message (we know these sends you to preview)
+    var vrtxAdm = vrtxAdmin;
     if(!canEdit || lockedByOther.length) {
       var csTitle = vrtxAdm.lang === "en" ? "Edit activity"
                                           : "Rediger aktivitet";

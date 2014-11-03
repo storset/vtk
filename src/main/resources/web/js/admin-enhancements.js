@@ -101,17 +101,17 @@ function VrtxAdmin() {
     adjustLeft: 8
   };
 
-  // Transitions
+  /* Transitions */
   this.transitionPropSpeed = this.isMobileWebkitDevice ? 0 : 100;
   this.transitionDropdownSpeed = this.isMobileWebkitDevice ? 0 : 100;
   this.transitionEasingSlideDown = (!this.isIE9 && !this.isMobileWebkitDevice) ? "easeOutQuad" : "linear";
   this.transitionEasingSlideUp = (!this.isIE9 && !this.isMobileWebkitDevice) ? "easeInQuad" : "linear";
 
-  // Throttle / debounced listeners
+  /* Throttle / debounced listeners */
   this.windowResizeScrollDebounceRate = 20;
   this.keyInputDebounceRate = 50;
 
-  // Application logic
+  /* Application logic */
   this.editorSaveButtonName = "";
   this.editorSaveButton = null;
   this.editorSaveIsRedirectPreview = false;

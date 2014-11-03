@@ -21,10 +21,12 @@ if(typeof viewDropdown === "undefined") { // Avoid duplicate running code
       };
       
       /* Dropdown ARIA states */
-      var ariaDropdownState = function (link, wrp, isExpanded) {
+      var ariaDropdownState = function (link, wrp, isExpanded, isEnter) {
         if(isExpanded) {
           var firstInteractiveElem = wrp.find("a, input[type='button'], input[type='submit']").filter(":first");
-          if(firstInteractiveElem.length) firstInteractiveElem.focus();
+          if(firstInteractiveElem.length && isEnter) {
+            firstInteractiveElem.focus();
+          }
         }
         wrp.attr({
           "aria-expanded": isExpanded,
@@ -34,20 +36,24 @@ if(typeof viewDropdown === "undefined") { // Avoid duplicate running code
       
       /* Dropdown click events handler */
       var toggledOpenClosable = function(e) {
-        var link = $(this);
-        if(link.parent().hasClass("vrtx-dropdown-component-toggled")) {
-          link.toggleClass("active");
+        var keyCode = (e.keyCode ? e.keyCode : e.which);
+        var isEnter = keyCode == 13;
+        if(e.type == "click" || isEnter) {
+          var link = $(this);
+          if(link.parent().hasClass("vrtx-dropdown-component-toggled")) {
+            link.toggleClass("active");
+          }
+          if(link.hasClass("vrtx-dropdown-close-link")) {
+            var wrp = link.closest(".vrtx-dropdown-wrapper");
+          } else {
+            var wrp = link.next(".vrtx-dropdown-wrapper");
+          }
+          wrp.slideToggle("fast", function() {
+            ariaDropdownState(link, wrp, wrp.is(":visible"), isEnter);
+          });
+          e.stopPropagation();
+          e.preventDefault();
         }
-        if(link.hasClass("vrtx-dropdown-close-link")) {
-          var wrp = link.closest(".vrtx-dropdown-wrapper");
-        } else {
-          var wrp = link.next(".vrtx-dropdown-wrapper");
-        }
-        wrp.slideToggle("fast", function() {
-          ariaDropdownState(link, wrp, wrp.is(":visible"));
-        });
-        e.stopPropagation();
-        e.preventDefault();
       };
     
       /* Initialize dropdowns */
@@ -67,11 +73,11 @@ if(typeof viewDropdown === "undefined") { // Avoid duplicate running code
           "aria-haspopup": "true"
         });
         
-        ariaDropdownState(link, wrp, false); /* Invisible at init */
+        ariaDropdownState(link, wrp, false, false); /* Invisible at init */
       }
       
       /* Listen for click events */
-      doc.on("click", ".vrtx-dropdown-component a.vrtx-dropdown-link, .vrtx-dropdown-component a.vrtx-dropdown-close-link", toggledOpenClosable);
+      doc.on("click keydown", ".vrtx-dropdown-component a.vrtx-dropdown-link, .vrtx-dropdown-component a.vrtx-dropdown-close-link", toggledOpenClosable);
     });
   })();
 }

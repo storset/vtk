@@ -41,7 +41,7 @@ function VrtxAdmin() {
   /* IE */
   this.isIE = /(msie) ([\w.]+)/.test(this.ua);
   var ieVersion = /(msie) ([\w.]+)/.exec(this.ua);
-  this.browserVersion = (ieVersion != null) ? ieVersion[2] : "0";
+  this.browserVersion = (ieVersion != null) ? ieVersion[2] : 99;
   this.isIE9 = this.isIE && this.browserVersion <= 9;
   this.isIE8 = this.isIE && this.browserVersion <= 8;
   this.isIE7 = this.isIE && this.browserVersion <= 7;

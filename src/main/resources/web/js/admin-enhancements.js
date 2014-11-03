@@ -635,14 +635,11 @@ VrtxAdmin.prototype.embeddedView = function embeddedView() {
     // Choose proper fail message (we know these sends you to preview)
     var vrtxAdm = vrtxAdmin;
     if(!canEdit || lockedByOther.length) {
-      var csTitle = vrtxAdm.lang === "en" ? "Edit activity"
-                                          : "Rediger aktivitet";
+      var csTitle = vrtxAdm.lang === "en" ? "Edit activity" : "Rediger aktivitet";
       if(!canEdit) {
-        var csFail = vrtxAdm.lang === "en" ? "You don't have write permissions to edit the course schedule."
-                                           : "Du har ikke skriverettigheter til å redigere denne timeplanen.";
+        var csFail = vrtxAdm.lang === "en" ? "You don't have write permissions to edit the course schedule." : "Du har ikke skriverettigheter til å redigere denne timeplanen.";
       } else {
-        var csFail = vrtxAdm.lang === "en" ? "The course schedule is locked by other user: " + lockedByOther
-                                           : "Timeplanen er låst av en annen bruker: " + lockedByOther;
+        var csFail = vrtxAdm.lang === "en" ? "The course schedule is locked by other user: " + lockedByOther : "Timeplanen er låst av en annen bruker: " + lockedByOther;
       }
       var failHtml = "<p id='editor-fail'>" + csFail + "</p>";
       

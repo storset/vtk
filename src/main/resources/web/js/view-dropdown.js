@@ -58,9 +58,8 @@ if(typeof viewDropdown === "undefined") { // Avoid duplicate running code
     
       /* Initialize dropdowns */
       var wrappers = $(".vrtx-dropdown-wrapper"),
-          i = wrappers.length,
           addMissingIdFunc = addMissingId;
-      while(i--) {
+      for(var i = wrappers.length; i--;) {
         var wrp = $(wrappers[i]);
         var link = wrp.prev();
      

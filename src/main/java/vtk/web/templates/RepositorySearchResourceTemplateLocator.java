@@ -35,9 +35,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Required;
+
 import vtk.repository.Namespace;
 import vtk.repository.Path;
-import vtk.repository.Property;
 import vtk.repository.PropertySet;
 import vtk.repository.ResourceTypeTree;
 import vtk.repository.resourcetype.PropertyTypeDefinition;
@@ -125,17 +125,14 @@ public class RepositorySearchResourceTemplateLocator implements ResourceTemplate
         
         // Iterate results and create list of resource template beans
         for (PropertySet propSet: results.getAllResults()) {
-            ResourceTemplate template = new ResourceTemplate();
-            template.setUri(propSet.getURI());
-            template.setName(propSet.getName());
-            
-            Property titleProp = propSet.getProperty(titlePropDef);
-            if (titleProp != null) {
-                template.setTitle(titleProp.getStringValue());
-            }
+            Path uri = propSet.getURI();
+            String name = propSet.getName();
+            String title = propSet.getProperty(titlePropDef).getStringValue();
+            String resourceType = propSet.getResourceType();
+
+            ResourceTemplate template = new ResourceTemplate(uri, title, name, resourceType);
             templates.add(template);
         }
-
         return templates;
     }
     

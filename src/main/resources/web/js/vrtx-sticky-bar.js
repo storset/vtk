@@ -27,7 +27,7 @@ var VrtxStickyBar = dejavu.Class.declare({
     var thisWindow = $(window);
     var ua = window.navigator.userAgent.toLowerCase();
     if (wrapper.length && !/iphone/.test(ua)) { // Turn off for iPhone. 
-      if (window.navigator.appName == "Microsoft Internet Explorer" && /msie 8/.test(ua)) { // Shadow below in IE8
+      if (window.navigator.appName === "Microsoft Internet Explorer" && /msie 8/.test(ua)) { // Shadow below in IE8
         var imageStickyShadow = "<span class='sticky-bg-ie8-below' />";
         if(opts.isBottomSticky) {
           wrapper.prepend(imageStickyShadow);
@@ -59,7 +59,7 @@ var VrtxStickyBar = dejavu.Class.declare({
           if (!wrapper.hasClass(stickyClass)) {
             wrapper.addClass(stickyClass);
             if(!opts.alwaysFixed) contents.css("paddingTop", wrapper.outerHeight(true) + "px");
-            if(stickFn != null) {
+            if(typeof stickFn === "function") {
               stickFn();
             }
           }
@@ -69,7 +69,7 @@ var VrtxStickyBar = dejavu.Class.declare({
             wrapper.removeClass(stickyClass);
             wrapper.css("width", "auto");
             if(!opts.alwaysFixed) contents.css("paddingTop", "0px");
-            if(unstickFn != null) {
+            if(typeof unstickFn === "function") {
               unstickFn();
             }
           }

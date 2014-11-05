@@ -26,9 +26,8 @@ var VrtxTree = dejavu.Class.declare({
     tree.__opts = opts;
     tree.__opts.pathNum = 0;
     
-    // TODO: rootUrl and jQueryUiVersion should be retrieved from Vortex config/properties somehow
+    // TODO: rootUrl should be retrieved from Vortex config/properties somehow
     var rootUrl = "/vrtx/__vrtx/static-resources";
-    var jQueryUiVersion = "1.10.4";
     
     $.loadCSS(window.location.protocol + "//" + window.location.host + rootUrl + "/themes/default/report/jquery.treeview.css");
     var futureTree = $.Deferred();
@@ -74,7 +73,7 @@ var VrtxTree = dejavu.Class.declare({
         var closestLi = link.closest("li");
         var hit = closestLi.find(tree.$static.leafSelector);
         hit.click();
-        if (tree.__opts.scrollToContent && (tree.__opts.pathNum == (tree.__opts.trav.length - 1))) {
+        if (tree.__opts.scrollToContent && (tree.__opts.pathNum === (tree.__opts.trav.length - 1))) {
           tree.__opts.elem.css("background", "none").fadeIn(200, function () {  // Scroll to last node
             tree.__scrollToLeaf(link, true);
           });

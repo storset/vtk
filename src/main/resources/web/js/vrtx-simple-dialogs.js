@@ -84,7 +84,7 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
       }
     }
     if (this.__opts.hasCancel) {
-      var cancel = this.__opts.btnTextCancel || ((typeof cancelI18n != "undefined") ? cancelI18n : "Cancel");
+      var cancel = this.__opts.btnTextCancel || ((typeof cancelI18n !== "undefined") ? cancelI18n : "Cancel");
       if(/^\(/.test(cancel)) {
         this.__opts.cancelIsNotAButton = true;
       }

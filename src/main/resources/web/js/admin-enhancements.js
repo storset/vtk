@@ -41,7 +41,7 @@ function VrtxAdmin() {
   /* IE */
   this.isIE = /(msie) ([\w.]+)/.test(this.ua);
   var ieVersion = /(msie) ([\w.]+)/.exec(this.ua);
-  this.browserVersion = (ieVersion != null) ? ieVersion[2] : 99;
+  this.browserVersion = (ieVersion !== null) ? ieVersion[2] : 99;
   this.isIE9 = this.isIE && this.browserVersion <= 9;
   this.isIE8 = this.isIE && this.browserVersion <= 8;
   this.isIE7 = this.isIE && this.browserVersion <= 7;
@@ -51,12 +51,12 @@ function VrtxAdmin() {
   this.isIPhone = /iphone/.test(this.ua);
   this.isIPad = /ipad/.test(this.ua);
   this.isIOS = this.isIPhone || this.isIPad;
-  this.isIOS5 = this.isIOS && this.ua.match(/os (2|3|4|5)_/) != null;
+  this.isIOS5 = this.isIOS && this.ua.match(/os (2|3|4|5)_/) !== null;
   this.isAndroid = /android/.test(this.ua); // http://www.gtrifonov.com/2011/04/15/google-android-user-agent-strings-2/
   this.isMobileWebkitDevice = (this.isIPhone || this.isIPad || this.isAndroid);
   this.isTouchDevice = window.ontouchstart !== undefined;
   /* Windows */
-  this.isWin = ((this.ua.indexOf("win") != -1) || (this.ua.indexOf("16bit") != -1));
+  this.isWin = ((this.ua.indexOf("win") !== -1) || (this.ua.indexOf("16bit") !== -1));
   
   this.supportsFileList = window.FileList;
   this.animateTableRows = !this.isIE9;
@@ -180,12 +180,12 @@ var VrtxAnimation = function(opts) {
    * TODO: general object prop access handling possible? http://blog.calyptus.eu/seb/2010/11/javascript-proxies-leaky-this/?
    * TODO: Firefox can use Proxy and get() for adding future applied functions(?) http://wiki.ecmascript.org/doku.php?id=harmony%3adirect_proxies
    */
-  obj.update = function update(opts)         { futureAppliedFn(arguments.callee.toString(), opts) };
-  obj.updateElem = function updateElem(elem) { futureAppliedFn(arguments.callee.toString(), elem) };
-  obj.rightIn = function rightIn()           { futureAppliedFn(arguments.callee.toString(), null) };
-  obj.leftOut = function leftOut()           { futureAppliedFn(arguments.callee.toString(), null) };
-  obj.topDown = function topDown()           { futureAppliedFn(arguments.callee.toString(), null) };
-  obj.bottomUp = function bottomUp()         { futureAppliedFn(arguments.callee.toString(), null) };
+  obj.update = function update(opts)         { futureAppliedFn(arguments.callee.toString(), opts); };
+  obj.updateElem = function updateElem(elem) { futureAppliedFn(arguments.callee.toString(), elem); };
+  obj.rightIn = function rightIn()           { futureAppliedFn(arguments.callee.toString(), null); };
+  obj.leftOut = function leftOut()           { futureAppliedFn(arguments.callee.toString(), null); };
+  obj.topDown = function topDown()           { futureAppliedFn(arguments.callee.toString(), null); };
+  obj.bottomUp = function bottomUp()         { futureAppliedFn(arguments.callee.toString(), null); };
 };
 
 

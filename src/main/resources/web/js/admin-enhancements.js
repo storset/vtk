@@ -635,6 +635,7 @@ VrtxAdmin.prototype.embeddedView = function embeddedView() {
     // Choose proper fail message (we know these sends you to preview)
     var vrtxAdm = vrtxAdmin;
     if(!canEdit || lockedByOther.length) {
+      // Title and fail message
       var csTitle = vrtxAdm.lang === "en" ? "Edit activity" : "Rediger aktivitet";
       if(!canEdit) {
         var csFail = vrtxAdm.lang === "en" ? "You don't have write permissions to edit the course schedule." : "Du har ikke skriverettigheter til å redigere denne timeplanen.";

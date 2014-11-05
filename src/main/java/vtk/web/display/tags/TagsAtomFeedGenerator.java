@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.abdera.model.Feed;
 import org.springframework.beans.factory.annotation.Required;
+
 import vtk.repository.Property;
 import vtk.repository.PropertySet;
 import vtk.repository.Resource;
@@ -46,6 +47,7 @@ import vtk.web.search.Listing;
 import vtk.web.search.ListingEntry;
 import vtk.web.search.SearchComponent;
 import vtk.web.service.Service;
+import vtk.web.service.URL;
 import vtk.web.tags.TagsHelper;
 
 public class TagsAtomFeedGenerator extends AtomFeedGenerator {
@@ -66,6 +68,17 @@ public class TagsAtomFeedGenerator extends AtomFeedGenerator {
         }
 
     }
+
+    @Override
+    protected void addFeedLinks(Resource feedScope, Feed feed) {
+        RequestContext requestContext = RequestContext.getRequestContext();
+        URL feedAlternateURL = viewService.constructURL(feedScope);
+        String tag = requestContext.getRequestURL().getParameter("tag");
+        if (tag != null) feedAlternateURL.addParameter("tag", tag);
+        feed.addLink(feedAlternateURL.toString(), "alternate");
+        feed.addLink(requestContext.getRequestURL().toString(), "self");
+    }
+    
 
     @Override
     protected Resource getFeedScope() throws Exception {

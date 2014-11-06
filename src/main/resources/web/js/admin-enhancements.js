@@ -1283,7 +1283,7 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
     togglerWrp.addClass("dropdown-init");
   
     togglerWrp.on("click keypress", ".dropdown-shortcut-menu-click-area", function (e) {
-      if (e.type === "click" || (e.which && e.which === 13) || (e.keyCode && e.keyCode === 13)) {
+      if (e.type === "click" || isKey(e, [vrtxAdm.keys.ENTER])) {
         var link = $(this);
         vrtxAdm.closeDropdowns();
         vrtxAdm.openDropdown(link, shortcutMenu);
@@ -1387,20 +1387,20 @@ VrtxAdmin.prototype.initScrollBreadcrumbs = function initScrollBreadcrumbs() {
   }, 120);
 
   vrtxAdm.cachedDoc.on("keydown", ".vrtx-breadcrumb-level", function(e) {
-    if((e.which && e.which === 13) || (e.keyCode && e.keyCode === 13)) {
+    if(isKey(e, [vrtxAdmin.keys.ENTER])) {
       window.location.href = $(this).find("a").attr("href");
       e.stopPropagation();
     }  
   });
   vrtxAdm.cachedDoc.on("click keypress", "#navigate-crumbs-left", function(e) {
-    if(e.type === "click" || ((e.which && e.which === 13) || (e.keyCode && e.keyCode === 13))) {
+    if(e.type === "click" || isKey(e, [vrtxAdmin.keys.ENTER])) {
       vrtxAdmin.scrollBreadcrumbsLeft();
       e.stopPropagation();
       e.preventDefault();
     }
   });
   vrtxAdm.cachedDoc.on("click keypress", "#navigate-crumbs-right", function(e) {
-    if(e.type === "click" || ((e.which && e.which === 13) || (e.keyCode && e.keyCode === 13))) {
+    if(e.type === "click" || isKey(e, [vrtxAdmin.keys.ENTER])) {
       vrtxAdmin.scrollBreadcrumbsRight();
       e.stopPropagation();
       e.preventDefault();
@@ -1530,7 +1530,7 @@ VrtxAdmin.prototype.adjustResourceTitle = function adjustResourceTitle() {
 
 function interceptEnterKey() {
   vrtxAdmin.cachedAppContent.on("keypress", "form#editor input, form[name='collectionListingForm'] input, form.trashcan input", function (e) {
-    if ((e.which && e.which === 13) || (e.keyCode && e.keyCode === 13)) {
+    if (isKey(e, [vrtxAdmin.keys.ENTER])) {
       e.preventDefault(); // cancel the default browser click
     }
   });
@@ -1538,7 +1538,7 @@ function interceptEnterKey() {
 
 function interceptEnterKeyAndReroute(txt, btn, fnOnKeyPress) {
   vrtxAdmin.cachedAppContent.on("keypress", txt, function (e) {
-    if ((e.which && e.which === 13) || (e.keyCode && e.keyCode === 13)) {
+    if (isKey(e, [vrtxAdmin.keys.ENTER])) {
       if ($(this).hasClass("blockSubmit")) { // submit/rerouting can be blocked elsewhere on textfield
         $(this).removeClass("blockSubmit");
       } else {

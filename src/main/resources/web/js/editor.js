@@ -913,7 +913,7 @@ VrtxEditor.prototype.initPreviewImage = function initPreviewImage() {
   });
 
   vrtxAdmin.cachedDoc.on("keydown", "input.preview-image-inputfield", _$.debounce(50, true, function (e) { // ENTER-key
-    if ((e.which && e.which === 13) || (e.keyCode && e.keyCode === 13)) {
+    if (isKey(e, [vrtxAdmin.keys.ENTER])) {
       previewImage(this.id);
       e.preventDefault();
     }
@@ -1244,28 +1244,28 @@ function getMultipleFieldsBoxesTemplates() {
 function initMultipleInputFields() {
   getMultipleFieldsBoxesTemplates();
   vrtxAdmin.cachedAppContent.on("click keypress", ".vrtx-multipleinputfield button.remove", function (e) {
-    if(e.type === "click" || ((e.which && e.which === 13) || (e.keyCode && e.keyCode === 13))) {
+    if(e.type === "click" || isKey(e, [vrtxAdmin.keys.ENTER])) {
       removeFormField($(this));
       e.preventDefault();
       e.stopPropagation();
     }
   });
   vrtxAdmin.cachedAppContent.on("click keypress", ".vrtx-multipleinputfield button.movedown", function (e) {
-    if(e.type === "click" || ((e.which && e.which === 13) || (e.keyCode && e.keyCode === 13))) {
+    if(e.type === "click" || isKey(e, [vrtxAdmin.keys.ENTER])) {
       swapContentTmp($(this), 1);
       e.preventDefault();
       e.stopPropagation();
     }
   });
   vrtxAdmin.cachedAppContent.on("click keypress", ".vrtx-multipleinputfield button.moveup", function (e) {
-    if(e.type === "click" || ((e.which && e.which === 13) || (e.keyCode && e.keyCode === 13))) {
+    if(e.type === "click" || isKey(e, [vrtxAdmin.keys.ENTER])) {
       swapContentTmp($(this), -1);
       e.preventDefault();
       e.stopPropagation();
     }
   });
   vrtxAdmin.cachedAppContent.on("click keypress", ".vrtx-multipleinputfield button.browse-resource-ref", function (e) {
-    if(e.type === "click" || ((e.which && e.which === 13) || (e.keyCode && e.keyCode === 13))) {
+    if(e.type === "click" || isKey(e, [vrtxAdmin.keys.ENTER])) {
       var m = $(this).closest(".vrtx-multipleinputfield");
       var elm = m.find('input.resource_ref');
       if(!elm.length) elm = m.find('input');
@@ -1503,21 +1503,21 @@ function initJsonMovableElements() {
   });
 
   vrtxAdmin.cachedAppContent.on("click keypress", ".vrtx-json .vrtx-move-down-button", function (e) {
-    if(e.type === "click" || ((e.which && e.which === 13) || (e.keyCode && e.keyCode === 13))) {
+    if(e.type === "click" || isKey(e, [vrtxAdmin.keys.ENTER])) {
       swapContent($(this), 1);
       e.stopPropagation();
       e.preventDefault();
     }
   });
   vrtxAdmin.cachedAppContent.on("click keypress", ".vrtx-json .vrtx-move-up-button", function (e) {
-    if(e.type === "click" || ((e.which && e.which === 13) || (e.keyCode && e.keyCode === 13))) {
+    if(e.type === "click" || isKey(e, [vrtxAdmin.keys.ENTER])) {
       swapContent($(this), -1);
       e.stopPropagation();
       e.preventDefault();
     }
   });
   vrtxAdmin.cachedAppContent.on("click keypress", ".vrtx-json .vrtx-add-button", function (e) {
-    if(e.type === "click" || ((e.which && e.which === 13) || (e.keyCode && e.keyCode === 13))) {
+    if(e.type === "click" || isKey(e, [vrtxAdmin.keys.ENTER])) {
     
       console.log(e.target);
       addJsonField($(this));
@@ -1526,7 +1526,7 @@ function initJsonMovableElements() {
     }
   });
   vrtxAdmin.cachedAppContent.on("click keypress", ".vrtx-json .vrtx-remove-button", function (e) {
-    if(e.type === "click" || ((e.which && e.which === 13) || (e.keyCode && e.keyCode === 13))) {
+    if(e.type === "click" || isKey(e, [vrtxAdmin.keys.ENTER])) {
       removeJsonField($(this));
       e.stopPropagation();
       e.preventDefault();

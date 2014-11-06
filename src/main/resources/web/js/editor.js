@@ -1518,8 +1518,6 @@ function initJsonMovableElements() {
   });
   vrtxAdmin.cachedAppContent.on("click keypress", ".vrtx-json .vrtx-add-button", function (e) {
     if(e.type === "click" || isKey(e, [vrtxAdmin.keys.ENTER])) {
-    
-      console.log(e.target);
       addJsonField($(this));
       e.stopPropagation();
       e.preventDefault();

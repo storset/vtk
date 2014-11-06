@@ -433,8 +433,7 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
       _$ = vrtxAdm._$;
 
   // Create folder chooser in global menu
-  vrtxAdm.cachedDoc.on("click", "#global-menu-create a, #vrtx-report-view-other", function (e) {
-    var link = this;
+  eventListen(vrtxAdm.cachedDoc, "click", "#global-menu-create a, #vrtx-report-view-other", function (link) {
     var id = link.id + "-content";
     vrtxAdm.serverFacade.getHtml(link.href, {
       success: function (results, status, resp) {
@@ -488,15 +487,12 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
         d.open();
       }
     });
-    e.stopPropagation();
-    e.preventDefault();
   });
   
   // Advanced publish settings (need more encapsulation)
   var apsD;
   var datepickerApsD;
-  vrtxAdm.cachedDoc.on("click", "#advanced-publish-settings", function (e) {
-    var link = this;
+  eventListen(vrtxAdm.cachedDoc, "click", "#advanced-publish-settings", function (link) {
     var id = link.id + "-content";
     vrtxAdm.serverFacade.getHtml(link.href + "&4", {
       success: function (results, status, resp) {
@@ -528,8 +524,6 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
         apsD.open();
       }
     });
-    e.stopPropagation();
-    e.preventDefault();
   });
   
   vrtxAdm.completeFormAsync({
@@ -646,10 +640,8 @@ VrtxAdmin.prototype.embeddedView = function embeddedView() {
       this.cachedContent.html(titleHtml + failHtml + buttonsHtml);
       
       // Ok / 'X' goes back to view
-      this.cachedDoc.on("click", "#vrtx-embedded-cancel-button, .vrtx-close-dialog-editor", function(e) {
+      eventListen(vrtxAdm.cachedDoc, "click", "#vrtx-embedded-cancel-button, .vrtx-close-dialog-editor", function (ref) {
         location.href = $("#global-menu-leave-admin a").attr("href");
-        e.stopPropagation();
-        e.preventDefault();
       });
     } else {
       $("#editor").height($(window).height() - $("body").height());
@@ -847,13 +839,13 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
         }));
     
         // Save
-        vrtxAdm.cachedAppContent.on("click", ".vrtx-save-button", function (e) {
-          var link = _$(this);
+        eventListen(vrtxAdm.cachedAppContent, "click", ".vrtx-save-button", function (ref) {
+          var link = _$(ref);
           vrtxAdm.editorSaveButtonName = link.attr("name");
           vrtxAdm.editorSaveButton = link;
           // ! Edit single course schedule session
-          vrtxAdm.editorSaveIsRedirectPreview = (this.id === "saveAndViewButton" || this.id === "saveViewAction")
-                                          && (typeof vrtxEditor === "undefined" || !(vrtxEditor.editorForm.hasClass("vrtx-course-schedule") && onlySessionId.length));
+          vrtxAdm.editorSaveIsRedirectPreview = (ref.id === "saveAndViewButton" || ref.id === "saveViewAction")
+                                             && (typeof vrtxEditor === "undefined" || !(vrtxEditor.editorForm.hasClass("vrtx-course-schedule") && onlySessionId.length));
           ajaxSave();
           _$.when(vrtxAdm.asyncEditorSavedDeferred).done(function () {
             vrtxAdm.removeMsg("error");
@@ -875,17 +867,13 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
               }
             }
           }).fail(handleAjaxSaveErrors);
-          e.stopPropagation();
-          e.preventDefault();
         });
       }
       break;
     case "vrtx-preview":
     case "vrtx-revisions":
-      vrtxAdm.cachedAppContent.on("click", "a.vrtx-revision-view, a.vrtx-revision-view-changes", function (e) {
-        var openedRevision = openRegular(this.href, 1020, 800, "DisplayRevision");
-        e.stopPropagation();
-        e.preventDefault();
+      eventListen(vrtxAdm.cachedAppContent, "click", "a.vrtx-revision-view, a.vrtx-revision-view-changes", function (ref) {
+        var openedRevision = openRegular(ref.href, 1020, 800, "DisplayRevision");
       });
 
       if (bodyId === "vrtx-revisions") {
@@ -1106,14 +1094,12 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
       
       break;
     case "vrtx-report-broken-links":
-      vrtxAdm.cachedDoc.on("click", ".vrtx-report-alternative-view-switch input", function(e) {
-        if(!$(this).is(":checked")) {
-          window.location.href = window.location.href.replace("&" + this.name, "");
+      eventListen(vrtxAdm.cachedDoc, "click", ".vrtx-report-alternative-view-switch input", function (ref) {
+        if(!$(ref).is(":checked")) {
+          window.location.href = window.location.href.replace("&" + ref.name, "");
         } else {
-          window.location.href = window.location.href + "&" + this.name;
+          window.location.href = window.location.href + "&" + ref.name;
         }
-        e.stopPropagation();
-        e.preventDefault();
       });
       break;
     default:
@@ -1217,13 +1203,11 @@ VrtxAdmin.prototype.dropdownPlain = function dropdownPlain(selector) {
   var headerText = header.text();
   header.replaceWith("<a href='javascript:void(0);' id='" + idLink + "' class='dropdown-shortcut-menu-click-area' aria-haspopup='true' aria-controls='" + idWrp + "' aria-expanded='false'>" + headerText.substring(0, headerText.length - 1) + "</a>");
 
-  vrtxAdm.cachedBody.on("click", selector + "-header", function (e) {
-    var link = _$(this);
+  eventListen(vrtxAdm.cachedBody, "click", selector + "-header", function (ref) {
+    var link = _$(ref);
     var wrp = link.next(".dropdown-shortcut-menu-container");
     vrtxAdm.closeDropdowns();
     vrtxAdm.openDropdown(link, wrp);
-    e.stopPropagation();
-    e.preventDefault();
   });
 };
 
@@ -1281,16 +1265,12 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
 
     var togglerWrp = list.find("li" + dropdownClickArea);
     togglerWrp.addClass("dropdown-init");
-  
-    togglerWrp.on("click keypress", ".dropdown-shortcut-menu-click-area", function (e) {
-      if (e.type === "click" || isKey(e, [vrtxAdm.keys.ENTER])) {
-        var link = $(this);
-        vrtxAdm.closeDropdowns();
-        vrtxAdm.openDropdown(link, shortcutMenu);
-        e.stopPropagation();
-        e.preventDefault();
-      }
-    });
+    
+    eventListen(togglerWrp, "click keypress", ".dropdown-shortcut-menu-click-area", function (ref) {
+      var link = $(ref);
+      vrtxAdm.closeDropdowns();
+      vrtxAdm.openDropdown(link, shortcutMenu);
+    }, "clickOrEnter");
   }
 };
 
@@ -1386,29 +1366,21 @@ VrtxAdmin.prototype.initScrollBreadcrumbs = function initScrollBreadcrumbs() {
     vrtxAdm.crumbsInner.addClass("animate");
   }, 120);
 
-  vrtxAdm.cachedDoc.on("keydown", ".vrtx-breadcrumb-level", function(e) {
-    if(isKey(e, [vrtxAdmin.keys.ENTER])) {
-      window.location.href = $(this).find("a").attr("href");
-      e.stopPropagation();
-    }  
-  });
-  vrtxAdm.cachedDoc.on("click keypress", "#navigate-crumbs-left", function(e) {
-    if(e.type === "click" || isKey(e, [vrtxAdmin.keys.ENTER])) {
-      vrtxAdmin.scrollBreadcrumbsLeft();
-      e.stopPropagation();
-      e.preventDefault();
-    }
-  });
-  vrtxAdm.cachedDoc.on("click keypress", "#navigate-crumbs-right", function(e) {
-    if(e.type === "click" || isKey(e, [vrtxAdmin.keys.ENTER])) {
-      vrtxAdmin.scrollBreadcrumbsRight();
-      e.stopPropagation();
-      e.preventDefault();
-    }
-  }); 
+  eventListen(vrtxAdm.cachedDoc, "keydown", ".vrtx-breadcrumb-level", function (ref) {
+    window.location.href = $(ref).find("a").attr("href");
+  }, "clickOrEnter", 10);
+  
+  eventListen(vrtxAdm.cachedDoc, "click keypress", "#navigate-crumbs-left", function (ref) {
+    vrtxAdmin.scrollBreadcrumbsLeft();
+  }, "clickOrEnter");
+  
+  eventListen(vrtxAdm.cachedDoc, "click keypress", "#navigate-crumbs-right", function (ref) {
+    vrtxAdmin.scrollBreadcrumbsRight();
+  }, "clickOrEnter");
+  
   /* TODO: replace with stacking of blue/hovered element above nav(?) */
-  vrtxAdm.cachedDoc.on("mouseover mouseout", ".vrtx-breadcrumb-level", function(e) {
-    var hoveredBreadcrumb = $(this);
+  eventListen(vrtxAdm.cachedDoc, "mouseover mouseout", ".vrtx-breadcrumb-level", function(ref) {
+    var hoveredBreadcrumb = $(ref);
     if(!hoveredBreadcrumb.hasClass("vrtx-breadcrumb-active")) {
       if(vrtxAdm.crumbsState === "left") {            
         var gradientRight = vrtxAdm.crumbsRight;
@@ -1426,8 +1398,6 @@ VrtxAdmin.prototype.initScrollBreadcrumbs = function initScrollBreadcrumbs() {
         }
       }
     }
-    e.stopPropagation();
-    e.preventDefault();
   });     
 };
 
@@ -1488,7 +1458,8 @@ VrtxAdmin.prototype.initMiscAdjustments = function initMiscAdjustments() {
     }
   }
 
-  interceptEnterKey();
+  // Stop enter key on input on editor and collectionlisting + trashcan
+  eventListen(vrtxAdmin.cachedAppContent, "keypress", "form#editor input, form[name='collectionListingForm'] input, form.trashcan input", function(ref) {}, "clickOrEnter");
 
   vrtxAdm.logoutButtonAsLink();
   vrtxAdm.adjustResourceTitle();
@@ -1528,14 +1499,6 @@ VrtxAdmin.prototype.adjustResourceTitle = function adjustResourceTitle() {
   }
 };
 
-function interceptEnterKey() {
-  vrtxAdmin.cachedAppContent.on("keypress", "form#editor input, form[name='collectionListingForm'] input, form.trashcan input", function (e) {
-    if (isKey(e, [vrtxAdmin.keys.ENTER])) {
-      e.preventDefault(); // cancel the default browser click
-    }
-  });
-}
-
 function interceptEnterKeyAndReroute(txt, btn, fnOnKeyPress) {
   vrtxAdmin.cachedAppContent.on("keypress", txt, function (e) {
     if (isKey(e, [vrtxAdmin.keys.ENTER])) {
@@ -1553,24 +1516,19 @@ function interceptEnterKeyAndReroute(txt, btn, fnOnKeyPress) {
 }
 
 VrtxAdmin.prototype.mapShortcut = function mapShortcut(selectors, reroutedSelector) {
-  this.cachedAppContent.on("click", selectors, function (e) {
+  eventListen(this.cachedAppContent, "click", selectors, function(ref) {
     $(reroutedSelector).click();
-    e.stopPropagation();
-    e.preventDefault();
   });
 };
 
 VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
-  var _$ = this._$;
-
-  var btn = _$('input#logoutAction');
+  var btn = $('input#logoutAction');
   if (!btn.length) return;
+  
   btn.hide();
   btn.after('&nbsp;<a id=\"logoutAction.link\" name=\"logoutAction\" href="javascript:void(0);">' + btn.attr('value') + '</a>');
-  _$("#app-head-wrapper").on("click", '#logoutAction\\.link', function (e) {
+  eventListen($("#app-head-wrapper"), "click", "#logoutAction\\.link", function(ref) {
     btn.click();
-    e.stopPropagation();
-    e.preventDefault();
   });
 };
 
@@ -1596,15 +1554,17 @@ function createFuncComplete() {
     }
   });
   
-  vrtxAdm.cachedDoc.on("keyup", "#vrtx-div-collection-title input[type='text']", $.debounce(vrtxAdm.keyInputDebounceRate, true, function () {
-    createTitleChange($(this), $("#vrtx-div-collection-name input[type='text']"), null);
-  }));
-  vrtxAdm.cachedDoc.on("keyup", "#vrtx-div-file-title input[type='text']", $.debounce(vrtxAdm.keyInputDebounceRate, true, function () {
-    createTitleChange($(this), $("#vrtx-div-file-name input[type='text']"), $("#isIndex"));
-  }));
-  vrtxAdm.cachedDoc.on("keyup", "#vrtx-div-file-name input[type='text'], #vrtx-div-collection-name input[type='text']", $.debounce(vrtxAdm.keyInputDebounceRate, true, function () {
-    createFileNameChange($(this));
-  }));
+  eventListen(vrtxAdm.cachedDoc, "keyup", "#vrtx-div-collection-title input[type='text']", function(ref) {
+    createTitleChange($(ref), $("#vrtx-div-collection-name input[type='text']"), null);
+  }, null, vrtxAdm.keyInputDebounceRate);
+  
+  eventListen(vrtxAdm.cachedDoc, "keyup", "#vrtx-div-file-title input[type='text']", function(ref) {
+    createTitleChange($(ref), $("#vrtx-div-file-name input[type='text']"), $("#isIndex"));
+  }, null, vrtxAdm.keyInputDebounceRate);
+  
+  eventListen(vrtxAdm.cachedDoc, "keyup", "#vrtx-div-file-name input[type='text'], #vrtx-div-collection-name input[type='text']", function(ref) {
+    createFileNameChange($(ref));
+  }, null, vrtxAdm.keyInputDebounceRate);
 
   vrtxAdm.createResourceReplaceTitle = true;
 
@@ -4119,6 +4079,7 @@ VrtxAdmin.prototype.ariaBusy = function ariaBusy(idOrElm, isBusy) {
  * @param {boolean} isExpanded If the id or element is expanded
  */
 VrtxAdmin.prototype.ariaDropdownState = function ariaDropdownState(idOrElmLink, idOrElmDropdown, isExpanded) {
+  this.ariaBool("expanded", idOrElmLink, isExpanded);
   this.ariaBool("expanded", idOrElmDropdown, isExpanded);
   this.ariaHidden(idOrElmDropdown, !isExpanded);
 };
@@ -4325,6 +4286,7 @@ function eventListen(listenBase, eventType, listenOn, handlerFn, handlerFnCheck,
       if(typeof handlerFnCheck !== "string"
             || (handlerFnCheck === "clickOrEnter" && (e.type === "click" || isKey(e, [vrtxAdmin.keys.ENTER])))) {
         handlerFn(this);
+        // DEBUG: vrtxAdmin.log({ msg: (e.type.toUpperCase() + " for " + (this.id || this.className || this.nodeType)) })
         e.preventDefault();
       }
     }));
@@ -4333,6 +4295,7 @@ function eventListen(listenBase, eventType, listenOn, handlerFn, handlerFnCheck,
       if(typeof handlerFnCheck !== "string"
             || (handlerFnCheck === "clickOrEnter" && (e.type === "click" || isKey(e, [vrtxAdmin.keys.ENTER])))) {
         handlerFn(this);
+        // DEBUG: vrtxAdmin.log({ msg: (e.type.toUpperCase() + " for " + (this.id || this.className || this.nodeType)) })
         e.stopPropagation();
         e.preventDefault();
       }

@@ -111,17 +111,21 @@ function VrtxAdmin() {
   this.windowResizeScrollDebounceRate = 20;
   this.keyInputDebounceRate = 50;
 
-  /* Application logic */
+  /* Save */
   this.editorSaveButtonName = "";
   this.editorSaveButton = null;
   this.editorSaveIsRedirectPreview = false;
+  
+  /* Async operations */
   this.asyncEditorSavedDeferred = null;
   this.asyncGetFormsInProgress = 0;
   this.asyncGetStatInProgress = false;
   
+  /* Upload */
   this.uploadCopyMoveSkippedFiles = {};
   this.uploadCompleteTimeoutBeforeProcessingDialog = 2000; // 2s
   
+  /* Create and trashcan */
   this.createResourceReplaceTitle = true;
   this.createDocumentFileName = "";
   this.trashcanCheckedFiles = 0;
@@ -224,14 +228,12 @@ vrtxAdmin._$(document).ready(function () {
       }
     }
   }
-  
-  if (vrtxAdm.runReadyLoad === false) return; // Return if should not run all of ready() code
+   // Return if should not run all of ready() code
+  if (vrtxAdm.runReadyLoad === false) return;
 
   // Load required init components (animations and trees)
   vrtxAdm.requiredScriptsLoaded = $.Deferred();
-  vrtxAdm.loadScripts(["/js/vrtx-animation.js", 
-                       "/js/vrtx-tree.js"],
-                       vrtxAdm.requiredScriptsLoaded);
+  vrtxAdm.loadScripts(["/js/vrtx-animation.js", "/js/vrtx-tree.js"], vrtxAdm.requiredScriptsLoaded);
   vrtxAdm.clientLastModified = $("#resource-last-modified").text().split(",");
   
   if(!isEmbedded) {
@@ -287,7 +289,7 @@ VrtxAdmin.prototype.cacheDOMNodesForReuse = function cacheDOMNodesForReuse() {
   var vrtxAdm = this,
     _$ = vrtxAdm._$;
 
-  if(vrtxAdm.cachedBody != null) return;
+  if(vrtxAdm.cachedBody) return;
 
   vrtxAdm.cachedDoc = _$(document);
   vrtxAdm.cachedBody = vrtxAdm.cachedDoc.find("body");
@@ -303,13 +305,14 @@ VrtxAdmin.prototype.cacheDOMNodesForReuse = function cacheDOMNodesForReuse() {
  */
  
 VrtxAdmin.prototype.initTooltips = function initTooltips() {
-   $("#title-container").vortexTips("abbr:not(.delayed)", {
+  var titleContainer = $("#title-container");
+  titleContainer.vortexTips("abbr:not(.delayed)", {
     appendTo: "#title-container",
     containerWidth: 200,
     xOffset: 20,
     yOffset: 0
   });
-  $("#title-container").vortexTips("abbr.delayed", {
+  titleContainer.vortexTips("abbr.delayed", {
     appendTo: "#title-container",
     containerWidth: 200,
     xOffset: 20,
@@ -1725,7 +1728,6 @@ function createFileNameChange(nameField) {
       growField(this.field, after, 5, 100, 530);
     }
   });
-  
   $(".file-name-from-title").removeClass("file-name-from-title");
 }
 

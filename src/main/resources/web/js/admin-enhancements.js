@@ -4273,15 +4273,15 @@ function isKey(e, keyCodes) {
 /**
  * Setup listener for events with handler a function (duplicate outer handler function for perf.)
  *
- * @param {object} listenBase The base element (jQElement) that gets the events bubbled up
- * @param {string} eventType What type of events
- * @param {object} listenOn What elements (jQElement) should listen on
- * @param {object} cbfn Handler function
- * @param {string} cbFnCheck If should proceed (event conditions like isKey)
+ * @param {object} listenBase Base element the events bubbles up to (jQElement)
+ * @param {string} eventType Type of events
+ * @param {object} listenOn Elements should listen on (jQElement's)
+ * @param {object} handlerFn Handler function
+ * @param {string} handlerFnCheck If should proceed with handler function (event conditions)
  * @param {number} debounceInterval Debounce the events by some milliseconds
  */
 function eventListen(listenBase, eventType, listenOn, handlerFn, handlerFnCheck, debounceInterval) {
-  // DEBUG: vrtxAdmin.log({ msg: "Listen events " + eventType + " on " + listenOn });
+  // DEBUG: vrtxAdmin.log({ msg: "Listen for events of type " + eventType.toUpperCase() + " on " + listenOn });
   if(typeof debounceInterval === "number") {
     listenBase.on(eventType, listenOn, $.debounce(debounceInterval, true, function (e) {
       if(typeof handlerFnCheck !== "string"

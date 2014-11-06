@@ -4309,20 +4309,30 @@ function isKey(e, keyCodes) {
   }
 }
 
-function eventListen(listenBase, eventType, listenOn, cbFn, cbFnCheck, debounceInterval) {
+/**
+ * Setup listener for events with handler a function (duplicate outer handler function for perf.)
+ *
+ * @param {object} listenBase The base element (jQElement) that gets the events bubbled up
+ * @param {string} eventType What type of events
+ * @param {object} listenOn What elements (jQElement) should listen on
+ * @param {object} cbfn Handler function
+ * @param {string} cbFnCheck If should proceed (event conditions like isKey)
+ * @param {number} debounceInterval Debounce the events by some milliseconds
+ */
+function eventListen(listenBase, eventType, listenOn, handlerFn, handlerFnCheck, debounceInterval) {
   if(typeof debounceInterval === "number") {
     listenBase.on(eventType, listenOn, $.debounce(debounceInterval, true, function (e) {
-      if(typeof cbFnCheck !== "string"
-            || (cbFnCheck === "clickOrEnter" && e.type === "click" || isKey(e, [vrtxAdmin.keys.ENTER]))) {
-        cbFn(this);
+      if(typeof handlerFnCheck !== "string"
+            || (handlerFnCheck === "clickOrEnter" && (e.type === "click" || isKey(e, [vrtxAdmin.keys.ENTER])))) {
+        handlerFn(this);
         e.preventDefault();
       }
     }));
   } else {
     listenBase.on(eventType, listenOn, function (e) {
-      if(typeof cbFnCheck !== "string"
-            || (cbFnCheck === "clickOrEnter" && e.type === "click" || isKey(e, [vrtxAdmin.keys.ENTER]))) {
-        cbFn(this);
+      if(typeof handlerFnCheck !== "string"
+            || (handlerFnCheck === "clickOrEnter" && (e.type === "click" || isKey(e, [vrtxAdmin.keys.ENTER])))) {
+        handlerFn(this);
         e.stopPropagation();
         e.preventDefault();
       }

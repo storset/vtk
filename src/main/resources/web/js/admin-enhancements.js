@@ -1296,7 +1296,9 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
 
 /**
  * Open dropdown (slide down)
- *
+ * 
+ * @param {object} link The link that triggered the dropdown
+ * @param {object} dropdown The element to be dropped down
  * @this {VrtxAdmin}
  */
 VrtxAdmin.prototype.openDropdown = function openDropdown(link, dropdown) {
@@ -3754,6 +3756,7 @@ VrtxAdmin.prototype.removeMsg = function removeMsg(type) {
  * Display error message in dialog
  *
  * @this {VrtxAdmin}
+ * @param {object} selector The element where msg is inserted before
  * @param {string} msg The message
  */
 VrtxAdmin.prototype.displayDialogErrorMsg = function displayDialogErrorMsg(selector, msg) {
@@ -3796,7 +3799,7 @@ VrtxAdmin.prototype.serverFacade = {
    * @this {serverFacade}
    * @param {string} url The URL
    * @param {object} callbacks The callback functions
-   * @param {bool} useCache Use cache in browser
+   * @param {boolean} useCache Use cache in browser
    */
   getJSON: function (url, callbacks, useCache) {
     this.get(url, callbacks, "json", (typeof useCache !== "boolean" || useCache));
@@ -3830,6 +3833,7 @@ VrtxAdmin.prototype.serverFacade = {
    * @param {string} url The URL
    * @param {object} callbacks The callback functions
    * @param {string} type The data type
+   * @param {boolean} useCache Use cache in browser
    */
   get: function (url, callbacks, type, useCache) {
     vrtxAdmin._$.ajax({
@@ -3901,7 +3905,7 @@ VrtxAdmin.prototype.serverFacade = {
    * @this {serverFacade}
    * @param {object} xhr The XMLHttpRequest object
    * @param {string} textStatus The text status
-   * @param {bool} useStatusCodeInMsg Use status code in error message?
+   * @param {boolean} useStatusCodeInMsg Use status code in error message?
    * @return {string} The messsage
    */
   error: function (xhr, textStatus, useStatusCodeInMsg) { // TODO: detect function origin
@@ -4110,8 +4114,9 @@ VrtxAdmin.prototype.ariaBusy = function ariaBusy(idOrElm, isBusy) {
  * ARIA-dropdown
  *
  * @this {VrtxAdmin}
- * @param {string} idOrElm The id or jQElement
- * @param {boolean} isBusy If the id or element is expanded
+ * @param {string} idOrElmLink The id or jQElement
+ * @param {string} idOrElmDropdown The id or jQElement
+ * @param {boolean} isExpanded If the id or element is expanded
  */
 VrtxAdmin.prototype.ariaDropdownState = function ariaDropdownState(idOrElmLink, idOrElmDropdown, isExpanded) {
   this.ariaBool("expanded", idOrElmDropdown, isExpanded);

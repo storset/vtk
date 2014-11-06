@@ -4309,6 +4309,27 @@ function isKey(e, keyCodes) {
   }
 }
 
+function eventListen(listenBase, eventType, listenOn, cbFn, cbFnCheck, debounceInterval) {
+  if(typeof debounceInterval === "number") {
+    listenBase.on(eventType, listenOn, $.debounce(debounceInterval, true, function (e) {
+      if(typeof cbFnCheck !== "string"
+            || (cbFnCheck === "clickOrEnter" && e.type === "click" || isKey(e, [vrtxAdmin.keys.ENTER]))) {
+        cbFn(this);
+        e.preventDefault();
+      }
+    }));
+  } else {
+    listenBase.on(eventType, listenOn, function (e) {
+      if(typeof cbFnCheck !== "string"
+            || (cbFnCheck === "clickOrEnter" && e.type === "click" || isKey(e, [vrtxAdmin.keys.ENTER]))) {
+        cbFn(this);
+        e.stopPropagation();
+        e.preventDefault();
+      }
+    });
+  }
+}
+
 
 /*-------------------------------------------------------------------*\
     13. Override JavaScript / jQuery

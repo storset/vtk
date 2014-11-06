@@ -908,16 +908,12 @@ VrtxEditor.prototype.initPreviewImage = function initPreviewImage() {
   }
   
   /* Inputfield events for image preview */
-  vrtxAdmin.cachedDoc.on("blur", "input.preview-image-inputfield", function (e) {
-    previewImage(this.id, true);
+  eventListen(vrtxAdmin.cachedDoc, "blur", "input.preview-image-inputfield", function (ref) {
+    previewImage(ref.id, true);
   });
-
-  vrtxAdmin.cachedDoc.on("keydown", "input.preview-image-inputfield", _$.debounce(50, true, function (e) { // ENTER-key
-    if (isKey(e, [vrtxAdmin.keys.ENTER])) {
-      previewImage(this.id);
-      e.preventDefault();
-    }
-  }));
+  eventListen(vrtxAdmin.cachedDoc, "keydown", "input.preview-image-inputfield", function (ref) {
+    previewImage(ref.id);
+  }, "clickOrEnter", 50);
 };
 
 function initPictureAddJsonField(elm) {
@@ -1501,38 +1497,19 @@ function initJsonMovableElements() {
 
     JSON_ELEMENTS_INITIALIZED.resolve();
   });
-
-  vrtxAdmin.cachedAppContent.on("click keypress", ".vrtx-json .vrtx-move-down-button", function (e) {
-    if(e.type === "click" || isKey(e, [vrtxAdmin.keys.ENTER])) {
-      swapContent($(this), 1);
-      e.stopPropagation();
-      e.preventDefault();
-    }
-  });
-  vrtxAdmin.cachedAppContent.on("click keypress", ".vrtx-json .vrtx-move-up-button", function (e) {
-    if(e.type === "click" || isKey(e, [vrtxAdmin.keys.ENTER])) {
-      swapContent($(this), -1);
-      e.stopPropagation();
-      e.preventDefault();
-    }
-  });
-  vrtxAdmin.cachedAppContent.on("click keypress", ".vrtx-json .vrtx-add-button", function (e) {
-    if(e.type === "click" || isKey(e, [vrtxAdmin.keys.ENTER])) {
-      addJsonField($(this));
-      e.stopPropagation();
-      e.preventDefault();
-    }
-  });
-  vrtxAdmin.cachedAppContent.on("click keypress", ".vrtx-json .vrtx-remove-button", function (e) {
-    if(e.type === "click" || isKey(e, [vrtxAdmin.keys.ENTER])) {
-      removeJsonField($(this));
-      e.stopPropagation();
-      e.preventDefault();
-    }
-  });
+  
+  eventListen(vrtxAdmin.cachedAppContent, "click keypress", ".vrtx-json .vrtx-move-down-button", function (ref) {
+    swapContent($(ref), 1);
+  }, "clickOrEnter");
+  eventListen(vrtxAdmin.cachedAppContent, "click keypress", ".vrtx-json .vrtx-move-up-button", function (ref) {
+    swapContent($(ref), -1);
+  }, "clickOrEnter");
+  eventListen(vrtxAdmin.cachedAppContent, "click keypress", ".vrtx-json .vrtx-add-button", addJsonField, "clickOrEnter");
+  eventListen(vrtxAdmin.cachedAppContent, "click keypress", ".vrtx-json .vrtx-remove-button", removeJsonField, "clickOrEnter");
 }
 
-function addJsonField(btn) {
+function addJsonField(ref) {
+  var btn = $(ref);
   var jsonParent = btn.closest(".vrtx-json");
   var numOfElements = jsonParent.find(".vrtx-json-element").length;
   var j = vrtxEditor.multipleBoxesTemplatesContract[parseInt(btn.data('number'), 10)];
@@ -1627,8 +1604,9 @@ function addJsonField(btn) {
   vrtxEditor.multipleFieldsBoxes[j.name].counter++;
 }
 
-function removeJsonField(btn) {
-  var removeElement = btn.closest(".vrtx-json-element"),
+function removeJsonField(ref) {
+  var btn = $(ref),
+      removeElement = btn.closest(".vrtx-json-element"),
       accordionWrapper = removeElement.closest(".vrtx-json-accordion"),
       hasAccordion = accordionWrapper.length,
       removeElementParent = removeElement.parent(),

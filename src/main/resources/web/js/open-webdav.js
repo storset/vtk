@@ -6,7 +6,7 @@
 if(typeof agentWebDav === "undefined") {
   $(function() {
     var ua = window.navigator.userAgent.toLowerCase();         
-    var isWin = ((ua.indexOf("win") != -1) || (ua.indexOf("16bit") != -1));
+    var isWin = ((ua.indexOf("win") !== -1) || (ua.indexOf("16bit") !== -1));
     if ((($.browser.msie && $.browser.version >= 7) || /.*trident\/7\.0.*/.test(ua)) && isWin) {  
       
       // Show / hide WebDAV link on hover in collection listing

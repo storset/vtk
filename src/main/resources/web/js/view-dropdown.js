@@ -37,8 +37,8 @@ if(typeof viewDropdown === "undefined") { // Avoid duplicate running code
       /* Dropdown click events handler */
       var toggledOpenClosable = function(e) {
         var keyCode = (e.keyCode ? e.keyCode : e.which);
-        var isEnter = keyCode == 13;
-        if(e.type == "click" || isEnter) {
+        var isEnter = keyCode === 13;
+        if(e.type === "click" || isEnter) {
           var link = $(this);
           if(link.parent().hasClass("vrtx-dropdown-component-toggled")) {
             link.toggleClass("active");

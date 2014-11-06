@@ -55,7 +55,7 @@ var VrtxAnimation = dejavu.Class.declare({
   initialize: function(opts) {
     this.__opts = opts;
     var animation = this;
-    if(animation.$static.cssTransform != null && animation.$static.cssTransition != null) {
+    if(animation.$static.cssTransform !== null && animation.$static.cssTransition !== null) {
       animation.__opts.cssTransitionEnd = (function () {
         var props = { 'WebkitTransition': 'webkitTransitionEnd', 'MozTransition': 'transitionend', 'OTransition': 'oTransitionEnd otransitionend', 'msTransition': 'MSTransitionEnd', 'transition': 'transitionend' };
         return props.hasOwnProperty(animation.$static.cssTransition) ? props[animation.$static.cssTransition] : null;
@@ -83,7 +83,7 @@ var VrtxAnimation = dejavu.Class.declare({
     }
     
     var animation = this;
-    if(animation.$static.cssTransform == null || !animation.__opts.useCSSAnim) { // JS pixel pushing
+    if(animation.$static.cssTransform === null || !animation.__opts.useCSSAnim) { // JS pixel pushing
       var easing = (dir === "in") ? "easeIn" : "easeOut";
       var speed = animation.__opts.animationSpeed || animation.$static.animationSpeed;
       animation.__opts.elem.animate({
@@ -110,7 +110,7 @@ var VrtxAnimation = dejavu.Class.declare({
     var height = this.__prepareMove(dir)[1];
 
     var animation = this;
-    if(animation.$static.cssTransform == null || !animation.__opts.useCSSAnim) { // JS pixel pushing
+    if(animation.$static.cssTransform === null || !animation.__opts.useCSSAnim) { // JS pixel pushing
       var easing = (dir === "in") ? "easeIn" : "easeOut";
       var speed = animation.__opts.animationSpeed || animation.$static.animationSpeed;
       animation.__opts.elem[(dir === "in") ? "slideDown" : "slideUp"](

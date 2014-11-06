@@ -2701,6 +2701,10 @@ table.privilegeTable {
   width: 100%;
 }
 
+table tbody th {
+  text-align: left;
+}
+
 table.resourceInfo td,
 table.resourceInfo th,
 table.privilegeTable td,

@@ -36,7 +36,7 @@
 
   <#if useVideoTag>
     <div id="mediaspiller-${dateStr}">
-      <video src="${url}" controls width="${width}" height="${height}" poster="<#if poster?exists>${poster?html}<#else>/vrtx/__vrtx/static-resources/themes/default/icons/${imgSrc}</#if>"></video>
+      <video src="${url}" controls<#if autoplay?? && autoplay == "true"> autoplay</#if> width="${width}" height="${height}" poster="<#if poster?exists>${poster?html}<#else>/vrtx/__vrtx/static-resources/themes/default/icons/${imgSrc}</#if>"></video>
     </div>
   <#else>
     <@genPlayButtonCSS showPlayButton />

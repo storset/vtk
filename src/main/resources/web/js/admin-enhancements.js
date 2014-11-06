@@ -4281,6 +4281,7 @@ function isKey(e, keyCodes) {
  * @param {number} debounceInterval Debounce the events by some milliseconds
  */
 function eventListen(listenBase, eventType, listenOn, handlerFn, handlerFnCheck, debounceInterval) {
+  // DEBUG: vrtxAdmin.log({ msg: "Listen events " + eventType + " on " + listenOn });
   if(typeof debounceInterval === "number") {
     listenBase.on(eventType, listenOn, $.debounce(debounceInterval, true, function (e) {
       if(typeof handlerFnCheck !== "string"

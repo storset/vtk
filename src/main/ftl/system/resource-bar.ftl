@@ -26,7 +26,7 @@
   <span id="resource-locked-by-other" class="hidden-server-info"><#if owner?exists && owner != currentPrincipal>true<#else>false</#if></span>
   <span id="resource-locked-by" class="hidden-server-info">${lockedBy?html}</span>
 </#if>
-<span id="resource-can-edit" class="hidden-server-info"><#if writePermissionAtAll.permissionsQueryResult = 'true'>true<#else>false</#if></span>
+<span id="resource-can-edit" class="hidden-server-info"><#if (writePermissionAtAll.permissionsQueryResult)?exists && writePermissionAtAll.permissionsQueryResult = 'true'>true<#else>false</#if></span>
 <script type="text/javascript"><!--
   if(vrtxAdmin.isIE7 || vrtxAdmin.isIETridentInComp) {
     if(vrtxAdmin.isIETridentInComp) {

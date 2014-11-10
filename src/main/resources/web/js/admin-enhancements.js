@@ -66,7 +66,7 @@ function VrtxAdmin() {
   this.hasConsoleLog = this.hasConsole && console.log;
   this.hasConsoleError = this.hasConsole && console.error;
 
-  /** Language extracted from cookie */
+  /** Language extracted from i18n in resource-bar.ftl */
   this.lang = "en";
 
   /** Permissions autocomplete parameters

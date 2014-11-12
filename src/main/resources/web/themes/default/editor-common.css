@@ -91,6 +91,12 @@ h2 {
   margin-bottom: 10px;
 }
 
+.vrtx-multipleinputfield {
+  clear: both;
+  float: left;
+  width: 100%;
+}
+
 .vrtx-multipleinputfield-json-wrapper,
 .vrtx-multipleinputfield .vrtx-dropdown {
   display: inline-block;
@@ -120,6 +126,10 @@ h2 {
   display: block;
 }
 
+.vrtx-multipleinputfield > * {
+  float: left;
+}
+
 .vrtx-multipleinputfield .vrtx-button.moveup img,
 .vrtx-multipleinputfield .vrtx-button.movedown img {
   height: 15px;
@@ -129,8 +139,9 @@ h2 {
 .vrtx-multipleinputfield .vrtx-button.movedown {
   padding-left: 9px;
   padding-right: 9px;
+  /* Inline block version
   position: relative;
-  bottom: -3px;
+  bottom: -3px; */
 }
 
 .vrtx-multipleinputfield .vrtx-button.moveup:hover,

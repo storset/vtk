@@ -124,7 +124,7 @@
               </#if>
             </td>
             <td class="vrtx-report-permissions permissions">
-              <#assign hasTooltip = report.permissionTooltips[res_index]?exists />
+              <#assign hasTooltip = (report.permissionTooltips[res_index])?exists />
               <#if report.isReadRestricted[res_index] >
                 <#assign permissionClass = "restricted" />
               <#else>

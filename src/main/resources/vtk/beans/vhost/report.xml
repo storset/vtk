@@ -101,6 +101,7 @@
         <ref bean="managed-xmlReporter" />
         <ref bean="htmlReporter" />
         <ref bean="phpReporter" />
+        <ref bean="queryReporter" />
       </list>
     </property>
   </bean>
@@ -419,6 +420,12 @@
     <property name="backReportName" ref="diagramReportName" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
+
+  <bean id="queryReporter" class="vtk.web.report.QueryReporter" parent="documentReporter">
+    <constructor-arg ref="searchParser" />
+    <property name="name" value="query" />
+  </bean>
+
 
   <bean id="report.viewResolver" parent="system.decoratingViewResolver">
     <property name="views">

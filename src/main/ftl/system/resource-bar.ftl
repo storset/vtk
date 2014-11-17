@@ -9,6 +9,13 @@
 </noscript>
 
 <#assign resource = resourceContext.currentResource />
+
+<#-- Listing JavaScript (collection and trash-can) -->
+<#if (!RequestParameters.mode?exists && !RequestParameters.action?exists && resource.collection)
+  || (RequestParameters.mode?exists && RequestParameters.mode == "trash-can" && resource.collection)>
+  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/domains/listing.js"></script>
+</#if>
+
 <#assign lang = vrtx.getMsg("eventListing.calendar.lang", "en") />
 
 <#assign lastModified = resource.getLastModified() />

@@ -605,7 +605,7 @@ VrtxAdmin.prototype.globalAsyncComplete = function globalAsyncComplete() {
   vrtxAdm.initResourceTitleDropdown();
   vrtxAdm.initPublishingDropdown();
   vrtxAdm.adjustResourceTitle();
-  if(vrtxAdm.updateCollectionListingInteraction) {
+  if(typeof vrtxAdm.updateCollectionListingInteraction === "function") {
     vrtxAdm.updateCollectionListingInteraction();
   }
 };
@@ -1600,7 +1600,7 @@ function resourcesCopyMove(resultElm, form, url, link) {
       after: function() {
         vrtxAdm.displayErrorMsg(resultElm.find(".errormessage").html());
         vrtxAdm.cachedContent.html(resultElm.find("#contents").html());
-        if(vrtxAdm.updateCollectionListingInteraction) {
+        if(typeof vrtxAdm.updateCollectionListingInteraction === "function") {
           vrtxAdm.updateCollectionListingInteraction();
         }
         li.remove();

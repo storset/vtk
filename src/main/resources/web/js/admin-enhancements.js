@@ -910,7 +910,9 @@ VrtxAdmin.prototype.initDomainsInstant = function initDomainsInstant() {
   switch (vrtxAdm.bodyId) {
     case "vrtx-trash-can":
     case "vrtx-manage-collectionlisting":
-      vrtxAdm.collectionListingInteraction();
+      if(typeof vrtxAdm.collectionListingInteraction === "function") {
+        vrtxAdm.collectionListingInteraction();
+      }
     default: // noop
       break;
   }

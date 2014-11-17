@@ -10,10 +10,16 @@
 
 <#assign resource = resourceContext.currentResource />
 
-<#-- Listing JavaScript (collection and trash-can) -->
+<#-- Listing (collection and trash-can) JavaScript -->
 <#if (!RequestParameters.mode?exists && !RequestParameters.action?exists && resource.collection)
   || (RequestParameters.mode?exists && RequestParameters.mode == "trash-can" && resource.collection)>
   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/domains/listing.js"></script>
+<#-- Save in editor JavaScript -->
+<#elseif (RequestParameters.action?exists && RequestParameters.action == "plaintext-edit")
+      || (RequestParameters.mode?exists && RequestParameters.mode == "editor" &&
+          RequestParameters.action?exists && RequestParameters.action == "edit")
+      || (RequestParameters.mode?exists && RequestParameters.mode == "aspects")>
+  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/domains/editors.js"></script>
 </#if>
 
 <#assign lang = vrtx.getMsg("eventListing.calendar.lang", "en") />

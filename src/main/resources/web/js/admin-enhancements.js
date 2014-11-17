@@ -1629,7 +1629,7 @@ function createChangeTemplate(hasTitle) {
   }
 
   var name = $("#name");
-  growField(name, name.val(), 5, isIndexOrReplaceTitle ? 35 : 100, 530);
+  vrtxAdmin.inputUpdateEngine.grow(name, name.val(), 5, isIndexOrReplaceTitle ? 35 : 100, 530);
   
   if (vrtxAdmin.createResourceReplaceTitle) {
     $(".vrtx-admin-form").addClass("file-name-from-title");
@@ -1639,7 +1639,7 @@ function createChangeTemplate(hasTitle) {
 function createCheckUncheckIndexFile(nameField, indexCheckbox) {
   if (indexCheckbox.is(":checked")) {
     vrtxAdmin.createDocumentFileName = nameField.val();
-    growField(nameField, 'index', 5, 35, 530);
+    vrtxAdmin.inputUpdateEngine.grow(nameField, 'index', 5, 35, 530);
     nameField.val("index");
     
     nameField[0].disabled = true;
@@ -1649,19 +1649,19 @@ function createCheckUncheckIndexFile(nameField, indexCheckbox) {
     $("#vrtx-textfield-file-type").removeClass("disabled");
 
     nameField.val(vrtxAdmin.createDocumentFileName);
-    growField(nameField, vrtxAdmin.createDocumentFileName, 5, (vrtxAdmin.createResourceReplaceTitle ? 35 : 100), 530);
+    vrtxAdmin.inputUpdateEngine.grow(nameField, vrtxAdmin.createDocumentFileName, 5, (vrtxAdmin.createResourceReplaceTitle ? 35 : 100), 530);
   }
 }
 
 function createTitleChange(titleField, nameField, indexCheckbox) {
   if (vrtxAdmin.createResourceReplaceTitle) {
-    var nameFieldVal = replaceInvalidChar(titleField.val(), fileTitleSubstitutions, true);
+    var nameFieldVal = vrtxAdmin.inputUpdateEngine.substitute(titleField.val(), true);
     if (!indexCheckbox || !indexCheckbox.length || !indexCheckbox.is(":checked")) {
       if (nameFieldVal.length > 50) {
         nameFieldVal = nameFieldVal.substring(0, 50);
       }
       nameField.val(nameFieldVal);
-      growField(nameField, nameFieldVal, 5, 35, 530);
+      vrtxAdmin.inputUpdateEngine.grow(nameField, nameFieldVal, 5, 35, 530);
     } else {
       vrtxAdmin.createDocumentFileName = nameFieldVal;
     }
@@ -1672,124 +1672,142 @@ function createFileNameChange(nameField) {
   if (vrtxAdmin.createResourceReplaceTitle) {
     vrtxAdmin.createResourceReplaceTitle = false;
   }
-
-  updateField({
-    field: nameField,
-    substitutions: fileTitleSubstitutions,
+  vrtxAdmin.inputUpdateEngine.update({
+    input: nameField,
     toLowerCase: true,
     afterUpdate: function(after) {
-      growField(this.field, after, 5, 100, 530);
+      vrtxAdmin.inputUpdateEngine.grow(this.input, after, 5, 100, 530);
     }
   });
   $(".file-name-from-title").removeClass("file-name-from-title");
 }
 
-var fileTitleSubstitutions = {
-  " ": "-",
-  "&": "-",
-  "'": "-",
-  "\"": "-",
-  "\\/": "-",
-  "\\\\": "-",
-  "æ": "e",
-  "ø": "o",
-  "å": "a",
-  ",": "",
-  "%": "",
-  "#": "",
-  "\\?": ""
-};
 
-function updateField(opts) {
-  var currentCaretPos = getCaretPos(opts.field[0]);
-  var before = opts.field.val();
-  var after = replaceInvalidChar(before, opts.substitutions, opts.toLowerCase);
-  opts.field.val(after);
-  if(opts.afterUpdate) opts.afterUpdate(after);
-  setCaretToPos(opts.field[0], currentCaretPos - (before.length - after.length));
-  return after;
-}
-
-function replaceInvalidChar(val, substitutions, toLowerCase) {
-  if(toLowerCase) val = val.toLowerCase();
-  for (var key in substitutions) {
-    var replaceThisCharGlobally = new RegExp(key, "g");
-    val = val.replace(replaceThisCharGlobally, substitutions[key]);
-  }
-  return val;
-}
-
-/* Taken from second comment (and jquery.autocomplete.js): 
- * http://stackoverflow.com/questions/499126/jquery-set-cursor-position-in-text-area
+/**
+ * Input update engine
+ * @namespace
  */
-function setCaretToPos(input, pos) {
-  setSelectionRange(input, pos, pos);
-}
-
-function setSelectionRange(field, start, end) {
-  if (field.createTextRange) {
-    var selRange = field.createTextRange();
-    selRange.collapse(true);
-    selRange.moveStart("character", start);
-    selRange.moveEnd("character", end);
-    selRange.select();
-  } else if (field.setSelectionRange) {
-    field.setSelectionRange(start, end);
-  } else {
-    if (field.selectionStart) {
-      field.selectionStart = start;
-      field.selectionEnd = end;
+VrtxAdmin.prototype.inputUpdateEngine = {
+  /**
+   * Update
+   *
+   * @this {inputSelectionEngine}
+   */
+  update: function(opts) {
+    var currentCaretPos = this.getCaretPos(opts.input[0]);
+    var before = opts.input.val();
+    var after = this.substitute(before, opts.toLowerCase, opts.substitutions);
+    opts.input.val(after);
+    if(opts.afterUpdate) {
+      opts.afterUpdate(after);
     }
+    this.setCaretPos(opts.input[0], currentCaretPos - (before.length - after.length));
+    return after;
+  },
+  /**
+   * Set caret position
+   * 
+   * Credits: http://stackoverflow.com/questions/499126/jquery-set-cursor-position-in-text-area (first)
+   * @this {inputSelectionEngine}
+   */
+  setCaretPos: function(input, pos) {
+    var start = pos;
+    var end = pos;
+    if (input.createTextRange) {
+      var selRange = input.createTextRange();
+      selRange.collapse(true);
+      selRange.moveStart("character", start);
+      selRange.moveEnd("character", end);
+      selRange.select();
+    } else if (input.setSelectionRange) {
+      input.setSelectionRange(start, end);
+    } else {
+      if (input.selectionStart) {
+        input.selectionStart = start;
+        input.selectionEnd = end;
+      }
+    }
+    input.focus();
+  },
+  /**
+   * Get caret position
+   * 
+   * Credits: http://stackoverflow.com/questions/4928586/get-caret-position-in-html-input (fourth)
+   * @this {inputSelectionEngine}
+   */
+  getCaretPos: function(input) {
+    if (input.setSelectionRange) {
+      return input.selectionStart;
+    } else if (document.selection && document.selection.createRange) {
+      var range = document.selection.createRange();
+      var bookmark = range.getBookmark();
+      return bookmark.charCodeAt(2) - 2;
+    }
+  },
+  /**
+   * Substitute characters
+   * 
+   * @this {inputSelectionEngine}
+   */
+  substitute: function(val, toLowerCase, substitutions) {
+    if(toLowerCase) {
+      val = val.toLowerCase();
+    }
+    if(typeof substitutions !== "object") {
+      substitutions = this.substitutionsDefault;
+    }
+    for (var key in substitutions) {
+      var replaceRegex = new RegExp(key, "g");
+      val = val.replace(replaceRegex, substitutions[key]);
+    }
+    return val;
+  },
+  /**
+   * Grow dynamically
+   *  
+   * Based on: jQuery autoGrowInput plugin by James Padolsey:
+   * http://stackoverflow.com/questions/931207/is-there-a-jquery-autogrow-plugin-for-text-fields
+   * @this {inputSelectionEngine}
+   */
+  grow: function(input, val, comfortZone, minWidth, maxWidth) {
+    var testSubject = $('<tester/>').css({
+      position: 'absolute',
+      top: -9999,
+      left: -9999,
+      width: 'auto',
+      fontSize: input.css('fontSize'),
+      fontFamily: input.css('fontFamily'),
+      fontWeight: input.css('fontWeight'),
+      letterSpacing: input.css('letterSpacing'),
+      whiteSpace: 'nowrap'
+    });
+    input.parent().find("tester").remove(); // Remove test-subjects
+    testSubject.insertAfter(input);
+    testSubject.html(val);
+
+    var newWidth = Math.min(Math.max(testSubject.width() + comfortZone, minWidth), maxWidth);
+    var currentWidth = input.width();
+    if (newWidth !== currentWidth) {
+      input.width(newWidth);
+    }
+  },
+  /* Default substitutions */
+  substitutionsDefault: {
+    " ": "-",
+    "&": "-",
+    "'": "-",
+    "\"": "-",
+    "\\/": "-",
+    "\\\\": "-",
+    "æ": "e",
+    "ø": "o",
+    "å": "a",
+    ",": "",
+    "%": "",
+    "#": "",
+    "\\?": ""
   }
-  field.focus();
-}
-
-/* Taken from fourth comment:
- * http://stackoverflow.com/questions/4928586/get-caret-position-in-html-input
- */
-function getCaretPos(input) {
-  if (input.setSelectionRange) {
-    return input.selectionStart;
-  } else if (document.selection && document.selection.createRange) {
-    var range = document.selection.createRange();
-    var bookmark = range.getBookmark();
-    return bookmark.charCodeAt(2) - 2;
-  }
-}
-
-/* 
- * jQuery autoGrowInput plugin 
- * by James Padolsey
- *
- * Modified to simplified function++ for more specific use / event-handling
- * by USIT, 2012
- *
- * See related thread: 
- * http://stackoverflow.com/questions/931207/is-there-a-jquery-autogrow-plugin-for-text-fields
- */
-function growField(input, val, comfortZone, minWidth, maxWidth) {
-  var testSubject = $('<tester/>').css({
-    position: 'absolute',
-    top: -9999,
-    left: -9999,
-    width: 'auto',
-    fontSize: input.css('fontSize'),
-    fontFamily: input.css('fontFamily'),
-    fontWeight: input.css('fontWeight'),
-    letterSpacing: input.css('letterSpacing'),
-    whiteSpace: 'nowrap'
-  });
-  input.parent().find("tester").remove(); // Remove test-subjects
-  testSubject.insertAfter(input);
-  testSubject.html(val);
-
-  var newWidth = Math.min(Math.max(testSubject.width() + comfortZone, minWidth), maxWidth),
-    currentWidth = input.width();
-  if (newWidth !== currentWidth) {
-    input.width(newWidth);
-  }
-}
-
+};
 
 /**
  * Initialize file upload

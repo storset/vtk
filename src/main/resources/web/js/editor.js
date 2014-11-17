@@ -1101,8 +1101,8 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
     vrtxEdit.accordionGroupedInit(".vrtx-sea-accordion", "fast");
   } else if (vrtxEdit.editorForm.hasClass("vrtx-contact-supervisor")) {
     vrtxAdm.cachedDoc.on("keyup", ".vrtx-string.id input[type='text']", $.debounce(50, true, function () {
-      updateField({
-        field: $(this),
+      vrtxAdm.inputUpdateEngine.update({
+        input: $(this),
         substitutions: {
           "#": "",
           " ": "-"

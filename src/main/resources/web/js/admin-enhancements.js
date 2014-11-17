@@ -1864,12 +1864,12 @@ function ajaxUpload(options) {
     var fileField = _$("#file");
     var filePaths = "";
     var numberOfFiles = 0;
-    var size = 0;
+    // var size = 0;
     if (vrtxAdm.supportsFileList) {
       var files = fileField[0].files;
       for (var i = 0, numberOfFiles = files.length; i < numberOfFiles; i++) {
         filePaths += files[i].name + ",";
-        size += files[i].size;
+        // size += files[i].size;
       }
     } else {
       filePaths = fileField.val().substring(fileField.val().lastIndexOf("\\") + 1);
@@ -1902,7 +1902,7 @@ function ajaxUpload(options) {
               filenamesFixed: existingFilenamesFixed,
               numberOfFiles: numberOfFiles, 
               completeFn: function() {
-                ajaxUploadPerform(opts, size);
+                ajaxUploadPerform(opts/*, size*/);
               },
               cancelFn: function() {
                 vrtxAdm.uploadCopyMoveSkippedFiles = {};;
@@ -1917,7 +1917,7 @@ function ajaxUpload(options) {
               isAllSkippedEqualComplete: false
             });
           } else {
-            ajaxUploadPerform(opts, size);
+            ajaxUploadPerform(opts/*, size*/);
           }
         }
       }
@@ -1926,7 +1926,7 @@ function ajaxUpload(options) {
   return false;
 }
 
-function ajaxUploadPerform(opts, size) {
+function ajaxUploadPerform(opts/*, size*/) {
   var vrtxAdm = vrtxAdmin,
   _$ = vrtxAdm._$;
 

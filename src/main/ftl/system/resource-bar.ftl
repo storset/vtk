@@ -15,7 +15,9 @@
   || (RequestParameters.mode?exists && RequestParameters.mode == "trash-can" && resource.collection)
   || (RequestParameters.action?exists && RequestParameters.action == "create-document" && resource.collection)
   || (RequestParameters.action?exists && RequestParameters.action == "create-directory" && resource.collection)
-  || (RequestParameters.action?exists && RequestParameters.action == "upload-file" && resource.collection)>
+  || (RequestParameters.action?exists && RequestParameters.action == "upload-file" && resource.collection)
+  || (RequestParameters.action?exists && RequestParameters.action == "copy-resources-to-this-folder" && resource.collection)
+  || (RequestParameters.action?exists && RequestParameters.action == "move-resources-to-this-folder" && resource.collection)>
   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/domains/listing.js"></script>
   
 <#-- Save in editor JavaScript -->

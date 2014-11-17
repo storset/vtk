@@ -386,13 +386,17 @@ VrtxAdmin.prototype.initResourceMenus = function initResourceMenus() {
           link: link,
           form: $("#vrtx-publish-document-form"),
           funcComplete: function () {
-            updateClientLastModifiedAlreadyRetrieved();
+            if(typeof updateClientLastModifiedAlreadyRetrieved === "function") {
+              updateClientLastModifiedAlreadyRetrieved();
+            }
             vrtxAdm.globalAsyncComplete();
           }
         });
         return false;
       } : function(link) {
-        updateClientLastModifiedAlreadyRetrieved();
+        if(typeof updateClientLastModifiedAlreadyRetrieved === "function") {
+          updateClientLastModifiedAlreadyRetrieved();
+        }
         vrtxAdm.globalAsyncComplete();
       }),
       post: (!isSavingBeforePublish && (typeof isImageAudioVideo !== "boolean" || !isImageAudioVideo))
@@ -559,7 +563,9 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
     },
     funcComplete: function () {
       apsD.close();
-      updateClientLastModifiedAlreadyRetrieved();
+      if(typeof updateClientLastModifiedAlreadyRetrieved === "function") {
+        updateClientLastModifiedAlreadyRetrieved();
+      }
       vrtxAdm.globalAsyncComplete();
     }
   });
@@ -1456,157 +1462,6 @@ VrtxAdmin.prototype.inputUpdateEngine = {
     "\\?": ""
   }
 };
-
-/*
- * Copy / move
- */
-function markResourcesCopyMove(resultElm, form, url, link) {
-  var vrtxAdm = vrtxAdmin;
-
-  var li = "li." + tabMenuServicesInjectMap[link.attr("id")];
-  var resourceMenuRight = $("#resourceMenuRight");
-  var copyMoveExists = "";
-  for (var key in tabMenuServicesInjectMap) {
-    var copyMove = resourceMenuRight.find("li." + tabMenuServicesInjectMap[key]);
-    if (copyMove.length) {
-      copyMoveExists = copyMove;
-      break;
-    }
-  }
-  var copyMoveAfter = function() {
-    resourceMenuRight.html(resultElm.find("#resourceMenuRight").html());
-    vrtxAdm.displayInfoMsg(resultElm.find(".infomessage").html());
-  };
-  if (copyMoveExists !== "") {
-    var copyMoveAnimation = new VrtxAnimation({
-      elem: copyMoveExists,
-      outerWrapperElem: resourceMenuRight,
-      useCSSAnim: true,
-      after: function() {
-        copyMoveExists.remove();
-        copyMoveAfter();
-        copyMoveAnimation.update({
-          elem: resourceMenuRight.find(li),
-          useCSSAnim: true,
-          outerWrapperElem: resourceMenuRight
-        });
-        copyMoveAnimation.rightIn();
-      }
-    });
-    copyMoveAnimation.leftOut();
-  } else {
-    copyMoveAfter();
-    var copyMoveAnimation = new VrtxAnimation({
-      elem: resourceMenuRight.find(li),
-      useCSSAnim: true,
-      outerWrapperElem: resourceMenuRight
-    });
-    copyMoveAnimation.rightIn();
-  }
-}
-
-function resourcesCopyMove(resultElm, form, url, link) {
-  var vrtxAdm = vrtxAdmin;
-
-  var cancelFn = function() {
-    form.find(".vrtx-button-small").show();
-    form.find(".vrtx-cancel-link").show();
-    form.find(".vrtx-show-processing").remove();
-    vrtxAdm.uploadCopyMoveSkippedFiles = {};
-  };
-  var li = form.closest("li");
-  var existingFilenamesField = resultElm.find("#copy-move-existing-filenames");
-  var moveToSameFolder = resultElm.find("#move-to-same-folder");
-  if(moveToSameFolder.length) {
-    cancelFn();
-    vrtxAdm.displayErrorMsg(vrtxAdm.messages.move.existing.sameFolder);
-  } else if(existingFilenamesField.length) {
-    var existingFilenames = existingFilenamesField.text().split("#");
-    var numberOfFiles = parseInt(resultElm.find("#copy-move-number-of-files").text(), 10);
-    userProcessExistingFiles({
-      filenames: existingFilenames,
-      numberOfFiles: numberOfFiles, 
-      completeFn: function() {
-        var skippedFiles = "";
-        for(key in vrtxAdm.uploadCopyMoveSkippedFiles) {
-          skippedFiles += key + ",";
-        }
-        form.find("#existing-skipped-files").remove();
-        form.append("<input id='existing-skipped-files' name='existing-skipped-files' type='hidden' value='" + skippedFiles + "' />");
-        cancelFn();
-        link.click();
-      },
-      cancelFn: cancelFn,
-      isAllSkippedEqualComplete: true
-    });
-  } else {
-    form.find("#existing-skipped-files").remove();
-    var copyMoveAnimation = new VrtxAnimation({
-      elem: li,
-      outerWrapperElem: $("#resourceMenuRight"),
-      useCSSAnim: true,
-      after: function() {
-        vrtxAdm.displayErrorMsg(resultElm.find(".errormessage").html());
-        vrtxAdm.cachedContent.html(resultElm.find("#contents").html());
-        if(typeof vrtxAdm.updateCollectionListingInteraction === "function") {
-          vrtxAdm.updateCollectionListingInteraction();
-        }
-        li.remove();
-      }
-    });
-    copyMoveAnimation.leftOut();
-  }
-}
-
-function userProcessExistingFiles(opts) {
-  var vrtxAdm = vrtxAdmin;
-
-  var filenamesLen = opts.filenames.length;
-  var userProcessNextFilename = function() {
-    if(opts.filenames.length) {
-      var filename = opts.filenames.pop();
-      var filenameFixed = opts.filenamesFixed ? opts.filenamesFixed.pop() : filename;
-      if(filenamesLen === 1 && opts.numberOfFiles === 1) {
-        var skipOverwriteDialogOpts = {
-          msg: filenameFixed,
-          title: vrtxAdm.messages.upload.existing.title,
-          onOk: userProcessNextFilename, // Keep/overwrite file
-          btnTextOk: vrtxAdm.messages.upload.existing.overwrite
-        };
-      } else {
-        var skipOverwriteDialogOpts = {
-          msg: filenameFixed,
-          title: vrtxAdm.messages.upload.existing.title,
-          onOk: function () {  // Skip file
-            vrtxAdm.uploadCopyMoveSkippedFiles[filename] = "skip";
-            userProcessNextFilename();
-          },
-          btnTextOk: vrtxAdm.messages.upload.existing.skip,
-          extraBtns: [{
-            btnText: vrtxAdm.messages.upload.existing.overwrite,
-            onOk: userProcessNextFilename // Keep/overwrite file
-          }]
-        };
-      }
-      skipOverwriteDialogOpts.onCancel = opts.cancelFn;
-      var userDecideExistingFileDialog = new VrtxConfirmDialog(skipOverwriteDialogOpts);
-      userDecideExistingFileDialog.open();
-    } else { // User has decided for all existing uris
-      var numberOfSkippedFiles = 0;
-       for (skippedFile in vrtxAdm.uploadCopyMoveSkippedFiles) {
-         if (vrtxAdm.uploadCopyMoveSkippedFiles[skippedFile]) {
-           numberOfSkippedFiles++;
-         }
-       }
-       if(opts.numberOfFiles > numberOfSkippedFiles || opts.isAllSkippedEqualComplete) {
-         opts.completeFn();
-       } else {
-         opts.cancelFn();
-      }
-    }
-  };
-  userProcessNextFilename();
-}
 
 
 /*-------------------------------------------------------------------*\

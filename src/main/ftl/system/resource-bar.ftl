@@ -12,8 +12,12 @@
 
 <#-- Listing (collection and trash-can) JavaScript -->
 <#if (!RequestParameters.mode?exists && !RequestParameters.action?exists && resource.collection)
-  || (RequestParameters.mode?exists && RequestParameters.mode == "trash-can" && resource.collection)>
+  || (RequestParameters.mode?exists && RequestParameters.mode == "trash-can" && resource.collection)
+  || (RequestParameters.action?exists && RequestParameters.action == "create-document" && resource.collection)
+  || (RequestParameters.action?exists && RequestParameters.action == "create-directory" && resource.collection)
+  || (RequestParameters.action?exists && RequestParameters.action == "upload-file" && resource.collection)>
   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/domains/listing.js"></script>
+  
 <#-- Save in editor JavaScript -->
 <#elseif (RequestParameters.action?exists && RequestParameters.action == "plaintext-edit")
       || (RequestParameters.mode?exists && RequestParameters.mode == "editor" &&

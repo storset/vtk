@@ -23,9 +23,13 @@
 -->
 <#macro genPlaceholder url dateStr isAudio=false showPlayButton=false useVideoTag=false>
   <#if !isAudio>
-    <#local imgSrc = "video-noflash.png" />
-    <#local width = "500" />
-    <#local height = "279" />
+    <#if poster??>
+      <#local imgSrc = poster />
+    <#else>
+      <#local imgSrc = "/vrtx/__vrtx/static-resources/themes/default/icons/video-noflash.png" />
+      <#local width = "500" />
+      <#local height = "279" />
+    </#if>
     <#local alt = vrtx.getMsg("article.media-file") />
   <#else>
     <#local imgSrc = "audio-icon.png" />
@@ -36,18 +40,18 @@
 
   <#if useVideoTag>
     <div id="mediaspiller-${dateStr}">
-      <video src="${url}" controls<#if autoplay?? && autoplay == "true"> autoplay</#if> width="${width}" height="${height}" poster="<#if poster?exists>${poster?html}<#else>/vrtx/__vrtx/static-resources/themes/default/icons/${imgSrc}</#if>"></video>
+      <video src="${url}" controls<#if autoplay?? && autoplay == "true"> autoplay</#if> width="${width}" height="${height}" poster="${imgSrc?html}"></video>
     </div>
   <#else>
     <@genPlayButtonCSS showPlayButton />
 
     <div id="mediaspiller-${dateStr}-print" class="vrtx-media-player-print<#if showPlayButton> vrtx-media-player-no-flash</#if>">
-      <img src="<#if poster?exists>${poster?html}<#else>/vrtx/__vrtx/static-resources/themes/default/icons/${imgSrc}</#if>" width="${width}" height="${height}" alt="${alt}"/>
+      <img src="${imgSrc?html}" width="${width}" height="${height}" alt="${alt}"/>
       <#if showPlayButton><a class="playbutton" href="${url}"></a></#if>
     </div>
     <div id="mediaspiller-${dateStr}"<#if showPlayButton> class="vrtx-media-player-no-flash"</#if>>
       <a class="vrtx-media" href="${url}">
-        <img src="<#if poster?exists>${poster?html}<#else>/vrtx/__vrtx/static-resources/themes/default/icons/${imgSrc}</#if>" width="${width}" height="${height}" alt="${alt}"/>
+        <img src="${imgSrc?html}" width="${width}" height="${height}" alt="${alt}"/>
         <#if showPlayButton><span class="playbutton"></span></#if>
       </a>
     </div>

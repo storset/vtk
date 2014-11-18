@@ -16,7 +16,6 @@
      
      TODO: maybe move to XML, but a little nice to have it overviewely her
 -->
-
 <#-- Listing (collection and trash-can) -->
 <#if (!RequestParameters.mode?exists && !RequestParameters.action?exists && resource.collection)
   || (RequestParameters.mode?exists && RequestParameters.mode == "trash-can" && resource.collection)
@@ -44,7 +43,6 @@
       Server information 
      ********************
 -->
-
 <#assign lang = vrtx.getMsg("eventListing.calendar.lang", "en") />
 <#assign lastModified = resource.getLastModified() />
 <#assign modifiedBy = resource.getModifiedBy() />
@@ -184,6 +182,7 @@
 <#else>
   <@gen resource /> 
 </#if>
+
 <#macro gen resource resourceMenuLeft="" resourceMenuRight="">
   <div id="title-container">
     

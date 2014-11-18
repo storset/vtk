@@ -1239,36 +1239,23 @@ function getMultipleFieldsBoxesTemplates() {
 
 function initMultipleInputFields() {
   getMultipleFieldsBoxesTemplates();
-  vrtxAdmin.cachedAppContent.on("click keypress", ".vrtx-multipleinputfield button.remove", function (e) {
-    if(e.type === "click" || isKey(e, [vrtxAdmin.keys.ENTER])) {
-      removeFormField($(this));
-      e.preventDefault();
-      e.stopPropagation();
-    }
+  
+  eventListen(vrtxAdmin.cachedAppContent, "click keypress", ".vrtx-multipleinputfield button.remove", function (ref) {
+    removeFormField($(ref));
   });
-  vrtxAdmin.cachedAppContent.on("click keypress", ".vrtx-multipleinputfield button.movedown", function (e) {
-    if(e.type === "click" || isKey(e, [vrtxAdmin.keys.ENTER])) {
-      swapContentTmp($(this), 1);
-      e.preventDefault();
-      e.stopPropagation();
-    }
+  eventListen(vrtxAdmin.cachedAppContent, "click keypress", ".vrtx-multipleinputfield button.movedown", function (ref) {
+    swapContentTmp($(ref), 1);
   });
-  vrtxAdmin.cachedAppContent.on("click keypress", ".vrtx-multipleinputfield button.moveup", function (e) {
-    if(e.type === "click" || isKey(e, [vrtxAdmin.keys.ENTER])) {
-      swapContentTmp($(this), -1);
-      e.preventDefault();
-      e.stopPropagation();
-    }
+  eventListen(vrtxAdmin.cachedAppContent, "click keypress", ".vrtx-multipleinputfield button.moveup", function (ref) {
+    swapContentTmp($(ref), -1);
   });
-  vrtxAdmin.cachedAppContent.on("click keypress", ".vrtx-multipleinputfield button.browse-resource-ref", function (e) {
-    if(e.type === "click" || isKey(e, [vrtxAdmin.keys.ENTER])) {
-      var m = $(this).closest(".vrtx-multipleinputfield");
-      var elm = m.find('input.resource_ref');
-      if(!elm.length) elm = m.find('input');
-      browseServer(elm.attr('id'), vrtxAdmin.multipleFormGroupingPaths.baseBrowserURL, vrtxAdmin.multipleFormGroupingPaths.baseFolderURL, vrtxAdmin.multipleFormGroupingPaths.basePath, 'File');
-      e.preventDefault();
-      e.stopPropagation();
+  eventListen(vrtxAdmin.cachedAppContent, "click keypress", ".vrtx-multipleinputfield button.browse-resource-ref", function (ref) {
+    var m = $(ref).closest(".vrtx-multipleinputfield");
+    var elm = m.find('input.resource_ref');
+    if(!elm.length) {
+      elm = m.find('input');
     }
+    browseServer(elm.attr('id'), vrtxAdmin.multipleFormGroupingPaths.baseBrowserURL, vrtxAdmin.multipleFormGroupingPaths.baseFolderURL, vrtxAdmin.multipleFormGroupingPaths.basePath, 'File');
   });
 }
 

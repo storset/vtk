@@ -1002,6 +1002,7 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
     _$ = vrtxAdm._$,
     vrtxEdit = this;
     
+  /* Show / hide for fields */
   var initResetAggregationManuallyApproved = function(_$, checkboxId, name) {
     if (!_$(checkboxId + "\\.true").is(":checked")) {
       _$("#vrtx-resource\\." + name).slideUp(0, "linear");
@@ -1045,38 +1046,37 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
   });
   _$("#resource\\.courseContext\\.course-status").change();
   
+  
   // Show/hide mappings for radios/booleans
   
   // Exchange sub-folder title
-  
   setShowHideBooleanOldEditor("#resource\\.show-subfolder-menu\\.true, #resource\\.show-subfolder-menu\\.unspecified",
     "#vrtx-resource\\.show-subfolder-title",
     "#resource\\.show-subfolder-menu\\.unspecified:checked",
     "");
     
   // Recursive
-
   setShowHideBooleanOldEditor("#resource\\.recursive-listing\\.false, #resource\\.recursive-listing\\.unspecified",
     "#vrtx-resource\\.recursive-listing-subfolders",
     "#resource\\.recursive-listing\\.false:checked",
     "false");
     
   // Calendar title
-
   setShowHideBooleanOldEditor("#resource\\.display-type\\.unspecified, #resource\\.display-type\\.calendar",
     "#vrtx-resource\\.event-type-title",
     "#resource\\.display-type\\.calendar:checked",
     null);
-
   setShowHideBooleanOldEditor("#resource\\.display-type\\.unspecified, #resource\\.display-type\\.calendar",
     "#vrtx-resource\\.hide-additional-content",
     "#resource\\.display-type\\.calendar:checked",
     "calendar");
 
+
+  // Show / hide mappings for selects
   vrtxEdit.setShowHideSelectNewEditor();
   
-  // Documenttype
   
+  // Documenttype domains
   if(vrtxEdit.editorForm.hasClass("vrtx-course-schedule")) {
     editorCourseSchedule = new courseSchedule();
   } else if (vrtxEdit.editorForm.hasClass("vrtx-hvordan-soke")) {

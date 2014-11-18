@@ -109,8 +109,7 @@ var VrtxAccordion = dejavu.Class.declare({
   },
   __findSingleContentMatch: function(elm) {
     var inputs = elm.find(this.$static.headerSingleCheckClass + " input[type='text'], " + this.$static.headerSingleCheckClass + " textarea");
-    var i = inputs.length;
-    for(;i--;) {
+    for(var i = inputs.length; i--;) {
       if("" !== this.__getFieldString(inputs[i])) { // One need to have content for match
         return true;
       }

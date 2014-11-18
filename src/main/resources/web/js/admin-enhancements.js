@@ -138,6 +138,7 @@ function VrtxAdmin() {
   });
   this.runReadyLoad = true;
   this.domainsIsReady = $.Deferred();
+  this.domainsInstantIsReady = $.Deferred();
   this.bodyId = "";
   
   this.requiredScriptsLoaded = null;
@@ -240,7 +241,7 @@ vrtxAdmin._$(document).ready(function () {
     vrtxAdm.initDropdowns();
     vrtxAdm.initScrollBreadcrumbs();
   }
-  vrtxAdm.initDomainsInstant();
+  vrtxAdm.domainsInstantIsReady.resolve();
   
   if(!isEmbedded) {
     vrtxAdm.initMiscAdjustments();
@@ -571,7 +572,7 @@ VrtxAdmin.prototype.initGlobalDialogs = function initGlobalDialogs() {
     }
   });
   
-  // Validation of dates
+  // Validation of dates (private function)
   var generateDateObjForValidation = function(dialog, idInfix) {
     var date = dialog.find("#" + idInfix + "-date").val();
     if(!date.length) {
@@ -730,20 +731,6 @@ VrtxAdmin.prototype.initDomains = function initDomains() {
       break;
     default:
       // noop
-      break;
-  }
-};
-
-VrtxAdmin.prototype.initDomainsInstant = function initDomainsInstant() {
-  var vrtxAdm = this;
-      
-  switch (vrtxAdm.bodyId) {
-    case "vrtx-trash-can":
-    case "vrtx-manage-collectionlisting":
-      if(typeof vrtxAdm.collectionListingInteraction === "function") {
-        vrtxAdm.collectionListingInteraction();
-      }
-    default: // noop
       break;
   }
 };

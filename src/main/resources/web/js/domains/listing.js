@@ -4,6 +4,19 @@
 
 $.when(vrtxAdmin.domainsIsReady).done(function() {
   var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
+      
+  switch (vrtxAdm.bodyId) {
+    case "vrtx-trash-can":
+    case "vrtx-manage-collectionlisting":
+      vrtxAdm.collectionListingInteraction();
+      break;
+    default: // noop
+      break;
+  }
+});
+
+$.when(vrtxAdmin.domainsIsReady).done(function() {
+  var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
 
   switch (vrtxAdm.bodyId) {
     case "vrtx-manage-collectionlisting":

@@ -19,8 +19,8 @@ $.when(vrtxAdmin.domainsIsReady).done(function() {
             selector: ".prop-" + propsAbout[i] + " a.vrtx-button-small",
             selectorClass: "expandedForm-prop-" + propsAbout[i],
             insertAfterOrReplaceClass: "tr.prop-" + propsAbout[i],
-            isReplacing: true,
             nodeType: "tr",
+            isReplacing: true,
             simultanSliding: true
           });
           vrtxAdm.completeFormAsync({

@@ -10,6 +10,8 @@
 
 <#assign resource = resourceContext.currentResource />
 
+<#-- TODO: maybe move to XML, but a little nice to have domains JS here -->
+
 <#-- Listing (collection and trash-can) JavaScript -->
 <#if (!RequestParameters.mode?exists && !RequestParameters.action?exists && resource.collection)
   || (RequestParameters.mode?exists && RequestParameters.mode == "trash-can" && resource.collection)
@@ -20,12 +22,16 @@
   || (RequestParameters.action?exists && RequestParameters.action == "move-resources-to-this-folder" && resource.collection)>
   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/domains/listing.js"></script>
   
-<#-- Save in editor JavaScript -->
+<#-- Save in editors JavaScript -->
 <#elseif (RequestParameters.action?exists && RequestParameters.action == "plaintext-edit")
       || (RequestParameters.mode?exists && RequestParameters.mode == "editor" &&
           RequestParameters.action?exists && RequestParameters.action == "edit")
       || (RequestParameters.mode?exists && RequestParameters.mode == "aspects")>
   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/domains/editors.js"></script>
+
+<#-- About JavaScript -->
+<#elseif (RequestParameters.mode?exists && RequestParameters.mode == "about")>
+  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/domains/about.js"></script>
 </#if>
 
 <#assign lang = vrtx.getMsg("eventListing.calendar.lang", "en") />

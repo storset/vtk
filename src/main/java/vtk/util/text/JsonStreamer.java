@@ -605,7 +605,7 @@ public class JsonStreamer {
 
         @Override
         void writeBeginArray(boolean asKeyValue, int level) throws IOException {
-            if (!asKeyValue) {
+            if (!asKeyValue && level > 0) {
                 writeNewLine(level);
             }
             super.writeBeginArray(asKeyValue, level);
@@ -613,7 +613,7 @@ public class JsonStreamer {
 
         @Override
         void writeBeginObject(boolean asKeyValue, int level) throws IOException {
-            if (!asKeyValue) {
+            if (!asKeyValue && level > 0) {
                 writeNewLine(level);
             }
             super.writeBeginObject(asKeyValue, level);
@@ -625,6 +625,9 @@ public class JsonStreamer {
                 writeNewLine(level);
             }
             super.writeEndArray(empty, level);
+            if (level == 0) {
+                writeNewLine(0);
+            }
         }
 
         @Override
@@ -633,6 +636,9 @@ public class JsonStreamer {
                 writeNewLine(level);
             }
             super.writeEndObject(empty, level);
+            if (level == 0) {
+                writeNewLine(0);
+            }
         }
     }
     

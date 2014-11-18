@@ -1147,21 +1147,13 @@ function toggleShowHideBoolean(props, show, init) {
     if (!vrtxAdmin.isIE9) {
       theProps.addClass("animate-optimized");
     }
-    if (show && !init) {
-      theProps.show();
-    } else {
-      theProps.hide();
-    }
+    theProps[(show && !init) ? "show" : "hide"]();
   } else {
     var animation = new VrtxAnimation({
       animationSpeed: vrtxAdmin.transitionPropSpeed,
       elem: theProps
     });
-    if (show) {
-      animation.topDown();
-    } else {
-      animation.bottomUp();
-    }
+    animation[show ? "topDown" : "bottomUp"]();
   }
 }
 

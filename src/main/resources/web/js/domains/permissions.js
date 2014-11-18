@@ -177,3 +177,19 @@ function checkStillAdmin(options) {
     vrtxAdmin.completeFormAsyncPost(options);
   }
 }
+
+function interceptEnterKeyAndReroute(txt, btn, fnOnKeyPress) {
+  vrtxAdmin.cachedAppContent.on("keypress", txt, function (e) {
+    if (isKey(e, [vrtxAdmin.keys.ENTER])) {
+      if ($(this).hasClass("blockSubmit")) { // submit/rerouting can be blocked elsewhere on textfield
+        $(this).removeClass("blockSubmit");
+      } else {
+        $(btn).click(); // click the associated button
+      }
+      if(typeof fnOnKeyPress === "function") {
+        fnOnKeyPress($(this));
+      }
+      e.preventDefault();
+    }
+  });
+}

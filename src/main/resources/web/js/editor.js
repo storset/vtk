@@ -2366,4 +2366,29 @@ VrtxEditor.prototype.initEventHandler = function initEventHandler(selector, opts
   });
 };
 
+function autocompleteUsernames(selector) {
+  var _$ = vrtxAdmin._$;
+  var autocompleteTextfields = _$(selector).find('.vrtx-textfield');
+  var i = autocompleteTextfields.length;
+  while (i--) {
+    permissionsAutocomplete(_$(autocompleteTextfields[i]).attr("id"), 'userNames', vrtxAdmin.usernameAutocompleteParams, true);
+  }
+}
+
+function autocompleteUsername(selector, subselector) {
+  var autocompleteTextfield = vrtxAdmin._$(selector).find('input#' + subselector);
+  if (autocompleteTextfield.length) {
+    permissionsAutocomplete(subselector, 'userNames', vrtxAdmin.usernameAutocompleteParams, true);
+  }
+}
+
+function autocompleteTags(selector) {
+  var _$ = vrtxAdmin._$;
+  var autocompleteTextfields = _$(selector).find('.vrtx-textfield');
+  var i = autocompleteTextfields.length;
+  while (i--) {
+    setAutoComplete(_$(autocompleteTextfields[i]).attr("id"), 'tags', vrtxAdmin.tagAutocompleteParams);
+  }
+}
+
 /* ^ Vortex Editor */

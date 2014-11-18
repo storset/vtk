@@ -660,14 +660,9 @@ VrtxAdmin.prototype.embeddedView = function embeddedView() {
 };
 
 /*
- * Domains init
- *
- * TODO: Too big and complex (HV: ?, CC: ?)
- *
- * * is based on id of body-tag
+ * Domains init (based on id of body-tag) - rest is in domain-specific JS-files in domains/-folder
  *
  */
- 
 VrtxAdmin.prototype.initDomains = function initDomains() {
   var vrtxAdm = this,
       bodyId = vrtxAdm.bodyId;
@@ -1114,22 +1109,6 @@ VrtxAdmin.prototype.adjustResourceTitle = function adjustResourceTitle() {
   }
 };
 
-function interceptEnterKeyAndReroute(txt, btn, fnOnKeyPress) {
-  vrtxAdmin.cachedAppContent.on("keypress", txt, function (e) {
-    if (isKey(e, [vrtxAdmin.keys.ENTER])) {
-      if ($(this).hasClass("blockSubmit")) { // submit/rerouting can be blocked elsewhere on textfield
-        $(this).removeClass("blockSubmit");
-      } else {
-        $(btn).click(); // click the associated button
-      }
-      if(typeof fnOnKeyPress === "function") {
-        fnOnKeyPress($(this));
-      }
-      e.preventDefault();
-    }
-  });
-}
-
 VrtxAdmin.prototype.mapShortcut = function mapShortcut(selectors, reroutedSelector) {
   eventListen(this.cachedAppContent, "click", selectors, function(ref) {
     $(reroutedSelector).click();
@@ -1273,31 +1252,6 @@ VrtxAdmin.prototype.inputUpdateEngine = {
     "\\?": ""
   }
 };
-
-function autocompleteUsernames(selector) {
-  var _$ = vrtxAdmin._$;
-  var autocompleteTextfields = _$(selector).find('.vrtx-textfield');
-  var i = autocompleteTextfields.length;
-  while (i--) {
-    permissionsAutocomplete(_$(autocompleteTextfields[i]).attr("id"), 'userNames', vrtxAdmin.usernameAutocompleteParams, true);
-  }
-}
-
-function autocompleteUsername(selector, subselector) {
-  var autocompleteTextfield = vrtxAdmin._$(selector).find('input#' + subselector);
-  if (autocompleteTextfield.length) {
-    permissionsAutocomplete(subselector, 'userNames', vrtxAdmin.usernameAutocompleteParams, true);
-  }
-}
-
-function autocompleteTags(selector) {
-  var _$ = vrtxAdmin._$;
-  var autocompleteTextfields = _$(selector).find('.vrtx-textfield');
-  var i = autocompleteTextfields.length;
-  while (i--) {
-    setAutoComplete(_$(autocompleteTextfields[i]).attr("id"), 'tags', vrtxAdmin.tagAutocompleteParams);
-  }
-}
 
 
 /*-------------------------------------------------------------------*\

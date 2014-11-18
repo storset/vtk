@@ -1242,13 +1242,13 @@ function initMultipleInputFields() {
   
   eventListen(vrtxAdmin.cachedAppContent, "click keypress", ".vrtx-multipleinputfield button.remove", function (ref) {
     removeFormField($(ref));
-  });
+  }, "clickOrEnter");
   eventListen(vrtxAdmin.cachedAppContent, "click keypress", ".vrtx-multipleinputfield button.movedown", function (ref) {
     swapContentTmp($(ref), 1);
-  });
+  }, "clickOrEnter");
   eventListen(vrtxAdmin.cachedAppContent, "click keypress", ".vrtx-multipleinputfield button.moveup", function (ref) {
     swapContentTmp($(ref), -1);
-  });
+  }, "clickOrEnter");
   eventListen(vrtxAdmin.cachedAppContent, "click keypress", ".vrtx-multipleinputfield button.browse-resource-ref", function (ref) {
     var m = $(ref).closest(".vrtx-multipleinputfield");
     var elm = m.find('input.resource_ref');
@@ -1256,7 +1256,7 @@ function initMultipleInputFields() {
       elm = m.find('input');
     }
     browseServer(elm.attr('id'), vrtxAdmin.multipleFormGroupingPaths.baseBrowserURL, vrtxAdmin.multipleFormGroupingPaths.baseFolderURL, vrtxAdmin.multipleFormGroupingPaths.basePath, 'File');
-  });
+  }, "clickOrEnter");
 }
 
 function enhanceMultipleInputFields(name, isMovable, isBrowsable, limit, json, isReadOnly) { // TODO: simplify

@@ -29,6 +29,10 @@
       || (RequestParameters.mode?exists && RequestParameters.mode == "aspects")>
   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/domains/editors.js"></script>
 
+<#-- Permissions JavaScript -->
+<#elseif (RequestParameters.mode?exists && RequestParameters.mode == "permissions")>
+  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/domains/permissions.js"></script>
+
 <#-- About JavaScript -->
 <#elseif (RequestParameters.mode?exists && RequestParameters.mode == "about")>
   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/domains/about.js"></script>

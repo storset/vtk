@@ -29,10 +29,9 @@
        <#assign name = link.name />
      </#if>
 
-     <#if name = "FacebookAPI"><#assign name = "Facebook" /></#if>
-     
      <#if url?is_string>
-       <li>
+       <li class="vrtx-share-at-${name}">
+         <#if name = "FacebookAPI"><#assign name = "Facebook" /></#if>
          <a href="${url}" target="_blank" class="${name?lower_case}">${prefixLinkText} ${name}</a>
        </li>
     </#if>

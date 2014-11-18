@@ -33,6 +33,7 @@ package vtk.web.filter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -129,24 +130,19 @@ public class CaptureOutputLoggingResponseFilter extends AbstractResponseFilter i
         logbuf.append(reqWrap.getQueryString() != null ? "?" + reqWrap.getQueryString() : "").append('\n');
         addHeadersForLogging(reqWrap, logbuf);
         logbuf.append('\n');
-        byte[] body = reqWrap.getInputBytes();
+        byte[] body = reqWrap.getCapturedBytes();
+        addBytesForLogging(body, reqWrap.getStreamBytesRead(), reqWrap.getHeader("Content-Type"), logbuf);
 
-        if (body.length > 0) {
-            addBytesForLogging(body, reqWrap.getHeader("Content-Type"), logbuf);
-        }
 
         // Response
         logbuf.append("\n--- RESPONSE:\n");
         logbuf.append(resWrap.getStatus()).append('\n');
         addHeadersForLogging(resWrap, logbuf);
         logbuf.append('\n');
-        body = resWrap.getOutputBytes();
-
-        if (body.length > 0) {
-            addBytesForLogging(body,
-                    resWrap.getHeaderValue("Content-Type") != null ? resWrap.getHeaderValue("Content-Type").toString()
-                            : null, logbuf);
-        }
+        body = resWrap.getCapturedBytes();
+        addBytesForLogging(body, resWrap.getStreamBytesWritten(),
+                resWrap.getHeaderValue("Content-Type") != null ? resWrap.getHeaderValue("Content-Type").toString()
+                        : null, logbuf);
 
         logbuf.append("\n--- END\n");
 
@@ -189,12 +185,12 @@ public class CaptureOutputLoggingResponseFilter extends AbstractResponseFilter i
         }
     }
 
-    private void addBytesForLogging(byte[] data, String contentType, StringBuilder logBuffer) {
+    private void addBytesForLogging(byte[] data, int totalBytes, String contentType, StringBuilder logBuffer) {
         int logBytes = Math.min(maxLogBytesBody, data.length);
         String rawString = getRawAsciiString(data, 0, logBytes, isProbablyBinary(contentType));
         logBuffer.append(rawString);
-        if (data.length > logBytes) {
-            logBuffer.append(" [").append(data.length - logBytes).append(" more bytes truncated ...]");
+        if (totalBytes > logBytes) {
+            logBuffer.append(" [").append(totalBytes - logBytes).append(" more bytes truncated ...]");
         }
     }
 
@@ -223,7 +219,7 @@ public class CaptureOutputLoggingResponseFilter extends AbstractResponseFilter i
     private class CaptureOutputResponseWrapper extends HeaderAwareResponseWrapper {
 
         private OutputStreamCopyWrapper streamWrapper;
-        private WriterCopyWrapper writerWrapper;
+        private PrintWriter printWriter;
 
         public CaptureOutputResponseWrapper(HttpServletResponse response) {
             super(response);
@@ -231,59 +227,46 @@ public class CaptureOutputLoggingResponseFilter extends AbstractResponseFilter i
 
         @Override
         public PrintWriter getWriter() throws IOException {
-            if (this.writerWrapper == null) {
-                this.writerWrapper = new WriterCopyWrapper(super.getWriter());
+            if (printWriter == null) {
+                if (streamWrapper != null) {
+                    // Illegal state according to ServletResponse documentation
+                    throw new IllegalStateException(
+                            "getOutputStream has already been called for this response");
+                }
+                
+                streamWrapper = new OutputStreamCopyWrapper(super.getOutputStream());
+                printWriter = new PrintWriter(
+                        new OutputStreamWriter(streamWrapper, getCharacterEncoding()));
             }
-            return new PrintWriter(this.writerWrapper);
+            
+            return this.printWriter;
         }
 
         @Override
         public ServletOutputStream getOutputStream() throws IOException {
-            if (this.streamWrapper == null) {
-                this.streamWrapper = new OutputStreamCopyWrapper(super.getOutputStream());
+            if (printWriter != null) {
+                // Illegal state according to ServletResponse documentation
+                throw new IllegalStateException("getWriter has already been called for this response");
             }
-            return this.streamWrapper;
+            if (streamWrapper == null) {
+                streamWrapper = new OutputStreamCopyWrapper(super.getOutputStream());
+            }
+            
+            return streamWrapper;
         }
 
-        byte[] getOutputBytes() {
+        byte[] getCapturedBytes() {
             if (this.streamWrapper != null) {
-                return this.streamWrapper.getOutputBytes();
-            }
-            if (this.writerWrapper != null) {
-                return this.writerWrapper.getOutputString().getBytes();
+                return this.streamWrapper.getCopiedBytes();
             }
             return new byte[0];
         }
-    }
-
-    private class WriterCopyWrapper extends Writer {
-
-        private Writer wrappedWriter;
-        private StringWriter streamCopyBuffer;
-
-        WriterCopyWrapper(Writer wrappedWriter) {
-            this.wrappedWriter = wrappedWriter;
-            this.streamCopyBuffer = new StringWriter();
-        }
-
-        @Override
-        public void write(char[] cbuf, int off, int len) throws IOException {
-            this.wrappedWriter.write(cbuf, off, len);
-            this.streamCopyBuffer.write(cbuf, off, len);
-        }
-
-        @Override
-        public void close() throws IOException {
-            this.wrappedWriter.close();
-        }
-
-        @Override
-        public void flush() throws IOException {
-            this.wrappedWriter.flush();
-        }
-
-        String getOutputString() {
-            return this.streamCopyBuffer.toString();
+        
+        int getStreamBytesWritten() {
+            if (this.streamWrapper != null) {
+                return this.streamWrapper.getStreamBytesWritten();
+            }
+            return 0;
         }
     }
 
@@ -291,6 +274,7 @@ public class CaptureOutputLoggingResponseFilter extends AbstractResponseFilter i
 
         private ByteArrayOutputStream streamCopyBuffer;
         private OutputStream wrappedStream;
+        private int streamBytesWritten=0;
 
         OutputStreamCopyWrapper(OutputStream wrappedStream) {
             this.wrappedStream = wrappedStream;
@@ -299,10 +283,10 @@ public class CaptureOutputLoggingResponseFilter extends AbstractResponseFilter i
 
         @Override
         public void write(int b) throws IOException {
-            this.wrappedStream.write(b);
-            if (b > -1) {
+            if (b > -1 && (streamBytesWritten++ < maxLogBytesBody)) {
                 streamCopyBuffer.write(b);
             }
+            this.wrappedStream.write(b);
         }
 
         @Override
@@ -310,20 +294,25 @@ public class CaptureOutputLoggingResponseFilter extends AbstractResponseFilter i
             this.wrappedStream.close();
         }
 
-        public byte[] getOutputBytes() {
+        byte[] getCopiedBytes() {
             return this.streamCopyBuffer.toByteArray();
+        }
+        
+        int getStreamBytesWritten() {
+            return this.streamBytesWritten;
         }
     }
 
     /**
-     * Set max number of raw bytes to log for body of request and response.
+     * Set max number of raw bytes to capture for body of response, and max number
+     * of bytes to log for body of request and response.
      * Default value is 4096 bytes.
      * 
      * @param maxLogBytesBody
      */
     public void setMaxLogBytesBody(int maxLogBytesBody) {
-        if (maxLogBytesBody < 1) {
-            throw new IllegalArgumentException("maxLogBytesBody must be > 0");
+        if (maxLogBytesBody < 0) {
+            throw new IllegalArgumentException("maxLogBytesBody must be >= 0");
         }
         this.maxLogBytesBody = maxLogBytesBody;
     }

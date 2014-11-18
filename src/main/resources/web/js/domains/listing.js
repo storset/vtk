@@ -2,7 +2,7 @@
  * Collection-listing and trash-can
  */
 
-$.when(vrtxAdmin.domainsIsReady).done(function() {
+$.when(vrtxAdmin.domainsInstantIsReady).done(function() {
   var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
       
   switch (vrtxAdm.bodyId) {

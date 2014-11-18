@@ -30,7 +30,7 @@
      </#if>
 
      <#if url?is_string>
-       <li class="vrtx-share-at-${name}">
+       <li class="vrtx-share-at-${name}-${useFacebookAPI?string}">
          <#if name = "FacebookAPI"><#assign name = "Facebook" /></#if>
          <a href="${url}" target="_blank" class="${name?lower_case}">${prefixLinkText} ${name}</a>
        </li>

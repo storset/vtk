@@ -1117,3 +1117,23 @@ VrtxAdmin.prototype.buildFileList = function buildFileList(boxes, boxesSize, use
   }
   return list;
 };
+
+/**
+ * Check if browser supports 'readOnly' attribute
+ * Credits: http://miketaylr.com/code/input-type-attr.html (MIT license)
+ *
+ * @this {VrtxAdmin}
+ */
+VrtxAdmin.prototype.supportsReadOnly = function supportsReadOnly(inputfield) {
+  return ( !! (inputfield.readOnly === false) && !! (inputfield.readOnly !== "undefined"));
+};
+
+/**
+ * Check if browser supports 'multiple' attribute
+ * Credits: http://miketaylr.com/code/input-type-attr.html (MIT license)
+ *
+* @this {VrtxAdmin}
+ */
+VrtxAdmin.prototype.supportsMultipleAttribute = function supportsMultipleAttribute(inputfield) {
+  return ( !! (inputfield.multiple === false) && !! (inputfield.multiple !== "undefined")) && !vrtxAdmin.isIOS;
+};

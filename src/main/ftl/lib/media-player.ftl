@@ -39,7 +39,7 @@
   </#if>
 
   <#if useVideoTag>
-    <div id="mediaspiller-${dateStr}">
+    <div id="mediaspiller-${dateStr}" class="vrtx-media-player-no-flash">
       <video src="${url}" controls<#if autoplay?? && autoplay == "true"> autoplay</#if> width="${width}" height="${height}" poster="${imgSrc?html}"></video>
     </div>
   <#else>

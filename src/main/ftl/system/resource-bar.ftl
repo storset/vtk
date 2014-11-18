@@ -10,9 +10,14 @@
 
 <#assign resource = resourceContext.currentResource />
 
-<#-- TODO: maybe move to XML, but a little nice to have domains JS here -->
+<#-- ********************
+      JavaScript domains 
+     ********************
+     
+     TODO: maybe move to XML, but a little nice to have it overviewely her
+-->
 
-<#-- Listing (collection and trash-can) JavaScript -->
+<#-- Listing (collection and trash-can) -->
 <#if (!RequestParameters.mode?exists && !RequestParameters.action?exists && resource.collection)
   || (RequestParameters.mode?exists && RequestParameters.mode == "trash-can" && resource.collection)
   || (RequestParameters.action?exists && RequestParameters.action == "create-document" && resource.collection)
@@ -21,25 +26,26 @@
   || (RequestParameters.action?exists && RequestParameters.action == "copy-resources-to-this-folder" && resource.collection)
   || (RequestParameters.action?exists && RequestParameters.action == "move-resources-to-this-folder" && resource.collection)>
   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/domains/listing.js"></script>
-  
-<#-- Save in editors JavaScript -->
+<#-- Save in editors -->
 <#elseif (RequestParameters.action?exists && RequestParameters.action == "plaintext-edit")
       || (RequestParameters.mode?exists && RequestParameters.mode == "editor" &&
           RequestParameters.action?exists && RequestParameters.action == "edit")
       || (RequestParameters.mode?exists && RequestParameters.mode == "aspects")>
   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/domains/editors.js"></script>
-
-<#-- Permissions JavaScript -->
+<#-- Permissions-->
 <#elseif (RequestParameters.mode?exists && RequestParameters.mode == "permissions")>
   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/domains/permissions.js"></script>
-
-<#-- About JavaScript -->
+<#-- About -->
 <#elseif (RequestParameters.mode?exists && RequestParameters.mode == "about")>
   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/domains/about.js"></script>
 </#if>
 
-<#assign lang = vrtx.getMsg("eventListing.calendar.lang", "en") />
+<#-- ********************
+      Server information 
+     ********************
+-->
 
+<#assign lang = vrtx.getMsg("eventListing.calendar.lang", "en") />
 <#assign lastModified = resource.getLastModified() />
 <#assign modifiedBy = resource.getModifiedBy() />
 <span id="server-now-time" class="hidden-server-info">${nowTime?string("yyyy")},${nowTime?string("MM")},${nowTime?string("dd")},${nowTime?string("HH")},${nowTime?string("mm")},${nowTime?string("ss")}</span>
@@ -56,6 +62,11 @@
   <span id="resource-locked-by" class="hidden-server-info">${lockedBy?html}</span>
 </#if>
 <span id="resource-can-edit" class="hidden-server-info"><#if (writePermissionAtAll.permissionsQueryResult)?exists && writePermissionAtAll.permissionsQueryResult = 'true'>true<#else>false</#if></span>
+
+<#-- *************************
+      IE-old message and i18n 
+     *************************
+-->
 <script type="text/javascript"><!--
   if(vrtxAdmin.isIE7 || vrtxAdmin.isIETridentInComp) {
     if(vrtxAdmin.isIETridentInComp) {
@@ -154,10 +165,18 @@
 // -->
 </script>
 
+<#-- ***************
+      Keep-alive
+     ***************
+-->
 <#if pingURL?? && !resourceContext.currentServiceName?lower_case?contains("preview")>
   <@ping.ping url=pingURL['url'] interval=300/> 
 </#if>
 
+<#-- ***************
+      Resource menu 
+     ***************
+-->
 <#if resource?exists && resourceMenuLeft?exists && resourceMenuRight?exists>
   <@gen resource resourceMenuLeft resourceMenuRight />
 <#elseif resource?exists && resourceMenuLeft?exists>
@@ -165,7 +184,6 @@
 <#else>
   <@gen resource /> 
 </#if>
-
 <#macro gen resource resourceMenuLeft="" resourceMenuRight="">
   <div id="title-container">
     

@@ -43,11 +43,11 @@ import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+
 import vtk.repository.Acl;
 import vtk.repository.Path;
 import vtk.repository.Privilege;
 import vtk.repository.Resource;
-import vtk.security.Principal;
 import vtk.text.html.HtmlUtil;
 import vtk.web.ACLTooltipHelper;
 import vtk.web.JSONTreeHelper;
@@ -131,7 +131,7 @@ public class ListResourcesService implements Controller {
             }
             
             String name = HtmlUtil.encodeBasicEntities(r.getName());
-            String title = aclTooltipHelper.generateTitle(r, name, request);
+            String title = aclTooltipHelper.generateTitle(r, r.getAcl(), r.isInheritedAcl(), name, request);
 
             // Add to JSON-object
             o.put(JSONTreeHelper.TEXT, name);

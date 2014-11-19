@@ -40,7 +40,8 @@ if(typeof viewDropdown === "undefined") { // Avoid duplicate running code
         var isEnter = keyCode === 13;
         if(e.type === "click" || isEnter) {
           var link = $(this);
-          if(link.parent().hasClass("vrtx-dropdown-component-toggled")) {
+          var container = link.parent();
+          if(container.hasClass("vrtx-dropdown-component-toggled")) {
             link.toggleClass("active");
           }
           if(link.hasClass("vrtx-dropdown-close-link")) {
@@ -48,9 +49,14 @@ if(typeof viewDropdown === "undefined") { // Avoid duplicate running code
           } else {
             var wrp = link.next(".vrtx-dropdown-wrapper");
           }
-          wrp.slideToggle("fast", function() {
+          if(!container.hasClass("vrtx-dropdown-component-toggle")) {
+            wrp.slideToggle("fast", function() {
+              ariaDropdownState(link, wrp, wrp.is(":visible"), isEnter);
+            });
+          } else {
+            wrp.toggleClass("activated");
             ariaDropdownState(link, wrp, wrp.is(":visible"), isEnter);
-          });
+          }
           e.stopPropagation();
           e.preventDefault();
         }

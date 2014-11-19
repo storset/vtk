@@ -126,7 +126,7 @@ h2 {
   display: block;
 }
 
-.vrtx-multipleinputfield.first .vrtx-multipleinputfield-json-has-title button {
+.vrtx-multipleinputfield.vrtx-multipleinputfield-json-has-title.first  button {
   margin-top: 30px;
 }
 

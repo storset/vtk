@@ -126,6 +126,10 @@ h2 {
   display: block;
 }
 
+.vrtx-multipleinputfield.first .vrtx-multipleinputfield-json-has-title button {
+  margin-top: 30px;
+}
+
 .vrtx-multipleinputfield > * {
   float: left;
 }

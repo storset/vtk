@@ -135,8 +135,8 @@
   {{^isDropdown}}
     {{#json}}
       {{./}}
-        <div class="vrtx-multipleinputfield-json-wrapper">
-          <label for="{{ idstr }}{{name}}-{{ i }}">{{ title }}</label>
+        <div class="vrtx-multipleinputfield-json-wrapper{{#title}} vrtx-multipleinputfield-json-has-title{{/title}}">
+          {{#title}}<label for="{{ idstr }}{{name}}-{{ i }}">{{ title }}</label>{{/title}}
           <input class="vrtx-textfield vrtx-multipleinputfield-field {{ type }}" value="{{ val }}" type="text" size="{{ size }}" id="{{ idstr }}{{name}}-{{ i }}"{{#isReadOnly}} readonly="readonly"{{/isReadOnly}} />
         </div>
       {{./}}

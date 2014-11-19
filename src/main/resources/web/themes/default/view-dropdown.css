@@ -41,6 +41,10 @@
   background: transparent url(images/dropdown-white-bg.png) no-repeat scroll top right;
 }
 
+.vrtx-dropdown-wrapper.activated {
+  display: block;
+}
+
 .vrtx-dropdown-component-not-toggled .vrtx-dropdown-wrapper {
   min-width: 150px;
 }

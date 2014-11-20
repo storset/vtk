@@ -1,5 +1,12 @@
 /*
  * Collection-listing and trash-can
+ * 
+ * Listing is in the core of the Vortex - the center of the information storm!
+ * Works like a web folder where you can:
+ * Create, Copy/move, Delete, Upload and Publish
+ * 
+ * In the trash-can you can: Restore or Permanently delete resources
+ * 
  */
 
 $.when(vrtxAdmin.domainsInstantIsReady).done(function() {

@@ -1,5 +1,5 @@
 /*
- * Editors Save
+ * Editors Save - have functionality for saving in a copy
  */
  
 $.when(vrtxAdmin.domainsIsReady).done(function() {

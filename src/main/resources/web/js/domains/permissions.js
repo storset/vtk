@@ -1,5 +1,9 @@
 /*
  * Permissions
+ * 
+ * Possible to set permissions for multiple users and groups on different levels:
+ * read, write, admin/all etc.
+ * 
  */
  
 $.when(vrtxAdmin.domainsIsReady).done(function() {

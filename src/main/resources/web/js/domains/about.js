@@ -1,5 +1,8 @@
 /*
  * About
+ * 
+ * Meta-data about a resource
+ * 
  */
  
 $.when(vrtxAdmin.domainsIsReady).done(function() {

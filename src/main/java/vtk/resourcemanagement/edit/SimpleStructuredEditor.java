@@ -15,6 +15,7 @@ import net.sf.json.JSONObject;
 
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+
 import vtk.repository.AuthorizationException;
 import vtk.repository.Path;
 import vtk.repository.Property;
@@ -58,23 +59,27 @@ public class SimpleStructuredEditor implements Controller {
 
         Resource currentResource = repository.retrieve(token, uri, false);
         model.put("isCollection", currentResource.isCollection());
-
+        
         if ("POST".equals(request.getMethod())) {
             if (request.getParameter(ACTION_PARAMETER_VALUE_CANCEL) != null) {
                 repository.unlock(token, uri, null);
                 setRedirect(response, currentResource.isCollection() ? uri : uri.getParent(), null, null);
+                return null;
             } else if (request.getParameter(ACTION_PARAMETER_VALUE_DELETE) != null) {
                 // This is going to be replaced later
                 repository.unlock(token, uri, null);
                 repository.delete(token, uri, true);
                 setRedirect(response, uri.getParent(), uri, ACTION_PARAMETER_VALUE_DELETE);
+                return null;
             } else if (currentResource.isCollection() && request.getParameter("save") != null) {
                 Path newUri = createNewDocument(request, repository, token, uri);
                 setRedirect(response, uri, newUri, ACTION_PARAMETER_VALUE_NEW);
+                return null;
             } else if (resourceType.equals(currentResource.getResourceType()) && request.getParameter("save") != null) {
                 updateDocument(request, token, repository, uri);
                 repository.unlock(token, uri, null);
                 setRedirect(response, uri.getParent(), uri, ACTION_PARAMETER_VALUE_UPDATE);
+                return null;
             }
         } else if (resourceType.equals(currentResource.getResourceType())) {
             // Edit some document

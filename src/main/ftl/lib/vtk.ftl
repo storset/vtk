@@ -748,8 +748,7 @@
   <#list options?keys as key>
     ${pre}
     <input type="radio" name="${spring.status.expression}" id="${key}" value="${key}"
-      <#if !(spring.status.value?exists) && c = 0>checked="checked"
-      <#elseif spring.status.value?default("") == key>checked="checked"</#if>
+      <#if spring.status.value?default("") == key>checked="checked"</#if>
       <#if (cTN && titles?has_content && titles[key]?exists)>onclick="createChangeTemplate(${titles[key]?string})"</#if> ${attributes} <@spring.closeTag/>
     <label for="${key}">${options[key]}</label>
     <#if (descriptions?has_content && descriptions[key]?exists)>

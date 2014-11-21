@@ -30,7 +30,6 @@
  */
 package vtk.web.actions.create;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -85,7 +84,7 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         CreateCollectionCommand command = new CreateCollectionCommand(url);
         
         // Set normal folder template as the selected
-        //command.setSourceURI(NORMAL_FOLDER_IDENTIFIER);
+        command.setSourceURI(NORMAL_FOLDER_IDENTIFIER);
 
         return command;
     }
@@ -107,23 +106,10 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         String standardCollectionName = new MessageLocalizer("property.standardCollectionName", "Standard collection",
                 null, springRequestContext).get(null).toString();
 
-        ResourceTemplate regularCollection = null;
-        List<ResourceTemplate> templateList = new ArrayList<ResourceTemplate>();
-        for (ResourceTemplate t: templates) {
-            if ("collection".equals(t.getResourceType()))
-                regularCollection = t;
-            else templateList.add(t);
-        }
-        
         // List normal folder first
-        if (regularCollection != null) {
-            tmp.put(regularCollection.getUri().toString(), regularCollection.getTitle());
-        }
-        else {
-            tmp.put(NORMAL_FOLDER_IDENTIFIER, standardCollectionName);
-        }
+        tmp.put(NORMAL_FOLDER_IDENTIFIER, standardCollectionName);
 
-        for (ResourceTemplate t : templateList) {
+        for (ResourceTemplate t : templates) {
             tmp.put(t.getUri().toString(), t.getTitle());
         }
 
@@ -230,7 +216,6 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
             for (PropertyTypeDefinition def: normalFolderProperties.keySet()) {
                 Property prop = def.createProperty();
                 prop.setValue(normalFolderProperties.get(def));
-                System.out.println("__add: " + prop);
                 collection.addProperty(prop);
             }
         }        

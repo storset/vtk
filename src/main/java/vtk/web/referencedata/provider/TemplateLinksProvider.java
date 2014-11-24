@@ -110,10 +110,11 @@ public class TemplateLinksProvider implements ReferenceDataProvider {
         Repository repository = requestContext.getRepository();
 
         final Resource resource = repository.retrieve(token, requestContext.getResourceURI(), true);
-        final Principal principal = requestContext.getPrincipal();
-        final Service service = requestContext.getService();
         
         if(resource.isReadRestricted() && onlyReadAll) return;
+        
+        final Principal principal = requestContext.getPrincipal();
+        final Service service = requestContext.getService();
         
         List<Link> links = new ArrayList<Link>();
         for (TemplateLink tl : this.templateLinks) {

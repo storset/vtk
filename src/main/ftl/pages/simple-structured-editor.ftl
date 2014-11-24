@@ -79,7 +79,7 @@
       <#if isCollection>
         $("#save").bind("click", function(e) {
           var title = $("input#title");
-          var titleText = $.trim(title.text());
+          var titleText = $.trim(title.val());
           if(titleText !== "") {
             var confirmDialog = new VrtxConfirmDialog({
               title: "${vrtx.getMsg("editor.new-message.confirm.title")}",

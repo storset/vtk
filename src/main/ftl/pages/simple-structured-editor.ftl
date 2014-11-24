@@ -81,7 +81,7 @@
           var title = $("input#title");
           var titleText = $.trim(title.text());
           if(titleText !== "") {
-            var d = new VrtxConfirmDialog({
+            var confirmDialog = new VrtxConfirmDialog({
               title: "${vrtx.getMsg("editor.new-message.confirm.title")}",
               msg: "${vrtx.getMsg("editor.new-message.confirm.msg")}",
               btnTextOk: "${vrtx.getMsg("editor.saveAndPublish")}",
@@ -91,13 +91,13 @@
                 $("#save").click();
               }
             });
-            d.open();
+            confirmDialog.open();
           } else {
-            var d = new VrtxMsgDialog({
+            var missingTitleMsgDialog = new VrtxMsgDialog({
               title: "${vrtx.getMsg("editor.message.missing-title.title")}",
               msg: "${vrtx.getMsg("editor.message.missing-title.msg")}"
             });
-            d.open();
+            missingTitleMsgDialog.open();
           }
           e.stopPropagation();
           return false;

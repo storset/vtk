@@ -378,9 +378,7 @@ VrtxAdmin.prototype.initResourceMenus = function initResourceMenus() {
       nodeType: "div",
       simultanSliding: true,
       funcComplete: (isSavingBeforePublish ? function (p) {
-        var publishSaveResource = vrtxAdm.lang === "en" ? "Are you sure you want to save and publish?"
-                                                        : "Er du sikker på at du vil lagre og publisere?";
-        $("#vrtx-publish-document-form h3").text(publishSaveResource);
+        $("#vrtx-publish-document-form h3").text(vrtxAdmin.messages.publish.saveConfirm);
       } : null)
     });
     vrtxAdm.completeFormAsync({

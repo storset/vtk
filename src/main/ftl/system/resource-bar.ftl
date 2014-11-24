@@ -99,6 +99,7 @@
       }
     },
     publish: {
+      saveConfirm: '${vrtx.getMsg("publishing.edit.save-confirm")}',
       unpublishDateBefore: '${vrtx.getMsg("publishing.edit.invalid.unpublishDateBefore")}',
       unpublishDateNonExisting: '${vrtx.getMsg("publishing.edit.invalid.unpublishDateNonExisting")}'
     },

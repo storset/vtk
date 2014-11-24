@@ -310,27 +310,32 @@ VrtxAdmin.prototype.initTooltips = function initTooltips() {
   var titleContainer = $("#title-container");
   titleContainer.vortexTips("abbr:not(.delayed)", {
     appendTo: "#title-container",
-    containerWidth: 200, xOffset: 20, yOffset: 0
+    containerWidth: 200,
+    xOffset: 20, yOffset: 0
   });
   titleContainer.vortexTips("abbr.delayed", {
     appendTo: "#title-container",
-    containerWidth: 200, xOffset: 20, yOffset: 0,
+    containerWidth: 200,
+    xOffset: 20, yOffset: 0,
     expandHoverToTipBox: true
   });
   $("#main").vortexTips(".tooltips", {
     appendTo: "#contents",
-    containerWidth: 320, xOffset: 20, yOffset: -15
+    containerWidth: 320,
+    xOffset: 20, yOffset: -15
   });
   this.cachedBody.vortexTips(".ui-dialog:visible .tree-create li span.folder", {
     appendTo: ".vrtx-create-tree",
-    containerWidth: 80, xOffset: 10, yOffset: -8,
+    containerWidth: 80,
+    xOffset: 10, yOffset: -8,
     expandHoverToTipBox: true,
     enterOpens: true,
     extra: true
   });
   this.cachedBody.vortexTips("td.permissions span.permission-tooltips", {
     appendTo: "#contents",
-    containerWidth: 340, xOffset: 10, yOffset: -8,
+    containerWidth: 340,
+    xOffset: 10, yOffset: -8,
     expandHoverToTipBox: true,
     enterOpens: true
   });

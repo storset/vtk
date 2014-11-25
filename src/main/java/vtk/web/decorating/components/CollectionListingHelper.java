@@ -11,7 +11,6 @@ import vtk.repository.EditInfo;
 import vtk.repository.Lock;
 import vtk.repository.MultiHostSearcher;
 import vtk.repository.Namespace;
-import vtk.repository.Privilege;
 import vtk.repository.Property;
 import vtk.repository.PropertySet;
 import vtk.repository.Repository;

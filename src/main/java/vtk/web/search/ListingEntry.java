@@ -30,8 +30,6 @@
  */
 package vtk.web.search;
 
-import java.util.Map;
-
 import vtk.repository.EditInfo;
 import vtk.repository.PropertySet;
 import vtk.web.service.URL;
@@ -68,7 +66,7 @@ public class ListingEntry {
         return editInfo.isEditLocked();
     }
 
-    public String lockedBy() {
+    public String getLockedBy() {
         return editInfo.getLockedBy();
     }
     

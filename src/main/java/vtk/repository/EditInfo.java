@@ -1,14 +1,16 @@
 package vtk.repository;
 
+import vtk.security.Principal;
+
 public class EditInfo {
     private boolean isEditAuthorized = false;
     private boolean isEditLocked = false;
-    private String lockedBy = "";
+    private Principal lockedBy;
     
     public EditInfo() {
     }
     
-    public EditInfo(boolean isEditAuthorized, boolean isEditLocked, String lockedBy) {
+    public EditInfo(boolean isEditAuthorized, boolean isEditLocked, Principal lockedBy) {
         this.isEditAuthorized = isEditAuthorized;
         this.isEditLocked = isEditLocked;
         this.lockedBy = lockedBy;
@@ -22,19 +24,19 @@ public class EditInfo {
         return isEditLocked;
     }
     
-    public String getLockedBy() {
+    public Principal getLockedBy() {
         return lockedBy;
     }
 
-    public void setLockedBy(String lockedBy) {
-        this.lockedBy = lockedBy;
-    }
-
-    public void setEditAuthorized(boolean isEditAuthorized) {
-        this.isEditAuthorized = isEditAuthorized;
-    }
-
-    public void setEditLocked(boolean isEditLocked) {
-        this.isEditLocked = isEditLocked;
+    public String getLockedByNameHref() {
+        if (lockedBy != null) {
+            String lockedByName = lockedBy.getName();
+            String url = lockedBy.getURL();
+            if (url != null) {
+                lockedByName = "<a href=\"" + lockedBy.getURL() + "\">" + lockedBy.getDescription() + "</a>";
+            }
+            return lockedByName;
+        }
+        return "";
     }
 }

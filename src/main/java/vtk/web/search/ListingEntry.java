@@ -66,8 +66,8 @@ public class ListingEntry {
         return editInfo.isEditLocked();
     }
 
-    public String getLockedBy() {
-        return editInfo.getLockedBy();
+    public String getLockedByNameHref() {
+        return editInfo.getLockedByNameHref();
     }
     
     @Override

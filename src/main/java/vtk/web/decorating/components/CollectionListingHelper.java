@@ -8,12 +8,14 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Required;
 
 import vtk.repository.EditInfo;
+import vtk.repository.Lock;
 import vtk.repository.MultiHostSearcher;
 import vtk.repository.Namespace;
 import vtk.repository.Privilege;
 import vtk.repository.Property;
 import vtk.repository.PropertySet;
 import vtk.repository.Repository;
+import vtk.repository.RepositoryAction;
 import vtk.repository.Resource;
 import vtk.repository.resourcetype.PropertyType;
 import vtk.repository.resourcetype.PropertyTypeDefinition;
@@ -76,21 +78,29 @@ public class CollectionListingHelper {
      * 
      */
     public EditInfo checkResourceForEditLink(Repository repo, Resource resource, Principal principal) {
-        boolean isLocked = resource.getLock() != null && !resource.getLock().getPrincipal().equals(principal);
-        String lockedBy = "";
-        if(isLocked) {
-            Principal principalLocked = resource.getLock().getPrincipal();
-            lockedBy = principalLocked.getName();
-            String url = principalLocked.getURL();
-            if (url != null) {
-                lockedBy = "<a href=\"" + principalLocked.getURL() + "\">"
-                        + principalLocked.getDescription() + "</a>";
+        boolean canEdit = false;
+        boolean canEditLocked = false;
+        Principal lockedBy = null;
+
+        try {
+
+            boolean hasReadWrite = repo.isAuthorized(resource, RepositoryAction.READ_WRITE, principal,
+                    false);
+            if (hasReadWrite) {
+                Lock lock = resource.getLock();
+                boolean locked = lock != null && (principal == null || !principal.equals(lock.getPrincipal()));
+                if (!locked) {
+                    canEdit = true;
+                } else {
+                    canEditLocked = true;
+                    lockedBy = lock.getPrincipal();
+                }
             }
+        } catch (Exception ex) {
+            // Ignore, just don't allow editing
         }
-        boolean canEdit = repo.authorize(principal, resource.getAcl(), Privilege.ALL)
-                       || repo.authorize(principal, resource.getAcl(), Privilege.READ_WRITE);
-        EditInfo editInfo = new EditInfo(canEdit, isLocked, lockedBy);
-        return editInfo;
+
+        return new EditInfo(canEdit, canEditLocked, lockedBy);
     }
 
     /**

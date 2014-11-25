@@ -55,7 +55,7 @@
             See open-webdav.js
           -->
           <#if entry.editLocked>
-            <span class="vrtx-resource-locked-webdav"><@vrtx.msg code="course-schedule.table-edit.locked" /><br/>${entry.lockedBy}</span>
+            <span class="vrtx-resource-locked-webdav"><@vrtx.msg code="course-schedule.table-edit.locked" /><br/>${entry.getLockedBy()}</span>
           <#elseif entry.editAuthorized>
             <a class="vrtx-resource-open-webdav" href="${vrtx.linkConstructor(entryPropSet.URI, 'webdavService')}"><@vrtx.msg code="collectionListing.editlink" /></a>
           </#if>

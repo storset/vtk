@@ -32,11 +32,13 @@ package vtk.web.search;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
 import vtk.edit.editor.ResourceWrapperManager;
+import vtk.repository.EditInfo;
 import vtk.repository.MultiHostSearcher;
 import vtk.repository.Namespace;
 import vtk.repository.Property;
@@ -117,17 +119,17 @@ public abstract class QuerySearchComponent implements SearchComponent {
         for (int i = 0; i < num; i++) {
             PropertySet propSet = result.getResult(i);
             URL url = null;
-            boolean editAuthorized = false;
+            EditInfo editInfo = new EditInfo();
             Property urlProp = propSet.getProperty(Namespace.DEFAULT_NAMESPACE, MultiHostSearcher.URL_PROP_NAME);
             if (urlProp != null) {
                 url = URL.parse(urlProp.getStringValue());
             } else {
                 url = viewService.constructURL(propSet.getURI());
                 if (displayEditLinks && helper != null) {
-                    editAuthorized = helper.checkResourceForEditLink(repository, propSet, token, principal);
+                    editInfo = helper.checkResourceForEditLink(repository, propSet, token, principal);
                 }
             }
-            entries.add(new ListingEntry(propSet, url, editAuthorized));
+            entries.add(new ListingEntry(propSet, url, editInfo));
         }
 
         List<PropertyTypeDefinition> displayPropDefs = new ArrayList<PropertyTypeDefinition>();

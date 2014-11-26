@@ -30,7 +30,6 @@
  */
 package vtk.web.search;
 
-import vtk.repository.EditInfo;
 import vtk.repository.PropertySet;
 import vtk.web.service.URL;
 

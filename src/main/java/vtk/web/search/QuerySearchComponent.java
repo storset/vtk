@@ -36,8 +36,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
+
 import vtk.edit.editor.ResourceWrapperManager;
-import vtk.repository.EditInfo;
 import vtk.repository.MultiHostSearcher;
 import vtk.repository.Namespace;
 import vtk.repository.Property;

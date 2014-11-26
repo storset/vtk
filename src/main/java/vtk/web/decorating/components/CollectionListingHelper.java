@@ -7,7 +7,6 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Required;
 
-import vtk.repository.EditInfo;
 import vtk.repository.Lock;
 import vtk.repository.MultiHostSearcher;
 import vtk.repository.Namespace;
@@ -20,6 +19,7 @@ import vtk.repository.resourcetype.PropertyType;
 import vtk.repository.resourcetype.PropertyTypeDefinition;
 import vtk.security.Principal;
 import vtk.util.repository.DocumentPrincipalMetadataRetriever;
+import vtk.web.search.EditInfo;
 
 public class CollectionListingHelper {
 
@@ -47,7 +47,6 @@ public class CollectionListingHelper {
             throws Exception {
         
         EditInfo editInfo = new EditInfo();
-        
         if (token == null || principal == null) {
             return editInfo;
         }
@@ -59,7 +58,6 @@ public class CollectionListingHelper {
                 return checkResourceForEditLink(repo, res, principal);
             } catch (Exception exception) {}
         }
-
         return editInfo;
     }
 

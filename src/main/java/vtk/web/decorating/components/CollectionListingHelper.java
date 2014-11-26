@@ -46,7 +46,7 @@ public class CollectionListingHelper {
     public EditInfo checkResourceForEditLink(Repository repo, PropertySet propSet, String token, Principal principal)
             throws Exception {
         
-        EditInfo editInfo = new EditInfo();
+        EditInfo editInfo = new EditInfo(false, false, null);
         if (token == null || principal == null) {
             return editInfo;
         }

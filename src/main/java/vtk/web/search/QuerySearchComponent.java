@@ -118,7 +118,7 @@ public abstract class QuerySearchComponent implements SearchComponent {
         for (int i = 0; i < num; i++) {
             PropertySet propSet = result.getResult(i);
             URL url = null;
-            EditInfo editInfo = new EditInfo();
+            EditInfo editInfo = new EditInfo(false, false, null);
             Property urlProp = propSet.getProperty(Namespace.DEFAULT_NAMESPACE, MultiHostSearcher.URL_PROP_NAME);
             if (urlProp != null) {
                 url = URL.parse(urlProp.getStringValue());

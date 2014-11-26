@@ -37,12 +37,6 @@ public class EditInfo {
     private boolean isEditLocked;
     private Principal lockedBy;
     
-    public EditInfo() {
-        this.isEditAuthorized = false;
-        this.isEditLocked = false;
-        this.lockedBy = null;
-    }
-    
     public EditInfo(boolean isEditAuthorized, boolean isEditLocked, Principal lockedBy) {
         this.isEditAuthorized = isEditAuthorized;
         this.isEditLocked = isEditLocked;

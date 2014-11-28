@@ -333,8 +333,17 @@ function courseSchedule() {
   /* Dates */
   
   this.parseDate = function(dateString) {
-    var m = /^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})\.([0-9]{3})([+-])([0-9]{2}):([0-9]{2})$/.exec(dateString);
-    return { year: m[1], month: m[2], date: m[3], hh: m[4], mm: m[5], tzhh: m[9], tzmm: m[10] };
+    var unknownDate = { year: "1970", month: "01", date: "01", hh: "00", mm: "00", tzhh: "00", tzmm: "00" };
+    if(typeof dateString !== "string") {
+      return unknownDate;
+    } else {
+      var m = /^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})\.([0-9]{3})([+-])([0-9]{2}):([0-9]{2})$/.exec(dateString);
+      if(m == null) {
+        return unknownDate;
+      } else {
+        return { year: m[1], month: m[2], date: m[3], hh: m[4], mm: m[5], tzhh: m[9], tzmm: m[10] };
+      }
+    }
   };
   this.getDateTime = function(s, e) {
     var startDateTime = this.parseDate(s);
@@ -403,6 +412,45 @@ function courseSchedule() {
           $("html").removeClass("embedded-loading");
           $("#editor").css("height", "auto");
         }
+      }
+    }
+  };
+  /*
+   * DELETE vrtxEditableDescription, vrtxResourceFixed and !(vrtx-props + id) from sessions
+   */
+  this.deleteUnwantedProps = function() {
+    for(var type in this.retrievedScheduleData) {
+      if(!this.retrievedScheduleData[type]) continue;
+      var data = this.retrievedScheduleData[type].activities;
+      if(!data) continue;
+      var dataLen = data.length;
+      if(!dataLen) continue;
+      for(var i = 0; i < dataLen; i++) {
+        var dt = data[i];
+        var seqs = dt.sequences || [];
+        for(var j = 0, seqsLen = seqs.length; j < seqsLen; j++) {
+          var sequence = seqs[j];
+          
+          delete sequence.vrtxResourcesFixed;
+          
+          var sessions = sequence.sessions || [];
+          for(var k = 0, sessLen = sessions.length; k < sessLen; k++) {
+            if(!sessions[k].vrtxOrphan) {
+              this.deleteUnwantedSessionProps(sessions[k]);
+            }
+          }
+        }
+      }
+      delete this.retrievedScheduleData[type].vrtxEditableDescription;
+    }
+  };
+  /*
+   * DELETE !(vrtx-props + id + dtStart + dtEnd) from session
+   */
+  this.deleteUnwantedSessionProps = function(session) {
+    for(var prop in session) {
+      if(!/^vrtx/.test(prop) && prop != "id" && prop != "dtStart" && prop != "dtEnd") {
+        delete session[prop];
       }
     }
   };

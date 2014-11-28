@@ -359,8 +359,17 @@ function courseSchedule() {
   
   /* Dates */
   this.parseDate = function(dateString) {
-    var m = /^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})\.([0-9]{3})([+-])([0-9]{2}):([0-9]{2})$/.exec(dateString);
-    return { year: m[1], month: m[2], date: m[3], hh: m[4], mm: m[5], tzhh: m[9], tzmm: m[10] };
+    var unknownDate = { year: "1970", month: "01", date: "01", hh: "00", mm: "00", tzhh: "00", tzmm: "00" };
+    if(typeof dateString !== "string") {
+      return unknownDate;
+    } else {
+      var m = /^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})\.([0-9]{3})([+-])([0-9]{2}):([0-9]{2})$/.exec(dateString);
+      if(m == null) {
+        return unknownDate;
+      } else {
+        return { year: m[1], month: m[2], date: m[3], hh: m[4], mm: m[5], tzhh: m[9], tzmm: m[10] };
+      }
+    }
   };
   this.getDateTime = function(s, e) {
     var startDateTime = this.parseDate(s);
@@ -463,11 +472,11 @@ function courseSchedule() {
     }
   };
   /*
-   * DELETE !(vrtx-props + id) from session
+   * DELETE !(vrtx-props + id + dtStart + dtEnd) from session
    */
   this.deleteUnwantedSessionProps = function(session) {
     for(var prop in session) {
-      if(!/^vrtx/.test(prop) && prop != "id") {
+      if(!/^vrtx/.test(prop) && prop != "id" && prop != "dtStart" && prop != "dtEnd") {
         delete session[prop];
       }
     }

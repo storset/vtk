@@ -49,6 +49,7 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+
 import vtk.repository.Path;
 import vtk.repository.Privilege;
 import vtk.repository.Repository;
@@ -67,6 +68,7 @@ import vtk.security.Principal;
 import vtk.text.html.HtmlFragment;
 import vtk.text.html.HtmlPageFilter;
 import vtk.text.html.HtmlPageParser;
+import vtk.util.text.JsonStreamer;
 import vtk.web.RequestContext;
 import vtk.web.service.Service;
 import vtk.web.service.URL;
@@ -128,7 +130,7 @@ public class StructuredResourceEditor  {
             return new ModelAndView(getFormView(), model);
         }
 
-        byte[] buffer = form.getResource().toJSON().toString(3).getBytes("utf-8");
+        byte[] buffer = JsonStreamer.toJson(form.getResource().toJSON(), 3, false).getBytes("utf-8");
         InputStream stream = new ByteArrayInputStream(buffer);
 
         if (saveWorkingCopy && workingCopy == null) {

@@ -38,13 +38,14 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.json.simple.JSONValue;
 import org.springframework.beans.factory.annotation.Required;
+
 import vtk.repository.ContentStream;
 import vtk.repository.Path;
 import vtk.repository.Property;
@@ -579,7 +580,7 @@ public class BrokenLinksReport extends DocumentReporter {
     }
 
     @Override
-    protected void handleResult(Resource resource, Map<String, Object> model) {
+    protected void handleResult(PropertySet resource, Map<String, Object> model) {
         Property linkCheck = resource.getProperty(this.linkCheckPropDef);
         if (linkCheck == null) {
             return;

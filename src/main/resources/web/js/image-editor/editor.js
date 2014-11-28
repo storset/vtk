@@ -73,7 +73,7 @@ VrtxImageEditor.prototype.init = function init(imageURL, imageSupported) {
   var editor = this;
   
   editor.canvas = document.getElementById("vrtx-image-editor");
-  editor.isIE8 = vrtxAdmin.isIE && vrtxAdmin.browserVersion < 9;
+  editor.isIE8 = vrtxAdmin.isIE8;
   editor.canvasSupported = (editor.isIE8 || ('getContext' in document.createElement('canvas'))) && imageSupported === "true";
   if(editor.canvasSupported) {
     if(editor.isIE8 && typeof editor.canvas.getContext === "undefined") {

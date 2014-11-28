@@ -77,7 +77,8 @@ var VrtxDatepicker = dejavu.Class.declare({
   },
   initFields: function(dateFields) {
     for(var i = 0, len = dateFields.length; i < len; i++) {
-      this.__initField(dateFields[i].name, this.__opts.selector);
+      var dateField = dateFields[i];
+      this.__initField(typeof dateField === "string" ? dateField : dateField.name, this.__opts.selector);
     }
   },
   __initField: function(name, selector) {

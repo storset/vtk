@@ -172,6 +172,7 @@ VrtxEditor.prototype.richtextEditorFacade = {
   initAsyncInterval: 15,
  /**
   * Setup multiple instances
+  * @param {boolean} isInAdmin Is the editor in admin?
   * @this {richtextEditorFacade}
   */
   setupMultiple: function(isInAdmin) {
@@ -476,7 +477,7 @@ VrtxEditor.prototype.richtextEditorFacade = {
       });
     }, 10);
   }
-}
+};
 
 /* Toolbars */
 
@@ -565,7 +566,7 @@ VrtxEditor.prototype.setupEditorHeight = function setupEditorHeight(c, opts) {
                                               : (c.isCaption ? 55 
                                                              : ((c.isStudyField || c.isScheduleComment || c.isAdditionalContent) ? 150 
                                                                                                                                  : (c.isIntro ? 100 
-                                                                                                                                              : 90))))
+                                                                                                                                              : 90))));
 };
 
 VrtxEditor.prototype.setupEditorMaxHeight = function setupEditorMaxHeight(c, opts) {
@@ -601,9 +602,9 @@ VrtxEditor.prototype.classifyEditorInstance = function classifyEditorInstance(op
       classification = {};
 
   // Content
-  classification.isOldContent = name == "resource.content";
-  classification.isStudyContent = name == "content-study";
-  classification.isContent = name == "content" ||
+  classification.isOldContent = name === "resource.content";
+  classification.isStudyContent = name === "content-study";
+  classification.isContent = name === "content" ||
                              classification.isOldContent ||
                              classification.isStudyContent;
   classification.isSimple = classification.isOldContent && opts.simple;
@@ -644,33 +645,33 @@ VrtxEditor.prototype.classifyEditorInstance = function classifyEditorInstance(op
                                 vrtxEdit.contains(name, "description-nn") ||
                                 vrtxEdit.contains(name, "description-no");
   classification.isScheduleComment = vrtxEdit.contains(name, "comment") && vrtxEdit.editorForm.hasClass("vrtx-schedule");
-  classification.isCourseDescriptionA = name == "teachingsemester-other" ||
-                                        name == "examsemester-other" ||
-                                        name == "teaching-language-text-field" ||
-                                        name == "eksamensspraak-text-field" ||
-                                        name == "sensur-text-field" ||
-                                        name == "antall-forsok-trekk-text-field" ||
-                                        name == "tilrettelagt-eksamen-text-field";
-  classification.isCourseDescriptionB = name == "course-content" ||
-                                        name == "learning-outcomes" ||
-                                        name == "opptak-og-adgang-text-field" ||
-                                        name == "ikke-privatist-text-field" ||
-                                        name == "obligatoriske-forkunnskaper-text-field" ||
-                                        name == "recommended-prerequisites-text-field" ||
-                                        name == "overlapping-courses-text-field" ||
-                                        name == "teaching-text-field" ||
-                                        name == "adgang-text-field" ||
-                                        name == "assessment-and-grading" ||
-                                        name == "hjelpemidler-text-field" ||
-                                        name == "klage-text-field" ||
-                                        name == "ny-utsatt-eksamen-text-field" ||
-                                        name == "evaluering-av-emnet-text-field" ||
-                                        name == "other-text-field";
-  classification.isCourseGroup = name == "course-group-about" ||
-                                 name == "courses-in-group" ||
-                                 name == "course-group-admission" ||
-                                 name == "relevant-study-programmes" ||
-                                 name == "course-group-other";       
+  classification.isCourseDescriptionA = name === "teachingsemester-other" ||
+                                        name === "examsemester-other" ||
+                                        name === "teaching-language-text-field" ||
+                                        name === "eksamensspraak-text-field" ||
+                                        name === "sensur-text-field" ||
+                                        name === "antall-forsok-trekk-text-field" ||
+                                        name === "tilrettelagt-eksamen-text-field";
+  classification.isCourseDescriptionB = name === "course-content" ||
+                                        name === "learning-outcomes" ||
+                                        name === "opptak-og-adgang-text-field" ||
+                                        name === "ikke-privatist-text-field" ||
+                                        name === "obligatoriske-forkunnskaper-text-field" ||
+                                        name === "recommended-prerequisites-text-field" ||
+                                        name === "overlapping-courses-text-field" ||
+                                        name === "teaching-text-field" ||
+                                        name === "adgang-text-field" ||
+                                        name === "assessment-and-grading" ||
+                                        name === "hjelpemidler-text-field" ||
+                                        name === "klage-text-field" ||
+                                        name === "ny-utsatt-eksamen-text-field" ||
+                                        name === "evaluering-av-emnet-text-field" ||
+                                        name === "other-text-field";
+  classification.isCourseGroup = name === "course-group-about" ||
+                                 name === "courses-in-group" ||
+                                 name === "course-group-admission" ||
+                                 name === "relevant-study-programmes" ||
+                                 name === "course-group-other";       
                                  
   classification.requiresStudyRefPlugin = classification.isStudyContent || classification.isCourseDescriptionB || classification.isCourseGroup || classification.isStudyField;
          
@@ -732,7 +733,7 @@ function unsavedChangesInEditor() {
       radioLen = currentStateOfRadioButtons.length;
 
   // Check if count has changed
-  if (textLen != vrtxEdit.editorInitInputFields.length || selectsLen != vrtxEdit.editorInitSelects.length || checkboxLen != vrtxEdit.editorInitCheckboxes.length || radioLen != vrtxEdit.editorInitRadios.length) return true;
+  if (textLen !== vrtxEdit.editorInitInputFields.length || selectsLen !== vrtxEdit.editorInitSelects.length || checkboxLen !== vrtxEdit.editorInitCheckboxes.length || radioLen !== vrtxEdit.editorInitRadios.length) return true;
   
   // Check if values have changed
   for (var i = 0; i < textLen; i++) if (currentStateOfInputFields[i].value !== vrtxEdit.editorInitInputFields[i]) return true;
@@ -741,7 +742,7 @@ function unsavedChangesInEditor() {
   for (i = 0; i < radioLen; i++) if (currentStateOfRadioButtons[i].name + " " + currentStateOfRadioButtons[i].value !== vrtxEdit.editorInitRadios[i]) return true;
 
   var currentStateOfTextFields = contents.find("textarea"); // CK->checkDirty()
-  if (typeof CKEDITOR != "undefined") {
+  if (typeof CKEDITOR !== "undefined") {
     var rteFacade = vrtxEdit.richtextEditorFacade;
     for (i = 0, len = currentStateOfTextFields.length; i < len; i++) {
       var ckInstance = rteFacade.getInstance(currentStateOfTextFields[i].name);
@@ -830,7 +831,7 @@ function validTextLengthsInEditor(isOldEditor) {
   }
 
   // Textareas that are not content-fields (RichText)
-  if (typeof CKEDITOR != "undefined") {
+  if (typeof CKEDITOR !== "undefined") {
     var currentTextAreas = isOldEditor ? contents.find(RTE_OLD) : contents.find(RTE_NEW);
     var rteFacade = vrtxEditor.richtextEditorFacade;
     for (i = 0, len = currentTextAreas.length; i < len; i++) {
@@ -907,16 +908,12 @@ VrtxEditor.prototype.initPreviewImage = function initPreviewImage() {
   }
   
   /* Inputfield events for image preview */
-  vrtxAdmin.cachedDoc.on("blur", "input.preview-image-inputfield", function (e) {
-    previewImage(this.id, true);
+  eventListen(vrtxAdmin.cachedDoc, "blur", "input.preview-image-inputfield", function (ref) {
+    previewImage(ref.id, true);
   });
-
-  vrtxAdmin.cachedDoc.on("keydown", "input.preview-image-inputfield", _$.debounce(50, true, function (e) { // ENTER-key
-    if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
-      previewImage(this.id);
-      e.preventDefault();
-    }
-  }));
+  eventListen(vrtxAdmin.cachedDoc, "keydown", "input.preview-image-inputfield", function (ref) {
+    previewImage(ref.id);
+  }, "clickOrEnter", 50);
 };
 
 function initPictureAddJsonField(elm) {
@@ -1005,6 +1002,7 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
     _$ = vrtxAdm._$,
     vrtxEdit = this;
     
+  /* Show / hide for fields */
   var initResetAggregationManuallyApproved = function(_$, checkboxId, name) {
     if (!_$(checkboxId + "\\.true").is(":checked")) {
       _$("#vrtx-resource\\." + name).slideUp(0, "linear");
@@ -1036,7 +1034,7 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
       afterOut: function(animation) {
         animation.__opts.elem.addClass("hidden");
       }
-    })
+    });
     if (courseStatus.val() === "continued-as") {
       animation.updateElem(_$("#vrtx-resource\\.courseContext\\.course-continued-as.hidden"));
       animation.topDown();
@@ -1048,38 +1046,37 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
   });
   _$("#resource\\.courseContext\\.course-status").change();
   
+  
   // Show/hide mappings for radios/booleans
   
   // Exchange sub-folder title
-  
   setShowHideBooleanOldEditor("#resource\\.show-subfolder-menu\\.true, #resource\\.show-subfolder-menu\\.unspecified",
     "#vrtx-resource\\.show-subfolder-title",
     "#resource\\.show-subfolder-menu\\.unspecified:checked",
     "");
     
   // Recursive
-
   setShowHideBooleanOldEditor("#resource\\.recursive-listing\\.false, #resource\\.recursive-listing\\.unspecified",
     "#vrtx-resource\\.recursive-listing-subfolders",
     "#resource\\.recursive-listing\\.false:checked",
     "false");
     
   // Calendar title
-
   setShowHideBooleanOldEditor("#resource\\.display-type\\.unspecified, #resource\\.display-type\\.calendar",
     "#vrtx-resource\\.event-type-title",
     "#resource\\.display-type\\.calendar:checked",
     null);
-
   setShowHideBooleanOldEditor("#resource\\.display-type\\.unspecified, #resource\\.display-type\\.calendar",
     "#vrtx-resource\\.hide-additional-content",
     "#resource\\.display-type\\.calendar:checked",
     "calendar");
 
+
+  // Show / hide mappings for selects
   vrtxEdit.setShowHideSelectNewEditor();
   
-  // Documenttype
   
+  // Documenttype domains
   if(vrtxEdit.editorForm.hasClass("vrtx-course-schedule")) {
     editorCourseSchedule = new courseSchedule();
   } else if (vrtxEdit.editorForm.hasClass("vrtx-hvordan-soke")) {
@@ -1104,8 +1101,8 @@ VrtxEditor.prototype.initEnhancements = function initEnhancements() {
     vrtxEdit.accordionGroupedInit(".vrtx-sea-accordion", "fast");
   } else if (vrtxEdit.editorForm.hasClass("vrtx-contact-supervisor")) {
     vrtxAdm.cachedDoc.on("keyup", ".vrtx-string.id input[type='text']", $.debounce(50, true, function () {
-      updateField({
-        field: $(this),
+      vrtxAdm.inputUpdateEngine.update({
+        input: $(this),
         substitutions: {
           "#": "",
           " ": "-"
@@ -1150,21 +1147,13 @@ function toggleShowHideBoolean(props, show, init) {
     if (!vrtxAdmin.isIE9) {
       theProps.addClass("animate-optimized");
     }
-    if (show && !init) {
-      theProps.show();
-    } else {
-      theProps.hide();
-    }
+    theProps[(show && !init) ? "show" : "hide"]();
   } else {
     var animation = new VrtxAnimation({
       animationSpeed: vrtxAdmin.transitionPropSpeed,
       elem: theProps
     });
-    if (show) {
-      animation.topDown();
-    } else {
-      animation.bottomUp();
-    }
+    animation[show ? "topDown" : "bottomUp"]();
   }
 }
 
@@ -1188,7 +1177,8 @@ VrtxEditor.prototype.setShowHideSelectNewEditor = function setShowHideSelectNewE
  * Select field show/hide
  *
  * @this {VrtxEditor}
- * @param {object} select The select field
+ * @param {object} select The select field jQElement
+ * @param {boolean} init
  */
 VrtxEditor.prototype.showHideSelect = function showHideSelect(select, init) {
   var vrtxEdit = this;
@@ -1241,37 +1231,24 @@ function getMultipleFieldsBoxesTemplates() {
 
 function initMultipleInputFields() {
   getMultipleFieldsBoxesTemplates();
-  vrtxAdmin.cachedAppContent.on("click keypress", ".vrtx-multipleinputfield button.remove", function (e) {
-    if(e.type == "click" || ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13))) {
-      removeFormField($(this));
-      e.preventDefault();
-      e.stopPropagation();
+  
+  eventListen(vrtxAdmin.cachedAppContent, "click keypress", ".vrtx-multipleinputfield button.remove", function (ref) {
+    removeFormField($(ref));
+  }, "clickOrEnter");
+  eventListen(vrtxAdmin.cachedAppContent, "click keypress", ".vrtx-multipleinputfield button.movedown", function (ref) {
+    swapContentTmp($(ref), 1);
+  }, "clickOrEnter");
+  eventListen(vrtxAdmin.cachedAppContent, "click keypress", ".vrtx-multipleinputfield button.moveup", function (ref) {
+    swapContentTmp($(ref), -1);
+  }, "clickOrEnter");
+  eventListen(vrtxAdmin.cachedAppContent, "click keypress", ".vrtx-multipleinputfield button.browse-resource-ref", function (ref) {
+    var m = $(ref).closest(".vrtx-multipleinputfield");
+    var elm = m.find('input.resource_ref');
+    if(!elm.length) {
+      elm = m.find('input');
     }
-  });
-  vrtxAdmin.cachedAppContent.on("click keypress", ".vrtx-multipleinputfield button.movedown", function (e) {
-    if(e.type == "click" || ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13))) {
-      swapContentTmp($(this), 1);
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  });
-  vrtxAdmin.cachedAppContent.on("click keypress", ".vrtx-multipleinputfield button.moveup", function (e) {
-    if(e.type == "click" || ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13))) {
-      swapContentTmp($(this), -1);
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  });
-  vrtxAdmin.cachedAppContent.on("click keypress", ".vrtx-multipleinputfield button.browse-resource-ref", function (e) {
-    if(e.type == "click" || ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13))) {
-      var m = $(this).closest(".vrtx-multipleinputfield");
-      var elm = m.find('input.resource_ref');
-      if(!elm.length) elm = m.find('input');
-      browseServer(elm.attr('id'), vrtxAdmin.multipleFormGroupingPaths.baseBrowserURL, vrtxAdmin.multipleFormGroupingPaths.baseFolderURL, vrtxAdmin.multipleFormGroupingPaths.basePath, 'File');
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  });
+    browseServer(elm.attr('id'), vrtxAdmin.multipleFormGroupingPaths.baseBrowserURL, vrtxAdmin.multipleFormGroupingPaths.baseFolderURL, vrtxAdmin.multipleFormGroupingPaths.basePath, 'File');
+  }, "clickOrEnter");
 }
 
 function enhanceMultipleInputFields(name, isMovable, isBrowsable, limit, json, isReadOnly) { // TODO: simplify
@@ -1344,7 +1321,7 @@ function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown
     browseButton = vrtxEditor.htmlFacade.getMultipleInputfieldsInteractionsButton("browse", "-resource-ref", idstr, "", vrtxAdmin.multipleFormGroupingMessages.browse);
   }
   
-  if(json && value && value.indexOf("###") != -1) {
+  if(json && value && value.indexOf("###") !== -1) {
     value = value.split("###");
     var j = 0;
     for(var prop in json) {
@@ -1382,13 +1359,13 @@ function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown
     autocompleteUsername(".vrtx-autocomplete-username", idstr + i);
     autocompleteUsername(".vrtx-autocomplete-username", idstr + "id-" + i); // JSON name='id' fix
     
-    var focusable = moreBtn.prev().find("input[type='text'], select")
+    var focusable = moreBtn.prev().find("input[type='text'], select");
     if(focusable.length) {
       focusable[0].focus();
     }
 
     // Hide add button if limit is reached
-	var isLimitReached = (len == (vrtxEditor.multipleFieldsBoxes[name].limit - 1));
+    var isLimitReached = (len === (vrtxEditor.multipleFieldsBoxes[name].limit - 1));
     if(isLimitReached || isReadOnly) {
       if(isLimitReached) {
 	    $("<p class='vrtx-" + name + "-limit-reached'>" + vrtxAdmin.multipleFormGroupingMessages.limitReached + "</p>").insertBefore(moreBtn);
@@ -1499,40 +1476,19 @@ function initJsonMovableElements() {
 
     JSON_ELEMENTS_INITIALIZED.resolve();
   });
-
-  vrtxAdmin.cachedAppContent.on("click keypress", ".vrtx-json .vrtx-move-down-button", function (e) {
-    if(e.type == "click" || ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13))) {
-      swapContent($(this), 1);
-      e.stopPropagation();
-      e.preventDefault();
-    }
-  });
-  vrtxAdmin.cachedAppContent.on("click keypress", ".vrtx-json .vrtx-move-up-button", function (e) {
-    if(e.type == "click" || ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13))) {
-      swapContent($(this), -1);
-      e.stopPropagation();
-      e.preventDefault();
-    }
-  });
-  vrtxAdmin.cachedAppContent.on("click keypress", ".vrtx-json .vrtx-add-button", function (e) {
-    if(e.type == "click" || ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13))) {
-    
-      console.log(e.target);
-      addJsonField($(this));
-      e.stopPropagation();
-      e.preventDefault();
-    }
-  });
-  vrtxAdmin.cachedAppContent.on("click keypress", ".vrtx-json .vrtx-remove-button", function (e) {
-    if(e.type == "click" || ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13))) {
-      removeJsonField($(this));
-      e.stopPropagation();
-      e.preventDefault();
-    }
-  });
+  
+  eventListen(vrtxAdmin.cachedAppContent, "click keypress", ".vrtx-json .vrtx-move-down-button", function (ref) {
+    swapContent($(ref), 1);
+  }, "clickOrEnter");
+  eventListen(vrtxAdmin.cachedAppContent, "click keypress", ".vrtx-json .vrtx-move-up-button", function (ref) {
+    swapContent($(ref), -1);
+  }, "clickOrEnter");
+  eventListen(vrtxAdmin.cachedAppContent, "click keypress", ".vrtx-json .vrtx-add-button", addJsonField, "clickOrEnter");
+  eventListen(vrtxAdmin.cachedAppContent, "click keypress", ".vrtx-json .vrtx-remove-button", removeJsonField, "clickOrEnter");
 }
 
-function addJsonField(btn) {
+function addJsonField(ref) {
+  var btn = $(ref);
   var jsonParent = btn.closest(".vrtx-json");
   var numOfElements = jsonParent.find(".vrtx-json-element").length;
   var j = vrtxEditor.multipleBoxesTemplatesContract[parseInt(btn.data('number'), 10)];
@@ -1627,8 +1583,9 @@ function addJsonField(btn) {
   vrtxEditor.multipleFieldsBoxes[j.name].counter++;
 }
 
-function removeJsonField(btn) {
-  var removeElement = btn.closest(".vrtx-json-element"),
+function removeJsonField(ref) {
+  var btn = $(ref),
+      removeElement = btn.closest(".vrtx-json-element"),
       accordionWrapper = removeElement.closest(".vrtx-json-accordion"),
       hasAccordion = accordionWrapper.length,
       removeElementParent = removeElement.parent(),
@@ -1726,7 +1683,7 @@ function scrollToElm(movedElm) {
   var absPos = movedElm.offset();
   var absPosTop = absPos.top;
   var stickyBar = $("#vrtx-editor-title-submit-buttons");
-  if (stickyBar.css("position") == "fixed") {
+  if (stickyBar.css("position") === "fixed") {
     var stickyBarHeight = stickyBar.height();
     absPosTop -= (stickyBarHeight <= absPosTop) ? stickyBarHeight : 0;
   }
@@ -1748,6 +1705,9 @@ function scrollToElm(movedElm) {
 VrtxEditor.prototype.htmlFacade = {
   /* 
    * Turn a block of JSON into HTML (Only working for Schedule per. 14.08.2014)
+   * 
+   * TODO: undefined checks should probably be with typeof against the string
+   * 
    */
   jsonToHtml: function(id, sessionId, idForLookup, session, fixedResourcesUrl, fixedResources, descs, i18n) {
     var html = "";
@@ -1792,7 +1752,7 @@ VrtxEditor.prototype.htmlFacade = {
             }
           }
         case "string":
-          val = (propsVal != "") ? propsVal : val;
+          val = (propsVal !== "") ? propsVal : val;
           val = (desc.multiple && typeof val === "object" && val.length != undefined) ? val.join(",") : val;
           if(desc.multiple) {
             multiples.push({
@@ -1865,7 +1825,7 @@ VrtxEditor.prototype.htmlFacade = {
        if(resourcesLen > 1) fixedResourcesHtml += "</li>";
      }
      var html = "<div class='preview-html'>";
-     if(resourcesLen > 1) html += "<ul>"
+     if(resourcesLen > 1) html += "<ul>";
      html += fixedResourcesHtml;
      if(resourcesLen > 1) html += "</ul>";
      html += "</div>";
@@ -1935,18 +1895,18 @@ VrtxEditor.prototype.htmlFacade = {
         }
       } else { // If removed in Vortex properties
         if(name === "vrtxStaff" && rawOrigTP[name.split("vrtx")[1].toLowerCase()]) { // If is "vrtxStaff" and has "staff" set to []
-		  if(rawPtr[name] == undefined || rawPtr[name].length > 0) {
+	  if(rawPtr[name] == undefined || rawPtr[name].length > 0) {
             vrtxAdmin.log({msg: "DEL EMPTY " + name + (typeof val === "string" ? " " + val : "")});
             rawPtr[name] = [];
             hasChanges = true;
-		  }
+	  }
         } else {
-		  if(rawOrig[name] != undefined) {
+	  if(rawOrig[name] != undefined) {
             vrtxAdmin.log({msg: "DEL " + name + (typeof val === "string" ? " " + val : "")});
             delete rawPtr[name];
             hasChanges = true;
-		  }
-		}
+	  }
+	}
       }
     }
     return hasChanges;
@@ -2127,6 +2087,8 @@ VrtxEditor.prototype.htmlFacade = {
 
 /**
  * Initialize grouped as accordion
+ * @param {string} subGroupedSelector The sub grouping selector
+ * @param {string} customSpeed The custom animation speed (only "fast" or "slow")
  * @this {VrtxEditor}
  */
 VrtxEditor.prototype.accordionGroupedInit = function accordionGroupedInit(subGroupedSelector, customSpeed) { /* param name pending */
@@ -2382,5 +2344,30 @@ VrtxEditor.prototype.initEventHandler = function initEventHandler(selector, opts
     opts.callback.apply(vrtxEdit, opts.callbackParams, false);
   });
 };
+
+function autocompleteUsernames(selector) {
+  var _$ = vrtxAdmin._$;
+  var autocompleteTextfields = _$(selector).find('.vrtx-textfield');
+  var i = autocompleteTextfields.length;
+  while (i--) {
+    permissionsAutocomplete(_$(autocompleteTextfields[i]).attr("id"), 'userNames', vrtxAdmin.usernameAutocompleteParams, true);
+  }
+}
+
+function autocompleteUsername(selector, subselector) {
+  var autocompleteTextfield = vrtxAdmin._$(selector).find('input#' + subselector);
+  if (autocompleteTextfield.length) {
+    permissionsAutocomplete(subselector, 'userNames', vrtxAdmin.usernameAutocompleteParams, true);
+  }
+}
+
+function autocompleteTags(selector) {
+  var _$ = vrtxAdmin._$;
+  var autocompleteTextfields = _$(selector).find('.vrtx-textfield');
+  var i = autocompleteTextfields.length;
+  while (i--) {
+    setAutoComplete(_$(autocompleteTextfields[i]).attr("id"), 'tags', vrtxAdmin.tagAutocompleteParams);
+  }
+}
 
 /* ^ Vortex Editor */

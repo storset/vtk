@@ -235,6 +235,10 @@
   padding-right: 10px;
 }
 
+.vrtx-multipleinputfields .vrtx-button.add {
+  clear: both;
+}
+
 .vrtx-multipleinputfields .vrtx-button.add:hover,
 .vrtx-multipleinputfields .vrtx-button.add:focus,
 .vrtx-json .vrtx-add-button:hover,
@@ -493,7 +497,7 @@
 
 /* ^ Mozilla hacks */
 
-/* Webkit fixes - typical apple mobile devices */
+/* Webkit fixes - typical Apple mobile devices */
 
 .forms-new input[type=button],
 .forms-new input[type=file],
@@ -505,6 +509,6 @@
   -webkit-appearance: none;
 }
 
-/* ^ Webkit fixes - typical apple mobile devices */
+/* ^ Webkit fixes - typical Apple mobile devices */
 
 /* ^ Vortex - Forms */

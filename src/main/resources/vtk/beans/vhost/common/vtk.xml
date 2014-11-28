@@ -16,8 +16,8 @@
         <value>classpath:/vtk/util/vtk_version.properties</value>
         <value>file://${user.home}/*vtk.properties</value>
         <value>file://${user.dir}/*vtk.properties</value>
-        <value>file://${user.home}/*.vrtx.properties</value>
-        <value>file://${user.dir}/*.vrtx.properties</value>
+        <value>file://${user.home}/*vrtx.properties</value>
+        <value>file://${user.dir}/*vrtx.properties</value>
         <!-- Uncomment for in-memory repo testing: -->
         <!--<value>classpath:/vtk/beans/in-memory-vtk.properties</value>-->
       </list>

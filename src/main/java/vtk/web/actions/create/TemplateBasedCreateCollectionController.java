@@ -41,6 +41,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+
 import vtk.repository.InheritablePropertiesStoreContext;
 import vtk.repository.Namespace;
 import vtk.repository.Path;
@@ -49,6 +50,7 @@ import vtk.repository.Repository;
 import vtk.repository.Resource;
 import vtk.repository.TypeInfo;
 import vtk.repository.resourcetype.PropertyTypeDefinition;
+import vtk.repository.resourcetype.Value;
 import vtk.web.RequestContext;
 import vtk.web.actions.ActionsHelper;
 import vtk.web.service.Service;
@@ -63,15 +65,13 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
 
     private ResourceTemplateManager templateManager;
     private PropertyTypeDefinition userTitlePropDef;
-    private PropertyTypeDefinition hiddenPropDef;
     private boolean downcaseCollectionNames = false;
     private Map<String, String> replaceNameChars;
     private String cancelView;
     private PropertyTypeDefinition descriptionPropDef;
-
     private PropertyTypeDefinition publishDatePropDef;
-    private PropertyTypeDefinition unpublishDatePropDef;
     private PropertyTypeDefinition unpublishedCollectionPropDef;
+    private Map<PropertyTypeDefinition, Value> normalFolderProperties; 
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -82,7 +82,7 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         String url = service.constructLink(resource, requestContext.getPrincipal());
 
         CreateCollectionCommand command = new CreateCollectionCommand(url);
-
+        
         // Set normal folder template as the selected
         command.setSourceURI(NORMAL_FOLDER_IDENTIFIER);
 
@@ -212,7 +212,13 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         titleProp.setStringValue(title);
         collection.addProperty(titleProp);
 
-        // hiddenPropDef can only be true or not set.
+        if (normalFolderProperties != null) {
+            for (PropertyTypeDefinition def: normalFolderProperties.keySet()) {
+                Property prop = def.createProperty();
+                prop.setValue(normalFolderProperties.get(def));
+                collection.addProperty(prop);
+            }
+        }        
         Resource r = repository.store(token, collection);
 
         if (!createCollectionCommand.getPublish()) {
@@ -298,11 +304,6 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         this.userTitlePropDef = userTitlePropDef;
     }
 
-    @Required
-    public void setHiddenPropDef(PropertyTypeDefinition hiddenPropDef) {
-        this.hiddenPropDef = hiddenPropDef;
-    }
-
     public void setDowncaseCollectionNames(boolean downcaseCollectionNames) {
         this.downcaseCollectionNames = downcaseCollectionNames;
     }
@@ -325,12 +326,12 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         this.publishDatePropDef = publishDatePropDef;
     }
 
-    public void setUnpublishDatePropDef(PropertyTypeDefinition unpublishDatePropDef) {
-        this.unpublishDatePropDef = unpublishDatePropDef;
-    }
-
     public void setUnpublishedCollectionPropDef(PropertyTypeDefinition unpublishedCollectionPropDef) {
         this.unpublishedCollectionPropDef = unpublishedCollectionPropDef;
     }
 
+    public void setNormalFolderProperties(Map<PropertyTypeDefinition, Value> normalFolderProperties) {
+        this.normalFolderProperties = new HashMap<PropertyTypeDefinition, Value>();
+        this.normalFolderProperties.putAll(normalFolderProperties);
+    }
 }

@@ -108,7 +108,7 @@
 
 ### {{! MULTIPLE INPUTFIELD AND DROPDOWN }}
 
-<div class="vrtx-multipleinputfield" id="{{ idstr }}row-{{ i }}">
+<div class="vrtx-multipleinputfield{{#json}}{{./}}{{#title}} vrtx-multipleinputfield-json-has-title{{/title}}{{./}}{{/json}}" id="{{ idstr }}row-{{ i }}">
 
   {{#isDropdown}}
     <div class="vrtx-dropdown">
@@ -136,7 +136,7 @@
     {{#json}}
       {{./}}
         <div class="vrtx-multipleinputfield-json-wrapper">
-          <label for="{{ idstr }}{{name}}-{{ i }}">{{ title }}</label>
+          {{#title}}<label for="{{ idstr }}{{name}}-{{ i }}">{{ title }}</label>{{/title}}
           <input class="vrtx-textfield vrtx-multipleinputfield-field {{ type }}" value="{{ val }}" type="text" size="{{ size }}" id="{{ idstr }}{{name}}-{{ i }}"{{#isReadOnly}} readonly="readonly"{{/isReadOnly}} />
         </div>
       {{./}}

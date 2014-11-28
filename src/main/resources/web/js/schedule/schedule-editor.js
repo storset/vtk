@@ -522,7 +522,14 @@ function courseSchedule() {
   };
   this.sessionOnlyWindowClose = function(isSaveView) {
     if(onlySessionId && isSaveView) {
-      window.location.href = $("#global-menu-leave-admin a").attr("href") + this.returnSectionHash;
+      var returnUrlToView = $("#global-menu-leave-admin a").attr("href");
+      if(this.returnSectionHash.length > 1 && (/safari/.test(vrtxAdmin.ua) && !/chrome/.test(vrtxAdmin.ua))) { // Safari
+        var param = (returnUrlToView.indexOf("?") !== -1) ? "&" : "?";
+        returnUrlToView += param + "hash=" + this.returnSectionHash.substring(1) + this.returnSectionHash;
+      } else {
+        returnUrlToView += this.returnSectionHash;
+      }
+      window.location.href = returnUrlToView;
     }
   };
 
@@ -561,7 +568,7 @@ function courseSchedule() {
     var sequenceId = session.sequenceId;
     
     var collectionTitle = (sessionDisciplines ? sessionDisciplines.join(", ") + " - " : "") + sessionTitle + " - " + sequenceId;
-    var collectionName = replaceInvalidChar((sessionDisciplines ? sessionDisciplines.join("-") + "-" : "") + sessionTitle + "-" + sequenceId, fileTitleSubstitutions, false);
+    var collectionName = vrtxAdmin.inputUpdateEngine.substitute((sessionDisciplines ? sessionDisciplines.join("-") + "-" : "") + sessionTitle + "-" + sequenceId, false);
     
     var collectionBaseUrl = cs.vrtxResourcesFixedUrl;
     if(!/\/$/.test(collectionBaseUrl)) { // Add last '/' if missing

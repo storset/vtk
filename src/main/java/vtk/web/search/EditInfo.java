@@ -1,4 +1,4 @@
-/* Copyright (c) 2008, University of Oslo, Norway
+/* Copyright (c) 2014, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,52 +28,42 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package vtk.web.templates;
+package vtk.web.search;
 
-import vtk.repository.Path;
+import vtk.security.Principal;
 
-/**
- * Just a simple bean encapsulating the necessary info about a 
- * resource template.  
- *
- */
-public class ResourceTemplate {
-
-    private Path uri;
-    private String title;
-    private String name;
-    private String resourceType;
-
-    public ResourceTemplate(Path uri, String title, String name, String resourceType) {
-        this.uri = uri;
-        this.title = title;
-        this.name = name;
-        this.resourceType = resourceType;
+public class EditInfo {
+    private boolean isEditAuthorized;
+    private boolean isEditLocked;
+    private Principal lockedBy;
+    
+    public EditInfo(boolean isEditAuthorized, boolean isEditLocked, Principal lockedBy) {
+        this.isEditAuthorized = isEditAuthorized;
+        this.isEditLocked = isEditLocked;
+        this.lockedBy = lockedBy;
     }
     
-    public Path getUri() {
-        return uri;
+    public boolean isEditAuthorized() {
+        return isEditAuthorized;
     }
     
-    public String getTitle() {
-        return title;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getResourceType() {
-        return resourceType;
+    public boolean isEditLocked() {
+        return isEditLocked;
     }
     
-    public String toString() {
-        StringBuilder builder = new StringBuilder(
-                                        ResourceTemplate.class.getSimpleName());
-        builder.append("[").append("uri = ").append(this.uri);
-        builder.append(", ").append("name = ").append(this.name);
-        builder.append(", ").append("title = ").append(this.title);
-        builder.append(", ").append("resourceType = ").append(this.resourceType).append("]");
-        return builder.toString();
+    public Principal getLockedBy() {
+        return lockedBy;
+    }
+
+    public String getLockedByNameHref() {
+        if (lockedBy != null) {
+            String lockedByName = lockedBy.getName();
+            String url = lockedBy.getURL();
+            if (url != null) {
+                lockedByName = "<a href=\"" + lockedBy.getURL() + "\">" + lockedBy.getDescription() + "</a>";
+            }
+            return lockedByName;
+        }
+        return "";
     }
 }

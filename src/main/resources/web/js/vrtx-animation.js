@@ -55,7 +55,7 @@ var VrtxAnimation = dejavu.Class.declare({
   initialize: function(opts) {
     this.__opts = opts;
     var animation = this;
-    if(animation.$static.cssTransform != null && animation.$static.cssTransition != null) {
+    if(animation.$static.cssTransform !== null && animation.$static.cssTransition !== null) {
       animation.__opts.cssTransitionEnd = (function () {
         var props = { 'WebkitTransition': 'webkitTransitionEnd', 'MozTransition': 'transitionend', 'OTransition': 'oTransitionEnd otransitionend', 'msTransition': 'MSTransitionEnd', 'transition': 'transitionend' };
         return props.hasOwnProperty(animation.$static.cssTransition) ? props[animation.$static.cssTransition] : null;
@@ -83,12 +83,14 @@ var VrtxAnimation = dejavu.Class.declare({
     }
     
     var animation = this;
-    if(animation.$static.cssTransform == null || !animation.__opts.useCSSAnim) { // JS pixel pushing
+    if(animation.$static.cssTransform === null || !animation.__opts.useCSSAnim) { // JS pixel pushing
       var easing = (dir === "in") ? "easeIn" : "easeOut";
       var speed = animation.__opts.animationSpeed || animation.$static.animationSpeed;
       animation.__opts.elem.animate({
         "marginLeft": left + "px"
-      }, speed, animation.__opts[easing] || animation.$static[easing], function () { animation.__afterMove() });
+      }, speed, animation.__opts[easing] || animation.$static[easing], function () {
+        animation.__afterMove();
+      });
     } else { // CSS pixel pushing
       var easing = (dir === "in") ? "cubic-bezier(0.17, 0.04, 0.03, 0.94)" : "cubic-bezier(0.03, 0.94, 0.96, 0.83)";
       var speed = animation.__opts.animationSpeed || animation.$static.animationSpeed;
@@ -108,11 +110,13 @@ var VrtxAnimation = dejavu.Class.declare({
     var height = this.__prepareMove(dir)[1];
 
     var animation = this;
-    if(animation.$static.cssTransform == null || !animation.__opts.useCSSAnim) { // JS pixel pushing
+    if(animation.$static.cssTransform === null || !animation.__opts.useCSSAnim) { // JS pixel pushing
       var easing = (dir === "in") ? "easeIn" : "easeOut";
       var speed = animation.__opts.animationSpeed || animation.$static.animationSpeed;
       animation.__opts.elem[(dir === "in") ? "slideDown" : "slideUp"](
-         speed, animation.__opts[easing] || animation.$static[easing], function () { animation.__afterMove() });
+         speed, animation.__opts[easing] || animation.$static[easing], function () {
+           animation.__afterMove();
+       });
     } else { // CSS pixel pushing
       var elm = animation.__opts.elem.is("tr") ? animation.__opts.elem.find('td > div')
                                                : animation.__opts.elem;                                  

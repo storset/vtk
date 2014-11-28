@@ -50,6 +50,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openxri.IRIUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
+
 import vtk.repository.MultiHostSearcher;
 import vtk.repository.Namespace;
 import vtk.repository.Path;
@@ -115,7 +116,6 @@ public abstract class AtomFeedGenerator implements FeedGenerator {
     }
 
     protected Feed createFeed(Resource feedScope) throws Exception {
-
         RequestContext requestContext = RequestContext.getRequestContext();
         Feed feed = abdera.newFeed();
 
@@ -126,12 +126,9 @@ public abstract class AtomFeedGenerator implements FeedGenerator {
         publishedDateProp = publishedDateProp == null ? feedScope.getProperty(creationTimePropDef) : publishedDateProp;
         feed.setId(getId(feedScope.getURI(), publishedDateProp, getFeedPrefix()));
 
-        URL feedAlternateURL = URL.parse(requestContext.getRequestURL().toString()).removeParameter("view");
-        feed.addLink(feedAlternateURL.toString(), "alternate");
-        feed.addLink(requestContext.getRequestURL().toString(), "self");
-
-        // Author of feed is the system service
-        feed.addAuthor(requestContext.getRepository().getId().concat("/").concat(requestContext.getService().getName()));
+        addFeedLinks(feedScope, feed);
+        
+        feed.addAuthor(requestContext.getRepository().getId());
         feed.setUpdated(getLastModified(feedScope));
 
         // Whether or not to display collection introduction in feed
@@ -153,9 +150,14 @@ public abstract class AtomFeedGenerator implements FeedGenerator {
                 feed.setLogo(val);
             }
         }
-
         return feed;
+    }
 
+    protected void addFeedLinks(Resource feedScope, Feed feed) {
+        RequestContext requestContext = RequestContext.getRequestContext();
+        URL feedAlternateURL = viewService.constructURL(feedScope);
+        feed.addLink(feedAlternateURL.toString(), "alternate");
+        feed.addLink(requestContext.getRequestURL().toString(), "self");
     }
 
     protected void addPropertySetAsFeedEntry(Feed feed, PropertySet result) {

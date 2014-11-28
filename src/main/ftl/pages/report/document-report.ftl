@@ -23,6 +23,16 @@
     </div>
     <h2>
       <@vrtx.msg code="report.${report.reportname}" />
+
+      <#if (report.form)?exists>
+        <form action="${(report.form.action)?html}" method="get">
+          <#list report.form.inputs as input>
+            <input name="${(input.name)?default('')?html}" type="${(input.type)?default('')?html}"
+                   value="${(input.value)?default('')?html}" />
+          </#list>
+        </form>
+      </#if>
+
       <#if !report.specificCollectionReporter??>
         <a id="vrtx-report-view-other" title="${vrtx.getMsg('manage.choose-location.choose-collection')}" href="${viewReportServiceURL?html}"><@vrtx.msg code="report.view-other-link" default="View other folder" />...</a>
       </#if>
@@ -124,7 +134,7 @@
               </#if>
             </td>
             <td class="vrtx-report-permissions permissions">
-              <#assign hasTooltip = report.permissionTooltips[res_index]?exists />
+              <#assign hasTooltip = (report.permissionTooltips[res_index])?exists />
               <#if report.isReadRestricted[res_index] >
                 <#assign permissionClass = "restricted" />
               <#else>

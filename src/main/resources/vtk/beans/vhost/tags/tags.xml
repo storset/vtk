@@ -101,6 +101,7 @@
   </bean>
 
   <bean id="tags.atomFeedGenerator" class="vtk.web.display.tags.TagsAtomFeedGenerator" parent="atomFeedGenerator">
+    <property name="viewService" ref="tags.viewService" />
     <property name="overridePublishDatePropDef" ref="publishedDatePropDef" />
     <property name="searchComponent" ref="tags.searchComponent" />
     <property name="tagsHelper" ref="tagsHelper" />

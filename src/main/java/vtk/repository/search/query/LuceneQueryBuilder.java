@@ -175,7 +175,10 @@ public class LuceneQueryBuilder implements InitializingBean {
             } else {
                 List<String> values = new ArrayList<String>();
                 values.add(ttq.getTerm());
-                values.addAll(this.resourceTypeTree.getDescendants(ttq.getTerm()));
+                List<String> descendantTypes = this.resourceTypeTree.getDescendants(ttq.getTerm());
+                if (descendantTypes != null) {
+                    values.addAll(descendantTypes);
+                }
                 builder = new TermsQueryBuilder(ResourceFields.RESOURCETYPE_FIELD_NAME, values,  
                         PropertyType.Type.STRING, ttq.getOperator(), documentMapper.getPropertyFields());
                 

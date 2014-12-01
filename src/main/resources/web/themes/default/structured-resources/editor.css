@@ -349,6 +349,11 @@
   color: #ed2023;
 }
 
+#editor.vrtx-course-schedule .admin-fixed-resources-iframe {
+  width: 100%;
+  height: 200px; /* default height */
+}
+
 /* ^ Accordion */
 
 /* Study enhancements */

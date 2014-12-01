@@ -639,25 +639,18 @@ function courseSchedule() {
         vrtxAdmin.serverFacade.postHtml(form.attr("action"), dataString, {
           success: function (results, status, resp) {
             linkElm.hide();
-            $("<iframe src='" + collectionUrl + "?vrtx=admin&embed'></iframe>").insertAfter(linkElm);
+            $("<iframe class='admin-fixed-resources-iframe' src='" + collectionUrl + "?vrtx=admin&embed'></iframe>").insertAfter(linkElm);
           },
           error: function (xhr, textStatus, errMsg) {
             if(xhr.status === 500) { // XXX: assumption that already created, as it can take time before folder created is coming through
               linkElm.hide();
-              $("<iframe src='" + collectionUrl + "?vrtx=admin&embed'></iframe>").insertAfter(linkElm);
+              $("<iframe class='admin-fixed-resources-iframe' src='" + collectionUrl + "?vrtx=admin&embed'></iframe>").insertAfter(linkElm);
             }
             $("body").scrollTo(0, 200, { easing: 'swing', queue: true, axis: 'y' });
           }
         });
       }
     });
-    e.preventDefault();
-    e.stopPropagation();
-  });
-  
-  // Open fixed resources
-  contents.on("click", ".admin-fixed-resources-folder", function(e) {
-    var fixedResourcesWindow = openPopupScrollable(this.href, 1040, 700, "adminFixedResources");
     e.preventDefault();
     e.stopPropagation();
   });

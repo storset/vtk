@@ -1,3 +1,4 @@
+
 /*
  * Schedule editor
  *
@@ -21,6 +22,7 @@ function courseSchedule() {
   // Data / lookup
   this.retrievedScheduleData = null;
   this.descs = {};
+  this.isMedisin = false;
   this.sessionsLookup = {};
   this.vrtxResourcesFixedUrl = "";
   this.i18n = scheduleI18n;
@@ -332,7 +334,7 @@ function courseSchedule() {
                        (prevId ? "<a class='prev' href='" + window.location.protocol + "//" + window.location.host + window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + prevId + "'>" + this.i18n.prev + "</a>" : "") +
                        (nextId ? "<a class='next' href='" + window.location.protocol + "//" + window.location.host + window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + nextId + "'>" + this.i18n.next + "</a>" : "") +
                        ((prevId || nextId) ? "</div>" : ""),
-        sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, id, session, this.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
+        sessionContent = vrtxEdit.htmlFacade.jsonToHtml(this.isMedisin, id, sessionId, id, session, this.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
 
      var rawOrigTP = jQuery.extend(true, {}, session);
 
@@ -423,6 +425,34 @@ function courseSchedule() {
         });
       }
       session.isEnhanced = true;
+      
+      var externalStaff = contentElm.find(".vrtxStaffExternal");
+      if(externalStaff.length) {
+        externalStaff.children().filter(":not(label:first-child)").wrapAll("<div />");
+        var optsExternalStaff = {
+          elem: externalStaff,
+          headerSelector: externalStaff.find("> label"),
+          onActivate: function (e, ui, accordion) {},
+          animationSpeed: 200
+        };
+        var accResources = new VrtxAccordion(optsExternalStaff);
+        accResources.create();
+        //accResources.elem.addClass("fast");
+      }
+      
+      var resources = contentElm.find(".vrtxResources");
+      if(resources.length) {
+        resources.children().filter(":not(label:first-child)").wrapAll("<div />");
+        var optsResources = {
+          elem: resources,
+          headerSelector: resources.find("> label"),
+          onActivate: function (e, ui, accordion) {},
+          animationSpeed: 200
+        };
+        var accResources = new VrtxAccordion(optsResources);
+        accResources.create();
+        //accResources.elem.addClass("fast");
+      }
     }
   };
   this.loadingUpdate = function(msg) {
@@ -506,7 +536,7 @@ function courseSchedule() {
     var rawPtr = sessionLookup.rawPtr;
     var descsPtr = sessionLookup.descsPtr;
 
-    sessionLookup.hasChanges = vrtxEditor.htmlFacade.htmlToJson(sessionElms, sessionId, descsPtr, rawOrig, rawOrigTP, rawPtr);
+    sessionLookup.hasChanges = vrtxEditor.htmlFacade.htmlToJson(this.isMedisin, sessionElms, sessionId, descsPtr, rawOrig, rawOrigTP, rawPtr);
   };
   this.saved = function(isSaveView) {
     for(var type in this.sessionsLookup) {
@@ -665,10 +695,13 @@ function courseSchedule() {
       editorProperties.prepend("<p>" + csRef.i18n.noData + "</p>");
       return;
     }
-    
     // Remove - TODO: don't generate
     $(".vrtx-json").remove();
+
+    // Is it a medisin course
+    csRef.isMedisin = csRef.retrievedScheduleData.isMedisin || /^MEDSEM/.test(csRef.retrievedScheduleData.courseId) || false;
     
+    // Set fixed resources url (and delete it)
     csRef.vrtxResourcesFixedUrl = csRef.retrievedScheduleData.vrtxResourcesFixedUrl;
     delete csRef.retrievedScheduleData.vrtxResourcesFixedUrl;
 

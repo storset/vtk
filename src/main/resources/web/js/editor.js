@@ -1449,7 +1449,7 @@ function saveMultipleInputFields(content, arrSeperator) {
   var arrSep = (typeof arrSeperator === "string") ? arrSeperator : ",";
   for (var i = 0, len = multipleFields.length; i < len; i++) {
     var multiple = $(multipleFields[i]);
-    var multipleInput = multiple.find("> input");
+    var multipleInput = multiple.find("> input, .ui-accordion-content > input");
     if (!multipleInput.length) continue;
     var multipleInputFields = multiple.find(".vrtx-multipleinputfield");
     if (!multipleInputFields.length) {
@@ -1730,15 +1730,18 @@ VrtxEditor.prototype.htmlFacade = {
    * TODO: undefined checks should probably be with typeof against the string
    * 
    */
-  jsonToHtml: function(id, sessionId, idForLookup, session, fixedResourcesUrl, fixedResources, descs, i18n) {
+  jsonToHtml: function(isMedisin, id, sessionId, idForLookup, session, fixedResourcesUrl, fixedResources, descs, i18n) {
     var html = "";
     var multiples = [];
     var rtEditors = [];
     var vrtxEdit = vrtxEditor;
     
     for(var name in descs) {
-      var desc = descs[name],
-          descProps = jQuery.extend(true, [], desc.props),
+      var desc = descs[name];
+      if((desc.notMedisin && isMedisin) || (desc.onlyMedisin && !isMedisin)) {
+        continue;
+      }
+      var descProps = jQuery.extend(true, [], desc.props),
           val = session[name] != undefined ? session[name] : fixedResources[name],
           origVal = "",
           propsVal = "",
@@ -1785,7 +1788,7 @@ VrtxEditor.prototype.htmlFacade = {
             });
           }
           html += vrtxEdit.htmlFacade.getStringField({ title: i18n[name],
-                                                       name: (desc.autocomplete ? "vrtx-autocomplete-" + desc.autocomplete + " " : "") + name + "-" + sessionId,
+                                                       name: (desc.autocomplete ? "vrtx-autocomplete-" + desc.autocomplete + " " : "") + name + " " + name + "-" + sessionId,
                                                        id: name + "-" + sessionId,
                                                        val: val,
                                                        size: desc.size,
@@ -1856,7 +1859,7 @@ VrtxEditor.prototype.htmlFacade = {
  /* 
   * Turn a block of HTML/DOM into JSON (Only working for Schedule per. 14.08.2014)
   */
-  htmlToJson: function (sessionElms, sessionId, descs, rawOrig, rawOrigTP, rawPtr) {
+  htmlToJson: function (isMedisin, sessionElms, sessionId, descs, rawOrig, rawOrigTP, rawPtr) {
     var vrtxEdit = vrtxEditor;
     var hasChanges = false;
     var editorDetectChangeFunc = editorDetectChange;
@@ -1864,10 +1867,10 @@ VrtxEditor.prototype.htmlFacade = {
     for(var name in descs) {
       var desc = descs[name],
           val = "";
-      if(descs[name].type === "json-fixed") {
+      if(desc.type === "json-fixed" || (desc.notMedisin && isMedisin) || (desc.onlyMedisin && !isMedisin)) {
         continue;
+      } else if(desc.type === "html") {
         // XXX: support multiple CK-fields starting with same name
-      } else if(descs[name].type === "html") {
         var elm = sessionElms.find("textarea[name^='" + name + "']");
       } else {
         var elm = sessionElms.find("input[name='" + name + "']");
@@ -1916,18 +1919,18 @@ VrtxEditor.prototype.htmlFacade = {
         }
       } else { // If removed in Vortex properties
         if(name === "vrtxStaff" && rawOrigTP[name.split("vrtx")[1].toLowerCase()]) { // If is "vrtxStaff" and has "staff" set to []
-	  if(rawPtr[name] == undefined || rawPtr[name].length > 0) {
+	      if(rawPtr[name] == undefined || rawPtr[name].length > 0) {
             vrtxAdmin.log({msg: "DEL EMPTY " + name + (typeof val === "string" ? " " + val : "")});
             rawPtr[name] = [];
             hasChanges = true;
-	  }
+	      }
         } else {
-	  if(rawOrig[name] != undefined) {
+	      if(rawOrig[name] != undefined) {
             vrtxAdmin.log({msg: "DEL " + name + (typeof val === "string" ? " " + val : "")});
             delete rawPtr[name];
             hasChanges = true;
-	  }
-	}
+	      }
+	    }
       }
     }
     return hasChanges;

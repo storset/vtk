@@ -186,22 +186,34 @@
   padding-top: 0;
 }
 
-.ui-accordion > div > .header.ui-accordion-header {
+.ui-accordion > div > .header.ui-accordion-header,
+.ui-accordion > div .ui-accordion > div .ui-accordion-header {
   padding: 15px 15px 14px 40px;
   border-radius: 0px;
+}
+
+.ui-accordion > div > .header.ui-accordion-header {
   margin-bottom: -3px;
   background: #f9f9f9;
   color: inherit;
   border-color: #d9d9d9;
 }
 
-.ui-accordion > div .ui-accordion > div > .header.ui-accordion-header {
-  padding: 15px 15px 14px 30px;
+.ui-accordion > div .ui-accordion > div .ui-accordion-header {
+  background: url(../images/line-dotted.gif) repeat-x top left;
+  padding-left: 30px;
   border-radius: 0px;
   margin: 0 0 -3px 20px;
-  background: url(../images/line-dotted.gif) repeat-x top left;
   color: inherit;
   border-width: 0;
+}
+
+.ui-accordion > div .ui-accordion > div .ui-accordion {
+  background: url(../images/line-dotted.gif) repeat-x bottom left;
+}
+
+.ui-accordion .ui-accordion .ui-accordion .ui-accordion-header {
+  margin-left: 0;
 }
 
 .ui-accordion > div > .header.ui-accordion-header.ui-corner-top {
@@ -293,13 +305,13 @@
   overflow: hidden;
 }
 
-.accordion-wrapper > div .ui-accordion > div > .ui-accordion-content {
+.accordion-wrapper > div .ui-accordion > div .ui-accordion-content {
   padding-left: 50px !important;
   border: none !important;
 }
 
 .accordion-wrapper.skip-tier > .ui-accordion-content,
-.accordion-wrapper > div .ui-accordion > div > .ui-accordion-content {
+.accordion-wrapper > div .ui-accordion > div .ui-accordion-content {
   padding-top: 10px !important;
 }
 

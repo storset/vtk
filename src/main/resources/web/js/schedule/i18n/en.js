@@ -43,7 +43,7 @@ var scheduleI18n = {
   "save": "Save",
   "cancel": "Cancel",
 
-  "vrtxTitle": "Title",
+  "vrtxTitle": "Name of activity",
   "vrtxStaff": "Staff (enter username)",
   "vrtxStaffExternal": "External staff",
   "vrtxStaffExternal-name": "Link text",
@@ -55,6 +55,6 @@ var scheduleI18n = {
   "vrtxResourcesFixed": "Fixed resources for the professional studies in medicine",
   "vrtxResourcesFixedInfo": "Permanent resources linked to the same activity every semester",
   "vrtxResourcesFixedUploadAdminFolder": "Upload more / manage",
-  "vrtxResourcesFixedCreateFolder": "Create folder",
+  "vrtxResourcesFixedCreateFolder": "Upload...",
   "vrtxStatus": "Cancel"
 }

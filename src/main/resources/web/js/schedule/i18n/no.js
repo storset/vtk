@@ -43,7 +43,7 @@ var scheduleI18n = {
   "save": "Lagre",
   "cancel": "Avbryt",
 
-  "vrtxTitle": "Tittel",
+  "vrtxTitle": "Navn på aktiviteten",
   "vrtxStaff": "Forelesere (fyll inn brukernavn)",
   "vrtxStaffExternal": "Eksterne forelesere",
   "vrtxStaffExternal-name": "Lenketekst",
@@ -55,6 +55,6 @@ var scheduleI18n = {
   "vrtxResourcesFixed": "Faste ressurser for medisinstudiet",
   "vrtxResourcesFixedInfo": "Ressurser som følger med fra semester til semester. Lesetilgang for brukere tilknyttet medisinstudiet",
   "vrtxResourcesFixedUploadAdminFolder": "Last opp flere / administrer",
-  "vrtxResourcesFixedCreateFolder": "Lag mappe",
+  "vrtxResourcesFixedCreateFolder": "Last opp...",
   "vrtxStatus": "Avlys"
 }

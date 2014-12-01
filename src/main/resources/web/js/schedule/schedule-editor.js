@@ -69,7 +69,7 @@ function courseSchedule() {
         if(fixedResources) {
           sequences[sequence.id] = jQuery.extend(true, [], fixedResources);
         }
-        delete sequence.vrtxResourcesFixed;
+        // delete sequence.vrtxResourcesFixed;
         sessions = sessions.concat(sequence.sessions);
       }
       
@@ -199,7 +199,7 @@ function courseSchedule() {
           if(fixedResources) {
             sequences[sequence.id] = jQuery.extend(true, [], fixedResources);
           }
-          delete sequence.vrtxResourcesFixed;
+          // delete sequence.vrtxResourcesFixed;
           sessions = sessions.concat(sequence.sessions);
         }
         if(!isPlenary || (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod)) {
@@ -458,7 +458,7 @@ function courseSchedule() {
         for(var j = 0, seqsLen = seqs.length; j < seqsLen; j++) {
           var sequence = seqs[j];
           
-          delete sequence.vrtxResourcesFixed;
+          // delete sequence.vrtxResourcesFixed;
           
           var sessions = sequence.sessions || [];
           for(var k = 0, sessLen = sessions.length; k < sessLen; k++) {

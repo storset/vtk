@@ -52,9 +52,8 @@ var scheduleI18n = {
   "vrtxResources-title": "Link text",
   "vrtxResources-url": "Web address",
   "vrtxResourcesText": "Curriculum",
-  "vrtxResourcesFixed": "Fixed resources for the professional studies in medicine",
+  "vrtxResourcesFixed": "Fixed resources for this activity",
   "vrtxResourcesFixedInfo": "Permanent resources linked to the same activity every semester",
-  "vrtxResourcesFixedUploadAdminFolder": "Upload more / manage",
   "vrtxResourcesFixedCreateFolder": "Upload...",
   "vrtxStatus": "Cancel"
 }

@@ -52,9 +52,8 @@ var scheduleI18n = {
   "vrtxResources-title": "Lenkjetekst",
   "vrtxResources-url": "Webadresse",
   "vrtxResourcesText": "Pensum",
-  "vrtxResourcesFixed": "Faste ressursar for medisinstudiet",
+  "vrtxResourcesFixed": "Faste ressursar for denne aktiviteten",
   "vrtxResourcesFixedInfo": "Ressursar som følgjer med frå semester til semester. Lesetilgang for brukarar knytta til medisinstudiet",
-  "vrtxResourcesFixedUploadAdminFolder": "Last opp fleire / administrer",
   "vrtxResourcesFixedCreateFolder": "Last opp...",
   "vrtxStatus": "Avlys"
 }

@@ -1799,16 +1799,9 @@ VrtxEditor.prototype.htmlFacade = {
           if(fixedResourcesUrl) {
             html += "<div class='vrtx-simple-html'><label>" + i18n[name] + "<abbr tabindex='0' class='tooltips label-tooltips' title='" + i18n.vrtxResourcesFixedInfo + "'></abbr></label>";
             if(!val) { // Create fixed resources folder
-              var buttons = "<a class='vrtx-button create-fixed-resources-folder' id='create-fixed-resources-folder-" + idForLookup + "SID" + sessionId + "' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a>";
-              html += buttons;
+              html += "<a class='vrtx-button create-fixed-resources-folder' id='create-fixed-resources-folder-" + idForLookup + "SID" + sessionId + "' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a>";
             } else { // Admin fixed resources folder
-              if(val.length == undefined) { // Object
-                html += this.jsonFixedResourcesToHtml(val.folderUrl, val.resources, name, i18n);
-              } else { // Array
-                for(i = 0, len = val.length; i < len; i++) {
-                  html += this.jsonFixedResourcesToHtml(val[i].folderUrl, val[i].resources, name, i18n);
-                }
-              }
+              html += "<iframe src='" + collectionUrl + "?vrtx=admin&embed'></iframe>";
             }
             html += "</div>";
           }
@@ -1840,21 +1833,6 @@ VrtxEditor.prototype.htmlFacade = {
       }
     }
     return { html: html, multiples: multiples, rtEditors: rtEditors };
-  },
-  jsonFixedResourcesToHtml: function(folderUrl, resources, name, i18n) {
-     var fixedResourcesHtml = "";
-     for(var i = 0, resourcesLen = resources.length; i < resourcesLen; i++) {
-       if(resourcesLen > 1) fixedResourcesHtml += "<li>";
-       fixedResourcesHtml += "<a href='" + resources[i].url + "'>" + resources[i].title + "</a>";
-       if(resourcesLen > 1) fixedResourcesHtml += "</li>";
-     }
-     var html = "<div class='preview-html'>";
-     if(resourcesLen > 1) html += "<ul>";
-     html += fixedResourcesHtml;
-     if(resourcesLen > 1) html += "</ul>";
-     html += "</div>";
-     html += "<a class='vrtx-button admin-fixed-resources-folder' href='" + folderUrl + "?vrtx=admin&displaymsg=yes'>" + i18n[name + "UploadAdminFolder"] + "</a>";
-     return html;
   },
  /* 
   * Turn a block of HTML/DOM into JSON (Only working for Schedule per. 14.08.2014)

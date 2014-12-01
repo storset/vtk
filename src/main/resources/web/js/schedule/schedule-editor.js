@@ -597,8 +597,11 @@ function courseSchedule() {
     var sessionTitle = session.rawPtr.vrtxTitle || session.rawOrigTP.title;
     var sequenceId = session.sequenceId;
     
+    /* Generate collection title and name based on disciplines, title and sequence id
     var collectionTitle = (sessionDisciplines ? sessionDisciplines.join(", ") + " - " : "") + sessionTitle + " - " + sequenceId;
     var collectionName = replaceInvalidChar((sessionDisciplines ? sessionDisciplines.join("-") + "-" : "") + sessionTitle + "-" + sequenceId, fileTitleSubstitutions, false);
+    
+    /* TODO: if "subFolderName" - generate regular sub-folders recursive */
     
     var collectionBaseUrl = cs.vrtxResourcesFixedUrl;
     if(!/\/$/.test(collectionBaseUrl)) { // Add last '/' if missing
@@ -619,6 +622,7 @@ function courseSchedule() {
                          "&propertyNamespace%5B%5D=" + encodeURIComponent("http://www.uio.no/resource-types/fixed-resources-collection") +
                          "&propertyName%5B%5D=fixed-resources-codes" +
                          "&propertyValue%5B%5D=" + encodeURIComponent(sequenceId);
+                         
         // Disciplines if exists
         if(sessionDisciplines) {
           for(var i = 0, len = sessionDisciplines.length; i < len; i++) {
@@ -635,13 +639,12 @@ function courseSchedule() {
         vrtxAdmin.serverFacade.postHtml(form.attr("action"), dataString, {
           success: function (results, status, resp) {
             linkElm.hide();
-            $("<a class='vrtx-button admin-fixed-resources-folder' href='" + collectionUrl + "?vrtx=admin&displaymsg=yes'>" + cs.i18n["vrtxResourcesFixedUploadAdminFolder"] + "</a>").insertAfter(linkElm);
-            var fixedResourcesWindow = openPopupScrollable(collectionUrl + "?vrtx=admin&displaymsg=yes", 1040, 700, "adminFixedResources");
+            $("<iframe src='" + collectionUrl + "?vrtx=admin&embed'></iframe>").insertAfter(linkElm);
           },
           error: function (xhr, textStatus, errMsg) {
             if(xhr.status === 500) { // XXX: assumption that already created, as it can take time before folder created is coming through
               linkElm.hide();
-              $("<a class='vrtx-button admin-fixed-resources-folder' href='" + collectionUrl + "?vrtx=admin&displaymsg=yes'>" + cs.i18n["vrtxResourcesFixedUploadAdminFolder"] + "</a>").insertAfter(linkElm);
+              $("<iframe src='" + collectionUrl + "?vrtx=admin&embed'></iframe>").insertAfter(linkElm);
             }
             $("body").scrollTo(0, 200, { easing: 'swing', queue: true, axis: 'y' });
           }
@@ -699,12 +702,13 @@ function courseSchedule() {
     $(".vrtx-json").remove();
 
     // Is it a medisin course
-    csRef.isMedisin = csRef.retrievedScheduleData.isMedisin || /^MEDSEM/.test(csRef.retrievedScheduleData.courseId) || false;
-    
-    // Set fixed resources url (and delete it)
+    csRef.isMedisin = typeof csRef.retrievedScheduleData.vrtxResourcesFixedUrl === "string";
     csRef.vrtxResourcesFixedUrl = csRef.retrievedScheduleData.vrtxResourcesFixedUrl;
     delete csRef.retrievedScheduleData.vrtxResourcesFixedUrl;
-
+      
+    /*
+     * Edit single session
+     */
     if(onlySessionId) {
       onlySessionId = decodeURIComponent(onlySessionId);
       var sessionOnly = csRef.getSessionOnlyHtml(onlySessionId);
@@ -715,23 +719,20 @@ function courseSchedule() {
       document.title = csRef.i18n.editOnlySessionTitle;
       
       var editorSubmitButtons = vrtxEditor.editorForm.find(".submitButtons");
-      
+
       if(sessionOnly) {
         editorProperties.prepend("<h4 class='property-label'>" + sessionOnly.title + "</h4>" + html);
         csRef.enhanceSession("single", "one", editorProperties);
         var newButtonsHtml = "<input class='vrtx-button vrtx-embedded-button' id='vrtx-embedded-save-view-button' type='submit' value='" + csRef.i18n.saveView + "' />" +
                              "<input class='vrtx-focus-button vrtx-embedded-button' id='vrtx-embedded-save-button' type='submit' value='" + csRef.i18n.save + "' />" +
                              "<input class='vrtx-button vrtx-embedded-button' id='vrtx-embedded-cancel-button' type='submit' value='" + csRef.i18n.cancel + "' />";
-
-        /* Save and unlock */
-        editorSubmitButtons.on("click", "#vrtx-embedded-save-view-button", function(e) {
+                             
+        editorSubmitButtons.on("click", "#vrtx-embedded-save-view-button", function(e) { /* Save and view shortcut */
           editorSubmitButtons.find("#saveAndViewButton").trigger("click");
           e.stopPropagation();
           e.preventDefault();
         });
-        
-        /* Save */
-        editorSubmitButtons.on("click", "#vrtx-embedded-save-button", function(e) {
+        editorSubmitButtons.on("click", "#vrtx-embedded-save-button", function(e) { /* Save shortcut */
           editorSubmitButtons.find("#updateAction").trigger("click");
           e.stopPropagation();
           e.preventDefault();
@@ -740,12 +741,10 @@ function courseSchedule() {
         editorProperties.prepend(html);
         var newButtonsHtml = "<input class='vrtx-button vrtx-embedded-button' id='vrtx-embedded-cancel-button' type='submit' value='Avbryt' />";
       }
-      
       editorSubmitButtons.prepend(newButtonsHtml);
       contents.find("#vrtx-editor-title-submit-buttons").show();
-
-      /* Cancel is unlock */
-      editorSubmitButtons.on("click", "#vrtx-embedded-cancel-button", function(e) {
+      
+      editorSubmitButtons.on("click", "#vrtx-embedded-cancel-button", function(e) { /* Cancel and unlock to view */
         var form = $("form[name='unlockForm']");
         var url = form.attr("action");
         var dataString = form.serialize();
@@ -757,13 +756,15 @@ function courseSchedule() {
         e.stopPropagation();
         e.preventDefault();
       });
+      
+    /*
+     * Edit all sessions
+     */
     } else {
       var html = "<div class='accordion-title'>" + csRef.i18n.titles.plenary + "</div>" +
                  csRef.getActivitiesForTypeHtml("plenary", true) +
                  "<div class='accordion-title'>" + csRef.i18n.titles.group + "</div>" +
                  csRef.getActivitiesForTypeHtml("group", false);
-      
-      // Add HTML to DOM
       editorProperties.prepend("<div class='vrtx-grouped'>" + html + "</div>"); 
       setupFullEditorAccordions(csRef, editorProperties);
     }

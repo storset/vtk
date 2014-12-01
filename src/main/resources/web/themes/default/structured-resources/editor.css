@@ -186,6 +186,7 @@
   padding-top: 0;
 }
 
+.embedded .ui-accordion .ui-accordion-header,
 .ui-accordion > div > .header.ui-accordion-header,
 .ui-accordion > div .ui-accordion > div .ui-accordion-header {
   padding: 15px 15px 14px 40px;
@@ -199,6 +200,7 @@
   border-color: #d9d9d9;
 }
 
+.embedded .ui-accordion .ui-accordion-header,
 .ui-accordion > div .ui-accordion > div .ui-accordion-header {
   background: url(../images/line-dotted.gif) repeat-x top left;
   padding-left: 30px;
@@ -208,10 +210,12 @@
   border-width: 0;
 }
 
+.embedded .ui-accordion,
 .ui-accordion > div .ui-accordion > div .ui-accordion {
   background: url(../images/line-dotted.gif) repeat-x bottom left;
 }
 
+.embedded .ui-accordion .ui-accordion-header,
 .ui-accordion .ui-accordion .ui-accordion .ui-accordion-header {
   margin-left: 0;
 }
@@ -296,6 +300,7 @@
   background: url(../images/line-dotted.gif) repeat-x top left !important;
 }
 
+.embeddable .ui-accordion .ui-accordion-content,
 .ui-accordion > div > .ui-accordion-content { 
   padding-left: 40px !important;
   padding-top: 0px !important;
@@ -305,6 +310,7 @@
   overflow: hidden;
 }
 
+.embeddable .ui-accordion .ui-accordion-content,
 .accordion-wrapper > div .ui-accordion > div .ui-accordion-content {
   padding-left: 50px !important;
   border: none !important;

@@ -3198,6 +3198,17 @@ body#vrtx-preview .tabMessage-big {
 
 /* 4. Embedding */
 
+html.embedded2,
+body.embedded2 {
+  background-color: #fff;
+  text-align: left;
+}
+
+#vrtx-editor-title-submit-buttons h2 {
+  margin: 0;
+  background: none;
+}
+
 .vrtx-close-dialog-editor {
   background: url("/vrtx/__vrtx/static-resources/themes/default/images/thickbox-close.png") no-repeat scroll center center transparent;
   display: block;
@@ -3207,17 +3218,12 @@ body#vrtx-preview .tabMessage-big {
   margin-top: 2px;
 }
 
-html.embedded .vrtx-close-dialog-editor {
-  margin-top: 5px;
-}
-
-#vrtx-editor-title-submit-buttons h2 {
-  margin: 0;
-  background: none;
-}
-
 html.embedded #vrtx-editor-title-submit-buttons h2 {
   padding-bottom: 5px;
+}
+
+html.embedded .vrtx-close-dialog-editor {
+  margin-top: 5px;
 }
 
 html.embedded .embedded-editor-fail #contents {

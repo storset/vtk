@@ -207,9 +207,12 @@ vrtxAdmin._$(document).ready(function () {
   if(typeof datePickerLang === "string") {
     vrtxAdm.lang = datePickerLang;
   }
-  isEmbedded2 = $("body").hasClass("embedded2");
-
   vrtxAdm.cacheDOMNodesForReuse();
+  
+  isEmbedded2 = vrtxAdm.cachedBody.hasClass("embedded2");
+  if(isEmbedded2) {
+    $("html").addClass("embedded2");
+  }
 
   vrtxAdm.bodyId = vrtxAdm.cachedBody.attr("id") || "";
   vrtxAdm.cachedBody.addClass("js");

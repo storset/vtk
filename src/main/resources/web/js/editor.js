@@ -1804,10 +1804,10 @@ VrtxEditor.prototype.htmlFacade = {
               html += "<a class='vrtx-button create-fixed-resources-folder' id='create-fixed-resources-folder-" + idForLookup + "SID" + sessionId + "' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a>";
             } else { // Admin fixed resources folder
               if(val.length == undefined) { // Object
-                html += "<iframe class='admin-fixed-resources-iframe' src='" + val.folderUrl + "?vrtx=admin&embed'></iframe>";
+                html += "<iframe class='admin-fixed-resources-iframe' src='" + val.folderUrl + "?vrtx=admin&mode=actions-listing&types=resource&actions=view,delete'></iframe>";
               } else { // Array
                 for(i = 0, len = val.length; i < len; i++) {
-                  html += "<iframe class='admin-fixed-resources-iframe' src='" + val[i].folderUrl + "?vrtx=admin&embed'></iframe>";
+                  html += "<iframe class='admin-fixed-resources-iframe' src='" + val[i].folderUrl + "?vrtx=admin&mode=actions-listing&types=resource&actions=view,delete'></iframe>";
                 }
               }
             }

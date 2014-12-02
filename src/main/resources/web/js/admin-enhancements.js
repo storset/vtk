@@ -308,7 +308,7 @@ VrtxAdmin.prototype.cacheDOMNodesForReuse = function cacheDOMNodesForReuse() {
  
 VrtxAdmin.prototype.initTooltips = function initTooltips() {
   var titleContainer = $("#title-container");
-  if(titleCointainer.length) {
+  if(titleContainer.length) {
     titleContainer.vortexTips("abbr:not(.delayed)", {
       appendTo: "#title-container",
       containerWidth: 200, xOffset: 20, yOffset: 0

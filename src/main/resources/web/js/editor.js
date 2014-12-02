@@ -1730,7 +1730,7 @@ VrtxEditor.prototype.htmlFacade = {
    * TODO: undefined checks should probably be with typeof against the string
    * 
    */
-  jsonToHtml: function(isMedisin, id, sessionId, idForLookup, session, fixedResourcesUrl, fixedResources, descs, i18n) {
+  jsonToHtml: function(isMedisin, id, sessionId, idForLookup, session, fixedResourcesUrl, fixedResources, descs, i18n, embeddedAdminService) {
     var html = "";
     var multiples = [];
     var rtEditors = [];
@@ -1797,17 +1797,15 @@ VrtxEditor.prototype.htmlFacade = {
           break;
         case "json-fixed":
           if(fixedResourcesUrl) {
-            console.log(val);
-            console.log(fixedResources[name]);
             html += "<div class='vrtx-simple-html'><label>" + i18n[name] + "<abbr tabindex='0' class='tooltips label-tooltips' title='" + i18n.vrtxResourcesFixedInfo + "'></abbr></label>";
             if(!val) { // Create fixed resources folder
               html += "<a class='vrtx-button create-fixed-resources-folder' id='create-fixed-resources-folder-" + idForLookup + "SID" + sessionId + "' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a>";
             } else { // Admin fixed resources folder
               if(val.length == undefined) { // Object
-                html += "<iframe class='admin-fixed-resources-iframe' src='" + val.folderUrl + "?vrtx=admin&mode=actions-listing&types=resource&actions=view,delete'></iframe>";
+                html += "<iframe class='admin-fixed-resources-iframe' src='" + val.folderUrl + embeddedAdminService + "'></iframe>";
               } else { // Array
                 for(i = 0, len = val.length; i < len; i++) {
-                  html += "<iframe class='admin-fixed-resources-iframe' src='" + val[i].folderUrl + "?vrtx=admin&mode=actions-listing&types=resource&actions=view,delete'></iframe>";
+                  html += "<iframe class='admin-fixed-resources-iframe' src='" + val[i].folderUrl + embeddedAdminService + "'></iframe>";
                 }
               }
             }

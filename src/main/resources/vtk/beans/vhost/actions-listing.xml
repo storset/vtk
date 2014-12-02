@@ -56,6 +56,24 @@
         <ref bean="resourceContextProvider" />
       </list>
     </property>
+    <property name="attributesMap">
+      <map>
+        <entry key="jsURLs">
+          <list>
+            <value>${jquery.baseURL}/jquery.min.js</value>
+            <value>${jsBaseURL}/frameworks/dejavu.js</value>
+            <!--  value>${jquery.baseURL}/plugins/jquery.vortexTips.js</value -->
+            <value>${jsBaseURL}/vrtx-simple-dialogs.js</value>
+            <value>${jsBaseURL}/admin-enhancements.js</value>
+          </list>
+        </entry>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/default.css</value>
+          </list>
+        </entry>
+      </map>
+    </property>
   </bean>
 
 </beans>

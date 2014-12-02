@@ -23,9 +23,10 @@ function courseSchedule() {
   this.retrievedScheduleData = null;
   this.descs = {};
   this.isMedisin = false;
-  this.sessionsLookup = {};
   this.vrtxResourcesFixedUrl = "";
+  this.sessionsLookup = {};
   this.i18n = scheduleI18n;
+  this.embeddedAdminService = "?vrtx=admin&mode=actions-listing&types=resource&actions=view,delete&global-actions=upload";
   
   // Last edited sessions
   this.lastId = "";
@@ -284,21 +285,15 @@ function courseSchedule() {
                     prevId = sessionId;
                   }
                 }
-                if(nextId) {
-                  break;
-                }
+                if(nextId) break;
               }
               groupSessions = [];
             }
           }
         }
-        if(nextId) {
-          break;
-        }
+        if(nextId) break;
       }
-      if(nextId) {
-        break;
-      }
+      if(nextId) break;
     }
     if(foundObj) {
       foundObj.nextId = nextId;
@@ -334,7 +329,7 @@ function courseSchedule() {
                        (prevId ? "<a class='prev' href='" + window.location.protocol + "//" + window.location.host + window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + prevId + "'>" + this.i18n.prev + "</a>" : "") +
                        (nextId ? "<a class='next' href='" + window.location.protocol + "//" + window.location.host + window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + nextId + "'>" + this.i18n.next + "</a>" : "") +
                        ((prevId || nextId) ? "</div>" : ""),
-        sessionContent = vrtxEdit.htmlFacade.jsonToHtml(this.isMedisin, id, sessionId, id, session, this.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
+        sessionContent = vrtxEdit.htmlFacade.jsonToHtml(this.isMedisin, id, sessionId, id, session, this.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n, this.embeddedAdminService);
 
      var rawOrigTP = jQuery.extend(true, {}, session);
 
@@ -639,12 +634,12 @@ function courseSchedule() {
         vrtxAdmin.serverFacade.postHtml(form.attr("action"), dataString, {
           success: function (results, status, resp) {
             linkElm.hide();
-            $("<iframe class='admin-fixed-resources-iframe' src='" + collectionUrl + "?vrtx=admin&mode=actions-listing&types=resource&actions=view,delete'></iframe>").insertAfter(linkElm);
+            $("<iframe class='admin-fixed-resources-iframe' src='" + collectionUrl + cs.embeddedAdminService + "'></iframe>").insertAfter(linkElm);
           },
           error: function (xhr, textStatus, errMsg) {
             if(xhr.status === 500) { // XXX: assumption that already created, as it can take time before folder created is coming through
               linkElm.hide();
-              $("<iframe class='admin-fixed-resources-iframe' src='" + collectionUrl + "?vrtx=admin&mode=actions-listing&types=resource&actions=view,delete'></iframe>").insertAfter(linkElm);
+              $("<iframe class='admin-fixed-resources-iframe' src='" + collectionUrl + cs.embeddedAdminService + "'></iframe>").insertAfter(linkElm);
             }
             $("body").scrollTo(0, 200, { easing: 'swing', queue: true, axis: 'y' });
           }

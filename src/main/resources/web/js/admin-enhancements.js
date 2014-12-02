@@ -198,6 +198,7 @@ var VrtxAnimation = function(opts) {
 \*-------------------------------------------------------------------*/
 
 var isEmbedded = window.location.href.indexOf("&embed") !== -1;
+var isEmbedded2 = false;
 var onlySessionId = gup("sessionid", window.location.href);
 
 vrtxAdmin._$(document).ready(function () {
@@ -206,6 +207,7 @@ vrtxAdmin._$(document).ready(function () {
   if(typeof datePickerLang === "string") {
     vrtxAdm.lang = datePickerLang;
   }
+  isEmbedded2 = $("body").hasClass("embedded2");
 
   vrtxAdm.cacheDOMNodesForReuse();
 
@@ -236,25 +238,25 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.loadScripts(["/js/vrtx-animation.js", "/js/vrtx-tree.js"], vrtxAdm.requiredScriptsLoaded);
   vrtxAdm.clientLastModified = $("#resource-last-modified").text().split(",");
   
-  if(!isEmbedded) {
+  if(!isEmbedded && !isEmbedded2) {
     vrtxAdm.initDropdowns();
     vrtxAdm.initScrollBreadcrumbs();
   }
   vrtxAdm.initDomainsInstant();
   
-  if(!isEmbedded) {
+  if(!isEmbedded && !isEmbedded2) {
     vrtxAdm.initMiscAdjustments();
   }
   
   var waitALittle = setTimeout(function() {
     vrtxAdm.initTooltips();
-    if(!isEmbedded) {
+    if(!isEmbedded && !isEmbedded2) {
       vrtxAdm.initGlobalDialogs();
     }
   }, 15);
   
   var waitALittleMore = setTimeout(function() {
-    if(!isEmbedded) {
+    if(!isEmbedded && !isEmbedded2) {
       vrtxAdm.initResourceMenus();
     }
     vrtxAdm.initDomains();
@@ -306,15 +308,17 @@ VrtxAdmin.prototype.cacheDOMNodesForReuse = function cacheDOMNodesForReuse() {
  
 VrtxAdmin.prototype.initTooltips = function initTooltips() {
   var titleContainer = $("#title-container");
-  titleContainer.vortexTips("abbr:not(.delayed)", {
-    appendTo: "#title-container",
-    containerWidth: 200, xOffset: 20, yOffset: 0
-  });
-  titleContainer.vortexTips("abbr.delayed", {
-    appendTo: "#title-container",
-    containerWidth: 200, xOffset: 20, yOffset: 0,
-    expandHoverToTipBox: true
-  });
+  if(titleCointainer.length) {
+    titleContainer.vortexTips("abbr:not(.delayed)", {
+      appendTo: "#title-container",
+      containerWidth: 200, xOffset: 20, yOffset: 0
+    });
+    titleContainer.vortexTips("abbr.delayed", {
+      appendTo: "#title-container",
+      containerWidth: 200, xOffset: 20, yOffset: 0,
+      expandHoverToTipBox: true
+    });
+  }
   $("#main").vortexTips(".tooltips", {
     appendTo: "#contents",
     containerWidth: 320, xOffset: 20, yOffset: -15

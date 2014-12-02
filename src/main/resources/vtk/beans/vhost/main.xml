@@ -44,6 +44,7 @@
   <import resource="editor/editor.xml" />
 
   <import resource="manage.xml" />
+  <import resource="actions-listing.xml" />
   <import resource="visual-profile-aspect.xml" />
   <import resource="report.xml" />
   <import resource="commenting.xml" />

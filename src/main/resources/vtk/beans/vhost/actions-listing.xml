@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <bean id="actionsListing.listingService" class="vtk.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="assertions">
+      <list>
+        <bean class="vtk.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="mode" />
+          <property name="parameterValue" value="actions-listing" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="actionsListing.handler" />
+  </bean>
+
+  <bean id="actionsListing.handler"
+        class="vtk.web.display.collection.ListingActionsController">
+    <constructor-arg value="actionsListing.listingView" />
+    <constructor-arg ref="actionsListing.actions" />
+    <constructor-arg ref="actionsListing.globalActions" />
+  </bean>
+
+
+  <bean id="actionsListing.actions" class="org.springframework.beans.factory.config.MapFactoryBean">
+    <property name="sourceMap">
+      <map>
+        <entry key="view" value-ref="viewService" />
+        <entry key="delete" value-ref="deleteResourceService" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="actionsListing.globalActions" class="org.springframework.beans.factory.config.MapFactoryBean">
+    <property name="sourceMap">
+      <map>
+        <entry key="upload" value-ref="fileUploadService" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="actionsListing.viewResolver" parent="manage.plainViewResolver">
+    <property name="views">
+      <map>
+        <entry key="actionsListing.listingView" value-ref="actionsListing.listingView" />
+      </map>
+    </property>
+  </bean>
+
+
+  <bean id="actionsListing.listingView" parent="freemarkerView">
+    <property name="url" value="pages/actions-listing.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+      </list>
+    </property>
+  </bean>
+
+</beans>

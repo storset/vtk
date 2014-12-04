@@ -46,6 +46,7 @@ import vtk.repository.Path;
 import vtk.repository.Property;
 import vtk.repository.Repository;
 import vtk.repository.Resource;
+import vtk.repository.TypeInfo;
 import vtk.repository.resourcetype.PropertyType;
 import vtk.util.io.StreamUtil;
 import vtk.web.RequestContext;
@@ -80,11 +81,12 @@ public class DisplayThumbnailController implements Controller, LastModified {
         String token = requestContext.getSecurityToken();
         Path uri = requestContext.getResourceURI();
 
-        Resource image = repository.retrieve(token, uri, true);
-        Property thumbnail = image.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.THUMBNAIL_PROP_NAME);
+        Resource resource = repository.retrieve(token, uri, true);
+        Property thumbnail = resource.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.THUMBNAIL_PROP_NAME);
 
         if (thumbnail == null || StringUtils.isBlank(thumbnail.getBinaryContentType())) {
-            String resourceType = image.getResourceType();
+            String resourceType = resource.getResourceType();
+            TypeInfo type = repository.getTypeInfo(resource);
             if ("image".equals(resourceType)) {
                 if (log.isDebugEnabled()) {
                     String detailedMessage = thumbnail == null ? "no thumbnail found (null)" : "no mimetype set";
@@ -95,7 +97,7 @@ public class DisplayThumbnailController implements Controller, LastModified {
                 InputStream in = this.getClass().getResourceAsStream(ADUIO_LOGO);
                 response.setContentType(AUDIO_LOGO_CONTENT_TYPE);
                 StreamUtil.pipe(in, response.getOutputStream());
-            } else if ("video".equals(resourceType)) {
+            } else if (type.isOfType("video")) { // We want placeholder for all kinds of video types.
                 InputStream in = this.getClass().getResourceAsStream(VIDEO_LOGO);
                 response.setContentType(VIDEO_LOGO_CONTENT_TYPE);
                 StreamUtil.pipe(in, response.getOutputStream());

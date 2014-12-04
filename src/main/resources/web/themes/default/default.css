@@ -3204,6 +3204,23 @@ body.embedded2 {
   text-align: left;
 }
 
+body.embedded2 #upload-action-container #file-upload-container #file {
+  opacity: 1;
+}
+
+body.embedded2 #upload-action-container .expandedForm {
+  margin: 0;
+  padding: 0;
+  background-color: transparent !important;
+  border: none !important;
+}
+
+body.embedded2 #upload-action-container h3,
+body.embedded2 #upload-action-container #fake-file,
+body.embedded2 #upload-action-container #submitButtons {
+  display: none;
+}
+
 #vrtx-editor-title-submit-buttons h2 {
   margin: 0;
   background: none;

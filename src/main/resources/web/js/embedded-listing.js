@@ -37,12 +37,13 @@ vrtxAdmin._$(document).ready(function () {
       },
       simultanSliding: true
     });
+    
     // Auto-trigger Upload when have choosen files
-    $(document).on("change", "#fake-file", function () {
-      $("form#fileUploadService-form input[type=submit]").click();
+    $(document).on("change", "#file", function () {
+      $("form#fileUploadService-form .vrtx-focus-button").click();
     });
     vrtxAdm.completeFormAsync({
-      selector: "form#fileUploadService-form input[type=submit]",
+      selector: "form#fileUploadService-form .vrtx-focus-button",
       errorContainer: "errorContainer",
       errorContainerInsertAfter: "h3",
       post: true,

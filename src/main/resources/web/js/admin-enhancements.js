@@ -2000,9 +2000,11 @@ function ajaxUploadPerform(opts, size) {
           easeIn: opts.transitionEasingSlideDown,
           easeOut: opts.transitionEasingSlideUp,
           afterOut: function(animation) {
-            for (var i = opts.updateSelectors.length; i--;) {
-              var outer = vrtxAdm.outerHTML(result, opts.updateSelectors[i]);
-              vrtxAdm.cachedBody.find(opts.updateSelectors[i]).replaceWith(outer);
+            if(opts.updateSelectors) {
+              for (var i = opts.updateSelectors.length; i--;) {
+                var outer = vrtxAdm.outerHTML(result, opts.updateSelectors[i]);
+                vrtxAdm.cachedBody.find(opts.updateSelectors[i]).replaceWith(outer);
+              }
             }
             vrtxAdm.updateCollectionListingInteraction();
             if (opts.funcComplete) {
@@ -3402,9 +3404,11 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(opts)
   vrtxAdmin.serverFacade.postHtml(url, dataString, {
     success: function (results, status, resp) {
       var internalComplete = function(res) {
-        for (var i = opts.updateSelectors.length; i--;) {
-          var outer = vrtxAdm.outerHTML(_$.parseHTML(res), opts.updateSelectors[i]);
-          vrtxAdm.cachedBody.find(opts.updateSelectors[i]).replaceWith(outer);
+        if(opts.updateSelectors) {
+          for (var i = opts.updateSelectors.length; i--;) {
+            var outer = vrtxAdm.outerHTML(_$.parseHTML(res), opts.updateSelectors[i]);
+            vrtxAdm.cachedBody.find(opts.updateSelectors[i]).replaceWith(outer);
+          }
         }
         if (opts.funcComplete) opts.funcComplete();
       };

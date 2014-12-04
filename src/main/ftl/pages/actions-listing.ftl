@@ -19,22 +19,26 @@
     <table id="directory-listing" class="collection-listing">
       <#list entries as entry>
         <#assign url = (entry.actions['view'])?default('') />
-        <tr class="<@vrtx.resourceToIconResolver entry.resource /><#if entry.resource.collection> true</#if>">
+        <tr class="<#if entry_index % 2 == 0>odd<#else>even</#if> <@vrtx.resourceToIconResolver entry.resource /><#if entry.resource.collection> true</#if>">
           <td class="name"><a href="${url?html}">${entry.resource.title}</a></td>
           <#list [ "delete" ] as action>
             <#if !(entry.actions[action])?exists>
               <td></td>
             <#else>
-              <td><a href="${entry.actions[action]?html}">${action?html}</a></td>
+              <td><a class="delete-action" href="${entry.actions[action]?html}">${action?html}</a></td>
             </#if>
           </#list>
         </tr>
       </#list>
     </table>
 
+    <div id="upload-action-container">
+      <span>&nbsp;</span>
+    </div>
+
     <#list globalActions?keys as globalAction>
       <div class="globalaction">
-        <a href="${globalActions[globalAction]?html}">${globalAction?html}</a>
+        <a id="upload-action" href="${globalActions[globalAction]?html}">${globalAction?html}</a>
       </div>
     </#list>
   </body>

@@ -34,6 +34,7 @@ vrtxAdmin._$(document).ready(function () {
       focusElement: "",
       funcComplete: function (p) {
         vrtxAdm.initFileUpload();
+        updateIframeHeight();
       },
       simultanSliding: true
     });
@@ -65,4 +66,11 @@ function updateListing() {
       $("#upload-action").click();
     }
   }); 
+}
+
+function updateIframeHeight() {
+  var iframes = $(window.parent.document.getElementsByTagName('iframe')).filter(":visible");
+  for (var i = 0, len = iframes.length; i < len; i++) {
+    iframes[i].style.height = iframes[i].contentWindow.document.body.offsetHeight + 'px';
+  }
 }

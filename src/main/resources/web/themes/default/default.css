@@ -3204,6 +3204,10 @@ body.embedded2 {
   text-align: left;
 }
 
+body.embedded2 {
+  min-width: 0;
+}
+
 body.embedded2 #upload-action-container #file-upload-container #file {
   opacity: 1;
   left: -100px;

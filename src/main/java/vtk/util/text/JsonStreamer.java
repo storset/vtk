@@ -700,6 +700,13 @@ public class JsonStreamer {
         public String writtenCharsToString() {
             return buffer.toString();
         }
+        
+        /**
+         * Clear all data written to internal string builder.
+         */
+        public void clear() {
+            buffer.setLength(0);
+        }
 
         @Override
         public String toString() {

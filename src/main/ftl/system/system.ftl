@@ -1,8 +1,9 @@
 <#ftl strip_whitespace=true />
 <#import "/lib/vtk.ftl" as vrtx />
-<noscript>
+
+<!--noscript>
   <div class="message infomessage">${vrtx.getMsg("msg.browser.javascript-off")}</div>
-</noscript>
+</noscript-->
 
 <#assign lang = vrtx.getMsg("eventListing.calendar.lang", "en") />
 

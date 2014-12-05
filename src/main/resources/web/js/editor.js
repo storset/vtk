@@ -1796,7 +1796,21 @@ VrtxEditor.prototype.htmlFacade = {
                                                      }, name);
           break;
         case "json-fixed":
-          if(fixedResourcesUrl) {
+          if(fixedResourcesUrl && val.length) {
+            for(i = 0, len = val.length; i < len; i++) {
+              var fr = val[i];
+              var folderType = fr.folderType;
+              var folderName = fr.folderName;
+              var folderUrl = fr.folderUrl;
+              html += "<div class='vrtx-simple-html'><label>" + i18n[name + "-" + folderType] + "</label>";
+              if(folderUrl && folderUrl.length) {
+                html += "<iframe class='admin-fixed-resources-iframe' src='" + folderUrl + embeddedAdminService + "'></iframe>";
+              } else {
+                html += "<a class='vrtx-button create-fixed-resources-folder' id='create-fixed-resources-folder-" + idForLookup + "SID" + sessionId + "SUBF" + folderName + "' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a>";
+              }
+              html += "</div>";
+            }
+            /* Old
             html += "<div class='vrtx-simple-html'><label>" + i18n[name] + "<abbr tabindex='0' class='tooltips label-tooltips' title='" + i18n.vrtxResourcesFixedInfo + "'></abbr></label>";
             if(!val) { // Create fixed resources folder
               html += "<a class='vrtx-button create-fixed-resources-folder' id='create-fixed-resources-folder-" + idForLookup + "SID" + sessionId + "' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a>";
@@ -1810,6 +1824,7 @@ VrtxEditor.prototype.htmlFacade = {
               }
             }
             html += "</div>";
+            */
           }
           break;
         case "html":

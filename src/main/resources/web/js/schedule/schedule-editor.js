@@ -584,8 +584,14 @@ function courseSchedule() {
   contents.on("click", ".create-fixed-resources-folder", function(e) {
     var linkElm = $(this);
     var sessionId = linkElm[0].id.split("create-fixed-resources-folder-")[1];
-    var id = sessionId.split("SID")[0];
-    sessionId = sessionId.split("SID")[1];
+    
+    var splitA = sessionId.split("SID");
+    var id = splitA[0];
+    sessionId = splitA[1];
+    var splitB = sessionId.split("SUBF");
+    sessionId = splitB[0];
+    var subfolder = splitB[1];
+    
     var session = cs.sessionsLookup[id][sessionId];
     
     var sessionDisciplines = session.rawOrigTP.disciplines;
@@ -596,7 +602,9 @@ function courseSchedule() {
     var collectionTitle = (sessionDisciplines ? sessionDisciplines.join(", ") + " - " : "") + sessionTitle + " - " + sequenceId;
     var collectionName = replaceInvalidChar((sessionDisciplines ? sessionDisciplines.join("-") + "-" : "") + sessionTitle + "-" + sequenceId, fileTitleSubstitutions, false);
     
-    /* TODO: if "subFolderName" - generate regular sub-folders recursive */
+    /* TODO: if "subFolderName" - generate regular sub-folders recursive 
+     * TODO: trigger new service that create before upload
+     */
     
     var collectionBaseUrl = cs.vrtxResourcesFixedUrl;
     if(!/\/$/.test(collectionBaseUrl)) { // Add last '/' if missing
@@ -633,15 +641,38 @@ function courseSchedule() {
         dataString += "&csrf-prevention-token=" + csrf;
         vrtxAdmin.serverFacade.postHtml(form.attr("action"), dataString, {
           success: function (results, status, resp) {
-            linkElm.hide();
-            $("<iframe class='admin-fixed-resources-iframe' src='" + collectionUrl + cs.embeddedAdminService + "'></iframe>").insertAfter(linkElm);
+            var dataString = "uri=" + encodeURIComponent(collectionUrl + "/" + subfolder)
+                             "&type=fixed-resources-collection";
+            vrtxAdmin.serverFacade.postHtml(form.attr("action"), dataString, {
+              success: function (results, status, resp) {
+                linkElm.hide();
+                $("<iframe class='admin-fixed-resources-iframe' src='" + collectionUrl + "/" + subfolder + cs.embeddedAdminService + "'></iframe>").insertAfter(linkElm);
+              },
+              error: function (xhr, textStatus, errMsg) {
+                if(xhr.status === 500) { // XXX: assumption that already created, as it can take time before folder created is coming through
+                  linkElm.hide();
+                  $("<iframe class='admin-fixed-resources-iframe' src='" + collectionUrl + "/" + subfolder + cs.embeddedAdminService + "'></iframe>").insertAfter(linkElm);
+                  $("body").scrollTo(0, 200, { easing: 'swing', queue: true, axis: 'y' });
+                }
+              }
+            });
           },
           error: function (xhr, textStatus, errMsg) {
-            if(xhr.status === 500) { // XXX: assumption that already created, as it can take time before folder created is coming through
-              linkElm.hide();
-              $("<iframe class='admin-fixed-resources-iframe' src='" + collectionUrl + cs.embeddedAdminService + "'></iframe>").insertAfter(linkElm);
-            }
-            $("body").scrollTo(0, 200, { easing: 'swing', queue: true, axis: 'y' });
+            var dataString = "uri=" + encodeURIComponent(collectionUrl + "/" + subfolder)
+                             "&type=fixed-resources-collection";
+            vrtxAdmin.serverFacade.postHtml(form.attr("action"), dataString, {
+              success: function (results, status, resp) {
+                linkElm.hide();
+                $("<iframe class='admin-fixed-resources-iframe' src='" + collectionUrl + "/" + subfolder + cs.embeddedAdminService + "'></iframe>").insertAfter(linkElm);
+              },
+              error: function (xhr, textStatus, errMsg) {
+                if(xhr.status === 500) { // XXX: assumption that already created, as it can take time before folder created is coming through
+                  linkElm.hide();
+                  $("<iframe class='admin-fixed-resources-iframe' src='" + collectionUrl + "/" + subfolder + cs.embeddedAdminService + "'></iframe>").insertAfter(linkElm);
+                  $("body").scrollTo(0, 200, { easing: 'swing', queue: true, axis: 'y' });
+                }
+              }
+            });
           }
         });
       }

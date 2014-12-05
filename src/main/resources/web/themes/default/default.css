@@ -3206,6 +3206,11 @@ body.embedded2 {
 
 body.embedded2 #upload-action-container #file-upload-container #file {
   opacity: 1;
+  left: -100px;
+}
+
+body.embedded2 #file-upload-container a.vrtx-file-upload {
+  left: 15px;
 }
 
 body.embedded2 #upload-action-container .expandedForm {

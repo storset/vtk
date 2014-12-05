@@ -52,7 +52,8 @@ var scheduleI18n = {
   "vrtxResources-title": "Link text",
   "vrtxResources-url": "Web address",
   "vrtxResourcesText": "Curriculum",
-  "vrtxResourcesFixed": "Fixed resources for this activity",
+  "vrtxResourcesFixed-permanent": "Fixed resources for this activity",
+  "vrtxResourcesFixed-semester": "Resources only for this semester", 
   "vrtxResourcesFixedInfo": "Permanent resources linked to the same activity every semester",
   "vrtxResourcesFixedCreateFolder": "Upload...",
   "vrtxStatus": "Cancel"

@@ -55,6 +55,6 @@ var scheduleI18n = {
   "vrtxResourcesFixed-permanent": "Fixed resources for this activity",
   "vrtxResourcesFixed-semester": "Resources only for this semester", 
   "vrtxResourcesFixedInfo": "Permanent resources linked to the same activity every semester",
-  "vrtxResourcesFixedCreateFolder": "Upload...",
+  "vrtxResourcesFixedCreateFolder": "Start uploading...",
   "vrtxStatus": "Cancel"
 }

@@ -22,6 +22,9 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.completeFormAsync({
     selector: "form#deleteResourceService-form input[type=submit]",
     post: true,
+    funcCancel: function() {
+      $("#upload-action").click();
+    },
     funcComplete: updateListing
   });
   
@@ -54,7 +57,10 @@ vrtxAdmin._$(document).ready(function () {
       errorContainer: "errorContainer",
       errorContainerInsertAfter: "h3",
       post: true,
-      funcProceedCondition: ajaxUpload,
+      funcProceedCondition: function(opts) {
+        updateIframeHeight(true);
+        return ajaxUpload(opts);
+      },
       funcComplete: updateListing
     });
     $("#upload-action").click();
@@ -71,13 +77,14 @@ function updateListing() {
   }); 
 }
 
-function updateIframeHeight() {
+function updateIframeHeight(minH) {
   if (window != top) {
+    var minHeight = (typeof minH !== "undefined") ? 250 : 0; /* Use a minimum height if specified in function parameter */
     var iframes = $(window.parent.document).find(".admin-fixed-resources-iframe").filter(":visible");
     for (var i = 0, len = iframes.length; i < len; i++) {
       var iframe = iframes[i];
       /* Taken from iframe-view.js */
-      var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight) + 45;
+      var computedHeight = Math.max(minHeight, Math.ceil(iframe.contentWindow.document.body.offsetHeight) + 45);
       computedHeight = (computedHeight - ($.browser.msie ? 4 : 0));
       iframe.style.height = computedHeight + 'px';
     }

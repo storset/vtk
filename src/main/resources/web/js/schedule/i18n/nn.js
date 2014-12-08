@@ -55,6 +55,6 @@ var scheduleI18n = {
   "vrtxResourcesFixed-permanent": "Faste ressursar for denne aktiviteten",
   "vrtxResourcesFixed-semester": "Ressursar berre for dette semesteret", 
   "vrtxResourcesFixedInfo": "Ressursar som følgjer med frå semester til semester. Lesetilgang for brukarar knytta til medisinstudiet",
-  "vrtxResourcesFixedCreateFolder": "Last opp...",
+  "vrtxResourcesFixedCreateFolder": "Start opplasting...",
   "vrtxStatus": "Avlys"
 }

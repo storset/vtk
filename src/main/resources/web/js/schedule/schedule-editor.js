@@ -401,12 +401,14 @@ function courseSchedule() {
   this.enhanceSession = function(id, sessionId, contentElm) {
     var session = this.sessionsLookup[id][sessionId];
     if(session && !session.isEnhanced) { // If not already enhanced
+      /* Multiple fields */
       var multiples = session.multiples;
       var enhanceMultipleInputFieldsFunc = enhanceMultipleInputFields;
       for(var i = multiples.length; i--;) {
         var m = multiples[i];
         enhanceMultipleInputFieldsFunc(m.name + "-" + sessionId, m.movable, m.browsable, 50, m.json, m.readOnly);
       }
+      /* CKEditors */
       var rtEditors = session.rtEditors;
       for(i = rtEditors.length; i--;) {
         vrtxEditor.richtextEditorFacade.setup({
@@ -419,6 +421,14 @@ function courseSchedule() {
           simple: true
         });
       }
+      /* Load iframes for iframe placeholders */
+      var iframePlaceholders = contentElm.find(".admin-fixed-resources-iframe");
+      for(var i = iframePlaceholders.length; i--;) {
+        var iframePlaceholder = $(iframePlaceholders[i]);
+        var iframe = "<iframe class='admin-fixed-resources-iframe' src='" + iframePlaceholder.attr("data-src") + "'></iframe>";
+        iframePlaceholder.replaceWith(iframe);
+      }
+      
       session.isEnhanced = true;
       
       var externalStaff = contentElm.find(".vrtxStaffExternal");

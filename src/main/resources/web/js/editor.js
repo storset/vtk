@@ -1804,7 +1804,8 @@ VrtxEditor.prototype.htmlFacade = {
               var folderUrl = fr.folderUrl;
               html += "<div class='vrtx-simple-html'><label>" + i18n[name + "-" + folderType] + "</label>";
               if(folderUrl && folderUrl.length) {
-                html += "<iframe class='admin-fixed-resources-iframe' src='" + folderUrl + embeddedAdminService + "'></iframe>";
+                /* Iframe placeholder */
+                html += "<div class='admin-fixed-resources-iframe' data-src='" + folderUrl + embeddedAdminService + "'></div>";
               } else {
                 html += "<a class='vrtx-button create-fixed-resources-folder' id='create-fixed-resources-folder-" + idForLookup + "SID" + sessionId + "SUBF" + folderName + "' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a>";
               }

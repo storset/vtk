@@ -14,16 +14,14 @@ vrtxAdmin._$(document).ready(function () {
     selectorClass: "globalmenu",
     insertAfterOrReplaceClass: "#directory-listing",
     nodeType: "div",
-    simultanSliding: true,
-    transitionSpeed: 0,
     funcComplete: function (p) {
       updateIframeHeight();
-    }
+    },
+    simultanSliding: true
   });
   vrtxAdm.completeFormAsync({
     selector: "form#deleteResourceService-form input[type=submit]",
     post: true,
-    transitionSpeed: 0,
     funcComplete: updateListing
   });
   
@@ -37,7 +35,6 @@ vrtxAdmin._$(document).ready(function () {
       insertAfterOrReplaceClass: "#upload-action-container span",
       nodeType: "div",
       focusElement: "",
-      transitionSpeed: 0,
       funcComplete: function (p) {
         vrtxAdm.initFileUpload();
         updateIframeHeight();
@@ -57,7 +54,6 @@ vrtxAdmin._$(document).ready(function () {
       errorContainer: "errorContainer",
       errorContainerInsertAfter: "h3",
       post: true,
-      transitionSpeed: 0,
       funcProceedCondition: ajaxUpload,
       funcComplete: updateListing
     });

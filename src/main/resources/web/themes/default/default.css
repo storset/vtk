@@ -3217,12 +3217,30 @@ body.embedded2 #file-upload-container a.vrtx-file-upload {
   left: 0px;
 }
 
-body.embedded2 #directory-listing tr td {
-  border-top: 0;
+body.embedded2 #directory-listing {
+  width: 99%;
+  border-collapse: separate;
+}
+
+body.embedded2 #directory-listing.collection-listing tr td {
+  border: 1px solid transparent;
 }
 
 body.embedded2 #directory-listing tr.even td {
   border: 1px solid #f0f0f0;
+}
+
+body.embedded2 #directory-listing tr.focus td,
+body.embedded2 #directory-listing tr:hover td {
+  border: 1px solid #c7dadf;
+}
+
+body.embedded2 #directory-listing.collection-listing tr td:first-child {
+  border-right: none;
+}
+
+body.embedded2 #directory-listing.collection-listing tr td:last-child {
+  border-left: none;
 }
 
 body.embedded2 #upload-action-container .expandedForm {

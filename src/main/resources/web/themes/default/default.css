@@ -3214,7 +3214,15 @@ body.embedded2 #upload-action-container #file-upload-container #file {
 }
 
 body.embedded2 #file-upload-container a.vrtx-file-upload {
-  left: 15px;
+  left: 0px;
+}
+
+body.embedded2 #directory-listing tr td {
+  border-top: 0;
+}
+
+body.embedded2 #directory-listing tr.even td {
+  border: 1px solid #f0f0f0;
 }
 
 body.embedded2 #upload-action-container .expandedForm {

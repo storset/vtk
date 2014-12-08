@@ -602,10 +602,6 @@ function courseSchedule() {
     var collectionTitle = (sessionDisciplines ? sessionDisciplines.join(", ") + " - " : "") + sessionTitle + " - " + sequenceId;
     var collectionName = replaceInvalidChar((sessionDisciplines ? sessionDisciplines.join("-") + "-" : "") + sessionTitle + "-" + sequenceId, fileTitleSubstitutions, false);
     
-    /* TODO: if "subFolderName" - generate regular sub-folders recursive 
-     * TODO: trigger new service that create before upload
-     */
-    
     var collectionBaseUrl = cs.vrtxResourcesFixedUrl;
     if(!/\/$/.test(collectionBaseUrl)) { // Add last '/' if missing
       collectionBaseUrl += "/";
@@ -613,72 +609,64 @@ function courseSchedule() {
     var collectionUrl = collectionBaseUrl + collectionName;
 
     // Create fixed resources folder
+    
+    var createFixedResourceSubfolder = function(form, csrf) {
+      var dataString = "uri=" + encodeURIComponent(collectionUrl + "/" + subfolder)
+                       "&type=fixed-resources-collection";
+      dataString += "&csrf-prevention-token=" + csrf;
+      vrtxAdmin.serverFacade.postHtml(form.attr("action"), dataString, {
+        success: function (results, status, resp) {
+          linkElm.hide();
+          $("<iframe class='admin-fixed-resources-iframe' src='" + collectionUrl + "/" + subfolder + cs.embeddedAdminService + "'></iframe>").insertAfter(linkElm);
+        }
+      });
+    };
+    
+    // GET create form
     vrtxAdmin.serverFacade.getHtml(baseUrl + "?vrtx=admin&service=create-collection-with-properties", {
       success: function (results, status, resp) {
         var form = $($.parseHTML(results)).find("#create-collection-form");
         var csrf = form.find("input[name='csrf-prevention-token']").val();
-        var dataString = "uri=" + encodeURIComponent(collectionUrl) +
-                         "&type=fixed-resources-collection" +
-                         "&propertyNamespace%5B%5D=" +
-                         "&propertyName%5B%5D=userTitle" +
-                         "&propertyValue%5B%5D=" + encodeURIComponent(collectionTitle) +
-                         "&propertyNamespace%5B%5D=" + encodeURIComponent("http://www.uio.no/resource-types/fixed-resources-collection") +
-                         "&propertyName%5B%5D=fixed-resources-codes" +
-                         "&propertyValue%5B%5D=" + encodeURIComponent(sequenceId);
-                         
-        // Disciplines if exists
-        if(sessionDisciplines) {
-          for(var i = 0, len = sessionDisciplines.length; i < len; i++) {
-            dataString += "&propertyNamespace%5B%5D=" +
-                          "&propertyName%5B%5D=tags" +
-                          "&propertyValue%5B%5D=" + encodeURIComponent(sessionDisciplines[i]);
-          }
-        }
-        // Hide folder from navigation
-        dataString += "&propertyNamespace%5B%5D=" + encodeURIComponent("http://www.uio.no/navigation") +
-                      "&propertyName%5B%5D=hidden" +
-                      "&propertyValue%5B%5D=true";
-        dataString += "&csrf-prevention-token=" + csrf;
-        vrtxAdmin.serverFacade.postHtml(form.attr("action"), dataString, {
-          success: function (results, status, resp) {
-            var dataString = "uri=" + encodeURIComponent(collectionUrl + "/" + subfolder)
-                             "&type=fixed-resources-collection";
-            vrtxAdmin.serverFacade.postHtml(form.attr("action"), dataString, {
-              success: function (results, status, resp) {
-                linkElm.hide();
-                $("<iframe class='admin-fixed-resources-iframe' src='" + collectionUrl + "/" + subfolder + cs.embeddedAdminService + "'></iframe>").insertAfter(linkElm);
-              },
-              error: function (xhr, textStatus, errMsg) {
-                if(xhr.status === 500) { // XXX: assumption that already created, as it can take time before folder created is coming through
-                  linkElm.hide();
-                  $("<iframe class='admin-fixed-resources-iframe' src='" + collectionUrl + "/" + subfolder + cs.embeddedAdminService + "'></iframe>").insertAfter(linkElm);
-                  $("body").scrollTo(0, 200, { easing: 'swing', queue: true, axis: 'y' });
-                }
-              }
-            });
+        
+        vrtxAdmin.serverFacade.head(collectionUrl, {
+          success: function (results, status, resp) { // Top folder exists: CREATE subfolder
+            createFixedResourceSubfolder(form, csrf);
           },
-          error: function (xhr, textStatus, errMsg) {
-            var dataString = "uri=" + encodeURIComponent(collectionUrl + "/" + subfolder)
-                             "&type=fixed-resources-collection";
-            vrtxAdmin.serverFacade.postHtml(form.attr("action"), dataString, {
-              success: function (results, status, resp) {
-                linkElm.hide();
-                $("<iframe class='admin-fixed-resources-iframe' src='" + collectionUrl + "/" + subfolder + cs.embeddedAdminService + "'></iframe>").insertAfter(linkElm);
-              },
-              error: function (xhr, textStatus, errMsg) {
-                if(xhr.status === 500) { // XXX: assumption that already created, as it can take time before folder created is coming through
-                  linkElm.hide();
-                  $("<iframe class='admin-fixed-resources-iframe' src='" + collectionUrl + "/" + subfolder + cs.embeddedAdminService + "'></iframe>").insertAfter(linkElm);
-                  $("body").scrollTo(0, 200, { easing: 'swing', queue: true, axis: 'y' });
+          error: function (xhr, textStatus, errMsg) { // Top folder not exists: CREATE folder and then subfolder
+            if(xhr.status == 404) {
+              var dataString = "uri=" + encodeURIComponent(collectionUrl) +
+                               "&type=fixed-resources-collection" +
+                               "&propertyNamespace%5B%5D=" +
+                               "&propertyName%5B%5D=userTitle" +
+                               "&propertyValue%5B%5D=" + encodeURIComponent(collectionTitle) +
+                               "&propertyNamespace%5B%5D=" + encodeURIComponent("http://www.uio.no/resource-types/fixed-resources-collection") +
+                               "&propertyName%5B%5D=fixed-resources-codes" +
+                               "&propertyValue%5B%5D=" + encodeURIComponent(sequenceId);
+              // Disciplines if exists
+              if(sessionDisciplines) {
+                for(var i = 0, len = sessionDisciplines.length; i < len; i++) {
+                  dataString += "&propertyNamespace%5B%5D=" +
+                                "&propertyName%5B%5D=tags" +
+                                "&propertyValue%5B%5D=" + encodeURIComponent(sessionDisciplines[i]);
                 }
               }
-            });
+              // Hide folder from navigation
+              dataString += "&propertyNamespace%5B%5D=" + encodeURIComponent("http://www.uio.no/navigation") +
+                            "&propertyName%5B%5D=hidden" +
+                            "&propertyValue%5B%5D=true";
+              dataString += "&csrf-prevention-token=" + csrf;
+              vrtxAdmin.serverFacade.postHtml(form.attr("action"), dataString, {
+                success: function (results, status, resp) {
+                  createFixedResourceSubfolder(form, csrf);
+                }
+              });
+            }
           }
         });
       }
     });
-    e.preventDefault();
     e.stopPropagation();
+    e.preventDefault();    
   });
   
   // Status change (refactor with the one below; almost identical)

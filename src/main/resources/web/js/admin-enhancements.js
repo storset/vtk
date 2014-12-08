@@ -3798,6 +3798,32 @@ VrtxAdmin.prototype.serverFacade = {
     this.post(url, params, callbacks, "json", "text/plain;charset=utf-8");
   },
   /**
+   * HEAD Ajax
+   *
+   * @this {serverFacade}
+   * @param {string} url The URL
+   * @param {object} callbacks The callback functions
+   */
+  head: function(url, callbacks) {
+    vrtxAdmin._$.ajax({
+      type: "HEAD",
+      async: true,
+      url: url,
+      useCache: false,
+      success: callbacks.success,
+      error: function (xhr, textStatus) {
+        if (callbacks.error) {
+          callbacks.error(xhr, textStatus);
+        }
+      },
+      complete: function (xhr, textStatus) {
+        if (callbacks.complete) {
+          callbacks.complete(xhr, textStatus);
+        }
+      }
+    });
+  },
+  /**
    * GET Ajax <data type>
    *
    * @this {serverFacade}

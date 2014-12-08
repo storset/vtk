@@ -14,11 +14,16 @@ vrtxAdmin._$(document).ready(function () {
     selectorClass: "globalmenu",
     insertAfterOrReplaceClass: "#directory-listing",
     nodeType: "div",
-    simultanSliding: true
+    simultanSliding: true,
+    transitionSpeed: 0,
+    funcComplete: function (p) {
+      updateIframeHeight();
+    }
   });
   vrtxAdm.completeFormAsync({
     selector: "form#deleteResourceService-form input[type=submit]",
     post: true,
+    transitionSpeed: 0,
     funcComplete: updateListing
   });
   
@@ -32,6 +37,7 @@ vrtxAdmin._$(document).ready(function () {
       insertAfterOrReplaceClass: "#upload-action-container span",
       nodeType: "div",
       focusElement: "",
+      transitionSpeed: 0,
       funcComplete: function (p) {
         vrtxAdm.initFileUpload();
         updateIframeHeight();
@@ -51,6 +57,7 @@ vrtxAdmin._$(document).ready(function () {
       errorContainer: "errorContainer",
       errorContainerInsertAfter: "h3",
       post: true,
+      transitionSpeed: 0,
       funcProceedCondition: ajaxUpload,
       funcComplete: updateListing
     });
@@ -69,8 +76,14 @@ function updateListing() {
 }
 
 function updateIframeHeight() {
-  var iframes = $(window.parent.document.getElementsByTagName('iframe')).filter(":visible");
-  for (var i = 0, len = iframes.length; i < len; i++) {
-    iframes[i].style.height = iframes[i].contentWindow.document.body.offsetHeight + 'px';
+  if (window != top) {
+    var iframes = $(window.parent.document).find(".admin-fixed-resources-iframe").filter(":visible");
+    for (var i = 0, len = iframes.length; i < len; i++) {
+      var iframe = iframes[i];
+      /* Taken from iframe-view.js */
+      var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight) + 45;
+      computedHeight = (computedHeight - ($.browser.msie ? 4 : 0));
+      iframe.style.height = computedHeight + 'px';
+    }
   }
 }

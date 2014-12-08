@@ -36,7 +36,7 @@ vrtxAdmin._$(document).ready(function () {
       nodeType: "div",
       focusElement: "",
       funcComplete: function (p) {
-        vrtxAdm.initFileUpload();
+        vrtxAdm.initFileUpload(true);
         updateIframeHeight();
       },
       simultanSliding: true

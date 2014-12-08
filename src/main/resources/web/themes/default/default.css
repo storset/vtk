@@ -3218,7 +3218,7 @@ body.embedded2 #file-upload-container a.vrtx-file-upload {
 }
 
 body.embedded2 #directory-listing {
-  width: 99%;
+  width: 60%;
   border-collapse: separate;
 }
 
@@ -3248,6 +3248,16 @@ body.embedded2 #upload-action-container .expandedForm {
   padding: 0;
   background-color: transparent !important;
   border: none !important;
+}
+
+body.embedded2 .expandedForm .vrtx-button {
+  background: #e7e7e7;
+}
+
+body.embedded2 .expandedForm .vrtx-button:hover,
+body.embedded2 .expandedForm .vrtx-button:focus,
+body.embedded2 .expandedForm .vrtx-button.hover {
+  background: #2b81c8;
 }
 
 body.embedded2 #upload-action-container h3,

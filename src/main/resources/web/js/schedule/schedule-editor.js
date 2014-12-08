@@ -445,7 +445,7 @@ function courseSchedule() {
         //accResources.elem.addClass("fast");
       }
       
-      var resources = contentElm.find(".vrtxResources");
+      var resources = contentElm.find(".vrtx-fixed-resources-semester");
       if(resources.length) {
         resources.children().filter(":not(label:first-child)").wrapAll("<div />");
         var optsResources = {
@@ -622,7 +622,7 @@ function courseSchedule() {
     
     var createFixedResourceSubfolder = function(form, csrf) {
       var dataString = "uri=" + encodeURIComponent(collectionUrl + "/" + subfolder)
-                       "&type=fixed-resources-collection";
+                       "&type=collection";
       dataString += "&csrf-prevention-token=" + csrf;
       vrtxAdmin.serverFacade.postHtml(form.attr("action"), dataString, {
         success: function (results, status, resp) {

@@ -186,7 +186,7 @@
   padding-top: 0;
 }
 
-.embedded .ui-accordion .ui-accordion-header,
+.ui-accordion label.ui-accordion-header,
 .ui-accordion > div > .header.ui-accordion-header,
 .ui-accordion > div .ui-accordion > div .ui-accordion-header {
   padding: 15px 15px 14px 40px;
@@ -200,7 +200,7 @@
   border-color: #d9d9d9;
 }
 
-.embedded .ui-accordion .ui-accordion-header,
+.ui-accordion label.ui-accordion-header,
 .ui-accordion > div .ui-accordion > div .ui-accordion-header {
   background: url(../images/line-dotted.gif) repeat-x top left;
   padding-left: 30px;
@@ -210,12 +210,24 @@
   border-width: 0;
 }
 
-.embedded .ui-accordion,
 .ui-accordion > div .ui-accordion > div .ui-accordion {
   background: url(../images/line-dotted.gif) repeat-x bottom left;
 }
 
-.embedded .ui-accordion .ui-accordion-header,
+.session .ui-accordion,
+.session label.ui-accordion-header,
+.embedded .ui-accordion,
+.embedded label.ui-accordion-header {
+  background: transparent !important;
+}
+
+.embedded .ui-accordion,
+.session .ui-accordion {
+  margin-top: 10px;
+  margin-bottom: -10px;
+}
+
+.ui-accordion label.ui-accordion-header,
 .ui-accordion .ui-accordion .ui-accordion .ui-accordion-header {
   margin-left: 0;
 }
@@ -224,6 +236,7 @@
   border-bottom: none;
 }
 
+.ui-accordion label.ui-accordion-header .ui-icon,
 .ui-accordion > div > .header.ui-accordion-header .ui-icon {
   top: 25px;
   left: 11px;
@@ -231,10 +244,7 @@
   width: 16px;
 }
 
-.ui-accordion > div .ui-accordion > div .header.ui-accordion-header .ui-icon {
-  left: -3px;
-}
-
+.ui-accordion label.ui-accordion-header .ui-icon.ui-icon-triangle-1-s,
 .ui-accordion > div > .header.ui-accordion-header .ui-icon.ui-icon-triangle-1-s { /* Expanded */
   background: url(../images/arrow-collapsed-big.gif) no-repeat top left;
 
@@ -254,10 +264,17 @@
   left: 13px;
 }
 
+.ui-accordion.ui-widget label.ui-accordion-header .ui-icon,
+.ui-accordion > div .ui-accordion > div .header.ui-accordion-header .ui-icon {
+  left: -3px;
+}
+
+.ie8 .ui-accordion label.ui-accordion-header .ui-icon.ui-icon-triangle-1-s,
 .ie8 .ui-accordion > div > .header.ui-accordion-header .ui-icon.ui-icon-triangle-1-s { /* Expanded */
   background: url(../images/arrow-expanded-big.gif) no-repeat center left;
 }
 
+.ui-accordion.fast label.ui-accordion-header .ui-icon.ui-icon-triangle-1-s,
 .ui-accordion.fast > div > .header.ui-accordion-header .ui-icon.ui-icon-triangle-1-s {
   transition: all 200ms ease-in-out;
   -webkit-transition: all 200ms ease-in-out;
@@ -266,6 +283,7 @@
   -ms-transition: all 200ms ease-in-out;
 }
 
+.ui-accordion label.ui-accordion-header .ui-icon.ui-icon-triangle-1-e,
 .ui-accordion > div > .header.ui-accordion-header .ui-icon.ui-icon-triangle-1-e { /* Collapsed */
   background: url(../images/arrow-collapsed-big.gif) no-repeat top left;
   transition: all 600ms ease-in-out;
@@ -275,6 +293,7 @@
   -ms-transition: all 600ms ease-in-out;
 }
 
+.ui-accordion.fast label.ui-accordion-header .ui-icon.ui-icon-triangle-1-e,
 .ui-accordion.fast > div > .header.ui-accordion-header .ui-icon.ui-icon-triangle-1-e {
   transition: all 200ms ease-in-out;
   -webkit-transition: all 200ms ease-in-out;
@@ -300,7 +319,6 @@
   background: url(../images/line-dotted.gif) repeat-x top left !important;
 }
 
-.embedded .ui-accordion .ui-accordion-content,
 .ui-accordion > div > .ui-accordion-content { 
   padding-left: 40px !important;
   padding-top: 0px !important;
@@ -316,6 +334,7 @@
   border: none !important;
 }
 
+.embedded .ui-accordion .ui-accordion-content,
 .accordion-wrapper.skip-tier > .ui-accordion-content,
 .accordion-wrapper > div .ui-accordion > div .ui-accordion-content {
   padding-top: 10px !important;

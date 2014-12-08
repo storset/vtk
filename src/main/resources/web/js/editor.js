@@ -1792,6 +1792,7 @@ VrtxEditor.prototype.htmlFacade = {
                                                        id: name + "-" + sessionId,
                                                        val: val,
                                                        size: desc.size,
+                                                       divide: desc.divide,
                                                        readOnly: readOnly
                                                      }, name);
           break;
@@ -1802,7 +1803,7 @@ VrtxEditor.prototype.htmlFacade = {
               var folderType = fr.folderType;
               var folderName = fr.folderName;
               var folderUrl = fr.folderUrl;
-              html += "<div class='vrtx-simple-html'><label>" + i18n[name + "-" + folderType] + "</label>";
+              html += "<div class='vrtx-simple-html vrtx-fixed-resources vrtx-fixed-resources-" + folderType + (i == 0 && desc.divide ? " divide-" + desc.divide : "") + "'><label>" + i18n[name + "-" + folderType] + "</label>";
               if(folderUrl && folderUrl.length) {
                 /* Iframe placeholder */
                 html += "<div class='admin-fixed-resources-iframe' data-src='" + folderUrl + embeddedAdminService + "'></div>";
@@ -1832,6 +1833,7 @@ VrtxEditor.prototype.htmlFacade = {
           html += vrtxEdit.htmlFacade.getSimpleHtmlField({ title: i18n[name],
                                                            name: name + "-" + sessionId,
                                                            id: name + "-" + sessionId,
+                                                           divide: desc.divide,
                                                            val: val
                                                          }, name + "-" + sessionId);
           rtEditors.push({ name: name + "-" + sessionId, readOnly: readOnly });
@@ -1843,6 +1845,7 @@ VrtxEditor.prototype.htmlFacade = {
                                                              name: name + "-" + sessionId,
                                                              id: name + "-" + sessionId,
                                                              checked: (val === desc.checkedVal ? val : null),
+                                                             divide: desc.divide,
                                                              tooltip: i18n.cancelledVortexTooltip
                                                            }, name);
             } else {
@@ -2017,6 +2020,7 @@ VrtxEditor.prototype.htmlFacade = {
         elemId: elem.id || inputFieldName,
         elemVal: elem.val,
         elemSize: elem.size || 40,
+        elemDivide: elem.divide,
         elemPlaceholder: elem.placeholder,
         elemReadOnly: elem.readOnly
       });
@@ -2032,6 +2036,7 @@ VrtxEditor.prototype.htmlFacade = {
       elemTitle: elem.title,
       inputFieldName: inputFieldName,
       elemId: elem.id || inputFieldName,
+      elemDivide: elem.divide,
       elemVal: elem.val
     });
   },
@@ -2047,6 +2052,7 @@ VrtxEditor.prototype.htmlFacade = {
       elemId: elem.id || inputFieldName,
       elemChecked: elem.checked,
       elemTooltip: elem.tooltip,
+      elemDivide: elem.divide,
       inputFieldName: inputFieldName
     });
   },

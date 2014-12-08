@@ -1803,14 +1803,20 @@ function growField(input, val, comfortZone, minWidth, maxWidth) {
  *
  * @this {VrtxAdmin}
  */
-VrtxAdmin.prototype.initFileUpload = function initFileUpload() {
+VrtxAdmin.prototype.initFileUpload = function initFileUpload(isAutoUpload) {
   var vrtxAdm = vrtxAdmin,
     _$ = vrtxAdm._$;
   var form = _$("form[name=fileUploadService]");
   if (!form.length) return;
   var inputFile = form.find("#file");
+  
+  if(typeof isAutoUpload !== "undefined" && isAutoUpload) {
+    var btnI18n = vrtxAdm.lang === "en" ? "Upload" : "Last opp";
+  } else {
+    var btnI18n = vrtxAdm.lang === "en" ? "Browse" : "Bla igjennom";
+  }
 
-  _$("<input class='vrtx-textfield vrtx-file-upload' tabindex='-1' id='fake-file' type='text' /><a tabindex='-1' class='vrtx-button vrtx-file-upload'>Browse...</a>")
+  _$("<input class='vrtx-textfield vrtx-file-upload' tabindex='-1' id='fake-file' type='text' /><a tabindex='-1' class='vrtx-button vrtx-file-upload'>" + btnI18n+ "...</a>")
     .insertAfter(inputFile);
 
   inputFile.change(function (e) {

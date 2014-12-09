@@ -14,10 +14,8 @@ vrtxAdmin._$(document).ready(function () {
     selectorClass: "globalmenu",
     insertAfterOrReplaceClass: "#directory-listing",
     nodeType: "div",
-    funcComplete: function (p) {
-      updateIframeHeight();
-    },
-    simultanSliding: true
+    simultanSliding: true,
+    funcAfterComplete: updateIframeHeight
   });
   vrtxAdm.completeFormAsync({
     selector: "form#deleteResourceService-form input[type=submit]",
@@ -35,30 +33,31 @@ vrtxAdmin._$(document).ready(function () {
     vrtxAdm.getFormAsync({
       selector: "#upload-action",
       selectorClass: "vrtx-admin-form",
-      insertAfterOrReplaceClass: "#upload-action-container span",
+      insertAfterOrReplaceClass: "#directory-listing",
       nodeType: "div",
       focusElement: "",
+      simultanSliding: true,
       funcComplete: function (p) {
-        vrtxAdm.initFileUpload(true);
-        updateIframeHeight();
+        vrtxAdm.initFileUpload();
       },
-      simultanSliding: true
+      funcAfterComplete: updateIframeHeight
     });
+    /*
     $(document).on("click", ".vrtx-file-upload", function () {
       $("#file").click();
     });
-    
     // Auto-trigger Upload when have choosen files
     $(document).on("change", "#file", function () {
       $("form#fileUploadService-form .vrtx-focus-button").click();
     });
+    */
     vrtxAdm.completeFormAsync({
       selector: "form#fileUploadService-form .vrtx-focus-button",
       errorContainer: "errorContainer",
       errorContainerInsertAfter: "h3",
       post: true,
       funcProceedCondition: function(opts) {
-        updateIframeHeight(true);
+        updateIframeHeight(250);
         return ajaxUpload(opts);
       },
       funcComplete: updateListing
@@ -79,12 +78,12 @@ function updateListing() {
 
 function updateIframeHeight(minH) {
   if (window != top) {
-    var minHeight = (typeof minH !== "undefined") ? 250 : 0; /* Use a minimum height if specified in function parameter */
+    var minHeight = (typeof minH === "number") ? minH : 0; /* Use a minimum height if specified in function parameter */
     var iframes = $(window.parent.document).find(".admin-fixed-resources-iframe").filter(":visible");
     for (var i = 0, len = iframes.length; i < len; i++) {
       var iframe = iframes[i];
       /* Taken from iframe-view.js */
-      var computedHeight = Math.max(minHeight, Math.ceil(iframe.contentWindow.document.body.offsetHeight) + 45);
+      var computedHeight = Math.max(minHeight, Math.ceil(iframe.contentWindow.document.body.offsetHeight));
       computedHeight = (computedHeight - ($.browser.msie ? 4 : 0));
       iframe.style.height = computedHeight + 'px';
     }

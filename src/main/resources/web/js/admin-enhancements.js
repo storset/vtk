@@ -3310,6 +3310,9 @@ VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(opts, form) {
           }
         }
       }
+      if (opts.funcAfterComplete) {
+        opts.funcAfterComplete();
+      }
     }
   });
   animation.topDown();

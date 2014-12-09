@@ -35,10 +35,6 @@
       <tbody> 
     </table>
 
-    <div id="upload-action-container">
-      <span>&nbsp;</span>
-    </div>
-
     <#list globalActions?keys as globalAction>
       <div class="globalaction">
         <a id="upload-action" href="${globalActions[globalAction]?html}">${globalAction?html}</a>

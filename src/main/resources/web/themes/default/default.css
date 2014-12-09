@@ -3206,6 +3206,7 @@ body.embedded2 {
 
 body.embedded2 {
   min-width: 0;
+  float: left;
 }
 
 body.embedded2.forms-new .ui-widget-overlay {
@@ -3216,17 +3217,7 @@ body.embedded2.forms-new .ui-widget-overlay {
   left: 0px;
 }
 
-body.embedded2 #upload-action-container #file-upload-container #file {
-  opacity: 1;
-  left: -100px;
-}
-
-body.embedded2 #file-upload-container a.vrtx-file-upload {
-  left: 0px;
-}
-
 body.embedded2 #directory-listing {
-  width: 99%;
   border-collapse: separate;
 }
 
@@ -3251,28 +3242,41 @@ body.embedded2 #directory-listing.collection-listing tr td:last-child {
   border-left: none;
 }
 
+body.embedded2 .expandedForm {
+  margin: 10px 0 0 0;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;   
+}
+
+/* Hide upload form
+body.embedded2 #upload-action-container #file-upload-container #file {
+  opacity: 1;
+  left: -100px;
+}
+body.embedded2 #file-upload-container a.vrtx-file-upload {
+  left: 0px;
+}
 body.embedded2 #upload-action-container .expandedForm {
   margin: 0;
   padding: 0;
   background-color: transparent !important;
   border: none !important;
 }
-
 body.embedded2 .expandedForm .vrtx-button {
   background: #e7e7e7;
 }
-
 body.embedded2 .expandedForm .vrtx-button:hover,
 body.embedded2 .expandedForm .vrtx-button:focus,
 body.embedded2 .expandedForm .vrtx-button.hover {
   background: #2b81c8;
 }
-
 body.embedded2 #upload-action-container h3,
 body.embedded2 #upload-action-container #fake-file,
 body.embedded2 #upload-action-container #submitButtons {
   display: none;
 }
+*/
 
 #vrtx-editor-title-submit-buttons h2 {
   margin: 0;

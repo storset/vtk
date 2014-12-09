@@ -3249,6 +3249,10 @@ body.embedded2 .expandedForm {
   box-sizing: border-box;   
 }
 
+body.embedded2 #fileUploadService-form input[name='cancelAction'] {
+  display: none;
+}
+
 /* Hide upload form
 body.embedded2 #upload-action-container #file-upload-container #file {
   opacity: 1;

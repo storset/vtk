@@ -83,7 +83,7 @@ function updateIframeHeight(minH) {
     for (var i = 0, len = iframes.length; i < len; i++) {
       var iframe = iframes[i];
       /* Taken from iframe-view.js */
-      var computedHeight = Math.max(minHeight, Math.ceil(iframe.contentWindow.document.body.offsetHeight));
+      var computedHeight = Math.max(minHeight, Math.ceil(iframe.contentWindow.document.body.offsetHeight) + 15);
       computedHeight = (computedHeight - ($.browser.msie ? 4 : 0));
       iframe.style.height = computedHeight + 'px';
     }

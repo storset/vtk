@@ -30,6 +30,7 @@
  */
 package vtk.web;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,13 +40,27 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import vtk.context.BaseContext;
+import vtk.repository.Acl;
 import vtk.repository.AuthorizationException;
+import vtk.repository.Comment;
+import vtk.repository.FailedDependencyException;
+import vtk.repository.IllegalOperationException;
 import vtk.repository.Path;
+import vtk.repository.ReadOnlyException;
+import vtk.repository.RecoverableResource;
 import vtk.repository.Repository;
+import vtk.repository.RepositoryException;
 import vtk.repository.Resource;
+import vtk.repository.ResourceLockedException;
 import vtk.repository.ResourceNotFoundException;
+import vtk.repository.ResourceOverwriteException;
 import vtk.repository.Revision;
+import vtk.repository.Revision.Type;
+import vtk.repository.StoreContext;
 import vtk.security.AuthenticationException;
 import vtk.security.Principal;
 import vtk.security.SecurityContext;
@@ -81,6 +96,8 @@ public class RequestContext {
     private final boolean viewUnauthenticated;
     private List<Message> infoMessages = new ArrayList<Message>(0);
     private List<Message> errorMessages = new ArrayList<Message>(0);
+    
+    private static final Log logger = LogFactory.getLog(RequestContext.class);
 
     /**
      * Creates a new request context.
@@ -107,7 +124,6 @@ public class RequestContext {
         this.service = service;
         this.isIndexFile = isIndexFile;
         this.viewUnauthenticated = viewUnauthenticated;
-        this.repository = repository;
         this.inRepository = inRepository;
         if (resource != null) {
             this.resourceURI = resource.getURI();
@@ -116,9 +132,17 @@ public class RequestContext {
             } else {
                 this.currentCollection = resource.getURI().getParent();
             }
-        } else {
+        } 
+        else {
             this.resourceURI = uri;
             this.currentCollection = null;
+        }
+        if (this.servletRequest.getParameter("revision") != null && isPreviewUnpublished()) {
+            this.repository = new RevisionWrapper(
+                    repository, resourceURI, servletRequest.getParameter("revision"));
+        }
+        else {
+            this.repository = repository;
         }
     }
 
@@ -249,10 +273,7 @@ public class RequestContext {
     }
 
     public Repository getRepository() {
-        if (this.servletRequest.getParameter("revision") != null && isPreviewUnpublished()) {
-            return new RevisionWrapper(this.repository, resourceURI, servletRequest.getParameter("revision"));
-        }
-        return this.repository;
+      return this.repository;
     }
 
     public String getSecurityToken() {
@@ -367,6 +388,188 @@ public class RequestContext {
             return super.getInputStream(token, uri, forProcessing);
         }
         
+        @Override
+        public Resource store(String token, Resource resource)
+                throws ResourceNotFoundException, AuthorizationException,
+                AuthenticationException, ResourceLockedException,
+                IllegalOperationException, ReadOnlyException, Exception {
+            throw new UnsupportedOperationException("Not supported");
+        }
+
+        @Override
+        public Resource store(String token, Resource resource,
+                StoreContext storeContext) throws ResourceNotFoundException,
+                AuthorizationException, AuthenticationException,
+                ResourceLockedException, IllegalOperationException,
+                ReadOnlyException, Exception {
+            throw new UnsupportedOperationException("Not supported");
+        }
+
+        @Override
+        public Resource storeContent(String token, Path uri, InputStream stream)
+                throws AuthorizationException, AuthenticationException,
+                ResourceNotFoundException, ResourceLockedException,
+                IllegalOperationException, ReadOnlyException, Exception {
+            throw new UnsupportedOperationException("Not supported");
+        }
+
+        @Override
+        public Resource storeContent(String token, Path uri,
+                InputStream stream, Revision revision)
+                throws AuthorizationException, AuthenticationException,
+                ResourceNotFoundException, ResourceLockedException,
+                IllegalOperationException, ReadOnlyException, Exception {
+            throw new UnsupportedOperationException("Not supported");
+        }
+
+        @Override
+        public Resource createDocument(String token, Path uri,
+                InputStream inputStream) throws IllegalOperationException,
+                AuthorizationException, AuthenticationException,
+                ResourceLockedException, ReadOnlyException, Exception {
+            throw new UnsupportedOperationException("Not supported");
+        }
+
+        @Override
+        public Resource createCollection(String token, Path uri)
+                throws AuthorizationException, AuthenticationException,
+                IllegalOperationException, ResourceLockedException,
+                ReadOnlyException, Exception {
+            throw new UnsupportedOperationException("Not supported");
+        }
+
+        @Override
+        public void copy(String token, Path srcUri, Path destUri,
+                boolean overwrite, boolean preserveACL)
+                throws IllegalOperationException, AuthorizationException,
+                AuthenticationException, FailedDependencyException,
+                ResourceOverwriteException, ResourceLockedException,
+                ResourceNotFoundException, ReadOnlyException, Exception {
+            throw new UnsupportedOperationException("Not supported");
+        }
+
+        @Override
+        public void move(String token, Path srcUri, Path destUri,
+                boolean overwrite) throws IllegalOperationException,
+                AuthorizationException, AuthenticationException,
+                FailedDependencyException, ResourceOverwriteException,
+                ResourceLockedException, ResourceNotFoundException,
+                ReadOnlyException, Exception {
+            throw new UnsupportedOperationException("Not supported");
+        }
+
+        @Override
+        public void delete(String token, Path uri, boolean restoreable)
+                throws IllegalOperationException, AuthorizationException,
+                AuthenticationException, ResourceNotFoundException,
+                ResourceLockedException, FailedDependencyException,
+                ReadOnlyException, Exception {
+            throw new UnsupportedOperationException("Not supported");
+        }
+
+        @Override
+        public void recover(String token, Path parentUri,
+                RecoverableResource recoverableResource)
+                throws ResourceNotFoundException, AuthorizationException,
+                AuthenticationException, Exception {
+            throw new UnsupportedOperationException("Not supported");
+        }
+
+        @Override
+        public void deleteRecoverable(String token, Path parentUri,
+                RecoverableResource recoverableResource) throws Exception {
+            throw new UnsupportedOperationException("Not supported");
+        }
+
+        @Override
+        public Resource lock(String token, Path uri, String ownerInfo,
+                Depth depth, int requestedTimoutSeconds, String lockToken)
+                throws ResourceNotFoundException, AuthorizationException,
+                AuthenticationException, FailedDependencyException,
+                ResourceLockedException, IllegalOperationException,
+                ReadOnlyException, Exception {
+            throw new UnsupportedOperationException("Not supported");
+        }
+
+        @Override
+        public void unlock(String token, Path uri, String lockToken)
+                throws ResourceNotFoundException, AuthorizationException,
+                AuthenticationException, ResourceLockedException,
+                ReadOnlyException, Exception {
+            throw new UnsupportedOperationException("Not supported");
+        }
+
+        @Override
+        public Resource storeACL(String token, Path uri, Acl acl)
+                throws ResourceNotFoundException, AuthorizationException,
+                AuthenticationException, IllegalOperationException,
+                ReadOnlyException, Exception {
+            throw new UnsupportedOperationException("Not supported");
+        }
+
+        @Override
+        public Resource storeACL(String token, Path uri, Acl acl,
+                boolean validateAcl) throws ResourceNotFoundException,
+                AuthorizationException, AuthenticationException,
+                IllegalOperationException, ReadOnlyException, Exception {
+            throw new UnsupportedOperationException("Not supported");
+        }
+
+        @Override
+        public Resource deleteACL(String token, Path uri)
+                throws ResourceNotFoundException, AuthorizationException,
+                AuthenticationException, IllegalOperationException,
+                ReadOnlyException, Exception {
+            throw new UnsupportedOperationException("Not supported");
+        }
+
+        @Override
+        public Revision createRevision(String token, Path uri, Type type)
+                throws AuthorizationException, ResourceNotFoundException,
+                AuthenticationException, IOException {
+            throw new UnsupportedOperationException("Not supported");
+        }
+
+        @Override
+        public void deleteRevision(String token, Path uri, Revision revision)
+                throws ResourceNotFoundException, AuthorizationException,
+                AuthenticationException, Exception {
+            throw new UnsupportedOperationException("Not supported");
+        }
+
+        @Override
+        public Comment addComment(String token, Resource resource,
+                String title, String text) throws RepositoryException,
+                AuthenticationException {
+            throw new UnsupportedOperationException("Not supported");
+        }
+
+        @Override
+        public Comment addComment(String token, Comment comment)
+                throws AuthenticationException {
+            throw new UnsupportedOperationException("Not supported");
+        }
+
+        @Override
+        public void deleteComment(String token, Resource resource,
+                Comment comment) throws RepositoryException,
+                AuthenticationException {
+            throw new UnsupportedOperationException("Not supported");
+        }
+
+        @Override
+        public void deleteAllComments(String token, Resource resource)
+                throws RepositoryException, AuthenticationException {
+            throw new UnsupportedOperationException("Not supported");
+        }
+
+        @Override
+        public Comment updateComment(String token, Resource resource,
+                Comment comment) throws RepositoryException,
+                AuthenticationException {
+            throw new UnsupportedOperationException("Not supported");
+        }
+
         private Revision findRevision(String token) throws Exception {
             if (cache.containsKey(token)) return cache.get(token);
 

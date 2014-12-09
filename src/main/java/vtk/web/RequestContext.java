@@ -40,9 +40,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import vtk.context.BaseContext;
 import vtk.repository.Acl;
 import vtk.repository.AuthorizationException;
@@ -96,8 +93,10 @@ public class RequestContext {
     private final boolean viewUnauthenticated;
     private List<Message> infoMessages = new ArrayList<Message>(0);
     private List<Message> errorMessages = new ArrayList<Message>(0);
+
+    // Set on first invocation (otherwise JUnit tests fail):
+    private RevisionWrapper revisionWrapper = null;
     
-    private static final Log logger = LogFactory.getLog(RequestContext.class);
 
     /**
      * Creates a new request context.
@@ -124,6 +123,7 @@ public class RequestContext {
         this.service = service;
         this.isIndexFile = isIndexFile;
         this.viewUnauthenticated = viewUnauthenticated;
+        this.repository = repository;
         this.inRepository = inRepository;
         if (resource != null) {
             this.resourceURI = resource.getURI();
@@ -137,13 +137,7 @@ public class RequestContext {
             this.resourceURI = uri;
             this.currentCollection = null;
         }
-        if (this.servletRequest.getParameter("revision") != null && isPreviewUnpublished()) {
-            this.repository = new RevisionWrapper(
-                    repository, resourceURI, servletRequest.getParameter("revision"));
-        }
-        else {
-            this.repository = repository;
-        }
+        
     }
 
     public static void setRequestContext(RequestContext requestContext) {
@@ -273,7 +267,14 @@ public class RequestContext {
     }
 
     public Repository getRepository() {
-      return this.repository;
+        if (revisionWrapper != null) return revisionWrapper;
+        if (servletRequest != null && servletRequest.getParameter("revision") != null 
+                && isPreviewUnpublished()) {
+            this.revisionWrapper = new RevisionWrapper(
+                    this.repository, resourceURI, servletRequest.getParameter("revision"));
+            return this.revisionWrapper;
+        }
+        return this.repository;
     }
 
     public String getSecurityToken() {

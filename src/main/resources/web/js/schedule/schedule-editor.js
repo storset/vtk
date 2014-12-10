@@ -620,12 +620,12 @@ function courseSchedule() {
 
     // Create fixed resources folder
     var createFixedResourceSubfolder = function(form, csrf) {
-      var dataString = "uri=" + encodeURIComponent(collectionUrl + "/" + subfolder);
+      var dataString = "uri=" + encodeURIComponent(collectionUrl + "/" + subfolder) +
                        "&type=collection" +
                        "&propertyNamespace%5B%5D=" +
                        "&propertyName%5B%5D=userTitle" +
                        "&propertyValue%5B%5D=" + encodeURIComponent(cs.i18n[subfolder] || subfolder) +
-         dataString += "&csrf-prevention-token=" + csrf;
+                       "&csrf-prevention-token=" + csrf;
       vrtxAdmin.serverFacade.postHtml(form.attr("action"), dataString, {
         success: function (results, status, resp) {
           // Replace link with iframe (also send in upload)

@@ -624,7 +624,7 @@ function courseSchedule() {
                        "&type=collection" +
                        "&propertyNamespace%5B%5D=" +
                        "&propertyName%5B%5D=userTitle" +
-                       "&propertyValue%5B%5D=" + encodeURIComponent(cs.i18n[subfolder]) +
+                       "&propertyValue%5B%5D=" + encodeURIComponent(cs.i18n[subfolder] || subfolder) +
          dataString += "&csrf-prevention-token=" + csrf;
       vrtxAdmin.serverFacade.postHtml(form.attr("action"), dataString, {
         success: function (results, status, resp) {

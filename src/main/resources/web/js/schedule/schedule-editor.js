@@ -622,9 +622,6 @@ function courseSchedule() {
     var createFixedResourceSubfolder = function(form, csrf) {
       var dataString = "uri=" + encodeURIComponent(collectionUrl + "/" + subfolder) +
                        "&type=collection" +
-                       "&propertyNamespace%5B%5D=" +
-                       "&propertyName%5B%5D=userTitle" +
-                       "&propertyValue%5B%5D=" + encodeURIComponent(cs.i18n[subfolder] || subfolder) +
                        "&csrf-prevention-token=" + csrf;
       vrtxAdmin.serverFacade.postHtml(form.attr("action"), dataString, {
         success: function (results, status, resp) {

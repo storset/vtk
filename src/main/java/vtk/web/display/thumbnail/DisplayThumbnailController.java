@@ -94,13 +94,19 @@ public class DisplayThumbnailController implements Controller, LastModified {
                 }
                 response.sendRedirect(URL.encode(uri).toString());
             } else if ("audio".equals(resourceType)) {
-                InputStream in = this.getClass().getResourceAsStream(ADUIO_LOGO);
+                InputStream in = getClass().getResourceAsStream(ADUIO_LOGO);
                 response.setContentType(AUDIO_LOGO_CONTENT_TYPE);
                 StreamUtil.pipe(in, response.getOutputStream());
             } else if (type.isOfType("video")) { // We want placeholder for all kinds of video types.
-                InputStream in = this.getClass().getResourceAsStream(VIDEO_LOGO);
+                // Avoid caching placeholder thumbnail for videos, because a thumbnail will likely be made.
+                setNoCache(response);
+                InputStream in = getClass().getResourceAsStream(VIDEO_LOGO);
                 response.setContentType(VIDEO_LOGO_CONTENT_TYPE);
                 StreamUtil.pipe(in, response.getOutputStream());
+            } else {
+                // Do not cache empty response.
+                setNoCache(response);
+                response.setStatus(404);
             }
             return null;
         } else {
@@ -113,4 +119,11 @@ public class DisplayThumbnailController implements Controller, LastModified {
             return null;
         }
     }
+
+    private void setNoCache(HttpServletResponse response) {
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0");
+        response.setHeader("Expires", "0");
+        response.setHeader("Pragma", "no-cache");
+    }
+
 }

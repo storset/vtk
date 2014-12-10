@@ -46,15 +46,16 @@ var scheduleI18n = {
   "vrtxTitle": "Namn på aktiviteten",
   "vrtxStaff": "Forelesere (fyll inn brukernamn)",
   "vrtxStaffExternal": "Eksterne forelesere",
-  "vrtxStaffExternal-name": "Lenkjetekst",
+  "vrtxStaffExternal-name": "Namn",
   "vrtxStaffExternal-url": "Webadresse",
   "vrtxResources": "Ressursar",
   "vrtxResources-title": "Lenkjetekst",
   "vrtxResources-url": "Webadresse",
   "vrtxResourcesText": "Pensum",
   "vrtxResourcesFixed-permanent": "Faste ressursar for denne aktiviteten",
+  "faste": "Faste ressursar",
   "vrtxResourcesFixed-semester": "Ressursar berre for dette semesteret", 
   "vrtxResourcesFixedInfo": "Ressursar som følgjer med frå semester til semester. Lesetilgang for brukarar knytta til medisinstudiet",
-  "vrtxResourcesFixedCreateFolder": "Start opplasting...",
+  "vrtxResourcesFixedCreateFolder": "Last opp",
   "vrtxStatus": "Avlys"
 }

@@ -27,7 +27,7 @@
             <#if !(entry.actions[action])?exists>
               <td></td>
             <#else>
-              <td><a class="delete-action" href="${entry.actions[action]?html}">${action?html}</a></td>
+              <td><a class="delete-action" href="${entry.actions[action]?html}">${vrtx.getMsg("embeddedListing.${action}")?lower_case}</a></td>
             </#if>
           </#list>
         </tr>
@@ -37,7 +37,7 @@
 
     <#list globalActions?keys as globalAction>
       <div class="globalaction">
-        <a id="upload-action" href="${globalActions[globalAction]?html}">${globalAction?html}</a>
+        <a class="vrtx-button" id="upload-action" href="${globalActions[globalAction]?html}">${vrtx.getMsg("embeddedListing.${globalAction}")}</a>
       </div>
     </#list>
   </body>

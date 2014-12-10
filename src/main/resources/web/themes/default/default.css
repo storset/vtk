@@ -3226,12 +3226,23 @@ body.embedded2 #directory-listing.collection-listing tr td {
 }
 
 body.embedded2 #directory-listing tr.even td {
-  border: 1px solid #f0f0f0;
+  background-color: #fff;
 }
 
-body.embedded2 #directory-listing tr.focus td,
-body.embedded2 #directory-listing tr:hover td {
+body.embedded2 #directory-listing tr.odd td {
+  border: 1px solid #f0f0f0;
+  background-color: #f9f9f9;
+}
+
+body.embedded2.forms-new #directory-listing tr.focus td,
+body.embedded2.forms-new #directory-listing tr:focus td,
+body.embedded2.forms-new #directory-listing tr:hover td {
   border: 1px solid #c7dadf;
+  background-color: #ecf3f9;
+}
+
+body.embedded2.forms-new .globalaction {
+  margin-top: 15px;
 }
 
 body.embedded2 #directory-listing.collection-listing tr td:first-child {

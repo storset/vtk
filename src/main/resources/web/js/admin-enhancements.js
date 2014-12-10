@@ -3095,6 +3095,7 @@ function autocompleteTags(selector) {
  * @param {string} opts.insertAfterOrReplaceClass Where to put the form
  * @param {boolean} opts.isReplacing Whether to replace instead of insert after
  * @param {string} opts.nodeType Node type that should be replaced or inserted
+ * @param {function} opts.funcBeforeComplete Callback function to run on before complete
  * @param {function} opts.funcComplete Callback function to run on success
  * @param {boolean} opts.simultanSliding Whether to slideUp existing form at the same time slideDown new form (only when there is an existing form)
  * @param {number} opts.transitionSpeed Transition speed in ms
@@ -3128,6 +3129,10 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(opts) {
         fromModeToNotMode = true;
       }
       existExpandedFormIsReplaced = true;
+    }
+    
+    if(opts.funcBeforeComplete) {
+      opts.funcBeforeComplete();
     }
     
     vrtxAdmin.serverFacade.getHtml(url, {
@@ -3330,7 +3335,7 @@ VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(opts, form) {
  * @param {string} opts.updateSelectors One or more containers that should update after POST
  * @param {string} opts.errorContainerInsertAfter Selector where to place the new error container
  * @param {string} opts.errorContainer The className of the error container
- * @param {function} opts.funcProceedCondition Callback function that proceedes with completeFormAsyncPost(opts)
+ * @param {function} opts.funcProceedCondition Callback function that proceeds with completeFormAsyncPost(opts)
  * @param {function} opts.funcComplete Callback function to run on success
  * @param {function} opts.funcCancel Callback function to run on cancel
  * @param {number} opts.isNotAnimated Not animated form

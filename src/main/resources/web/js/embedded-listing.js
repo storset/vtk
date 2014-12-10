@@ -20,15 +20,12 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.completeFormAsync({
     selector: "form#deleteResourceService-form input[type=submit]",
     post: true,
-    funcCancel: function() {
-      $("#upload-action").click();
-    },
     funcComplete: updateListing
   });
   
   /* Upload action */
-  $("#upload-action").hide();
   if (vrtxAdm.isIOS5) {
+    $("#upload-action").hide();
   } else {
     vrtxAdm.getFormAsync({
       selector: "#upload-action",
@@ -37,20 +34,14 @@ vrtxAdmin._$(document).ready(function () {
       nodeType: "div",
       focusElement: "",
       simultanSliding: true,
+      funcBeforeComplete: function() {
+        $("#upload-action").hide();
+      },
       funcComplete: function (p) {
         vrtxAdm.initFileUpload();
       },
       funcAfterComplete: updateIframeHeight
     });
-    /*
-    $(document).on("click", ".vrtx-file-upload", function () {
-      $("#file").click();
-    });
-    // Auto-trigger Upload when have choosen files
-    $(document).on("change", "#file", function () {
-      $("form#fileUploadService-form .vrtx-focus-button").click();
-    });
-    */
     vrtxAdm.completeFormAsync({
       selector: "form#fileUploadService-form .vrtx-focus-button",
       errorContainer: "errorContainer",
@@ -60,9 +51,15 @@ vrtxAdmin._$(document).ready(function () {
         updateIframeHeight(250);
         return ajaxUpload(opts);
       },
-      funcComplete: updateListing
+      funcComplete: function() {
+        $("#upload-action").show();
+        updateListing();
+      }
     });
-    $("#upload-action").click();
+    // Only if received upload parameter
+    if(gup("upload", location.href) === "true") {
+      $("#upload-action").hide().click();
+    }
   }
 });
 
@@ -71,7 +68,6 @@ function updateListing() {
     success: function (results, status, resp) {
       var html = $($.parseHTML(results)).filter("#directory-listing").html();
       vrtxAdmin.cachedBody.find("#directory-listing").html(html);
-      $("#upload-action").click();
     }
   }); 
 }

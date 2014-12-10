@@ -619,15 +619,18 @@ function courseSchedule() {
     var collectionUrl = collectionBaseUrl + collectionName;
 
     // Create fixed resources folder
-    
     var createFixedResourceSubfolder = function(form, csrf) {
-      var dataString = "uri=" + encodeURIComponent(collectionUrl + "/" + subfolder)
-                       "&type=collection";
-      dataString += "&csrf-prevention-token=" + csrf;
+      var dataString = "uri=" + encodeURIComponent(collectionUrl + "/" + subfolder);
+                       "&type=collection" +
+                       "&propertyNamespace%5B%5D=" +
+                       "&propertyName%5B%5D=userTitle" +
+                       "&propertyValue%5B%5D=" + encodeURIComponent(cs.i18n[subfolder]) +
+         dataString += "&csrf-prevention-token=" + csrf;
       vrtxAdmin.serverFacade.postHtml(form.attr("action"), dataString, {
         success: function (results, status, resp) {
+          // Replace link with iframe (also send in upload)
           linkElm.hide();
-          $("<iframe class='admin-fixed-resources-iframe' src='" + collectionUrl + "/" + subfolder + cs.embeddedAdminService + "'></iframe>").insertAfter(linkElm);
+          $("<iframe class='admin-fixed-resources-iframe' src='" + collectionUrl + "/" + subfolder + cs.embeddedAdminService + "&upload=true'></iframe>").insertAfter(linkElm);
         }
       });
     };

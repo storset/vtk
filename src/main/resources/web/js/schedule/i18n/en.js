@@ -46,15 +46,16 @@ var scheduleI18n = {
   "vrtxTitle": "Name of activity",
   "vrtxStaff": "Staff (enter username)",
   "vrtxStaffExternal": "External staff",
-  "vrtxStaffExternal-name": "Link text",
+  "vrtxStaffExternal-name": "Name",
   "vrtxStaffExternal-url": "Web address",
   "vrtxResources": "Resources",
   "vrtxResources-title": "Link text",
   "vrtxResources-url": "Web address",
   "vrtxResourcesText": "Curriculum",
   "vrtxResourcesFixed-permanent": "Fixed resources for this activity",
+  "faste": "Fixed resources",
   "vrtxResourcesFixed-semester": "Resources only for this semester", 
   "vrtxResourcesFixedInfo": "Permanent resources linked to the same activity every semester",
-  "vrtxResourcesFixedCreateFolder": "Start uploading...",
+  "vrtxResourcesFixedCreateFolder": "Upload",
   "vrtxStatus": "Cancel"
 }

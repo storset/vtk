@@ -21,13 +21,14 @@
       <tbody> 
       <#list entries as entry>
         <#assign url = (entry.actions['view'])?default('') />
-        <tr class="<#if entry_index % 2 == 0>odd<#else>even</#if> <@vrtx.resourceToIconResolver entry.resource /><#if entry.resource.collection> true</#if>">
+        <#assign count = entry_index + 1 />
+        <tr class="vrtx-directory-listing-${count} <#if entry_index % 2 == 0>odd<#else>even</#if> <@vrtx.resourceToIconResolver entry.resource /><#if entry.resource.collection> true</#if>">
           <td class="name"><a href="${url?html}">${entry.resource.title}</a></td>
           <#list [ "delete" ] as action>
             <#if !(entry.actions[action])?exists>
-              <td></td>
+              <td class="action"></td>
             <#else>
-              <td><a class="delete-action" href="${entry.actions[action]?html}">${vrtx.getMsg("embeddedListing.${action}")?lower_case}</a></td>
+              <td class="action"><a class="delete-action" href="${entry.actions[action]?html}">${vrtx.getMsg("embeddedListing.${action}")?lower_case}</a></td>
             </#if>
           </#list>
         </tr>

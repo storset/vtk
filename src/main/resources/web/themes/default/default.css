@@ -1779,6 +1779,8 @@ span.vrtx-help-step-by-step-cmd {
 
 #directory-listing th.name,
 #directory-listing td.name,
+#directory-listing th.action,
+#directory-listing td.action,
 #directory-listing th#vrtx-trash-can\.name,
 #directory-listing td.vrtx-trash-can-name,
 body#vrtx-report-documents #directory-listing th#vrtx-report-name,
@@ -3217,20 +3219,28 @@ body.embedded2.forms-new .ui-widget-overlay {
   left: 0px;
 }
 
-body.embedded2 #directory-listing {
+body.embedded2 #directory-listing.collection-listing {
   border-collapse: separate;
+  margin-bottom: 15px;
 }
 
 body.embedded2 #directory-listing.collection-listing tr td {
-  border: 1px solid transparent;
+  border: 1px solid #f0f0f0;
+  padding-top: 10px;
+  padding-bottom: 15px;
 }
 
 body.embedded2 #directory-listing tr.even td {
   background-color: #fff;
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+}
+
+body.embedded2 #directory-listing tr.even:last-child td {
+  border-bottom: 1px solid #f0f0f0;
 }
 
 body.embedded2 #directory-listing tr.odd td {
-  border: 1px solid #f0f0f0;
   background-color: #f9f9f9;
 }
 
@@ -3239,10 +3249,6 @@ body.embedded2.forms-new #directory-listing tr:focus td,
 body.embedded2.forms-new #directory-listing tr:hover td {
   border: 1px solid #c7dadf;
   background-color: #ecf3f9;
-}
-
-body.embedded2.forms-new .globalaction {
-  margin-top: 15px;
 }
 
 body.embedded2 #directory-listing.collection-listing tr td:first-child {
@@ -3258,10 +3264,6 @@ body.embedded2 .expandedForm {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;   
-}
-
-body.embedded2 #fileUploadService-form input[name='cancelAction'] {
-  display: none;
 }
 
 /* Hide upload form

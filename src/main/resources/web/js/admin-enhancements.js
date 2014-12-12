@@ -1869,6 +1869,9 @@ function ajaxUpload(options) {
                                                  msg: vrtxAdm.serverFacade.errorMessages.uploadingFilesFailed
                                               });
       uploadingFailedD.open();
+      if(opts.funcAfterComplete) {
+        opts.funcAfterComplete();
+      }
     });
   } else {
     futureFormAjax.resolve();
@@ -1923,7 +1926,12 @@ function ajaxUpload(options) {
                   elem: opts.form.parent(),
                   animationSpeed: opts.transitionSpeed,
                   easeIn: opts.transitionEasingSlideDown,
-                  easeOut: opts.transitionEasingSlideUp
+                  easeOut: opts.transitionEasingSlideUp,
+                  afterOut: function() {
+                    if(opts.funcAfterComplete) {
+                      opts.funcAfterComplete();
+                    }
+                  }
                 });
                 animation.bottomUp();
               },
@@ -2036,6 +2044,9 @@ function ajaxUploadPerform(opts, size) {
       } else {
         uploadingD.close();
       }
+      if(opts.funcAfterComplete) {
+        opts.funcAfterComplete();
+      }
     }
   });
     
@@ -2045,6 +2056,9 @@ function ajaxUploadPerform(opts, size) {
     }
     uploadingD.close();
     $(this).prev().removeClass("tab-visible");
+    if(opts.funcAfterComplete) {
+      opts.funcAfterComplete();
+    }
     e.stopPropagation();
     e.preventDefault();
   };
@@ -3137,7 +3151,8 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(opts) {
     
     vrtxAdmin.serverFacade.getHtml(url, {
       success: function (results, status, resp) {
-        var form = _$(_$.parseHTML(results)).find("." + opts.selectorClass).html();
+        opts.formElm = _$(_$.parseHTML(results)).find("." + opts.selectorClass);
+        var form = opts.formElm.html();
 
         // If something went wrong
         if (!form) {
@@ -3175,7 +3190,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(opts) {
                     success: function (results, status, resp) {
                       succeededAddedOriginalMarkup = vrtxAdm.addOriginalMarkup(modeUrl, _$.parseHTML(results), resultSelectorClass, expandedForm);
                       if (succeededAddedOriginalMarkup) {
-                        vrtxAdmin.addNewMarkup(opts, form);
+                        vrtxAdmin.addNewMarkup(opts, form, link);
                       } else {
                         if (vrtxAdm.asyncGetFormsInProgress) {
                           vrtxAdmin.asyncGetFormsInProgress--;
@@ -3205,7 +3220,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(opts) {
                     vrtxAdmin.asyncGetFormsInProgress--;
                   }
                 } else {
-                  vrtxAdmin.addNewMarkup(opts, form);
+                  vrtxAdmin.addNewMarkup(opts, form, link);
                 }
               }
             }
@@ -3213,7 +3228,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(opts) {
           animation.bottomUp();
         }
         if ((!existExpandedForm || opts.simultanSliding) && !fromModeToNotMode) {
-          vrtxAdm.addNewMarkup(opts, form);
+          vrtxAdm.addNewMarkup(opts, form, link);
         }
       },
       error: function (xhr, textStatus) {
@@ -3268,18 +3283,20 @@ VrtxAdmin.prototype.addOriginalMarkup = function addOriginalMarkup(url, results,
  * @param {string} transitionEasingSlideUp Transition easing algorithm for slideUp()
  * @param {object} form The form
  */
-VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(opts, form) {
+VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(opts, form, link) {
   var vrtxAdm = this,
     _$ = vrtxAdm._$;
     
-  var inject = _$(opts.insertAfterOrReplaceClass);
+  var inject = opts.findClosest ? link.closest(opts.insertAfterOrReplaceClass) : _$(opts.insertAfterOrReplaceClass);
   if (!inject.length) {
     inject = _$(opts.secondaryInsertAfterOrReplaceClass);
   }
 
   if (opts.isReplacing) {
     var classes = inject.attr("class");
-    inject.replaceWith(vrtxAdm.wrap(opts.nodeType, "expandedForm expandedFormIsReplaced nodeType" + opts.nodeType + " " + opts.selectorClass + " " + classes, form));
+    var isBadMarkup = opts.nodeType === "tr" && !opts.formElm.find("td").length && !opts.formElm.filter("td").length;
+    inject.replaceWith(vrtxAdm.wrap(opts.nodeType, "expandedForm expandedFormIsReplaced nodeType" + opts.nodeType + " " + opts.selectorClass + " " + classes,
+                                    (isBadMarkup ? "<td colspan='2'>" : "") + opts.formElm.html() + (isBadMarkup ? "</td>" : "")));
   } else {
     _$(vrtxAdm.wrap(opts.nodeType, "expandedForm nodeType" + opts.nodeType + " " + opts.selectorClass, form))
       .insertAfter(inject);
@@ -3353,7 +3370,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(opts) {
 
     var link = _$(this),
         isCancelAction = link.attr("name").toLowerCase().indexOf("cancel") !== -1;
-
+        
     if (isCancelAction && !opts.isReplacing) {
       var elem = $(".expandedForm");
       if(!opts.isNotAnimated) {
@@ -3364,11 +3381,17 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(opts) {
           easeOut: opts.transitionEasingSlideUp,
           afterOut: function(animation) {
             animation.__opts.elem.remove();
+            if(opts.funcAfterComplete) {
+              opts.funcAfterComplete()
+            }
           }
         });
         animation.bottomUp();
       } else {
         elem.remove();
+        if(opts.funcAfterComplete) {
+          opts.funcAfterComplete()
+        }
       }
       if(opts.funcCancel) opts.funcCancel();
       e.preventDefault();
@@ -3444,6 +3467,9 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(opts)
         if (opts.isReplacing) {
           internalAnimation(opts.form.parent(), function(animation) { 
             internalComplete(results);
+            if(opts.funcAfterComplete) {
+              opts.funcAfterComplete();
+            }
           });
         } else {
           var sameMode = false;
@@ -3462,6 +3488,9 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(opts)
                 internalComplete(results);
                 internalAnimation(opts.form.parent(), function(animation) {
                   animation.__opts.elem.remove();
+                  if(opts.funcAfterComplete) {
+                    opts.funcAfterComplete();
+                  }
                 });
               }
             });
@@ -3469,6 +3498,9 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(opts)
             internalComplete(results);
             internalAnimation(opts.form.parent(), function(animation) {
               animation.__opts.elem.remove();
+              if(opts.funcAfterComplete) {
+                opts.funcAfterComplete();
+              }
             });
           }
         }

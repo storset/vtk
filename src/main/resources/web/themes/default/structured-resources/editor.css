@@ -223,8 +223,8 @@
 
 .embedded .ui-accordion,
 .session .ui-accordion {
-  margin-top: 10px;
-  margin-bottom: -10px;
+  margin-top: 5px;
+  margin-bottom: 0px;
 }
 
 .ui-accordion label.ui-accordion-header,

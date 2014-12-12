@@ -28,9 +28,27 @@
       <map>
         <entry key="view" value-ref="viewService" />
         <entry key="delete" value-ref="deleteResourceService" />
+        <entry key="edit-title" value-ref="actionsListing.editUserTitleService" />
       </map>
     </property>
   </bean>
+
+  <bean id="actionsListing.editUserTitleService" parent="manage.propertyEditService">
+    <property name="assertions">
+      <list>
+        <bean class="vtk.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="mode" />
+          <property name="parameterValue" value="edit-property" />
+        </bean>
+        <bean class="vtk.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="name" />
+          <property name="parameterValue" value="userTitle" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+
 
   <bean id="actionsListing.globalActions" class="org.springframework.beans.factory.config.MapFactoryBean">
     <property name="sourceMap">

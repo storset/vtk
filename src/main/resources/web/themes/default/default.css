@@ -3209,6 +3209,7 @@ body.embedded2 {
 body.embedded2 {
   min-width: 0;
   float: left;
+  width: 100%;
 }
 
 body.embedded2.forms-new .ui-widget-overlay {

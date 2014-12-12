@@ -3226,6 +3226,9 @@ body.embedded2 #directory-listing.collection-listing {
 
 body.embedded2 #directory-listing.collection-listing tr td {
   border: 1px solid #f0f0f0;
+}
+
+body.embedded2 #directory-listing.collection-listing tr.expandedForm td {
   padding-top: 10px;
   padding-bottom: 15px;
 }

@@ -48,8 +48,6 @@
     </property>
   </bean>
 
-
-
   <bean id="actionsListing.globalActions" class="org.springframework.beans.factory.config.MapFactoryBean">
     <property name="sourceMap">
       <map>

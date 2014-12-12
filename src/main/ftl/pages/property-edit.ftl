@@ -8,11 +8,22 @@
   <title>${title?html}</title>
 </head>
 <body id="vrtx-property-edit">
-  <h3>${title?html}</h3>
-  <form action="${(form.action)?html}" method="post">
-    <#list form.inputs as input>
-      <input name="${(input.name)?default('')?html}" type="${(input.type)?default('')?html}"
-             value="${(input.value)?default('')?html}" />
-    </#list>
-  </form>
+  <div class="propertyForm">
+    <form action="${(form.action)?html}" method="post" id="editPropertyService-form">
+      <h3>${title?html}</h3>
+      <#assign firstSubmit = false />
+      <#list form.inputs as input>
+        <#if input.type == "submit" && !firstSubmit>
+          <div class="submitButtons">
+        </#if>
+        <input class="<#if input.type == "text">vrtx-textfield<#elseif input.type == "submit">vrtx-focus-button</#if>"
+               name="${(input.name)?default('')?html}" type="${(input.type)?default('')?html}"
+               value="<#if input.type == "submit">${vrtx.getMsg("propertyEditor.${(input.value)?default('')?lower_case?html}")}<#else>${(input.value)?default('')?html}</#if>" />
+        <#if input.type == "submit" && !firstSubmit>
+          </div>
+          <#assign firstSubmit = true />
+        </#if>
+     </#list>
+    </form>
+  </div>
 </body>

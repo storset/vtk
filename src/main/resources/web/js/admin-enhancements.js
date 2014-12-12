@@ -3130,6 +3130,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(opts) {
     var link = _$(this),
         url = link.attr("href") || link.closest("form").attr("action"),
         modeUrl = window.location.href,
+        isActionsListing = modeUrl.indexOf("&mode=actions-listing") !== -1,
         fromModeToNotMode = false,
         existExpandedFormIsReplaced = false,
         expandedForm = $(".expandedForm"),
@@ -3139,7 +3140,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(opts) {
     // -- only if a expandedForm exists and is of the replaced kind..
     //
     if (existExpandedForm && expandedForm.hasClass("expandedFormIsReplaced")) {
-      if (url.indexOf("&mode=") === -1 && modeUrl.indexOf("&mode=") !== -1) {
+      if ((url.indexOf("&mode=") === -1 && modeUrl.indexOf("&mode=") !== -1) || isActionsListing) {
         fromModeToNotMode = true;
       }
       existExpandedFormIsReplaced = true;
@@ -3169,12 +3170,22 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(opts) {
         if (existExpandedForm) {
           var resultSelectorClasses = expandedForm.attr("class").split(" ");
           var resultSelectorClass = "";
-          var ignoreClasses = { "even": "", "odd": "", "first": "", "last": "" };
-          for (var i = resultSelectorClasses.length; i--;) {
-            var resultSelectorClass = resultSelectorClasses[i];
-            if (resultSelectorClass && resultSelectorClass !== "" && !(resultSelectorClass in ignoreClasses)) {
-              resultSelectorClass = "." + resultSelectorClasses[i];
-              break;
+          if(isActionsListing) {
+            for (var i = resultSelectorClasses.length; i--;) {
+              var resultSelectorClass = resultSelectorClasses[i];
+              if(/^vrtx-/.test(resultSelectorClass)) {
+                resultSelectorClass = "." + resultSelectorClass;
+                break;
+              }
+            }
+          } else {
+            var ignoreClasses = { "even": "", "odd": "", "first": "", "last": "" };
+            for (var i = resultSelectorClasses.length; i--;) {
+              var resultSelectorClass = resultSelectorClasses[i];
+              if (resultSelectorClass && resultSelectorClass !== "" && !(resultSelectorClass in ignoreClasses)) {
+                resultSelectorClass = "." + resultSelectorClass;
+                break;
+              }
             }
           }
           var succeededAddedOriginalMarkup = false;

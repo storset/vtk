@@ -26,7 +26,7 @@ function courseSchedule() {
   this.vrtxResourcesFixedUrl = "";
   this.sessionsLookup = {};
   this.i18n = scheduleI18n;
-  this.embeddedAdminService = "?vrtx=admin&mode=actions-listing&types=resource&actions=view,delete&global-actions=upload";
+  this.embeddedAdminService = "?vrtx=admin&mode=actions-listing&types=resource&actions=view,edit-title,delete&global-actions=upload";
   
   // Last edited sessions
   this.lastId = "";

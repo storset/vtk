@@ -287,8 +287,8 @@
   top: 14px;
 }
 
-.tip.vrtx-fixed-resources-semester {
-  background-color: #fff !important;
+#main #contents .tip.vrtx-fixed-resources-semester {
+  background: #fff !important;
 }
 /* ^ Fix when tooltip */
 

@@ -3820,7 +3820,7 @@ VrtxAdmin.prototype.serverFacade = {
    * @param {boolean} useCache Use cache in browser
    */
   getHtml: function (url, callbacks, useCache) {
-    this.get(url, callbacks, "html", (typeof useCache === "boolean" && useCache));
+    this.get(url, callbacks, "html", (typeof useCache !== "boolean" ? true : useCache));
   },
   /**
    * GET JSON
@@ -3831,7 +3831,7 @@ VrtxAdmin.prototype.serverFacade = {
    * @param {boolean} useCache Use cache in browser
    */
   getJSON: function (url, callbacks, useCache) {
-    this.get(url, callbacks, "json", (typeof useCache === "boolean" && useCache));
+    this.get(url, callbacks, "json", (typeof useCache !== "boolean" ? true : useCache));
   },
   /**
    * POST HTML

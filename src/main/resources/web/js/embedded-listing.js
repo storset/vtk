@@ -113,8 +113,8 @@ vrtxAdmin._$(document).ready(function () {
 function updateListing() {
   vrtxAdmin.serverFacade.getHtml(location.href, {
     success: function (results, status, resp) {
-      var html = $($.parseHTML(results)).filter("#directory-listing").html();
-      vrtxAdmin.cachedBody.find("#directory-listing").html(html);
+      var outer = $($.parseHTML(results)).filter("#directory-listing")[0].outerHTML;
+      vrtxAdmin.cachedBody.find("#directory-listing").replaceWith(outer);
       updateIframeHeight();
     }
   }, false); 

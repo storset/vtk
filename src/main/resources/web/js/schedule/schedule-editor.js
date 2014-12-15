@@ -431,6 +431,7 @@ function courseSchedule() {
       
       session.isEnhanced = true;
       
+      // Accordions for session
       var externalStaff = contentElm.find(".vrtxStaffExternal");
       if(externalStaff.length) {
         externalStaff.children().filter(":not(label:first-child)").wrapAll("<div />");
@@ -447,9 +448,11 @@ function courseSchedule() {
       
       var resources = contentElm.find(".vrtx-fixed-resources-semester");
       if(resources.length) {
+        // Enhance vrtxResources for putting it inside fixed resources for semester
         var resourcesList = contentElm.find(".vrtxResources");
         if(resourcesList.length) {
           resourcesList.removeClass("divide-top");
+          resourcesList.find("> label").html(this.i18n.links + "<abbr tabindex='0' class='tooltips label-tooltips' title='" + this.i18n["vrtxResources-info"] + "'></abbr>");
           resources.append(resourcesList.remove()[0].outerHTML);
         }
         resources.children().filter(":not(label:first-child)").wrapAll("<div />");

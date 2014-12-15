@@ -442,11 +442,16 @@ function courseSchedule() {
         };
         var accResources = new VrtxAccordion(optsExternalStaff);
         accResources.create();
-        //accResources.elem.addClass("fast");
+        externalStaff.addClass("fast");
       }
       
       var resources = contentElm.find(".vrtx-fixed-resources-semester");
       if(resources.length) {
+        var resourcesList = contentElm.find(".vrtxResources");
+        if(resourcesList.length) {
+          resourcesList.removeClass("divide-top");
+          resources.append(resourcesList.remove()[0].outerHTML);
+        }
         resources.children().filter(":not(label:first-child)").wrapAll("<div />");
         var optsResources = {
           elem: resources,
@@ -456,7 +461,7 @@ function courseSchedule() {
         };
         var accResources = new VrtxAccordion(optsResources);
         accResources.create();
-        //accResources.elem.addClass("fast");
+        resources.addClass("fast");
       }
     }
   };

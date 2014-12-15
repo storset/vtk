@@ -44,6 +44,10 @@
           <property name="parameterName" value="name" />
           <property name="parameterValue" value="userTitle" />
         </bean>
+          <!-- Structured resources do not support setting userTitle: -->
+        <bean parent="structuredResources.typeAssertion">
+          <property name="invert" value="true" />
+        </bean>
       </list>
     </property>
   </bean>

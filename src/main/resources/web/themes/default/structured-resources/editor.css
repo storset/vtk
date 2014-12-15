@@ -232,16 +232,6 @@
   margin-left: 0;
 }
 
-.session .vrtx-fixed-resources-semester.ui-accordion label.ui-accordion-header,
-.embedded .vrtx-fixed-resources-semester.ui-accordion label.ui-accordion-header {
-  position: static;
-}
-
-.session .vrtx-fixed-resources-semester.ui-accordion,
-.embedded .vrtx-fixed-resources-semester.ui-accordion {
-  position: relative;
-}
-
 .ui-accordion > div > .header.ui-accordion-header.ui-corner-top {
   border-bottom: none;
 }
@@ -278,6 +268,25 @@
 .ui-accordion > div .ui-accordion > div .header.ui-accordion-header .ui-icon {
   left: -3px;
 }
+
+/* Fix when tooltip */
+.session .vrtx-fixed-resources-semester.ui-accordion label.ui-accordion-header,
+.embedded .vrtx-fixed-resources-semester.ui-accordion label.ui-accordion-header {
+  position: static;
+}
+
+.session .vrtx-fixed-resources-semester.ui-accordion label.ui-accordion-header .ui-icon,
+.embedded .vrtx-fixed-resources-semester.ui-accordion label.ui-accordion-header .ui-icon {
+  position: relative;
+  top: 18px;
+  left: -33px;
+}
+
+.session .vrtx-fixed-resources-semester.ui-accordion label.ui-accordion-header .ui-icon.ui-icon-triangle-1-s,
+.embedded .vrtx-fixed-resources-semester.ui-accordion label.ui-accordion-header .ui-icon.ui-icon-triangle-1-s {
+  top: 14px;
+}
+/* ^ Fix when tooltip */
 
 .ie8 .ui-accordion label.ui-accordion-header .ui-icon.ui-icon-triangle-1-s,
 .ie8 .ui-accordion > div > .header.ui-accordion-header .ui-icon.ui-icon-triangle-1-s { /* Expanded */

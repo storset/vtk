@@ -117,7 +117,7 @@ function updateListing() {
       vrtxAdmin.cachedBody.find("#directory-listing").html(html);
       updateIframeHeight();
     }
-  }, true); 
+  }, false); 
 }
 
 function updateIframeHeight(minH) {

@@ -43,6 +43,8 @@
           </#list>
         <tbody> 
       </table>
+    <#else>
+      <span id="directory-listing"></span>
     </#if>
     
     <#list globalActions?keys as globalAction>

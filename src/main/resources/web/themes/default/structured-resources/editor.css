@@ -286,6 +286,10 @@
 .embedded .vrtx-fixed-resources-semester.ui-accordion label.ui-accordion-header .ui-icon.ui-icon-triangle-1-s {
   top: 14px;
 }
+
+.tip.vrtx-fixed-resources-semester {
+  background-color: #fff !important;
+}
 /* ^ Fix when tooltip */
 
 .ie8 .ui-accordion label.ui-accordion-header .ui-icon.ui-icon-triangle-1-s,

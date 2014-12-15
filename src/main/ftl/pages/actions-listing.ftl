@@ -24,25 +24,27 @@
     
   </head>
   <body class="embedded2 forms-new">
-    <table id="directory-listing" class="collection-listing">
-      <tbody> 
-      <#list entries as entry>
-        <#assign url = (entry.actions['view'])?default('') />
-        <#assign count = entry_index + 1 />
-        <tr class="vrtx-directory-listing-${count} <#if entry_index % 2 == 0>odd<#else>even</#if> <@vrtx.resourceToIconResolver entry.resource /><#if entry.resource.collection> true</#if>">
-          <td class="name"><a href="${url?html}">${entry.resource.title}</a></td>
-          <td class="action">
-          <#list entry.actions?keys as action>
-            <#if action != "view">
-              <a class="${action}-action" href="${entry.actions[action]?html}<#if action == "edit-title">&amp;default-value=${entry.resource.title?url("UTF-8")}</#if>">${vrtx.getMsg("embeddedListing.${action}")?lower_case}</a>&nbsp;&nbsp;&nbsp;
-            </#if>
+    <#if entries??>
+      <table id="directory-listing" class="collection-listing">
+        <tbody> 
+          <#list entries as entry>
+            <#assign url = (entry.actions['view'])?default('') />
+            <#assign count = entry_index + 1 />
+            <tr class="vrtx-directory-listing-${count} <#if entry_index % 2 == 0>odd<#else>even</#if> <@vrtx.resourceToIconResolver entry.resource /><#if entry.resource.collection> true</#if>">
+              <td class="name"><a href="${url?html}">${entry.resource.title}</a></td>
+              <td class="action">
+                <#list entry.actions?keys as action>
+                  <#if action != "view">
+                    <a class="${action}-action" href="${entry.actions[action]?html}<#if action == "edit-title">&amp;default-value=${entry.resource.title?url("UTF-8")}</#if>">${vrtx.getMsg("embeddedListing.${action}")?lower_case}</a>&nbsp;&nbsp;&nbsp;
+                  </#if>
+                </#list>
+              </td>
+            </tr>
           </#list>
-          </td>
-        </tr>
-      </#list>
-      <tbody> 
-    </table>
-
+        <tbody> 
+      </table>
+    </#if>
+    
     <#list globalActions?keys as globalAction>
       <div class="globalaction">
         <a class="vrtx-button" id="upload-action" href="${globalActions[globalAction]?html}">${vrtx.getMsg("embeddedListing.${globalAction}")}</a>

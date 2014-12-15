@@ -3817,9 +3817,10 @@ VrtxAdmin.prototype.serverFacade = {
    * @this {serverFacade}
    * @param {string} url The URL
    * @param {object} callbacks The callback functions
+   * @param {boolean} useCache Use cache in browser
    */
-  getHtml: function (url, callbacks) {
-    this.get(url, callbacks, "html");
+  getHtml: function (url, callbacks, useCache) {
+    this.get(url, callbacks, "html", (typeof useCache === "boolean" && useCache));
   },
   /**
    * GET JSON
@@ -3830,7 +3831,7 @@ VrtxAdmin.prototype.serverFacade = {
    * @param {boolean} useCache Use cache in browser
    */
   getJSON: function (url, callbacks, useCache) {
-    this.get(url, callbacks, "json", (typeof useCache !== "boolean" || useCache));
+    this.get(url, callbacks, "json", (typeof useCache === "boolean" && useCache));
   },
   /**
    * POST HTML
@@ -3866,7 +3867,7 @@ VrtxAdmin.prototype.serverFacade = {
       type: "HEAD",
       async: true,
       url: url,
-      useCache: false,
+      cache: false,
       success: callbacks.success,
       error: function (xhr, textStatus) {
         if (callbacks.error) {
@@ -3894,7 +3895,7 @@ VrtxAdmin.prototype.serverFacade = {
       type: "GET",
       url: url,
       dataType: type,
-      useCache: useCache,
+      cache: useCache,
       success: callbacks.success,
       error: function (xhr, textStatus) {
         var msg = vrtxAdmin.serverFacade.error(xhr, textStatus, true);

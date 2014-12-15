@@ -232,6 +232,16 @@
   margin-left: 0;
 }
 
+.session .vrtx-fixed-resources-semester.ui-accordion label.ui-accordion-header,
+.embedded .vrtx-fixed-resources-semester.ui-accordion label.ui-accordion-header {
+  position: static;
+}
+
+.session .vrtx-fixed-resources-semester.ui-accordion,
+.embedded .vrtx-fixed-resources-semester.ui-accordion {
+  position: relative;
+}
+
 .ui-accordion > div > .header.ui-accordion-header.ui-corner-top {
   border-bottom: none;
 }

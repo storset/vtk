@@ -1199,6 +1199,7 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   border-radius: 0px !important;
   -moz-border-radius: 0px !important;
   -webkit-border-radius: 0px !important;
+  border: none !important;
   padding: 14px;
   background-color: #fff;
   display: none;
@@ -1320,7 +1321,6 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 
 .tip.vrtx-create-tree {
   padding: 4px 0px 4px 0 !important;
-  border: none !important;
   -moz-box-shadow: none !important;
   -webkit-box-shadow: none !important;
   box-shadow: none !important;

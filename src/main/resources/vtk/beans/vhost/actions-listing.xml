@@ -27,8 +27,8 @@
     <property name="sourceMap">
       <map>
         <entry key="view" value-ref="viewService" />
-        <entry key="delete" value-ref="deleteResourceService" />
         <entry key="edit-title" value-ref="actionsListing.editUserTitleService" />
+        <entry key="delete" value-ref="deleteResourceService" />
       </map>
     </property>
   </bean>

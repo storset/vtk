@@ -1763,7 +1763,7 @@ VrtxEditor.prototype.htmlFacade = {
         case "json":
           for(var i = 0, descPropsLen = descProps.length; i < descPropsLen; i++) {
             descProps[i].title = i18n[name + "-" + descProps[i].name];
-            if(desc.multiple && desc.props[i].type === "resource_ref") {
+            if(desc.multiple && desc.props[i].type === "resource_ref" && !isMedisin) {
               browsable = true;
             }
           }

@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -107,7 +108,7 @@ public class ListingActionsController implements Controller {
         children = filter(requestContext, children, types);
 
         paramList = csvParameter(request, "actions");
-        List<String> actions = new ArrayList<String>();
+        List<String> actions = new LinkedList<String>();
         for (String s: paramList) {
             if (!this.actions.containsKey(s))
                 throw new IllegalArgumentException("Invalid action: '" + s 
@@ -115,7 +116,7 @@ public class ListingActionsController implements Controller {
                 actions.add(s);
         }
         paramList = csvParameter(request, "global-actions");
-        List<String> globalActions = new ArrayList<>();
+        List<String> globalActions = new LinkedList<>();
         for (String s: paramList) {
             if (!this.globalActions.containsKey(s))
                 throw new IllegalArgumentException("Invalid global-action: '" + s 
@@ -123,7 +124,7 @@ public class ListingActionsController implements Controller {
                 globalActions.add(s);
         }
 
-        List<Object> entries = new ArrayList<>();
+        List<Object> entries = new LinkedList<>();
         for (Resource r: children) {
             Map<String, Object> entry = new HashMap<>();
             entry.put("resource", r);
@@ -142,7 +143,7 @@ public class ListingActionsController implements Controller {
     
     
     private List<String> csvParameter(HttpServletRequest request, String parameter) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new LinkedList<String>();
         String param = request.getParameter(parameter);
         if (param != null) {
             String[] values = param.split(",");
@@ -152,7 +153,7 @@ public class ListingActionsController implements Controller {
     }
 
     private Resource[] filter(RequestContext requestContext, Resource[] list, List<String> types) {
-        List<Resource> result = new ArrayList<>();
+        List<Resource> result = new LinkedList<>();
         for (Resource r: list) {
             String resourceType = r.getResourceType();
             TypeInfo typeInfo = requestContext.getRepository().getTypeInfo(resourceType);
@@ -168,7 +169,7 @@ public class ListingActionsController implements Controller {
 
     private Map<String, URL> genActions(RequestContext requestContext, Resource resource, 
             Map<String, Service> actions, Collection<String> selection) {
-        Map<String, URL> result = new HashMap<>();
+        Map<String, URL> result = new LinkedHashMap<>();
 
         for (String action: selection) {
             Service service = actions.get(action);

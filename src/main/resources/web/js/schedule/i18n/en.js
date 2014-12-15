@@ -55,7 +55,7 @@ var scheduleI18n = {
   "vrtxResourcesText": "Curriculum",
   "vrtxResourcesFixed-permanent": "Fixed resources for this activity",
   "vrtxResourcesFixed-semester": "Resources only for this semester",
-  "vrtxResources-info": "Links to podcasts, web pages, e-learning resources etc",
+  "vrtxResources-info": "podcasts, web pages, e-learning resources etc",
   "vrtxResourcesFixed-permanent-info": "Permanent resources linked to the same activity every time this subject is taught. Permission for users associated with the Programme in Medicine.",
   "vrtxResourcesFixed-semester-info": "Resources for the activity this semester only.",
   "vrtxResourcesFixedCreateFolder": "Upload",

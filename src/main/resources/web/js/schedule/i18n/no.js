@@ -55,7 +55,7 @@ var scheduleI18n = {
   "vrtxResourcesText": "Pensum",
   "vrtxResourcesFixed-permanent": "Faste ressurser for denne aktiviteten",
   "vrtxResourcesFixed-semester": "Ressurser kun for dette semesteret",
-  "vrtxResources-info": "Lenker til podkaster, nettsider, elæring osv.",
+  "vrtxResources-info": "podkaster, nettsider, elæring osv.",
   "vrtxResourcesFixed-permanent-info": "Faste ressurser som følger aktiviteten hver gang emnet undervises. Lesetilgang for brukere tilknyttet medisinstudiet.",
   "vrtxResourcesFixed-semester-info": "Ressurser for denne aktiviteten gjeldende kun dette semesteret. Lesetilgang for brukere tilknyttet medisinstudiet.",
   "vrtxResourcesFixedCreateFolder": "Last opp",

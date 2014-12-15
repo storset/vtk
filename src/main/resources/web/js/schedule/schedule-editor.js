@@ -425,7 +425,7 @@ function courseSchedule() {
       var iframePlaceholders = contentElm.find(".admin-fixed-resources-iframe");
       for(var i = iframePlaceholders.length; i--;) {
         var iframePlaceholder = $(iframePlaceholders[i]);
-        var iframe = "<iframe class='admin-fixed-resources-iframe' src='" + iframePlaceholder.attr("data-src") + "'></iframe>";
+        var iframe = "<iframe class='admin-fixed-resources-iframe' src='" + iframePlaceholder.attr("data-src") + "' frameborder='0'></iframe>";
         iframePlaceholder.replaceWith(iframe);
       }
       
@@ -452,7 +452,7 @@ function courseSchedule() {
         var resourcesList = contentElm.find(".vrtxResources");
         if(resourcesList.length) {
           resourcesList.removeClass("divide-top");
-          resourcesList.find("> label").html(this.i18n.links + "<abbr tabindex='0' class='tooltips label-tooltips' title='" + this.i18n["vrtxResources-info"] + "'></abbr>");
+          resourcesList.find("> label").text(this.i18n.links + " (" + this.i18n["vrtxResources-info"] + ")");
           resources.append(resourcesList.remove()[0].outerHTML);
         }
         resources.children().filter(":not(label:first-child)").wrapAll("<div />");
@@ -636,13 +636,13 @@ function courseSchedule() {
       vrtxAdmin.serverFacade.postHtml(form.attr("action"), dataString, {
         success: function (results, status, resp) {
           linkElm.hide();
-          $("<iframe class='admin-fixed-resources-iframe' src='" + collectionUrl + "/" + subfolder + cs.embeddedAdminService + "&upload=true'></iframe>").insertAfter(linkElm);
+          $("<iframe class='admin-fixed-resources-iframe' src='" + collectionUrl + "/" + subfolder + cs.embeddedAdminService + "&upload=true' frameborder='0'></iframe>").insertAfter(linkElm);
         },
         error: function (xhr, textStatus) {
           if(xhr.status === 500) { // 500 means created but has cached stuff
             $(".errormessage.message").remove();
             linkElm.hide();
-            $("<iframe class='admin-fixed-resources-iframe' src='" + collectionUrl + "/" + subfolder + cs.embeddedAdminService + "&upload=true'></iframe>").insertAfter(linkElm);
+            $("<iframe class='admin-fixed-resources-iframe' src='" + collectionUrl + "/" + subfolder + cs.embeddedAdminService + "&upload=true' frameborder='0'></iframe>").insertAfter(linkElm);
           }
         }
       });

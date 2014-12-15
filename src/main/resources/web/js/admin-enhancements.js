@@ -3381,7 +3381,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(opts) {
 
     var link = _$(this),
         isCancelAction = link.attr("name").toLowerCase().indexOf("cancel") !== -1;
-        
+
     if (isCancelAction && !opts.isReplacing) {
       var elem = $(".expandedForm");
       if(!opts.isNotAnimated) {
@@ -3420,6 +3420,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(opts) {
       } else {
         opts.form = link.closest("form");
         opts.link = link;
+        opts.isCancelAction = isCancelAction;
         if (!isCancelAction && opts.funcProceedCondition) {
           opts.funcProceedCondition(opts);
         } else {
@@ -3439,6 +3440,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(opts) {
  * @param {object} opts Configuration
  * @param {object} opts.form The form
  * @param {object} opts.link The action link
+ * @param {object} opts.isCancelAction Is it a cancel?
  */
 VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(opts) {
   if(opts.funcBeforeComplete) opts.funcBeforeComplete();
@@ -3447,77 +3449,85 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(opts)
        _$ = vrtxAdm._$,
       url = opts.form.attr("action"),
       modeUrl = window.location.href,
+      isActionsListing = modeUrl.indexOf("&mode=actions-listing") !== -1,
       dataString = opts.form.serialize() + "&" + opts.link.attr("name");
 
-  vrtxAdmin.serverFacade.postHtml(url, dataString, {
-    success: function (results, status, resp) {
-      var internalComplete = function(res) {
-        if(opts.updateSelectors) {
-          for (var i = opts.updateSelectors.length; i--;) {
-            var outer = vrtxAdm.outerHTML(_$.parseHTML(res), opts.updateSelectors[i]);
-            vrtxAdm.cachedBody.find(opts.updateSelectors[i]).replaceWith(outer);
+  var postIt = function(results, status, resp) {
+    var internalComplete = function(res) {
+      if(opts.updateSelectors && res != null) {
+        for (var i = opts.updateSelectors.length; i--;) {
+          var outer = vrtxAdm.outerHTML(_$.parseHTML(res), opts.updateSelectors[i]);
+          vrtxAdm.cachedBody.find(opts.updateSelectors[i]).replaceWith(outer);
+        }
+      }
+      if (opts.funcComplete) opts.funcComplete();
+    };
+    var internalAnimation = function(elem, afterOut) {
+      if(opts.isNotAnimated) return;
+      var animation = new VrtxAnimation({
+        elem: elem,
+        animationSpeed: opts.transitionSpeed,
+        easeIn: opts.transitionEasingSlideDown,
+        easeOut: opts.transitionEasingSlideUp,
+        afterOut: afterOut
+      });
+      animation.bottomUp();
+    };
+    
+    if (vrtxAdm.hasErrorContainers(_$.parseHTML(results), opts.errorContainer)) {
+      vrtxAdm.displayErrorContainers(_$.parseHTML(results), opts.form, opts.errorContainerInsertAfter, opts.errorContainer);
+    } else {
+      if (opts.isReplacing) {
+        internalAnimation(opts.form.parent(), function(animation) { 
+          internalComplete(results);
+          if(opts.funcAfterComplete) {
+            opts.funcAfterComplete();
+          }
+        });
+      } else {
+        var sameMode = false;
+        var remoteIsMode = url.indexOf("&mode=") !== -1;
+        var pageIsMode = modeUrl.indexOf("&mode=") !== -1;
+        var remoteIsRevisions = url.indexOf("&action=revisions") !== -1;
+        var pageIsRevisions = modeUrl.indexOf("&action=revisions") !== -1;
+        if (remoteIsMode) {
+          if (gup("mode", url) === gup("mode", modeUrl)) {
+            sameMode = true;
           }
         }
-        if (opts.funcComplete) opts.funcComplete();
-      };
-      var internalAnimation = function(elem, afterOut) {
-        if(opts.isNotAnimated) return;
-        var animation = new VrtxAnimation({
-          elem: elem,
-          animationSpeed: opts.transitionSpeed,
-          easeIn: opts.transitionEasingSlideDown,
-          easeOut: opts.transitionEasingSlideUp,
-          afterOut: afterOut
-        });
-        animation.bottomUp();
-      };
-    
-      if (vrtxAdm.hasErrorContainers(_$.parseHTML(results), opts.errorContainer)) {
-        vrtxAdm.displayErrorContainers(_$.parseHTML(results), opts.form, opts.errorContainerInsertAfter, opts.errorContainer);
-      } else {
-        if (opts.isReplacing) {
-          internalAnimation(opts.form.parent(), function(animation) { 
-            internalComplete(results);
+        if (opts.isUndecoratedService || (pageIsMode && !sameMode) || (pageIsRevisions !== remoteIsRevisions)) { // When we need the 'mode=' or 'action=revisions' HTML. TODO: should only run when updateSelector is inside content
+          vrtxAdm.serverFacade.getHtml(modeUrl, {
+            success: function (results, status, resp) {
+              internalComplete(results);
+              internalAnimation(opts.form.parent(), function(animation) {
+                animation.__opts.elem.remove();
+                if(opts.funcAfterComplete) {
+                  opts.funcAfterComplete();
+                }
+              });
+            }
+          });
+        } else {
+          internalComplete(results);
+          internalAnimation(opts.form.parent(), function(animation) {
+            animation.__opts.elem.remove();
             if(opts.funcAfterComplete) {
               opts.funcAfterComplete();
             }
           });
-        } else {
-          var sameMode = false;
-          var remoteIsMode = url.indexOf("&mode=") !== -1;
-          var pageIsMode = modeUrl.indexOf("&mode=") !== -1;
-          var remoteIsRevisions = url.indexOf("&action=revisions") !== -1;
-          var pageIsRevisions = modeUrl.indexOf("&action=revisions") !== -1;
-          if (remoteIsMode) {
-            if (gup("mode", url) === gup("mode", modeUrl)) {
-              sameMode = true;
-            }
-          }
-          if (opts.isUndecoratedService || (pageIsMode && !sameMode) || (pageIsRevisions !== remoteIsRevisions)) { // When we need the 'mode=' or 'action=revisions' HTML. TODO: should only run when updateSelector is inside content
-            vrtxAdm.serverFacade.getHtml(modeUrl, {
-              success: function (results, status, resp) {
-                internalComplete(results);
-                internalAnimation(opts.form.parent(), function(animation) {
-                  animation.__opts.elem.remove();
-                  if(opts.funcAfterComplete) {
-                    opts.funcAfterComplete();
-                  }
-                });
-              }
-            });
-          } else {
-            internalComplete(results);
-            internalAnimation(opts.form.parent(), function(animation) {
-              animation.__opts.elem.remove();
-              if(opts.funcAfterComplete) {
-                opts.funcAfterComplete();
-              }
-            });
-          }
         }
       }
     }
-  });
+  }
+
+  // Avoid POST if cancel in actions listing
+  if(opts.isCancelAction && isActionsListing) {
+    postIt(null, null, null);
+  } else {
+    vrtxAdmin.serverFacade.postHtml(url, dataString, {
+      success: postIt
+    });
+  }
 };
 
 /**

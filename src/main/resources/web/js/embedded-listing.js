@@ -98,7 +98,7 @@ vrtxAdmin._$(document).ready(function () {
       },
       funcAfterComplete: function() {
         $("#upload-action").show();
-        updateListing();
+        var waitAlittle = setTimeout(updateListing, 50);
       }
     });
     // Only if received upload parameter

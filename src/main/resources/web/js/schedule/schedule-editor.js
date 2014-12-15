@@ -621,7 +621,6 @@ function courseSchedule() {
     // Create fixed resources folder
     var createFixedResourceSubfolder = function(form, csrf) {
       var dataString = "uri=" + encodeURIComponent(collectionUrl + "/" + subfolder) +
-                       "&type=collection" +
                        "&propertyNamespace%5B%5D=" +
                        "&propertyName%5B%5D=userTitle" +
                        "&propertyValue%5B%5D=" + encodeURIComponent(cs.i18n[subfolder] || subfolder) +

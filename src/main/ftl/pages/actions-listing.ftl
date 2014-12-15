@@ -24,7 +24,7 @@
     
   </head>
   <body class="embedded2 forms-new">
-    <#if entries??>
+    <#if entries?has_content>
       <table id="directory-listing" class="collection-listing">
         <tbody> 
           <#list entries as entry>

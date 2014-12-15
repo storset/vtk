@@ -19,6 +19,9 @@
         <input class="<#if input.type == "text">vrtx-textfield<#elseif input.type == "submit">vrtx-focus-button</#if>"
                name="${(input.name)?default('')?html}" type="${(input.type)?default('')?html}"
                value="<#if input.type == "submit">${vrtx.getMsg("propertyEditor.${(input.value)?default('')?lower_case?html}")}<#else>${(input.value)?default('')?html}</#if>" />
+        <#if !input_has_next>
+          <input class="vrtx-button" name="cancel" type="submit" value="${vrtx.getMsg("propertyEditor.cancel")}" />
+        </#if>
         <#if input.type == "submit" && !firstSubmit>
           </div>
           <#assign firstSubmit = true />

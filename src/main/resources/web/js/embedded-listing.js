@@ -35,6 +35,7 @@ vrtxAdmin._$(document).ready(function () {
   });
   
   /* Delete action */
+  var titleText = "";
   vrtxAdm.getFormAsync({
     selector: ".delete-action",
     selectorClass: "globalmenu",
@@ -43,6 +44,21 @@ vrtxAdmin._$(document).ready(function () {
     findClosest: true,
     nodeType: "tr",
     simultanSliding: true,
+    funcBeforeComplete: function(link) {
+      var rowElm = link.closest("tr");
+      if(rowElm.length) {
+        var nameElm = rowElm.find("td.name");
+        if(nameElm.length) {
+          titleText = nameElm.text();
+        }
+      }
+    },
+    funcComplete: function(selectorClass) {
+      var titleElm = $("." + selectorClass).find("strong");
+      if(titleElm.length && titleText != "") {
+        titleElm.text(titleText);
+      }
+    },
     funcAfterComplete: updateIframeHeight
   });
   vrtxAdm.completeFormAsync({

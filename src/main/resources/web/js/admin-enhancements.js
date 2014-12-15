@@ -3147,7 +3147,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(opts) {
     }
     
     if(opts.funcBeforeComplete) {
-      opts.funcBeforeComplete();
+      opts.funcBeforeComplete(link);
     }
     
     vrtxAdmin.serverFacade.getHtml(url, {

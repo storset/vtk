@@ -3234,6 +3234,10 @@ body.embedded2 #directory-listing.collection-listing tr.expandedForm td {
   padding-bottom: 15px;
 }
 
+body.embedded2 #directory-listing.collection-listing tr.expandedForm h3 {
+  font-size: 1.35em;
+}
+
 body.embedded2 #directory-listing tr.even td {
   background-color: #fff;
   border-top: 1px solid transparent;

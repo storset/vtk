@@ -278,6 +278,11 @@
   left: -3px;
 }
 
+/* Fix when deleted */
+.ui-accordion.vrtxStaffExternal {
+  clear: left;
+}
+
 /* Fix when tooltip */
 .session .vrtx-fixed-resources-semester.ui-accordion label.ui-accordion-header,
 .embedded .vrtx-fixed-resources-semester.ui-accordion label.ui-accordion-header {

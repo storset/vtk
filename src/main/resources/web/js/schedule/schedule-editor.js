@@ -636,12 +636,14 @@ function courseSchedule() {
       vrtxAdmin.serverFacade.postHtml(form.attr("action"), dataString, {
         success: function (results, status, resp) {
           linkElm.hide();
+          linkElm.next().hide();
           $("<iframe class='admin-fixed-resources-iframe' src='" + collectionUrl + "/" + subfolder + cs.embeddedAdminService + "&upload=true' frameborder='0'></iframe>").insertAfter(linkElm);
         },
         error: function (xhr, textStatus) {
           if(xhr.status === 500) { // 500 means created but has cached stuff
             $(".errormessage.message").remove();
             linkElm.hide();
+            linkElm.next().hide();
             $("<iframe class='admin-fixed-resources-iframe' src='" + collectionUrl + "/" + subfolder + cs.embeddedAdminService + "&upload=true' frameborder='0'></iframe>").insertAfter(linkElm);
           }
         }

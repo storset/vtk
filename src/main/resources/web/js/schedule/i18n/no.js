@@ -56,8 +56,9 @@ var scheduleI18n = {
   "vrtxResourcesFixed-permanent": "Faste ressurser for denne aktiviteten",
   "vrtxResourcesFixed-semester": "Ressurser kun for inneværende semester",
   "vrtxResources-info": "blir åpent tilgjengelig uten innlogging",
-  "vrtxResourcesFixed-permanent-info": "Faste ressurser som følger aktiviteten hver gang emnet undervises. Lesetilgang for brukere tilknyttet medisinstudiet.",
-  "vrtxResourcesFixed-semester-info": "Ressurser for denne aktiviteten gjeldende kun dette semesteret. Lesetilgang for brukere tilknyttet medisinstudiet.",
+  "vrtxResourcesFixed-permanent-info": "Faste ressurser som følger aktiviteten hver gang emnet undervises.",
+  "vrtxResourcesFixed-semester-info": "Ressurser for denne aktiviteten gjeldende kun dette semesteret.",
+  "vrtxResourcesFixedInfo": "Lesetilgang for brukere tilknyttet medisinstudiet.",
   "vrtxResourcesFixedCreateFolder": "Last opp",
   "faste": "Faste ressurser",
   "vrtxStatus": "Avlys"

@@ -84,9 +84,12 @@ function courseSchedule() {
             }
             if(hasFolderUrl) newFixedResources.push(fixedR);
           }
-		  sequence.vrtxResourcesFixed = newFixedResources;
+          if (newFixedResources.length > 0) {
+            sequence.vrtxResourcesFixed = newFixedResources;
+          } else {
+            delete sequence.vrtxResourcesFixed;
+          }
         }
-        // delete sequence.vrtxResourcesFixed;
         sessions = sessions.concat(sequence.sessions);
       }
       
@@ -528,7 +531,11 @@ function courseSchedule() {
               }
               if(hasFolderUrl) newFixedResources.push(fixedR);
             }
-		    sequence.vrtxResourcesFixed = newFixedResources;
+            if (newFixedResources.length > 0) {
+              sequence.vrtxResourcesFixed = newFixedResources;
+            } else {
+              delete sequence.vrtxResourcesFixed;
+            }
           }
 		  
           var sessions = sequence.sessions || [];

@@ -1800,16 +1800,20 @@ VrtxEditor.prototype.htmlFacade = {
           if(fixedResourcesUrl && val.length) {
             for(i = 0, len = val.length; i < len; i++) {
               var fr = val[i];
+              var folderUrl = fr.folderUrl;
               var folderType = fr.folderType;
               var folderName = fr.folderName;
-              var folderUrl = fr.folderUrl;
+              var folderRoot = fr.folderRoot;
               html += "<div class='vrtx-simple-html vrtx-fixed-resources vrtx-fixed-resources-" + folderType + (i == 0 && desc.divide ? " divide-" + desc.divide : "") + "'><label>" + i18n[name + "-" + folderType] + "<abbr tabindex='0' class='tooltips label-tooltips' title='" + i18n[name + "-" + folderType + "-info"] + "'></abbr></label>";
               if(folderUrl && folderUrl.length) {
                 /* Iframe placeholder */
                 html += "<div class='admin-fixed-resources-iframe' data-src='" + folderUrl + embeddedAdminService + "'></div>";
               } else {
-                html += "<a class='vrtx-button create-fixed-resources-folder' id='create-fixed-resources-folder-" + idForLookup + "SID" + sessionId + "SUBF" +
-                        folderName + "' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a>" + "<p class='fixed-resources-permissions-info'>" + i18n.vrtxResourcesFixedInfo + "</p>";
+                html += "<a class='vrtx-button create-fixed-resources-folder' id='create-fixed-resources-folder-" + idForLookup +
+                        "SID" + sessionId +
+                        "SUBF" + folderName +
+                        ((folderRoot && folderRoot != "") ? ("PARENTR" + escape(folderRoot)) : "") +
+                        "' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a>" + "<p class='fixed-resources-permissions-info'>" + i18n.vrtxResourcesFixedInfo + "</p>";
               }
               html += "</div>";
             }

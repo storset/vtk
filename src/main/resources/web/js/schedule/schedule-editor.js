@@ -71,6 +71,20 @@ function courseSchedule() {
         var fixedResources = sequence.vrtxResourcesFixed;
         if(fixedResources) {
           sequences[sequence.id] = jQuery.extend(true, [], fixedResources);
+		  var newFixedResources = [];
+          for(var k = 0; k < fixedResources.length; k++) {
+            var fixedR = fixedResources[k];
+            var hasFolderUrl = false;
+            for(var key in fixedR) {
+              if(key != "folderUrl") {
+                delete fixedR[key];
+              } else {
+                hasFolderUrl = true;
+              }
+            }
+            if(hasFolderUrl) newFixedResources.push(fixedR);
+          }
+		  sequence.vrtxResourcesFixed = newFixedResources;
         }
         // delete sequence.vrtxResourcesFixed;
         sessions = sessions.concat(sequence.sessions);
@@ -202,7 +216,6 @@ function courseSchedule() {
           if(fixedResources) {
             sequences[sequence.id] = jQuery.extend(true, [], fixedResources);
           }
-          // delete sequence.vrtxResourcesFixed;
           sessions = sessions.concat(sequence.sessions);
         }
         if(!isPlenary || (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod)) {
@@ -501,8 +514,23 @@ function courseSchedule() {
         for(var j = 0, seqsLen = seqs.length; j < seqsLen; j++) {
           var sequence = seqs[j];
           
-          // delete sequence.vrtxResourcesFixed;
-          
+		  if(sequence.vrtxResourcesFixed) {
+		    var newFixedResources = [];
+            for(var k = 0; k < sequence.vrtxResourcesFixed.length; k++) {
+              var fixedR = sequence.vrtxResourcesFixed[k];
+              var hasFolderUrl = false;
+              for(var key in fixedR) {
+                if(key != "folderUrl") {
+                  delete fixedR[key];
+                } else {
+                  hasFolderUrl = true;
+                }
+              }
+              if(hasFolderUrl) newFixedResources.push(fixedR);
+            }
+		    sequence.vrtxResourcesFixed = newFixedResources;
+          }
+		  
           var sessions = sequence.sessions || [];
           for(var k = 0, sessLen = sessions.length; k < sessLen; k++) {
             if(!sessions[k].vrtxOrphan) {

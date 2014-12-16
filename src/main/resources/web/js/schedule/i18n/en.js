@@ -56,8 +56,9 @@ var scheduleI18n = {
   "vrtxResourcesFixed-permanent": "Fixed resources for this activity",
   "vrtxResourcesFixed-semester": "Resources for current semester only",
   "vrtxResources-info": "will be visible without authentication",
-  "vrtxResourcesFixed-permanent-info": "Permanent resources linked to the same activity every time this subject is taught. Permission for users associated with the Programme in Medicine.",
+  "vrtxResourcesFixed-permanent-info": "Permanent resources linked to the same activity every time this subject is taught.",
   "vrtxResourcesFixed-semester-info": "Resources for the activity this semester only.",
+  "vrtxResourcesFixedInfo": "Permission for users associated with the Programme in Medicine.",
   "vrtxResourcesFixedCreateFolder": "Upload",
   "faste": "Fixed resources",
   "vrtxStatus": "Cancel"

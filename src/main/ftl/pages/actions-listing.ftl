@@ -50,6 +50,8 @@
     <#list globalActions?keys as globalAction>
       <div class="globalaction">
         <a class="vrtx-button" id="upload-action" href="${globalActions[globalAction]?html}">${vrtx.getMsg("embeddedListing.${globalAction}")}</a>
+        <#-- FIXME: Hack for showing info for medicine upload -->
+        <#if globalAction == "upload"><p class='fixed-resources-permissions-info'>${vrtx.getMsg("embeddedListing.${globalAction}.fixed-resources-permissions-info")}</p></#if>
       </div>
     </#list>
   </body>

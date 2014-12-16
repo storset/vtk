@@ -1394,6 +1394,12 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   margin-bottom: -3px;
 }
 
+.fixed-resources-permissions-info {
+  display: inline-block;
+  padding-left: 19px;
+  color: #666;
+}
+
 /* ^ Tooltip */
 
 /* ^ 3.2 Resource title */

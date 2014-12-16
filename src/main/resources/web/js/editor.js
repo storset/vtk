@@ -1449,7 +1449,7 @@ function saveMultipleInputFields(content, arrSeperator) {
   var arrSep = (typeof arrSeperator === "string") ? arrSeperator : ",";
   for (var i = 0, len = multipleFields.length; i < len; i++) {
     var multiple = $(multipleFields[i]);
-    var multipleInput = multiple.find("> input");
+    var multipleInput = multiple.find("> input, .ui-accordion-content > input");
     if (!multipleInput.length) continue;
     var multipleInputFields = multiple.find(".vrtx-multipleinputfield");
     if (!multipleInputFields.length) {
@@ -1730,15 +1730,18 @@ VrtxEditor.prototype.htmlFacade = {
    * TODO: undefined checks should probably be with typeof against the string
    * 
    */
-  jsonToHtml: function(id, sessionId, idForLookup, session, fixedResourcesUrl, fixedResources, descs, i18n) {
+  jsonToHtml: function(isMedisin, id, sessionId, idForLookup, session, fixedResourcesUrl, fixedResources, descs, i18n, embeddedAdminService) {
     var html = "";
     var multiples = [];
     var rtEditors = [];
     var vrtxEdit = vrtxEditor;
     
     for(var name in descs) {
-      var desc = descs[name],
-          descProps = jQuery.extend(true, [], desc.props),
+      var desc = descs[name];
+      if((desc.notMedisin && isMedisin) || (desc.onlyMedisin && !isMedisin)) {
+        continue;
+      }
+      var descProps = jQuery.extend(true, [], desc.props),
           val = session[name] != undefined ? session[name] : fixedResources[name],
           origVal = "",
           propsVal = "",
@@ -1760,7 +1763,7 @@ VrtxEditor.prototype.htmlFacade = {
         case "json":
           for(var i = 0, descPropsLen = descProps.length; i < descPropsLen; i++) {
             descProps[i].title = i18n[name + "-" + descProps[i].name];
-            if(desc.multiple && desc.props[i].type === "resource_ref") {
+            if(desc.multiple && desc.props[i].type === "resource_ref" && !isMedisin) {
               browsable = true;
             }
           }
@@ -1785,35 +1788,52 @@ VrtxEditor.prototype.htmlFacade = {
             });
           }
           html += vrtxEdit.htmlFacade.getStringField({ title: i18n[name],
-                                                       name: (desc.autocomplete ? "vrtx-autocomplete-" + desc.autocomplete + " " : "") + name + "-" + sessionId,
+                                                       name: (desc.autocomplete ? "vrtx-autocomplete-" + desc.autocomplete + " " : "") + name + " " + name + "-" + sessionId,
                                                        id: name + "-" + sessionId,
                                                        val: val,
                                                        size: desc.size,
+                                                       divide: desc.divide,
                                                        readOnly: readOnly
                                                      }, name);
           break;
         case "json-fixed":
-          if(fixedResourcesUrl) {
+          if(fixedResourcesUrl && val.length) {
+            for(i = 0, len = val.length; i < len; i++) {
+              var fr = val[i];
+              var folderType = fr.folderType;
+              var folderName = fr.folderName;
+              var folderUrl = fr.folderUrl;
+              html += "<div class='vrtx-simple-html vrtx-fixed-resources vrtx-fixed-resources-" + folderType + (i == 0 && desc.divide ? " divide-" + desc.divide : "") + "'><label>" + i18n[name + "-" + folderType] + "<abbr tabindex='0' class='tooltips label-tooltips' title='" + i18n[name + "-" + folderType + "-info"] + "'></abbr></label>";
+              if(folderUrl && folderUrl.length) {
+                /* Iframe placeholder */
+                html += "<div class='admin-fixed-resources-iframe' data-src='" + folderUrl + embeddedAdminService + "'></div>";
+              } else {
+                html += "<a class='vrtx-button create-fixed-resources-folder' id='create-fixed-resources-folder-" + idForLookup + "SID" + sessionId + "SUBF" + folderName + "' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a>";
+              }
+              html += "</div>";
+            }
+            /* Old
             html += "<div class='vrtx-simple-html'><label>" + i18n[name] + "<abbr tabindex='0' class='tooltips label-tooltips' title='" + i18n.vrtxResourcesFixedInfo + "'></abbr></label>";
             if(!val) { // Create fixed resources folder
-              var buttons = "<a class='vrtx-button create-fixed-resources-folder' id='create-fixed-resources-folder-" + idForLookup + "SID" + sessionId + "' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a>";
-              html += buttons;
+              html += "<a class='vrtx-button create-fixed-resources-folder' id='create-fixed-resources-folder-" + idForLookup + "SID" + sessionId + "' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a>";
             } else { // Admin fixed resources folder
               if(val.length == undefined) { // Object
-                html += this.jsonFixedResourcesToHtml(val.folderUrl, val.resources, name, i18n);
+                html += "<iframe class='admin-fixed-resources-iframe' src='" + val.folderUrl + embeddedAdminService + "'></iframe>";
               } else { // Array
                 for(i = 0, len = val.length; i < len; i++) {
-                  html += this.jsonFixedResourcesToHtml(val[i].folderUrl, val[i].resources, name, i18n);
+                  html += "<iframe class='admin-fixed-resources-iframe' src='" + val[i].folderUrl + embeddedAdminService + "'></iframe>";
                 }
               }
             }
             html += "</div>";
+            */
           }
           break;
         case "html":
           html += vrtxEdit.htmlFacade.getSimpleHtmlField({ title: i18n[name],
                                                            name: name + "-" + sessionId,
                                                            id: name + "-" + sessionId,
+                                                           divide: desc.divide,
                                                            val: val
                                                          }, name + "-" + sessionId);
           rtEditors.push({ name: name + "-" + sessionId, readOnly: readOnly });
@@ -1825,6 +1845,7 @@ VrtxEditor.prototype.htmlFacade = {
                                                              name: name + "-" + sessionId,
                                                              id: name + "-" + sessionId,
                                                              checked: (val === desc.checkedVal ? val : null),
+                                                             divide: desc.divide,
                                                              tooltip: i18n.cancelledVortexTooltip
                                                            }, name);
             } else {
@@ -1838,25 +1859,10 @@ VrtxEditor.prototype.htmlFacade = {
     }
     return { html: html, multiples: multiples, rtEditors: rtEditors };
   },
-  jsonFixedResourcesToHtml: function(folderUrl, resources, name, i18n) {
-     var fixedResourcesHtml = "";
-     for(var i = 0, resourcesLen = resources.length; i < resourcesLen; i++) {
-       if(resourcesLen > 1) fixedResourcesHtml += "<li>";
-       fixedResourcesHtml += "<a href='" + resources[i].url + "'>" + resources[i].title + "</a>";
-       if(resourcesLen > 1) fixedResourcesHtml += "</li>";
-     }
-     var html = "<div class='preview-html'>";
-     if(resourcesLen > 1) html += "<ul>";
-     html += fixedResourcesHtml;
-     if(resourcesLen > 1) html += "</ul>";
-     html += "</div>";
-     html += "<a class='vrtx-button admin-fixed-resources-folder' href='" + folderUrl + "?vrtx=admin&displaymsg=yes'>" + i18n[name + "UploadAdminFolder"] + "</a>";
-     return html;
-  },
  /* 
   * Turn a block of HTML/DOM into JSON (Only working for Schedule per. 14.08.2014)
   */
-  htmlToJson: function (sessionElms, sessionId, descs, rawOrig, rawOrigTP, rawPtr) {
+  htmlToJson: function (isMedisin, sessionElms, sessionId, descs, rawOrig, rawOrigTP, rawPtr) {
     var vrtxEdit = vrtxEditor;
     var hasChanges = false;
     var editorDetectChangeFunc = editorDetectChange;
@@ -1864,10 +1870,10 @@ VrtxEditor.prototype.htmlFacade = {
     for(var name in descs) {
       var desc = descs[name],
           val = "";
-      if(descs[name].type === "json-fixed") {
+      if(desc.type === "json-fixed" || (desc.notMedisin && isMedisin) || (desc.onlyMedisin && !isMedisin)) {
         continue;
+      } else if(desc.type === "html") {
         // XXX: support multiple CK-fields starting with same name
-      } else if(descs[name].type === "html") {
         var elm = sessionElms.find("textarea[name^='" + name + "']");
       } else {
         var elm = sessionElms.find("input[name='" + name + "']");
@@ -1916,18 +1922,18 @@ VrtxEditor.prototype.htmlFacade = {
         }
       } else { // If removed in Vortex properties
         if(name === "vrtxStaff" && rawOrigTP[name.split("vrtx")[1].toLowerCase()]) { // If is "vrtxStaff" and has "staff" set to []
-	  if(rawPtr[name] == undefined || rawPtr[name].length > 0) {
+	      if(rawPtr[name] == undefined || rawPtr[name].length > 0) {
             vrtxAdmin.log({msg: "DEL EMPTY " + name + (typeof val === "string" ? " " + val : "")});
             rawPtr[name] = [];
             hasChanges = true;
-	  }
+	      }
         } else {
-	  if(rawOrig[name] != undefined) {
+	      if(rawOrig[name] != undefined) {
             vrtxAdmin.log({msg: "DEL " + name + (typeof val === "string" ? " " + val : "")});
             delete rawPtr[name];
             hasChanges = true;
-	  }
-	}
+	      }
+	    }
       }
     }
     return hasChanges;
@@ -2014,6 +2020,7 @@ VrtxEditor.prototype.htmlFacade = {
         elemId: elem.id || inputFieldName,
         elemVal: elem.val,
         elemSize: elem.size || 40,
+        elemDivide: elem.divide,
         elemPlaceholder: elem.placeholder,
         elemReadOnly: elem.readOnly
       });
@@ -2029,6 +2036,7 @@ VrtxEditor.prototype.htmlFacade = {
       elemTitle: elem.title,
       inputFieldName: inputFieldName,
       elemId: elem.id || inputFieldName,
+      elemDivide: elem.divide,
       elemVal: elem.val
     });
   },
@@ -2044,6 +2052,7 @@ VrtxEditor.prototype.htmlFacade = {
       elemId: elem.id || inputFieldName,
       elemChecked: elem.checked,
       elemTooltip: elem.tooltip,
+      elemDivide: elem.divide,
       inputFieldName: inputFieldName
     });
   },

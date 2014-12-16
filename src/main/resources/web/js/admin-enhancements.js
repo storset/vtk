@@ -198,6 +198,7 @@ var VrtxAnimation = function(opts) {
 \*-------------------------------------------------------------------*/
 
 var isEmbedded = window.location.href.indexOf("&embed") !== -1;
+var isEmbedded2 = false;
 var onlySessionId = gup("sessionid", window.location.href);
 
 vrtxAdmin._$(document).ready(function () {
@@ -206,8 +207,12 @@ vrtxAdmin._$(document).ready(function () {
   if(typeof datePickerLang === "string") {
     vrtxAdm.lang = datePickerLang;
   }
-
   vrtxAdm.cacheDOMNodesForReuse();
+  
+  isEmbedded2 = vrtxAdm.cachedBody.hasClass("embedded2");
+  if(isEmbedded2) {
+    $("html").addClass("embedded2");
+  }
 
   vrtxAdm.bodyId = vrtxAdm.cachedBody.attr("id") || "";
   vrtxAdm.cachedBody.addClass("js");
@@ -236,25 +241,25 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.loadScripts(["/js/vrtx-animation.js", "/js/vrtx-tree.js"], vrtxAdm.requiredScriptsLoaded);
   vrtxAdm.clientLastModified = $("#resource-last-modified").text().split(",");
   
-  if(!isEmbedded) {
+  if(!isEmbedded && !isEmbedded2) {
     vrtxAdm.initDropdowns();
     vrtxAdm.initScrollBreadcrumbs();
   }
   vrtxAdm.initDomainsInstant();
   
-  if(!isEmbedded) {
+  if(!isEmbedded && !isEmbedded2) {
     vrtxAdm.initMiscAdjustments();
   }
   
   var waitALittle = setTimeout(function() {
     vrtxAdm.initTooltips();
-    if(!isEmbedded) {
+    if(!isEmbedded && !isEmbedded2) {
       vrtxAdm.initGlobalDialogs();
     }
   }, 15);
   
   var waitALittleMore = setTimeout(function() {
-    if(!isEmbedded) {
+    if(!isEmbedded && !isEmbedded2) {
       vrtxAdm.initResourceMenus();
     }
     vrtxAdm.initDomains();
@@ -306,15 +311,17 @@ VrtxAdmin.prototype.cacheDOMNodesForReuse = function cacheDOMNodesForReuse() {
  
 VrtxAdmin.prototype.initTooltips = function initTooltips() {
   var titleContainer = $("#title-container");
-  titleContainer.vortexTips("abbr:not(.delayed)", {
-    appendTo: "#title-container",
-    containerWidth: 200, xOffset: 20, yOffset: 0
-  });
-  titleContainer.vortexTips("abbr.delayed", {
-    appendTo: "#title-container",
-    containerWidth: 200, xOffset: 20, yOffset: 0,
-    expandHoverToTipBox: true
-  });
+  if(titleContainer.length) {
+    titleContainer.vortexTips("abbr:not(.delayed)", {
+      appendTo: "#title-container",
+      containerWidth: 200, xOffset: 20, yOffset: 0
+    });
+    titleContainer.vortexTips("abbr.delayed", {
+      appendTo: "#title-container",
+      containerWidth: 200, xOffset: 20, yOffset: 0,
+      expandHoverToTipBox: true
+    });
+  }
   $("#main").vortexTips(".tooltips", {
     appendTo: "#contents",
     containerWidth: 320, xOffset: 20, yOffset: -15
@@ -1796,14 +1803,20 @@ function growField(input, val, comfortZone, minWidth, maxWidth) {
  *
  * @this {VrtxAdmin}
  */
-VrtxAdmin.prototype.initFileUpload = function initFileUpload() {
+VrtxAdmin.prototype.initFileUpload = function initFileUpload(isAutoUpload) {
   var vrtxAdm = vrtxAdmin,
     _$ = vrtxAdm._$;
   var form = _$("form[name=fileUploadService]");
   if (!form.length) return;
   var inputFile = form.find("#file");
+  
+  if(typeof isAutoUpload !== "undefined" && isAutoUpload) {
+    var btnI18n = vrtxAdm.lang === "en" ? "Upload" : "Last opp";
+  } else {
+    var btnI18n = vrtxAdm.lang === "en" ? "Browse" : "Bla igjennom";
+  }
 
-  _$("<input class='vrtx-textfield vrtx-file-upload' tabindex='-1' id='fake-file' type='text' /><a tabindex='-1' class='vrtx-button vrtx-file-upload'>Browse...</a>")
+  _$("<input class='vrtx-textfield vrtx-file-upload' tabindex='-1' id='fake-file' type='text' /><a tabindex='-1' class='vrtx-button vrtx-file-upload'>" + btnI18n+ "...</a>")
     .insertAfter(inputFile);
 
   inputFile.change(function (e) {
@@ -1856,6 +1869,9 @@ function ajaxUpload(options) {
                                                  msg: vrtxAdm.serverFacade.errorMessages.uploadingFilesFailed
                                               });
       uploadingFailedD.open();
+      if(opts.funcAfterComplete) {
+        opts.funcAfterComplete();
+      }
     });
   } else {
     futureFormAjax.resolve();
@@ -1910,7 +1926,12 @@ function ajaxUpload(options) {
                   elem: opts.form.parent(),
                   animationSpeed: opts.transitionSpeed,
                   easeIn: opts.transitionEasingSlideDown,
-                  easeOut: opts.transitionEasingSlideUp
+                  easeOut: opts.transitionEasingSlideUp,
+                  afterOut: function() {
+                    if(opts.funcAfterComplete) {
+                      opts.funcAfterComplete();
+                    }
+                  }
                 });
                 animation.bottomUp();
               },
@@ -1993,9 +2014,11 @@ function ajaxUploadPerform(opts, size) {
           easeIn: opts.transitionEasingSlideDown,
           easeOut: opts.transitionEasingSlideUp,
           afterOut: function(animation) {
-            for (var i = opts.updateSelectors.length; i--;) {
-              var outer = vrtxAdm.outerHTML(result, opts.updateSelectors[i]);
-              vrtxAdm.cachedBody.find(opts.updateSelectors[i]).replaceWith(outer);
+            if(opts.updateSelectors) {
+              for (var i = opts.updateSelectors.length; i--;) {
+                var outer = vrtxAdm.outerHTML(result, opts.updateSelectors[i]);
+                vrtxAdm.cachedBody.find(opts.updateSelectors[i]).replaceWith(outer);
+              }
             }
             vrtxAdm.updateCollectionListingInteraction();
             if (opts.funcComplete) {
@@ -2021,6 +2044,9 @@ function ajaxUploadPerform(opts, size) {
       } else {
         uploadingD.close();
       }
+      if(opts.funcAfterComplete) {
+        opts.funcAfterComplete();
+      }
     }
   });
     
@@ -2030,6 +2056,9 @@ function ajaxUploadPerform(opts, size) {
     }
     uploadingD.close();
     $(this).prev().removeClass("tab-visible");
+    if(opts.funcAfterComplete) {
+      opts.funcAfterComplete();
+    }
     e.stopPropagation();
     e.preventDefault();
   };
@@ -3080,6 +3109,7 @@ function autocompleteTags(selector) {
  * @param {string} opts.insertAfterOrReplaceClass Where to put the form
  * @param {boolean} opts.isReplacing Whether to replace instead of insert after
  * @param {string} opts.nodeType Node type that should be replaced or inserted
+ * @param {function} opts.funcBeforeComplete Callback function to run on before complete
  * @param {function} opts.funcComplete Callback function to run on success
  * @param {boolean} opts.simultanSliding Whether to slideUp existing form at the same time slideDown new form (only when there is an existing form)
  * @param {number} opts.transitionSpeed Transition speed in ms
@@ -3100,6 +3130,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(opts) {
     var link = _$(this),
         url = link.attr("href") || link.closest("form").attr("action"),
         modeUrl = window.location.href,
+        isActionsListing = modeUrl.indexOf("&mode=actions-listing") !== -1,
         fromModeToNotMode = false,
         existExpandedFormIsReplaced = false,
         expandedForm = $(".expandedForm"),
@@ -3109,15 +3140,20 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(opts) {
     // -- only if a expandedForm exists and is of the replaced kind..
     //
     if (existExpandedForm && expandedForm.hasClass("expandedFormIsReplaced")) {
-      if (url.indexOf("&mode=") === -1 && modeUrl.indexOf("&mode=") !== -1) {
+      if ((url.indexOf("&mode=") === -1 && modeUrl.indexOf("&mode=") !== -1) || isActionsListing) {
         fromModeToNotMode = true;
       }
       existExpandedFormIsReplaced = true;
     }
     
+    if(opts.funcBeforeComplete) {
+      opts.funcBeforeComplete(link);
+    }
+    
     vrtxAdmin.serverFacade.getHtml(url, {
       success: function (results, status, resp) {
-        var form = _$(_$.parseHTML(results)).find("." + opts.selectorClass).html();
+        opts.formElm = _$(_$.parseHTML(results)).find("." + opts.selectorClass);
+        var form = opts.formElm.html();
 
         // If something went wrong
         if (!form) {
@@ -3134,12 +3170,22 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(opts) {
         if (existExpandedForm) {
           var resultSelectorClasses = expandedForm.attr("class").split(" ");
           var resultSelectorClass = "";
-          var ignoreClasses = { "even": "", "odd": "", "first": "", "last": "" };
-          for (var i = resultSelectorClasses.length; i--;) {
-            var resultSelectorClass = resultSelectorClasses[i];
-            if (resultSelectorClass && resultSelectorClass !== "" && !(resultSelectorClass in ignoreClasses)) {
-              resultSelectorClass = "." + resultSelectorClasses[i];
-              break;
+          if(isActionsListing) {
+            for (var i = resultSelectorClasses.length; i--;) {
+              var resultSelectorClass = resultSelectorClasses[i];
+              if(/^vrtx-/.test(resultSelectorClass)) {
+                resultSelectorClass = "." + resultSelectorClass;
+                break;
+              }
+            }
+          } else {
+            var ignoreClasses = { "even": "", "odd": "", "first": "", "last": "" };
+            for (var i = resultSelectorClasses.length; i--;) {
+              var resultSelectorClass = resultSelectorClasses[i];
+              if (resultSelectorClass && resultSelectorClass !== "" && !(resultSelectorClass in ignoreClasses)) {
+                resultSelectorClass = "." + resultSelectorClass;
+                break;
+              }
             }
           }
           var succeededAddedOriginalMarkup = false;
@@ -3155,7 +3201,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(opts) {
                     success: function (results, status, resp) {
                       succeededAddedOriginalMarkup = vrtxAdm.addOriginalMarkup(modeUrl, _$.parseHTML(results), resultSelectorClass, expandedForm);
                       if (succeededAddedOriginalMarkup) {
-                        vrtxAdmin.addNewMarkup(opts, form);
+                        vrtxAdmin.addNewMarkup(opts, form, link);
                       } else {
                         if (vrtxAdm.asyncGetFormsInProgress) {
                           vrtxAdmin.asyncGetFormsInProgress--;
@@ -3185,7 +3231,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(opts) {
                     vrtxAdmin.asyncGetFormsInProgress--;
                   }
                 } else {
-                  vrtxAdmin.addNewMarkup(opts, form);
+                  vrtxAdmin.addNewMarkup(opts, form, link);
                 }
               }
             }
@@ -3193,7 +3239,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(opts) {
           animation.bottomUp();
         }
         if ((!existExpandedForm || opts.simultanSliding) && !fromModeToNotMode) {
-          vrtxAdm.addNewMarkup(opts, form);
+          vrtxAdm.addNewMarkup(opts, form, link);
         }
       },
       error: function (xhr, textStatus) {
@@ -3248,18 +3294,20 @@ VrtxAdmin.prototype.addOriginalMarkup = function addOriginalMarkup(url, results,
  * @param {string} transitionEasingSlideUp Transition easing algorithm for slideUp()
  * @param {object} form The form
  */
-VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(opts, form) {
+VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(opts, form, link) {
   var vrtxAdm = this,
     _$ = vrtxAdm._$;
     
-  var inject = _$(opts.insertAfterOrReplaceClass);
+  var inject = opts.findClosest ? link.closest(opts.insertAfterOrReplaceClass) : _$(opts.insertAfterOrReplaceClass);
   if (!inject.length) {
     inject = _$(opts.secondaryInsertAfterOrReplaceClass);
   }
 
   if (opts.isReplacing) {
     var classes = inject.attr("class");
-    inject.replaceWith(vrtxAdm.wrap(opts.nodeType, "expandedForm expandedFormIsReplaced nodeType" + opts.nodeType + " " + opts.selectorClass + " " + classes, form));
+    var isBadMarkup = opts.nodeType === "tr" && !opts.formElm.find("td").length && !opts.formElm.filter("td").length;
+    inject.replaceWith(vrtxAdm.wrap(opts.nodeType, "expandedForm expandedFormIsReplaced nodeType" + opts.nodeType + " " + opts.selectorClass + " " + classes,
+                                    (isBadMarkup ? "<td colspan='2'>" : "") + opts.formElm.html() + (isBadMarkup ? "</td>" : "")));
   } else {
     _$(vrtxAdm.wrap(opts.nodeType, "expandedForm nodeType" + opts.nodeType + " " + opts.selectorClass, form))
       .insertAfter(inject);
@@ -3295,6 +3343,9 @@ VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(opts, form) {
           }
         }
       }
+      if (opts.funcAfterComplete) {
+        opts.funcAfterComplete();
+      }
     }
   });
   animation.topDown();
@@ -3312,7 +3363,7 @@ VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(opts, form) {
  * @param {string} opts.updateSelectors One or more containers that should update after POST
  * @param {string} opts.errorContainerInsertAfter Selector where to place the new error container
  * @param {string} opts.errorContainer The className of the error container
- * @param {function} opts.funcProceedCondition Callback function that proceedes with completeFormAsyncPost(opts)
+ * @param {function} opts.funcProceedCondition Callback function that proceeds with completeFormAsyncPost(opts)
  * @param {function} opts.funcComplete Callback function to run on success
  * @param {function} opts.funcCancel Callback function to run on cancel
  * @param {number} opts.isNotAnimated Not animated form
@@ -3341,11 +3392,17 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(opts) {
           easeOut: opts.transitionEasingSlideUp,
           afterOut: function(animation) {
             animation.__opts.elem.remove();
+            if(opts.funcAfterComplete) {
+              opts.funcAfterComplete()
+            }
           }
         });
         animation.bottomUp();
       } else {
         elem.remove();
+        if(opts.funcAfterComplete) {
+          opts.funcAfterComplete()
+        }
       }
       if(opts.funcCancel) opts.funcCancel();
       e.preventDefault();
@@ -3363,6 +3420,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(opts) {
       } else {
         opts.form = link.closest("form");
         opts.link = link;
+        opts.isCancelAction = isCancelAction;
         if (!isCancelAction && opts.funcProceedCondition) {
           opts.funcProceedCondition(opts);
         } else {
@@ -3382,6 +3440,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(opts) {
  * @param {object} opts Configuration
  * @param {object} opts.form The form
  * @param {object} opts.link The action link
+ * @param {object} opts.isCancelAction Is it a cancel?
  */
 VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(opts) {
   if(opts.funcBeforeComplete) opts.funcBeforeComplete();
@@ -3390,66 +3449,85 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(opts)
        _$ = vrtxAdm._$,
       url = opts.form.attr("action"),
       modeUrl = window.location.href,
+      isActionsListing = modeUrl.indexOf("&mode=actions-listing") !== -1,
       dataString = opts.form.serialize() + "&" + opts.link.attr("name");
 
-  vrtxAdmin.serverFacade.postHtml(url, dataString, {
-    success: function (results, status, resp) {
-      var internalComplete = function(res) {
+  var postIt = function(results, status, resp) {
+    var internalComplete = function(res) {
+      if(opts.updateSelectors && res != null) {
         for (var i = opts.updateSelectors.length; i--;) {
           var outer = vrtxAdm.outerHTML(_$.parseHTML(res), opts.updateSelectors[i]);
           vrtxAdm.cachedBody.find(opts.updateSelectors[i]).replaceWith(outer);
         }
-        if (opts.funcComplete) opts.funcComplete();
-      };
-      var internalAnimation = function(elem, afterOut) {
-        if(opts.isNotAnimated) return;
-        var animation = new VrtxAnimation({
-          elem: elem,
-          animationSpeed: opts.transitionSpeed,
-          easeIn: opts.transitionEasingSlideDown,
-          easeOut: opts.transitionEasingSlideUp,
-          afterOut: afterOut
-        });
-        animation.bottomUp();
-      };
+      }
+      if (opts.funcComplete) opts.funcComplete();
+    };
+    var internalAnimation = function(elem, afterOut) {
+      if(opts.isNotAnimated) return;
+      var animation = new VrtxAnimation({
+        elem: elem,
+        animationSpeed: opts.transitionSpeed,
+        easeIn: opts.transitionEasingSlideDown,
+        easeOut: opts.transitionEasingSlideUp,
+        afterOut: afterOut
+      });
+      animation.bottomUp();
+    };
     
-      if (vrtxAdm.hasErrorContainers(_$.parseHTML(results), opts.errorContainer)) {
-        vrtxAdm.displayErrorContainers(_$.parseHTML(results), opts.form, opts.errorContainerInsertAfter, opts.errorContainer);
+    if (vrtxAdm.hasErrorContainers(_$.parseHTML(results), opts.errorContainer)) {
+      vrtxAdm.displayErrorContainers(_$.parseHTML(results), opts.form, opts.errorContainerInsertAfter, opts.errorContainer);
+    } else {
+      if (opts.isReplacing) {
+        internalAnimation(opts.form.parent(), function(animation) { 
+          internalComplete(results);
+          if(opts.funcAfterComplete) {
+            opts.funcAfterComplete();
+          }
+        });
       } else {
-        if (opts.isReplacing) {
-          internalAnimation(opts.form.parent(), function(animation) { 
-            internalComplete(results);
+        var sameMode = false;
+        var remoteIsMode = url.indexOf("&mode=") !== -1;
+        var pageIsMode = modeUrl.indexOf("&mode=") !== -1;
+        var remoteIsRevisions = url.indexOf("&action=revisions") !== -1;
+        var pageIsRevisions = modeUrl.indexOf("&action=revisions") !== -1;
+        if (remoteIsMode) {
+          if (gup("mode", url) === gup("mode", modeUrl)) {
+            sameMode = true;
+          }
+        }
+        if (opts.isUndecoratedService || (pageIsMode && !sameMode) || (pageIsRevisions !== remoteIsRevisions)) { // When we need the 'mode=' or 'action=revisions' HTML. TODO: should only run when updateSelector is inside content
+          vrtxAdm.serverFacade.getHtml(modeUrl, {
+            success: function (results, status, resp) {
+              internalComplete(results);
+              internalAnimation(opts.form.parent(), function(animation) {
+                animation.__opts.elem.remove();
+                if(opts.funcAfterComplete) {
+                  opts.funcAfterComplete();
+                }
+              });
+            }
           });
         } else {
-          var sameMode = false;
-          var remoteIsMode = url.indexOf("&mode=") !== -1;
-          var pageIsMode = modeUrl.indexOf("&mode=") !== -1;
-          var remoteIsRevisions = url.indexOf("&action=revisions") !== -1;
-          var pageIsRevisions = modeUrl.indexOf("&action=revisions") !== -1;
-          if (remoteIsMode) {
-            if (gup("mode", url) === gup("mode", modeUrl)) {
-              sameMode = true;
+          internalComplete(results);
+          internalAnimation(opts.form.parent(), function(animation) {
+            animation.__opts.elem.remove();
+            if(opts.funcAfterComplete) {
+              opts.funcAfterComplete();
             }
-          }
-          if (opts.isUndecoratedService || (pageIsMode && !sameMode) || (pageIsRevisions !== remoteIsRevisions)) { // When we need the 'mode=' or 'action=revisions' HTML. TODO: should only run when updateSelector is inside content
-            vrtxAdm.serverFacade.getHtml(modeUrl, {
-              success: function (results, status, resp) {
-                internalComplete(results);
-                internalAnimation(opts.form.parent(), function(animation) {
-                  animation.__opts.elem.remove();
-                });
-              }
-            });
-          } else {
-            internalComplete(results);
-            internalAnimation(opts.form.parent(), function(animation) {
-              animation.__opts.elem.remove();
-            });
-          }
+          });
         }
       }
     }
-  });
+  }
+
+  // Avoid POST if cancel in actions listing
+  if(opts.isCancelAction && isActionsListing) {
+    postIt(null, null, null);
+  } else {
+    vrtxAdmin.serverFacade.postHtml(url, dataString, {
+      success: postIt
+    });
+  }
 };
 
 /**
@@ -3749,9 +3827,10 @@ VrtxAdmin.prototype.serverFacade = {
    * @this {serverFacade}
    * @param {string} url The URL
    * @param {object} callbacks The callback functions
+   * @param {boolean} useCache Use cache in browser
    */
-  getHtml: function (url, callbacks) {
-    this.get(url, callbacks, "html");
+  getHtml: function (url, callbacks, useCache) {
+    this.get(url, callbacks, "html", (typeof useCache !== "boolean" ? true : useCache));
   },
   /**
    * GET JSON
@@ -3762,7 +3841,7 @@ VrtxAdmin.prototype.serverFacade = {
    * @param {boolean} useCache Use cache in browser
    */
   getJSON: function (url, callbacks, useCache) {
-    this.get(url, callbacks, "json", (typeof useCache !== "boolean" || useCache));
+    this.get(url, callbacks, "json", (typeof useCache !== "boolean" ? true : useCache));
   },
   /**
    * POST HTML
@@ -3787,6 +3866,32 @@ VrtxAdmin.prototype.serverFacade = {
     this.post(url, params, callbacks, "json", "text/plain;charset=utf-8");
   },
   /**
+   * HEAD Ajax
+   *
+   * @this {serverFacade}
+   * @param {string} url The URL
+   * @param {object} callbacks The callback functions
+   */
+  head: function(url, callbacks) {
+    vrtxAdmin._$.ajax({
+      type: "HEAD",
+      async: true,
+      url: url,
+      cache: false,
+      success: callbacks.success,
+      error: function (xhr, textStatus) {
+        if (callbacks.error) {
+          callbacks.error(xhr, textStatus);
+        }
+      },
+      complete: function (xhr, textStatus) {
+        if (callbacks.complete) {
+          callbacks.complete(xhr, textStatus);
+        }
+      }
+    });
+  },
+  /**
    * GET Ajax <data type>
    *
    * @this {serverFacade}
@@ -3800,7 +3905,7 @@ VrtxAdmin.prototype.serverFacade = {
       type: "GET",
       url: url,
       dataType: type,
-      useCache: useCache,
+      cache: useCache,
       success: callbacks.success,
       error: function (xhr, textStatus) {
         var msg = vrtxAdmin.serverFacade.error(xhr, textStatus, true);

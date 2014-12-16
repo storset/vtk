@@ -227,8 +227,8 @@
   margin-bottom: 0px;
 }
 
-.ui-accordion label.ui-accordion-header,
-.ui-accordion .ui-accordion .ui-accordion .ui-accordion-header {
+.embedded .ui-accordion .ui-accordion-header,
+.session .ui-accordion .ui-accordion-header {
   margin-left: 0;
 }
 

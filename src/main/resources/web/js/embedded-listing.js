@@ -70,7 +70,9 @@ vrtxAdmin._$(document).ready(function () {
   
   /* Upload action */
   if (vrtxAdm.isIOS5) {
-    $("#upload-action").hide();
+    var linkElm = $("#upload-action");
+    linkElm.hide();
+    linkElm.next().hide();
   } else {
     vrtxAdm.getFormAsync({
       selector: "#upload-action",
@@ -80,7 +82,9 @@ vrtxAdmin._$(document).ready(function () {
       focusElement: "",
       simultanSliding: true,
       funcBeforeComplete: function() {
-        $("#upload-action").hide();
+        var linkElm = $("#upload-action");
+        linkElm.hide();
+        linkElm.next().hide();
       },
       funcComplete: function (p) {
         vrtxAdm.initFileUpload();
@@ -97,7 +101,9 @@ vrtxAdmin._$(document).ready(function () {
         return ajaxUpload(opts);
       },
       funcAfterComplete: function() {
-        $("#upload-action").show();
+        var linkElm = $("#upload-action");
+        linkElm.show();
+        linkElm.next().show();
         var waitAlittle = setTimeout(updateListing, 50);
       }
     });

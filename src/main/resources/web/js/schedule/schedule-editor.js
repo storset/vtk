@@ -617,7 +617,7 @@ function courseSchedule() {
     if(subfolder.indexOf("PARENTR") !== -1) {
       var splitC = subfolder.split("PARENTR");
       subfolder = splitC[0];
-      var collectionUrl = unescape(splitC[1]);
+      var collectionUrl = decodeURIComponent(splitC[1]);
 
       hasParentFolder = true;
     } else {

@@ -602,8 +602,7 @@ function courseSchedule() {
   contents.on("click", ".create-fixed-resources-folder", function(e) {
     var linkElm = $(this);
     var sessionId = linkElm[0].id.split("create-fixed-resources-folder-")[1];
-    var session = cs.sessionsLookup[id][sessionId];
-    
+
     var hasParentFolder = false;
     
     var splitA = sessionId.split("SID");
@@ -611,6 +610,9 @@ function courseSchedule() {
     sessionId = splitA[1];
     var splitB = sessionId.split("SUBF");
     sessionId = splitB[0];
+    
+    var session = cs.sessionsLookup[id][sessionId];
+    
     var subfolder = splitB[1];
     if(subfolder.indexOf("PARENTR") !== -1) {
       var splitC = subfolder.split("PARENTR");

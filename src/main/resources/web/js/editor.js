@@ -1812,7 +1812,7 @@ VrtxEditor.prototype.htmlFacade = {
                 html += "<a class='vrtx-button create-fixed-resources-folder' id='create-fixed-resources-folder-" + idForLookup +
                         "SID" + sessionId +
                         "SUBF" + folderName +
-                        ((folderRoot && folderRoot != "") ? ("PARENTR" + escape(folderRoot)) : "") +
+                        ((folderRoot && folderRoot != "") ? ("PARENTR" + encodeURIComponent(folderRoot)) : "") +
                         "' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a>" + "<p class='fixed-resources-permissions-info'>" + i18n.vrtxResourcesFixedInfo + "</p>";
               }
               html += "</div>";

@@ -71,8 +71,25 @@ function courseSchedule() {
         var fixedResources = sequence.vrtxResourcesFixed;
         if(fixedResources) {
           sequences[sequence.id] = jQuery.extend(true, [], fixedResources);
+          var newFixedResources = [];
+          for(var k = 0; k < fixedResources.length; k++) {
+            var fixedR = fixedResources[k];
+            var hasFolderUrl = false;
+            for(var key in fixedR) {
+              if(key != "folderUrl") {
+                delete fixedR[key];
+              } else {
+                hasFolderUrl = true;
+              }
+            }
+            if(hasFolderUrl) newFixedResources.push(fixedR);
+          }
+          if (newFixedResources.length > 0) {
+            sequence.vrtxResourcesFixed = newFixedResources;
+          } else {
+            delete sequence.vrtxResourcesFixed;
+          }
         }
-        // delete sequence.vrtxResourcesFixed;
         sessions = sessions.concat(sequence.sessions);
       }
       
@@ -202,7 +219,6 @@ function courseSchedule() {
           if(fixedResources) {
             sequences[sequence.id] = jQuery.extend(true, [], fixedResources);
           }
-          // delete sequence.vrtxResourcesFixed;
           sessions = sessions.concat(sequence.sessions);
         }
         if(!isPlenary || (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod)) {
@@ -501,8 +517,27 @@ function courseSchedule() {
         for(var j = 0, seqsLen = seqs.length; j < seqsLen; j++) {
           var sequence = seqs[j];
           
-          // delete sequence.vrtxResourcesFixed;
-          
+          if(sequence.vrtxResourcesFixed) {
+            var newFixedResources = [];
+            for(var k = 0; k < sequence.vrtxResourcesFixed.length; k++) {
+              var fixedR = sequence.vrtxResourcesFixed[k];
+              var hasFolderUrl = false;
+              for(var key in fixedR) {
+                if(key != "folderUrl") {
+                  delete fixedR[key];
+                } else {
+                  hasFolderUrl = true;
+                }
+              }
+              if(hasFolderUrl) newFixedResources.push(fixedR);
+            }
+            if (newFixedResources.length > 0) {
+              sequence.vrtxResourcesFixed = newFixedResources;
+            } else {
+              delete sequence.vrtxResourcesFixed;
+            }
+          }
+
           var sessions = sequence.sessions || [];
           for(var k = 0, sessLen = sessions.length; k < sessLen; k++) {
             if(!sessions[k].vrtxOrphan) {
@@ -602,8 +637,7 @@ function courseSchedule() {
   contents.on("click", ".create-fixed-resources-folder", function(e) {
     var linkElm = $(this);
     var sessionId = linkElm[0].id.split("create-fixed-resources-folder-")[1];
-    var session = cs.sessionsLookup[id][sessionId];
-    
+
     var hasParentFolder = false;
     
     var splitA = sessionId.split("SID");
@@ -611,11 +645,14 @@ function courseSchedule() {
     sessionId = splitA[1];
     var splitB = sessionId.split("SUBF");
     sessionId = splitB[0];
+    
+    var session = cs.sessionsLookup[id][sessionId];
+    
     var subfolder = splitB[1];
     if(subfolder.indexOf("PARENTR") !== -1) {
       var splitC = subfolder.split("PARENTR");
       subfolder = splitC[0];
-      var collectionUrl = unescape(splitC[1]);
+      var collectionUrl = decodeURIComponent(splitC[1]);
 
       hasParentFolder = true;
     } else {

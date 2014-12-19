@@ -39,6 +39,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Ignore;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -95,6 +96,7 @@ public class JsonViewTest {
     }
     
     @Test
+    @Ignore
     public void renderArray() throws Exception {
         int[] numbers = new int[3];
         numbers[0] = 2;

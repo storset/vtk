@@ -32,6 +32,7 @@ package vtk.util.text;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -53,7 +54,7 @@ import java.util.Map;
  * the calling code.
  *
  * <p>Note: There is currently no built-in protection against stack overflow
- * error if you try to serialize self-referencing container structures (maps/lists
+ * error if you try to serialize self-referencing container structures (maps/lists/arrays
  * containing direct or indirect reference cycles)
  * TODO add simple checking to detect ref-cycles between lists/maps on recursive
  * calls.
@@ -323,10 +324,12 @@ public class JsonStreamer {
     /**
      * Write a value, which can be anything from primitives to full maps forming
      * complete objects.
+     * 
      * @param object the value
      * @return this <code>JsonStreamer</code> instance.
      * @throws IOException if writing to stream fails
      * @throws IllegalStateException if current state is object with no specified key.
+     * @throws StackOverflowError if object is a structure with reference cycles, which is not supported.
      */
     public JsonStreamer value(Object object) throws IOException {
         Context ctx = contexts.peek();
@@ -344,7 +347,7 @@ public class JsonStreamer {
         if (!ctx.empty && ctx.state != KEY_VALUE) {
             formatter.writeValueSeparator(ctx.level);
         }
-        
+
         if (ctx.state == KEY_VALUE) {
             ctx.state = OBJECT;
             formatter.writePrimitiveMemberValue(object, ctx.level);
@@ -356,12 +359,11 @@ public class JsonStreamer {
     }
 
     /**
-     * Write an array.
+     * Write a list (becomes JSON array).
      * @param values
      * @return
      * @throws IOException 
-     * 
-     * TODO prevent infinite recursion if structure contains reference cycles.
+     * @throws StackOverflowError if object is a structure with reference cycles, which is not supported.
      */
     public JsonStreamer array(List<Object> values) throws IOException {
         beginArray();
@@ -379,8 +381,7 @@ public class JsonStreamer {
      * @return this <code>JsonStreamer</code> instance.
      * @throws IOException if writing to stream fails
      * @throws IllegalStateException if current state is object with no specified key.
-     * 
-     * TODO prevent infinite recursion if structure contains reference cycles.
+     * @throws StackOverflowError if object is a structure with reference cycles, which is not supported.
      */
     public JsonStreamer object(Map<String, Object> map) throws IOException {
         beginObject();
@@ -398,6 +399,7 @@ public class JsonStreamer {
      * @return this <code>JsonStreamer</code> instance.
      * @throws IOException if writing to stream fails
      * @throws IllegalStateException if current state is not an object
+     * @throws StackOverflowError if object is a structure with reference cycles, which is not supported.
      */
     public JsonStreamer member(String key, Object value) throws IOException {
         key(key);
@@ -413,6 +415,7 @@ public class JsonStreamer {
      * @return this <code>JsonStreamer</code> instance.
      * @throws IOException if writing to stream fails
      * @throws IllegalStateException if current state is not an object
+     * @throws StackOverflowError if object is a structure with reference cycles, which is not supported.
      */
     public JsonStreamer memberIfNotNull(String key, Object value) throws IOException {
         if (key == null || value == null) {
@@ -456,7 +459,7 @@ public class JsonStreamer {
             previous = ctx;
         }
     }
-
+    
     // Default serializer/formatter for JSON output
     private static class Formatter {
         
@@ -562,7 +565,7 @@ public class JsonStreamer {
             w.write('\"');
         }
     }
-    
+
     // Pretty printing serializer/formatter for JSON output
     private static final class PrettyFormatter extends Formatter {
 
@@ -583,11 +586,6 @@ public class JsonStreamer {
             for (int i=0; i<level; i++) {
                 w.write(indentLevel);
             }
-        }
-
-        @Override
-        void writePrimitiveMemberValue(Object value, int level) throws IOException {
-            super.writePrimitiveMemberValue(value, level);
         }
 
         @Override
@@ -648,7 +646,7 @@ public class JsonStreamer {
      * of this class to <code>JsonStreamer</code>. Essentially the same as {@link java.io.StringWriter
      * }, but doesn't use <code>StringBuffer</code> internally.
      */
-    public static final class StringBuilderWriter extends Writer {
+    static final class StringBuilderWriter extends Writer {
 
         private final StringBuilder buffer = new StringBuilder(); 
         
@@ -713,5 +711,4 @@ public class JsonStreamer {
             return writtenCharsToString();
         }
     }
-    
 }

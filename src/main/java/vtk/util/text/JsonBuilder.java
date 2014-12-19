@@ -73,8 +73,8 @@ public class JsonBuilder {
      * Get the JSON string built so far. May not be a complete and closed JSON object
      * or array if the building is not in a "closed state".
      * 
-     * <p>To make sure you get a complete object, call {@link #endJson() } first, 
-     * or use {@link #endJsonString()}.
+     * <p>To make sure you get a complete object, call {@link #endJson() } first.
+     * 
      * @return a string of JSON data built so far.
      */
     public String jsonString() {

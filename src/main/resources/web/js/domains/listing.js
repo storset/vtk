@@ -399,6 +399,9 @@ function ajaxUpload(options) {
                                                  msg: vrtxAdm.serverFacade.errorMessages.uploadingFilesFailed
                                               });
       uploadingFailedD.open();
+	  if(opts.funcAfterComplete) {
+        opts.funcAfterComplete();
+      }
     });
   } else {
     futureFormAjax.resolve();
@@ -453,7 +456,12 @@ function ajaxUpload(options) {
                   elem: opts.form.parent(),
                   animationSpeed: opts.transitionSpeed,
                   easeIn: opts.transitionEasingSlideDown,
-                  easeOut: opts.transitionEasingSlideUp
+                  easeOut: opts.transitionEasingSlideUp,
+                  afterOut: function() {
+                    if(opts.funcAfterComplete) {
+                      opts.funcAfterComplete();
+                    }
+                  }
                 });
                 animation.bottomUp();
               },
@@ -564,6 +572,9 @@ function ajaxUploadPerform(opts/*, size*/) {
       } else {
         uploadingD.close();
       }
+	  if(opts.funcAfterComplete) {
+        opts.funcAfterComplete();
+      }
     }
   });
     
@@ -573,6 +584,9 @@ function ajaxUploadPerform(opts/*, size*/) {
     }
     uploadingD.close();
     $(this).prev().removeClass("tab-visible");
+	if(opts.funcAfterComplete) {
+      opts.funcAfterComplete();
+    }
     e.stopPropagation();
     e.preventDefault();
   };

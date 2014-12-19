@@ -1196,6 +1196,10 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   -moz-box-shadow: 0px 0px 0px 6px rgba(160,160,160,0.5);
   -webkit-box-shadow: 0px 0px 0px 6px rgba(160,160,160,0.5);
   box-shadow: 0px 0px 0px 6px rgba(160,160,160,0.5);
+  border-radius: 0px !important;
+  -moz-border-radius: 0px !important;
+  -webkit-border-radius: 0px !important;
+  border: none !important;
   padding: 14px;
   background-color: #fff;
   display: none;
@@ -1316,13 +1320,13 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 }
 
 .tip.vrtx-create-tree {
+  padding: 4px 0px 4px 0 !important;
+  -moz-box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
   margin: 6px 0 0;
-  padding: 0;
   border: none;
   background-color: #ecf3f9;
-  -moz-box-shadow: none;
-  -webkit-box-shadow: none;
-  box-shadow: none;
 }
 
 .tip.vrtx-create-tree .no-create-permission {
@@ -1386,6 +1390,12 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 #title-container .tooltips {
   border-bottom: none;
   margin-bottom: -3px;
+}
+
+.fixed-resources-permissions-info {
+  display: inline-block;
+  padding-left: 19px;
+  color: #666;
 }
 
 /* ^ Tooltip */
@@ -1776,6 +1786,8 @@ span.vrtx-help-step-by-step-cmd {
 
 #directory-listing th.name,
 #directory-listing td.name,
+#directory-listing th.action,
+#directory-listing td.action,
 #directory-listing th#vrtx-trash-can\.name,
 #directory-listing td.vrtx-trash-can-name,
 body#vrtx-report-documents #directory-listing th#vrtx-report-name,
@@ -3195,6 +3207,85 @@ body#vrtx-preview .tabMessage-big {
 
 /* 4. Embedding */
 
+html.embedded2,
+body.embedded2 {
+  background-color: #fff;
+  text-align: left;
+}
+
+body.embedded2 {
+  min-width: 0;
+  float: left;
+  width: 100%;
+}
+
+body.embedded2.forms-new .ui-widget-overlay {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+
+body.embedded2 #directory-listing.collection-listing {
+  border-collapse: separate;
+  margin-bottom: 15px;
+}
+
+body.embedded2 #directory-listing.collection-listing tr td {
+  border: 1px solid #f0f0f0;
+}
+
+body.embedded2 #directory-listing.collection-listing tr.expandedForm td {
+  padding-top: 10px;
+  padding-bottom: 15px;
+}
+
+body.embedded2 #directory-listing.collection-listing tr.expandedForm h3 {
+  font-size: 1.35em;
+}
+
+body.embedded2 #directory-listing tr.even td {
+  background-color: #fff;
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+}
+
+body.embedded2 #directory-listing tr.even:last-child td {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+body.embedded2 #directory-listing tr.odd td {
+  background-color: #f9f9f9;
+}
+
+body.embedded2.forms-new #directory-listing tr.focus td,
+body.embedded2.forms-new #directory-listing tr:focus td,
+body.embedded2.forms-new #directory-listing tr:hover td {
+  border: 1px solid #c7dadf;
+  background-color: #ecf3f9;
+}
+
+body.embedded2 #directory-listing.collection-listing tr td:first-child {
+  border-right: none;
+}
+
+body.embedded2 #directory-listing.collection-listing tr td:last-child {
+  border-left: none;
+}
+
+body.embedded2 .expandedForm {
+  margin: 10px 0 0 0;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;   
+}
+
+#vrtx-editor-title-submit-buttons h2 {
+  margin: 0;
+  background: none;
+}
+
 .vrtx-close-dialog-editor {
   background: url("/vrtx/__vrtx/static-resources/themes/default/images/thickbox-close.png") no-repeat scroll center center transparent;
   display: block;
@@ -3204,17 +3295,12 @@ body#vrtx-preview .tabMessage-big {
   margin-top: 2px;
 }
 
-html.embedded .vrtx-close-dialog-editor {
-  margin-top: 5px;
-}
-
-#vrtx-editor-title-submit-buttons h2 {
-  margin: 0;
-  background: none;
-}
-
 html.embedded #vrtx-editor-title-submit-buttons h2 {
   padding-bottom: 5px;
+}
+
+html.embedded .vrtx-close-dialog-editor {
+  margin-top: 5px;
 }
 
 html.embedded .embedded-editor-fail #contents {
@@ -3262,7 +3348,7 @@ html.embedded #app-content #main {
 }
 
 html.embedded #app-content {
-  width: 770px;
+  width: 780px;
   margin: 0 auto;
   padding: 20px;
   position: relative;

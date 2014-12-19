@@ -1,13 +1,13 @@
 {{! STRING }}
 
-<div class="{{ classes }}">
+<div class="{{ classes }}{{#elemDivide}} divide-{{elemDivide}}{{/elemDivide}}">
   <label for="{{ elemId  }}">{{ elemTitle }}</label>
   <input class="vrtx-textfield inputfield" size="{{ elemSize }}" type="text" name="{{ inputFieldName }}" value="{{ elemVal }}"{{#elemReadOnly}} readonly="readonly"{{/elemReadOnly}}{{#elemPlaceholder}} placeholder="{{ elemPlaceholder }}"{{/elemPlaceholder}} id="{{ elemId }}" />
 </div>
 
 ### {{! HTML }}
 
-<div class="{{ classes }}">
+<div class="{{ classes }}{{#elemDivide}} divide-{{elemDivide}}{{/elemDivide}}">
   <label for="{{ elemId  }}">{{ elemTitle }}</label>
   <textarea name="{{ inputFieldName }}" id="{{ elemId }}" rows="7" cols="60" >{{ elemVal }}</textarea>
 </div>
@@ -26,7 +26,7 @@
 
 ### {{! CHECKBOX }}
 
-<div class="vrtx-checkbox">
+<div class="vrtx-checkbox{{#elemDivide}} divide-{{elemDivide}}{{/elemDivide}}">
   <input name="{{ inputFieldName }}" id="{{ elemId }}" type="checkbox" {{#elemChecked}}checked="checked"{{/elemChecked}} />
   <label for="{{ elemId }}">{{ elemTitle }}</label>
   {{#elemTooltip}}<abbr tabindex="0" class="tooltips" title="{{ elemTooltip }}"></abbr>{{/elemTooltip}} 

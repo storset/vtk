@@ -1,3 +1,4 @@
+
 /*
  * Schedule editor
  *
@@ -21,9 +22,11 @@ function courseSchedule() {
   // Data / lookup
   this.retrievedScheduleData = null;
   this.descs = {};
-  this.sessionsLookup = {};
+  this.isMedisin = false;
   this.vrtxResourcesFixedUrl = "";
+  this.sessionsLookup = {};
   this.i18n = scheduleI18n;
+  this.embeddedAdminService = "?vrtx=admin&mode=actions-listing&types=resource&actions=view,edit-title,delete&global-actions=upload";
   
   // Last edited sessions
   this.lastId = "";
@@ -68,8 +71,25 @@ function courseSchedule() {
         var fixedResources = sequence.vrtxResourcesFixed;
         if(fixedResources) {
           sequences[sequence.id] = jQuery.extend(true, [], fixedResources);
+          var newFixedResources = [];
+          for(var k = 0; k < fixedResources.length; k++) {
+            var fixedR = fixedResources[k];
+            var hasFolderUrl = false;
+            for(var key in fixedR) {
+              if(key != "folderUrl") {
+                delete fixedR[key];
+              } else {
+                hasFolderUrl = true;
+              }
+            }
+            if(hasFolderUrl) newFixedResources.push(fixedR);
+          }
+          if (newFixedResources.length > 0) {
+            sequence.vrtxResourcesFixed = newFixedResources;
+          } else {
+            delete sequence.vrtxResourcesFixed;
+          }
         }
-        delete sequence.vrtxResourcesFixed;
         sessions = sessions.concat(sequence.sessions);
       }
       
@@ -199,7 +219,6 @@ function courseSchedule() {
           if(fixedResources) {
             sequences[sequence.id] = jQuery.extend(true, [], fixedResources);
           }
-          delete sequence.vrtxResourcesFixed;
           sessions = sessions.concat(sequence.sessions);
         }
         if(!isPlenary || (!data[i+1] || data[i+1].teachingMethod.toLowerCase() !== teachingMethod)) {
@@ -282,21 +301,15 @@ function courseSchedule() {
                     prevId = sessionId;
                   }
                 }
-                if(nextId) {
-                  break;
-                }
+                if(nextId) break;
               }
               groupSessions = [];
             }
           }
         }
-        if(nextId) {
-          break;
-        }
+        if(nextId) break;
       }
-      if(nextId) {
-        break;
-      }
+      if(nextId) break;
     }
     if(foundObj) {
       foundObj.nextId = nextId;
@@ -332,7 +345,7 @@ function courseSchedule() {
                        (prevId ? "<a class='prev' href='" + window.location.protocol + "//" + window.location.host + window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + prevId + "'>" + this.i18n.prev + "</a>" : "") +
                        (nextId ? "<a class='next' href='" + window.location.protocol + "//" + window.location.host + window.location.pathname + "?vrtx=admin&mode=editor&action=edit&embed&sessionid=" + nextId + "'>" + this.i18n.next + "</a>" : "") +
                        ((prevId || nextId) ? "</div>" : ""),
-        sessionContent = vrtxEdit.htmlFacade.jsonToHtml(id, sessionId, id, session, this.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n);
+        sessionContent = vrtxEdit.htmlFacade.jsonToHtml(this.isMedisin, id, sessionId, id, session, this.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n, this.embeddedAdminService);
 
      var rawOrigTP = jQuery.extend(true, {}, session);
 
@@ -404,12 +417,14 @@ function courseSchedule() {
   this.enhanceSession = function(id, sessionId, contentElm) {
     var session = this.sessionsLookup[id][sessionId];
     if(session && !session.isEnhanced) { // If not already enhanced
+      /* Multiple fields */
       var multiples = session.multiples;
       var enhanceMultipleInputFieldsFunc = enhanceMultipleInputFields;
       for(var i = multiples.length; i--;) {
         var m = multiples[i];
         enhanceMultipleInputFieldsFunc(m.name + "-" + sessionId, m.movable, m.browsable, 50, m.json, m.readOnly);
       }
+      /* CKEditors */
       var rtEditors = session.rtEditors;
       for(i = rtEditors.length; i--;) {
         vrtxEditor.richtextEditorFacade.setup({
@@ -422,7 +437,51 @@ function courseSchedule() {
           simple: true
         });
       }
+      /* Load iframes for iframe placeholders */
+      var iframePlaceholders = contentElm.find(".admin-fixed-resources-iframe");
+      for(var i = iframePlaceholders.length; i--;) {
+        var iframePlaceholder = $(iframePlaceholders[i]);
+        var iframe = "<iframe class='admin-fixed-resources-iframe' src='" + iframePlaceholder.attr("data-src") + "' frameborder='0'></iframe>";
+        iframePlaceholder.replaceWith(iframe);
+      }
+      
       session.isEnhanced = true;
+      
+      // Accordions for session
+      var externalStaff = contentElm.find(".vrtxStaffExternal");
+      if(externalStaff.length) {
+        externalStaff.children().filter(":not(label:first-child)").wrapAll("<div />");
+        var optsExternalStaff = {
+          elem: externalStaff,
+          headerSelector: externalStaff.find("> label"),
+          onActivate: function (e, ui, accordion) {},
+          animationSpeed: 200
+        };
+        var accResources = new VrtxAccordion(optsExternalStaff);
+        accResources.create();
+        externalStaff.addClass("fast");
+      }
+      
+      var resources = contentElm.find(".vrtx-fixed-resources-semester");
+      if(resources.length) {
+        // Enhance vrtxResources for putting it inside fixed resources for semester
+        var resourcesList = contentElm.find(".vrtxResources");
+        if(resourcesList.length) {
+          resourcesList.removeClass("divide-top");
+          resourcesList.find("> label").text(this.i18n.links + " (" + this.i18n["vrtxResources-info"] + ")");
+          resources.append(resourcesList.remove()[0].outerHTML);
+        }
+        resources.children().filter(":not(label:first-child)").wrapAll("<div />");
+        var optsResources = {
+          elem: resources,
+          headerSelector: resources.find("> label"),
+          onActivate: function (e, ui, accordion) {},
+          animationSpeed: 200
+        };
+        var accResources = new VrtxAccordion(optsResources);
+        accResources.create();
+        resources.addClass("fast");
+      }
     }
   };
   this.loadingUpdate = function(msg) {
@@ -458,8 +517,27 @@ function courseSchedule() {
         for(var j = 0, seqsLen = seqs.length; j < seqsLen; j++) {
           var sequence = seqs[j];
           
-          delete sequence.vrtxResourcesFixed;
-          
+          if(sequence.vrtxResourcesFixed) {
+            var newFixedResources = [];
+            for(var k = 0; k < sequence.vrtxResourcesFixed.length; k++) {
+              var fixedR = sequence.vrtxResourcesFixed[k];
+              var hasFolderUrl = false;
+              for(var key in fixedR) {
+                if(key != "folderUrl") {
+                  delete fixedR[key];
+                } else {
+                  hasFolderUrl = true;
+                }
+              }
+              if(hasFolderUrl) newFixedResources.push(fixedR);
+            }
+            if (newFixedResources.length > 0) {
+              sequence.vrtxResourcesFixed = newFixedResources;
+            } else {
+              delete sequence.vrtxResourcesFixed;
+            }
+          }
+
           var sessions = sequence.sessions || [];
           for(var k = 0, sessLen = sessions.length; k < sessLen; k++) {
             if(!sessions[k].vrtxOrphan) {
@@ -506,7 +584,7 @@ function courseSchedule() {
     var rawPtr = sessionLookup.rawPtr;
     var descsPtr = sessionLookup.descsPtr;
 
-    sessionLookup.hasChanges = vrtxEditor.htmlFacade.htmlToJson(sessionElms, sessionId, descsPtr, rawOrig, rawOrigTP, rawPtr);
+    sessionLookup.hasChanges = vrtxEditor.htmlFacade.htmlToJson(this.isMedisin, sessionElms, sessionId, descsPtr, rawOrig, rawOrigTP, rawPtr);
   };
   this.saved = function(isSaveView) {
     for(var type in this.sessionsLookup) {
@@ -559,74 +637,112 @@ function courseSchedule() {
   contents.on("click", ".create-fixed-resources-folder", function(e) {
     var linkElm = $(this);
     var sessionId = linkElm[0].id.split("create-fixed-resources-folder-")[1];
-    var id = sessionId.split("SID")[0];
-    sessionId = sessionId.split("SID")[1];
+
+    var hasParentFolder = false;
+    
+    var splitA = sessionId.split("SID");
+    var id = splitA[0];
+    sessionId = splitA[1];
+    var splitB = sessionId.split("SUBF");
+    sessionId = splitB[0];
+    
     var session = cs.sessionsLookup[id][sessionId];
-    
-    var sessionDisciplines = session.rawOrigTP.disciplines;
-    var sessionTitle = session.rawPtr.vrtxTitle || session.rawOrigTP.title;
-    var sequenceId = session.sequenceId;
-    
-    var collectionTitle = (sessionDisciplines ? sessionDisciplines.join(", ") + " - " : "") + sessionTitle + " - " + sequenceId;
-    var collectionName = vrtxAdmin.inputUpdateEngine.substitute((sessionDisciplines ? sessionDisciplines.join("-") + "-" : "") + sessionTitle + "-" + sequenceId, false);
-    
-    var collectionBaseUrl = cs.vrtxResourcesFixedUrl;
-    if(!/\/$/.test(collectionBaseUrl)) { // Add last '/' if missing
-      collectionBaseUrl += "/";
+
+    var subfolder = splitB[1];
+    if(subfolder.indexOf("PARENTR") !== -1) {
+      var splitC = subfolder.split("PARENTR");
+      subfolder = splitC[0];
+      var collectionUrl = decodeURIComponent(splitC[1]);
+
+      hasParentFolder = true;
+    } else {
+      var sessionDisciplines = session.rawOrigTP.disciplines;
+      var sessionTitle = session.rawPtr.vrtxTitle || session.rawOrigTP.title;
+      var sequenceId = session.sequenceId;
+
+      var collectionTitle = (sessionDisciplines ? sessionDisciplines.join(", ") + " - " : "") + sessionTitle + " - " + sequenceId;
+      var collectionName = vrtxAdmin.inputUpdateEngine.substitute((sessionDisciplines ? sessionDisciplines.join("-") + "-" : "") + sessionTitle + "-" + sequenceId, false);
+
+      var collectionBaseUrl = cs.vrtxResourcesFixedUrl;
+      if(!/\/$/.test(collectionBaseUrl)) { // Add last '/' if missing
+        collectionBaseUrl += "/";
+      }
+      var collectionUrl = collectionBaseUrl + collectionName;
     }
-    var collectionUrl = collectionBaseUrl + collectionName;
 
     // Create fixed resources folder
+    var createFixedResourceSubfolder = function(form, csrf) {
+      var dataString = "uri=" + encodeURIComponent(collectionUrl + "/" + subfolder) +
+                       "&propertyNamespace%5B%5D=" +
+                       "&propertyName%5B%5D=userTitle" +
+                       "&propertyValue%5B%5D=" + encodeURIComponent(cs.i18n[subfolder] || subfolder) +
+                       "&csrf-prevention-token=" + csrf;
+      vrtxAdmin.serverFacade.postHtml(form.attr("action"), dataString, {
+        success: function (results, status, resp) {
+          linkElm.hide();
+          linkElm.next().hide();
+          $("<iframe class='admin-fixed-resources-iframe' src='" + collectionUrl + "/" + subfolder + cs.embeddedAdminService + "&upload=true' frameborder='0'></iframe>").insertAfter(linkElm);
+        },
+        error: function (xhr, textStatus) {
+          if(xhr.status === 500) { // 500 means created but has cached stuff
+            $(".errormessage.message").remove();
+            linkElm.hide();
+            linkElm.next().hide();
+            $("<iframe class='admin-fixed-resources-iframe' src='" + collectionUrl + "/" + subfolder + cs.embeddedAdminService + "&upload=true' frameborder='0'></iframe>").insertAfter(linkElm);
+          }
+        }
+      });
+    };
+    
+    // GET create form
     vrtxAdmin.serverFacade.getHtml(baseUrl + "?vrtx=admin&service=create-collection-with-properties", {
       success: function (results, status, resp) {
         var form = $($.parseHTML(results)).find("#create-collection-form");
         var csrf = form.find("input[name='csrf-prevention-token']").val();
-        var dataString = "uri=" + encodeURIComponent(collectionUrl) +
-                         "&type=fixed-resources-collection" +
-                         "&propertyNamespace%5B%5D=" +
-                         "&propertyName%5B%5D=userTitle" +
-                         "&propertyValue%5B%5D=" + encodeURIComponent(collectionTitle) +
-                         "&propertyNamespace%5B%5D=" + encodeURIComponent("http://www.uio.no/resource-types/fixed-resources-collection") +
-                         "&propertyName%5B%5D=fixed-resources-codes" +
-                         "&propertyValue%5B%5D=" + encodeURIComponent(sequenceId);
-        // Disciplines if exists
-        if(sessionDisciplines) {
-          for(var i = 0, len = sessionDisciplines.length; i < len; i++) {
-            dataString += "&propertyNamespace%5B%5D=" +
-                          "&propertyName%5B%5D=tags" +
-                          "&propertyValue%5B%5D=" + encodeURIComponent(sessionDisciplines[i]);
-          }
-        }
-        // Hide folder from navigation
-        dataString += "&propertyNamespace%5B%5D=" + encodeURIComponent("http://www.uio.no/navigation") +
-                      "&propertyName%5B%5D=hidden" +
-                      "&propertyValue%5B%5D=true";
-        dataString += "&csrf-prevention-token=" + csrf;
-        vrtxAdmin.serverFacade.postHtml(form.attr("action"), dataString, {
-          success: function (results, status, resp) {
-            linkElm.hide();
-            $("<a class='vrtx-button admin-fixed-resources-folder' href='" + collectionUrl + "?vrtx=admin&displaymsg=yes'>" + cs.i18n["vrtxResourcesFixedUploadAdminFolder"] + "</a>").insertAfter(linkElm);
-            var fixedResourcesWindow = openPopupScrollable(collectionUrl + "?vrtx=admin&displaymsg=yes", 1040, 700, "adminFixedResources");
-          },
-          error: function (xhr, textStatus, errMsg) {
-            if(xhr.status === 500) { // XXX: assumption that already created, as it can take time before folder created is coming through
-              linkElm.hide();
-              $("<a class='vrtx-button admin-fixed-resources-folder' href='" + collectionUrl + "?vrtx=admin&displaymsg=yes'>" + cs.i18n["vrtxResourcesFixedUploadAdminFolder"] + "</a>").insertAfter(linkElm);
+        
+        if(hasParentFolder) {
+          createFixedResourceSubfolder(form, csrf);
+        } else {
+          vrtxAdmin.serverFacade.head(collectionUrl, {
+            success: function (results, status, resp) { // Top folder exists: CREATE subfolder
+              createFixedResourceSubfolder(form, csrf);
+            },
+            error: function (xhr, textStatus, errMsg) { // Top folder not exists: CREATE folder and then subfolder
+              if(xhr.status == 404) {
+                var dataString = "uri=" + encodeURIComponent(collectionUrl) +
+                                 "&type=fixed-resources-collection" +
+                                 "&propertyNamespace%5B%5D=" +
+                                 "&propertyName%5B%5D=userTitle" +
+                                 "&propertyValue%5B%5D=" + encodeURIComponent(collectionTitle) +
+                                 "&propertyNamespace%5B%5D=" + encodeURIComponent("http://www.uio.no/resource-types/fixed-resources-collection") +
+                                 "&propertyName%5B%5D=fixed-resources-codes" +
+                                 "&propertyValue%5B%5D=" + encodeURIComponent(sequenceId);
+                // Disciplines if exists
+                if(sessionDisciplines) {
+                  for(var i = 0, len = sessionDisciplines.length; i < len; i++) {
+                    dataString += "&propertyNamespace%5B%5D=" +
+                                  "&propertyName%5B%5D=tags" +
+                                  "&propertyValue%5B%5D=" + encodeURIComponent(sessionDisciplines[i]);
+                  }
+                }
+                // Hide folder from navigation
+                dataString += "&propertyNamespace%5B%5D=" + encodeURIComponent("http://www.uio.no/navigation") +
+                              "&propertyName%5B%5D=hidden" +
+                              "&propertyValue%5B%5D=true";
+                dataString += "&csrf-prevention-token=" + csrf;
+                vrtxAdmin.serverFacade.postHtml(form.attr("action"), dataString, {
+                  success: function (results, status, resp) {
+                    createFixedResourceSubfolder(form, csrf);
+                  }
+                });
+              }
             }
-            $("body").scrollTo(0, 200, { easing: 'swing', queue: true, axis: 'y' });
-          }
-        });
+          });
+        }
       }
     });
-    e.preventDefault();
     e.stopPropagation();
-  });
-  
-  // Open fixed resources
-  contents.on("click", ".admin-fixed-resources-folder", function(e) {
-    var fixedResourcesWindow = openPopupScrollable(this.href, 1040, 700, "adminFixedResources");
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault();    
   });
   
   // Status change (refactor with the one below; almost identical)
@@ -665,13 +781,17 @@ function courseSchedule() {
       editorProperties.prepend("<p>" + csRef.i18n.noData + "</p>");
       return;
     }
-    
     // Remove - TODO: don't generate
     $(".vrtx-json").remove();
-    
+
+    // Is it a medisin course
+    csRef.isMedisin = typeof csRef.retrievedScheduleData.vrtxResourcesFixedUrl === "string";
     csRef.vrtxResourcesFixedUrl = csRef.retrievedScheduleData.vrtxResourcesFixedUrl;
     delete csRef.retrievedScheduleData.vrtxResourcesFixedUrl;
-
+      
+    /*
+     * Edit single session
+     */
     if(onlySessionId) {
       onlySessionId = decodeURIComponent(onlySessionId);
       var sessionOnly = csRef.getSessionOnlyHtml(onlySessionId);
@@ -682,23 +802,20 @@ function courseSchedule() {
       document.title = csRef.i18n.editOnlySessionTitle;
       
       var editorSubmitButtons = vrtxEditor.editorForm.find(".submitButtons");
-      
+
       if(sessionOnly) {
         editorProperties.prepend("<h4 class='property-label'>" + sessionOnly.title + "</h4>" + html);
         csRef.enhanceSession("single", "one", editorProperties);
         var newButtonsHtml = "<input class='vrtx-button vrtx-embedded-button' id='vrtx-embedded-save-view-button' type='submit' value='" + csRef.i18n.saveView + "' />" +
                              "<input class='vrtx-focus-button vrtx-embedded-button' id='vrtx-embedded-save-button' type='submit' value='" + csRef.i18n.save + "' />" +
                              "<input class='vrtx-button vrtx-embedded-button' id='vrtx-embedded-cancel-button' type='submit' value='" + csRef.i18n.cancel + "' />";
-
-        /* Save and unlock */
-        editorSubmitButtons.on("click", "#vrtx-embedded-save-view-button", function(e) {
+                             
+        editorSubmitButtons.on("click", "#vrtx-embedded-save-view-button", function(e) { /* Save and view shortcut */
           editorSubmitButtons.find("#saveAndViewButton").trigger("click");
           e.stopPropagation();
           e.preventDefault();
         });
-        
-        /* Save */
-        editorSubmitButtons.on("click", "#vrtx-embedded-save-button", function(e) {
+        editorSubmitButtons.on("click", "#vrtx-embedded-save-button", function(e) { /* Save shortcut */
           editorSubmitButtons.find("#updateAction").trigger("click");
           e.stopPropagation();
           e.preventDefault();
@@ -707,12 +824,10 @@ function courseSchedule() {
         editorProperties.prepend(html);
         var newButtonsHtml = "<input class='vrtx-button vrtx-embedded-button' id='vrtx-embedded-cancel-button' type='submit' value='Avbryt' />";
       }
-      
       editorSubmitButtons.prepend(newButtonsHtml);
       contents.find("#vrtx-editor-title-submit-buttons").show();
-
-      /* Cancel is unlock */
-      editorSubmitButtons.on("click", "#vrtx-embedded-cancel-button", function(e) {
+      
+      editorSubmitButtons.on("click", "#vrtx-embedded-cancel-button", function(e) { /* Cancel and unlock to view */
         var form = $("form[name='unlockForm']");
         var url = form.attr("action");
         var dataString = form.serialize();
@@ -724,13 +839,15 @@ function courseSchedule() {
         e.stopPropagation();
         e.preventDefault();
       });
+      
+    /*
+     * Edit all sessions
+     */
     } else {
       var html = "<div class='accordion-title'>" + csRef.i18n.titles.plenary + "</div>" +
                  csRef.getActivitiesForTypeHtml("plenary", true) +
                  "<div class='accordion-title'>" + csRef.i18n.titles.group + "</div>" +
                  csRef.getActivitiesForTypeHtml("group", false);
-      
-      // Add HTML to DOM
       editorProperties.prepend("<div class='vrtx-grouped'>" + html + "</div>"); 
       setupFullEditorAccordions(csRef, editorProperties);
     }

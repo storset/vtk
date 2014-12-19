@@ -42,7 +42,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -258,9 +257,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new IllegalArgumentException("No such revision: " + revision.getID());
         }
 
+        // Permissions on WORKING_COPY are the same as on the 
+        // resource itself. Otherwise, authorize for the given revision:
         if (revision.getType() != Revision.Type.WORKING_COPY) {
             if (!this.authorizationManager.authorize(principal, revision.getAcl(), Privilege.READ)) {
-                throw new AuthorizationException("Principal " + principal + " not authorized by revision ACL for privilege READ");
+                throw new AuthorizationException(
+                        "Principal " + principal + " not authorized by revision ACL for privilege READ");
             }
         }
 
@@ -1284,7 +1286,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         Type type = existing.getType();
         Date timestamp = new Date();
         String checksum;
-        Integer changeAmount;
 
         File tempFile = null;
         try {
@@ -1293,14 +1294,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             OutputStream out = new FileOutputStream(tempFile);
             StreamUtil.pipe(wrapper, out, FILE_COPY_BUF_SIZE, true);
             checksum = wrapper.checksum();
-            changeAmount = Revisions.changeAmount(new FileInputStream(tempFile),
-                    this.contentStore.getInputStream(r.getURI()));
 
             stream = new FileInputStream(tempFile);
 
             Revision.Builder builder = Revision.newBuilder();
-
-            Revision rev = builder.id(revisionId).acl(acl).changeAmount(changeAmount).checksum(checksum).name(name)
+            Revision rev = builder.id(revisionId).acl(acl).checksum(checksum).name(name)
                     .type(type).timestamp(timestamp).uid(uid).build();
             this.revisionStore.store(r, rev, stream);
 
@@ -1566,20 +1564,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             name = "1";
         }
         InputStream content = this.contentStore.getInputStream(resource.getURI());
-        InputStream prev = null;
-
-        if (Revision.Type.WORKING_COPY.name().equals(name)) {
-            prev = this.contentStore.getInputStream(resource.getURI());
-        } else {
-            List<Revision> list = this.revisionStore.list(resource);
-            if (list.size() > 0) {
-                Revision r = list.get(0);
-                prev = this.revisionStore.getContent(resource, r);
-            }
-        }
 
         long revisionId = this.revisionStore.newRevisionID();
-        Integer changeAmount = null;
         String uid = resource.getModifiedBy().getQualifiedName();
         String checksum;
         Date timestamp = resource.getLastModified();
@@ -1593,14 +1579,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             StreamUtil.pipe(wrapper, out, FILE_COPY_BUF_SIZE, true);
             checksum = wrapper.checksum();
 
-            if (prev != null && tempFile != null) {
-                changeAmount = Revisions.changeAmount(prev, new FileInputStream(tempFile));
-
-            }
             content = new FileInputStream(tempFile);
             Revision.Builder builder = Revision.newBuilder();
 
-            Revision revision = builder.id(revisionId).acl(acl).changeAmount(changeAmount).checksum(checksum)
+            Revision revision = builder.id(revisionId).acl(acl).checksum(checksum)
                     .name(name).type(type).timestamp(timestamp).uid(uid).build();
             this.revisionStore.create(resource, revision, content);
             return revision;
@@ -1637,47 +1619,17 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         Revision found = null;
-        Revision older = null;
-        Revision newer = null;
-        Iterator<Revision> it = this.revisionStore.list(resource).iterator();
-        while (it.hasNext()) {
-            Revision rev = it.next();
-            if (revision.getID() == rev.getID()) {
+        for (Revision rev: revisionStore.list(resource)) {
+            if (rev.getID() == revision.getID()) {
                 found = rev;
-                if (it.hasNext()) {
-                    Revision next = it.next();
-                    if (next.getType() != Type.WORKING_COPY) {
-                        older = next;
-                    }
-                }
                 break;
             }
-            if (rev.getType() != Type.WORKING_COPY) {
-                newer = rev;
-            }
         }
-
         if (found == null) {
             throw new IllegalOperationException("Revision not found: " + revision.getID());
         }
 
         this.revisionStore.delete(resource, revision);
-
-        if (newer != null && older != null) {
-            Revision.Builder builder = newer.changeBuilder();
-            InputStream newerStream = this.revisionStore.getContent(resource, newer);
-            InputStream olderStream = this.revisionStore.getContent(resource, older);
-            Integer changeAmount = Revisions.changeAmount(newerStream, olderStream);
-            builder.changeAmount(changeAmount);
-            newer = builder.build();
-            this.revisionStore.store(resource, newer, this.revisionStore.getContent(resource, newer));
-
-        } else if (newer != null) {
-            Revision.Builder builder = newer.changeBuilder();
-            builder.changeAmount(null);
-            newer = builder.build();
-            this.revisionStore.store(resource, newer, this.revisionStore.getContent(resource, newer));
-        }
     }
 
     @Transactional

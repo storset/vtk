@@ -192,6 +192,7 @@ public class StructuredResourceEditor  {
         }
         InputStream stream = null;
         if (workingCopy != null) {
+            resource = repository.retrieve(token, uri, false, workingCopy);
             stream = repository.getInputStream(token, uri, true, workingCopy);
         } else {
             stream = repository.getInputStream(token, uri, true);

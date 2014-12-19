@@ -647,7 +647,7 @@ function courseSchedule() {
     sessionId = splitB[0];
     
     var session = cs.sessionsLookup[id][sessionId];
-    
+
     var subfolder = splitB[1];
     if(subfolder.indexOf("PARENTR") !== -1) {
       var splitC = subfolder.split("PARENTR");
@@ -659,10 +659,9 @@ function courseSchedule() {
       var sessionDisciplines = session.rawOrigTP.disciplines;
       var sessionTitle = session.rawPtr.vrtxTitle || session.rawOrigTP.title;
       var sequenceId = session.sequenceId;
-    
-      /* Generate collection title and name based on disciplines, title and sequence id */
+
       var collectionTitle = (sessionDisciplines ? sessionDisciplines.join(", ") + " - " : "") + sessionTitle + " - " + sequenceId;
-      var collectionName = replaceInvalidChar((sessionDisciplines ? sessionDisciplines.join("-") + "-" : "") + sessionTitle + "-" + sequenceId, fileTitleSubstitutions, false);
+      var collectionName = vrtxAdmin.inputUpdateEngine.substitute((sessionDisciplines ? sessionDisciplines.join("-") + "-" : "") + sessionTitle + "-" + sequenceId, false);
 
       var collectionBaseUrl = cs.vrtxResourcesFixedUrl;
       if(!/\/$/.test(collectionBaseUrl)) { // Add last '/' if missing

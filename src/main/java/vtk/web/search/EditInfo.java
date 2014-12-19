@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2014, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,47 +28,42 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package vtk.repository.content;
+package vtk.web.search;
 
-import java.awt.Dimension;
-import java.awt.image.BufferedImage;
-import java.io.InputStream;
+import vtk.security.Principal;
 
-import javax.imageio.ImageIO;
-import vtk.graphics.ImageUtil;
-
-public class ImageContentFactory implements ContentFactory {
-
-    @Override
-    public Class<?>[] getRepresentationClasses() {
-        String prop = System.getProperty("java.awt.headless");
-        try {
-            System.setProperty("java.awt.headless", "true");
-            return new Class[] {BufferedImage.class, Dimension.class};
-        } finally {
-            if (prop != null) {
-                System.setProperty("java.awt.headless", prop);
-            }
-        }
+public class EditInfo {
+    private boolean isEditAuthorized;
+    private boolean isEditLocked;
+    private Principal lockedBy;
+    
+    public EditInfo(boolean isEditAuthorized, boolean isEditLocked, Principal lockedBy) {
+        this.isEditAuthorized = isEditAuthorized;
+        this.isEditLocked = isEditLocked;
+        this.lockedBy = lockedBy;
+    }
+    
+    public boolean isEditAuthorized() {
+        return isEditAuthorized;
+    }
+    
+    public boolean isEditLocked() {
+        return isEditLocked;
+    }
+    
+    public Principal getLockedBy() {
+        return lockedBy;
     }
 
-    @Override
-    public Object getContentRepresentation(Class clazz,  InputStream is)
-        throws Exception {
-        
-        try {
-            if (clazz == Dimension.class) {
-                return ImageUtil.getImageStreamDimension(is);
-            } else if (clazz == BufferedImage.class) {
-                return ImageIO.read(is);                
-            } else {
-                throw new UnsupportedContentRepresentation("Unsupported content representation: " + clazz);
+    public String getLockedByNameHref() {
+        if (lockedBy != null) {
+            String lockedByName = lockedBy.getName();
+            String url = lockedBy.getURL();
+            if (url != null) {
+                lockedByName = "<a href=\"" + lockedBy.getURL() + "\">" + lockedBy.getDescription() + "</a>";
             }
-
-        } finally {
-            // ImageIO.read documentation states that it does not close the input stream.
-            is.close();
+            return lockedByName;
         }
+        return "";
     }
-
 }

@@ -95,11 +95,9 @@ var VrtxAccordion = dejavu.Class.declare({
   },
   __findMultiContentMatch: function(elm) {
     var containers = elm.find(this.$static.headerMultipleCheckClass);
-    var i = containers.length;
-    for(;i--;) {
+    for(var i = containers.length; i--;) {
       var inputs = $(containers[i]).find("input[type='text'], textarea");
-      var j = inputs.length;
-      for(;j--;) {
+      for(var j = inputs.length; j--;) {
         if("" === this.__getFieldString(inputs[j])) { // All need to have content for match
           return false;
         }
@@ -109,8 +107,7 @@ var VrtxAccordion = dejavu.Class.declare({
   },
   __findSingleContentMatch: function(elm) {
     var inputs = elm.find(this.$static.headerSingleCheckClass + " input[type='text'], " + this.$static.headerSingleCheckClass + " textarea");
-    var i = inputs.length;
-    for(;i--;) {
+    for(var i = inputs.length; i--;) {
       if("" !== this.__getFieldString(inputs[i])) { // One need to have content for match
         return true;
       }

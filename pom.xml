@@ -568,22 +568,22 @@
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-core</artifactId>
-      <version>4.10.1</version>
+      <version>4.10.2</version>
     </dependency>
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-analyzers-common</artifactId>
-      <version>4.10.1</version>
+      <version>4.10.2</version>
     </dependency>
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-analyzers-icu</artifactId>
-      <version>4.10.1</version>
+      <version>4.10.2</version>
     </dependency>
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-queries</artifactId>
-      <version>4.10.1</version>
+      <version>4.10.2</version>
     </dependency>
     <dependency>
       <groupId>org.freemarker</groupId>
@@ -670,11 +670,6 @@
       <artifactId>commons-collections</artifactId>
       <version>3.2.1</version>
       <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.googlecode.java-diff-utils</groupId>
-      <artifactId>diffutils</artifactId>
-      <version>1.2.1</version>
     </dependency>
     <dependency>
       <groupId>owasp-java-html-sanitizer</groupId>

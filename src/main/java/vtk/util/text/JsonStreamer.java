@@ -32,19 +32,20 @@ package vtk.util.text;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 /**
+ * TODO support serialization of arrays of objects and primitives.
+ * 
  * Serialize generic data structures to JSON with a stream-friendly API.
  * 
  * The stream generator is stateful with regard to validation and should prevent client
  * code from creating invalid JSON. It handles comma-separators, value
  * serializing, proper closing of JSON structure and optional pretty printing.
- *
+ * 
  * <p>
  * Client code invokes methods to add data forming a logical JSON structure. The
  * serialized data is immediately written to a stream writer instance, but state

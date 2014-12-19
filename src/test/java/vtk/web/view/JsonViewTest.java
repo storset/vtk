@@ -96,7 +96,7 @@ public class JsonViewTest {
     }
     
     @Test
-    @Ignore
+    @Ignore // Disabled until JsonStreamer supports Java arrays
     public void renderArray() throws Exception {
         int[] numbers = new int[3];
         numbers[0] = 2;

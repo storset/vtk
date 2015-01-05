@@ -50,11 +50,8 @@ function courseSchedule() {
     // Store sessions HTML and multiple descriptions in lookup object
     var vrtxEdit = vrtxEditor,
         html = "",
-        htmlArr = [],
-        sessions = [],
-        sequences = {}, // For fixed resources
-        sessionsHtml = "",
-        self = this;
+        htmlArr = [], sessions = [], sequences = {}, // For fixed resources
+        sessionsHtml = "";
     for(var i = 0; i < dataLen; i++) {
       var dt = data[i],
           teachingMethod = dt.teachingMethod.toLowerCase(),
@@ -71,25 +68,8 @@ function courseSchedule() {
         var fixedResources = sequence.vrtxResourcesFixed;
         if(fixedResources) {
           sequences[sequence.id] = jQuery.extend(true, [], fixedResources);
-          var newFixedResources = [];
-          for(var k = 0; k < fixedResources.length; k++) {
-            var fixedR = fixedResources[k];
-            var hasFolderUrl = false;
-            for(var key in fixedR) {
-              if(key != "folderUrl") {
-                delete fixedR[key];
-              } else {
-                hasFolderUrl = true;
-              }
-            }
-            if(hasFolderUrl) newFixedResources.push(fixedR);
-          }
-          if (newFixedResources.length > 0) {
-            sequence.vrtxResourcesFixed = newFixedResources;
-          } else {
-            delete sequence.vrtxResourcesFixed;
-          }
-        }
+          this.deleteUnwantedFixedResourcesProps(sequence);
+        }   
         sessions = sessions.concat(sequence.sessions);
       }
       
@@ -99,7 +79,7 @@ function courseSchedule() {
         for(j = 0, len = sessions.length; j < len; j++) {
           var session = sessions[j];
           
-          var dateTime = self.getDateTime(session.dtStart, session.dtEnd);
+          var dateTime = this.getDateTime(session.dtStart, session.dtEnd);
           var start = dateTime.start;
           var end = dateTime.end;
           var startEndString = start.year + "" + start.month + "" + start.date + "" + start.hh + "" + start.mm + "" + end.hh + "" + end.mm;
@@ -502,7 +482,7 @@ function courseSchedule() {
     }
   };
   /*
-   * DELETE vrtxEditableDescription, vrtxResourceFixed and !(vrtx-props + id) from sessions
+   * DELETE vrtxEditableDescription and !(vrtx-props + id + dtStart + dtEnd) from sessions
    */
   this.deleteUnwantedProps = function() {
     for(var type in this.retrievedScheduleData) {
@@ -518,26 +498,9 @@ function courseSchedule() {
           var sequence = seqs[j];
           
           if(sequence.vrtxResourcesFixed) {
-            var newFixedResources = [];
-            for(var k = 0; k < sequence.vrtxResourcesFixed.length; k++) {
-              var fixedR = sequence.vrtxResourcesFixed[k];
-              var hasFolderUrl = false;
-              for(var key in fixedR) {
-                if(key != "folderUrl") {
-                  delete fixedR[key];
-                } else {
-                  hasFolderUrl = true;
-                }
-              }
-              if(hasFolderUrl) newFixedResources.push(fixedR);
-            }
-            if (newFixedResources.length > 0) {
-              sequence.vrtxResourcesFixed = newFixedResources;
-            } else {
-              delete sequence.vrtxResourcesFixed;
-            }
+            this.deleteUnwantedFixedResourcesProps(sequence);
           }
-
+          
           var sessions = sequence.sessions || [];
           for(var k = 0, sessLen = sessions.length; k < sessLen; k++) {
             if(!sessions[k].vrtxOrphan) {
@@ -549,8 +512,31 @@ function courseSchedule() {
       delete this.retrievedScheduleData[type].vrtxEditableDescription;
     }
   };
+ /*
+   * DELETE !folderUrl from objects in vrtxResourcesFixed (if no objects have folderUrl => delete whole vrtxResourcesFixed)
+   */
+  this.deleteUnwantedFixedResourcesProps = function(sequence) {
+    var newFixedResources = [];
+    for(var i = 0; i < sequence.vrtxResourcesFixed.length; i++) {
+      var fixedResources = sequence.vrtxResourcesFixed[i];
+      var hasFolderUrl = false;
+      for(var key in fixedResources) {
+        if(key != "folderUrl") {
+          delete fixedResources[key];
+        } else {
+          hasFolderUrl = true;
+        }
+      }
+      if(hasFolderUrl) newFixedResources.push(fixedResources);
+    }
+    if (newFixedResources.length > 0) {
+      sequence.vrtxResourcesFixed = newFixedResources;
+    } else {
+      delete sequence.vrtxResourcesFixed;
+    }
+  };
   /*
-   * DELETE !(vrtx-props + id + dtStart + dtEnd) from session
+   * DELETE !(vrtx-props + id + dtStart + dtEnd) from a session
    */
   this.deleteUnwantedSessionProps = function(session) {
     for(var prop in session) {

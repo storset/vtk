@@ -621,7 +621,7 @@ function courseSchedule() {
   
   // Setup interaction handlers
   contents.on("click", ".create-fixed-resources-folder", function(e) { // Create Fixed resource folders
-    createFixedResourcesFolders(cs, this);
+    createFixedResourcesFolders(cs, this, baseUrl);
     e.stopPropagation();
     e.preventDefault();    
   });
@@ -730,7 +730,7 @@ function courseSchedule() {
 /*
  * Creates fixed resources folder (if not exists) and subfolder (fixed or semester)
  */
-function createFixedResourcesFolders(cs, elm) {
+function createFixedResourcesFolders(cs, elm, baseUrl) {
   var linkElm = $(elm);
   var sessionId = linkElm[0].id.split("create-fixed-resources-folder-")[1];
 

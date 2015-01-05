@@ -544,11 +544,15 @@ function ajaxUploadPerform(opts/*, size*/) {
           easeIn: opts.transitionEasingSlideDown,
           easeOut: opts.transitionEasingSlideUp,
           afterOut: function(animation) {
-            for (var i = opts.updateSelectors.length; i--;) {
-              var outer = vrtxAdm.outerHTML(result, opts.updateSelectors[i]);
-              vrtxAdm.cachedBody.find(opts.updateSelectors[i]).replaceWith(outer);
+            if(opts.updateSelectors) {
+              for (var i = opts.updateSelectors.length; i--;) {
+               var outer = vrtxAdm.outerHTML(result, opts.updateSelectors[i]);
+                vrtxAdm.cachedBody.find(opts.updateSelectors[i]).replaceWith(outer);
+              }
             }
-            vrtxAdm.updateCollectionListingInteraction();
+            if(typeof vrtxAdm.updateCollectionListingInteraction === "function") {
+              vrtxAdm.updateCollectionListingInteraction();
+            }
             if (opts.funcComplete) {
               opts.funcComplete();
             }

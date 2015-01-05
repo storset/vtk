@@ -785,6 +785,9 @@ function createFixedResourcesFolders(cs, elm, baseUrl) {
           linkElm.hide();
           linkElm.next().hide();
           $("<iframe class='admin-fixed-resources-iframe' src='" + collectionUrl + "/" + subfolder + cs.embeddedAdminService + "&upload=true' frameborder='0'></iframe>").insertAfter(linkElm);
+        } else {
+          var msg = vrtxAdmin.serverFacade.error(xhr, textStatus, true);
+          vrtxAdmin.displayErrorMsg(msg);
         }
       }
     });
@@ -831,6 +834,9 @@ function createFixedResourcesFolders(cs, elm, baseUrl) {
                   createFixedResourceSubfolder(form, csrf);
                 }
               });
+            } else {
+              var msg = vrtxAdmin.serverFacade.error(xhr, textStatus, true);
+              vrtxAdmin.displayErrorMsg(msg);
             }
           }
         });

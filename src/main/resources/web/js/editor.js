@@ -1757,7 +1757,6 @@ VrtxEditor.prototype.htmlFacade = {
         }
       }
       switch(desc.type) {
-        // Flatten data from objects to string
         case "json":
           for(var i = 0, descPropsLen = descProps.length; i < descPropsLen; i++) {
             descProps[i].title = i18n[name + "-" + descProps[i].name];
@@ -1923,13 +1922,13 @@ VrtxEditor.prototype.htmlFacade = {
         // Is "vrtxStaff" and has "staff" set to []
         if(name === "vrtxStaff" && rawOrigTP[name.split("vrtx")[1].toLowerCase()]) {
 	      if(rawPtr[name] == undefined || rawPtr[name].length > 0) {
-            vrtxAdmin.log({msg: "DEL EMPTY " + name + (typeof val === "string" ? " " + val : "")});
+            vrtxAdmin.log({msg: "DEL EMPTY " + name});
             rawPtr[name] = [];
             hasChanges = true;
 	      }
         } else { // Otherwise Delete
 	      if(rawOrig[name] != undefined) { // If exists
-            vrtxAdmin.log({msg: "DEL " + name + (typeof val === "string" ? " " + val : "")});
+            vrtxAdmin.log({msg: "DEL " + name});
             delete rawPtr[name];
             hasChanges = true;
 	      }

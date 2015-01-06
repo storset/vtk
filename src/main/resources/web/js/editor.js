@@ -1757,6 +1757,7 @@ VrtxEditor.prototype.htmlFacade = {
         }
       }
       switch(desc.type) {
+        // Flatten data from objects to string
         case "json":
           for(var i = 0, descPropsLen = descProps.length; i < descPropsLen; i++) {
             descProps[i].title = i18n[name + "-" + descProps[i].name];

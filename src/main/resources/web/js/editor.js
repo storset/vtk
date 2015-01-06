@@ -1725,10 +1725,7 @@ function scrollToElm(movedElm) {
  */
 VrtxEditor.prototype.htmlFacade = {
   /* 
-   * Turn a block of JSON into HTML (Only working for Schedule per. 14.08.2014)
-   * 
-   * TODO: undefined checks should probably be with typeof against the string
-   * 
+   * Turn a block of JSON into HTML (only working for Schedule)
    */
   jsonToHtml: function(isMedisin, id, sessionId, idForLookup, session, fixedResourcesUrl, fixedResources, descs, i18n, embeddedAdminService) {
     var html = "";
@@ -1817,21 +1814,6 @@ VrtxEditor.prototype.htmlFacade = {
               }
               html += "</div>";
             }
-            /* Old
-            html += "<div class='vrtx-simple-html'><label>" + i18n[name] + "<abbr tabindex='0' class='tooltips label-tooltips' title='" + i18n.vrtxResourcesFixedInfo + "'></abbr></label>";
-            if(!val) { // Create fixed resources folder
-              html += "<a class='vrtx-button create-fixed-resources-folder' id='create-fixed-resources-folder-" + idForLookup + "SID" + sessionId + "' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a>";
-            } else { // Admin fixed resources folder
-              if(val.length == undefined) { // Object
-                html += "<iframe class='admin-fixed-resources-iframe' src='" + val.folderUrl + embeddedAdminService + "'></iframe>";
-              } else { // Array
-                for(i = 0, len = val.length; i < len; i++) {
-                  html += "<iframe class='admin-fixed-resources-iframe' src='" + val[i].folderUrl + embeddedAdminService + "'></iframe>";
-                }
-              }
-            }
-            html += "</div>";
-            */
           }
           break;
         case "html":
@@ -1865,7 +1847,7 @@ VrtxEditor.prototype.htmlFacade = {
     return { html: html, multiples: multiples, rtEditors: rtEditors };
   },
  /* 
-  * Turn a block of HTML/DOM into JSON (Only working for Schedule per. 14.08.2014)
+  * Turn a block of HTML/DOM into JSON (only working for Schedule)
   */
   htmlToJson: function (isMedisin, sessionElms, sessionId, descs, rawOrig, rawOrigTP, rawPtr) {
     var vrtxEdit = vrtxEditor;

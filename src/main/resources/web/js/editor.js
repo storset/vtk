@@ -1857,7 +1857,9 @@ VrtxEditor.prototype.htmlFacade = {
     for(var name in descs) {
       var desc = descs[name],
           val = "";
-      if(desc.type === "json-fixed" || (desc.notMedisin && isMedisin) || (desc.onlyMedisin && !isMedisin)) {
+      // Skip fixed resources and branch: Medisin | Not Medisin
+      if(desc.type === "json-fixed" || (desc.notMedisin && isMedisin) 
+                                    || (desc.onlyMedisin && !isMedisin)) {
         continue;
       } else if(desc.type === "html") {
         // XXX: support multiple CK-fields starting with same name
@@ -1874,6 +1876,7 @@ VrtxEditor.prototype.htmlFacade = {
       } else if(desc.type === "html") {
         val = vrtxEdit.richtextEditorFacade.getInstanceValue(elm.attr("name"));
       } else {
+        // Reconstruct data from flattened string to objects
         val = elm.val(); // To string (string)
         if(desc.multiple && val.length) { // To array (multiple)
           val = val.split("$$$");

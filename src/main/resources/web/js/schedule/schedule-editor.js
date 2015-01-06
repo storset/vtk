@@ -766,12 +766,10 @@ function createFixedResourcesFolders(cs, elm, baseUrl) {
     var collectionUrl = collectionBaseUrl + collectionName;
   }
 
-  // Create fixed resources folder
+  // POST Create fixed resources subfolder
   var createFixedResourceSubfolder = function(form, csrf) {
     var dataString = "uri=" + encodeURIComponent(collectionUrl + "/" + subfolder) +
-                     "&propertyNamespace%5B%5D=" +
-                     "&propertyName%5B%5D=userTitle" +
-                     "&propertyValue%5B%5D=" + encodeURIComponent(cs.i18n[subfolder] || subfolder) +
+                     addCreateProperty("", "userTitle", (cs.i18n[subfolder] || subfolder)) +
                      "&csrf-prevention-token=" + csrf;
     vrtxAdmin.serverFacade.postHtml(form.attr("action"), dataString, {
       success: function (results, status, resp) {
@@ -792,6 +790,28 @@ function createFixedResourcesFolders(cs, elm, baseUrl) {
       }
     });
   };
+  
+  // POST Create fixed resources folder
+  var createFixedResourceFolder = function(form, csrf) {
+    var dataString = "uri=" + encodeURIComponent(collectionUrl) +
+                     "&type=fixed-resources-collection" +
+                      addCreateProperty("http://www.uio.no/navigation", "userTitle", collectionTitle) +
+                      addCreateProperty("http://www.uio.no/resource-types/fixed-resources-collection", "fixed-resources-codes", sequenceId);
+    // Disciplines if exists
+    if(sessionDisciplines) {
+      for(var i = 0, len = sessionDisciplines.length; i < len; i++) {
+        dataString += addCreateProperty("", "tags", sessionDisciplines[i]);
+      }
+    }
+    // Hide folder from navigation
+    dataString += addCreateProperty("http://www.uio.no/navigation", "hidden", "true") +
+                  "&csrf-prevention-token=" + csrf;
+    vrtxAdmin.serverFacade.postHtml(form.attr("action"), dataString, {
+      success: function (results, status, resp) {
+        createFixedResourceSubfolder(form, csrf);
+      }
+    });
+  };
     
   // GET create form
   vrtxAdmin.serverFacade.getHtml(baseUrl + "?vrtx=admin&service=create-collection-with-properties", {
@@ -808,32 +828,7 @@ function createFixedResourcesFolders(cs, elm, baseUrl) {
           },
           error: function (xhr, textStatus, errMsg) { // Top folder not exists: CREATE folder and then subfolder
             if(xhr.status == 404) {
-              var dataString = "uri=" + encodeURIComponent(collectionUrl) +
-                               "&type=fixed-resources-collection" +
-                               "&propertyNamespace%5B%5D=" +
-                               "&propertyName%5B%5D=userTitle" +
-                               "&propertyValue%5B%5D=" + encodeURIComponent(collectionTitle) +
-                               "&propertyNamespace%5B%5D=" + encodeURIComponent("http://www.uio.no/resource-types/fixed-resources-collection") +
-                               "&propertyName%5B%5D=fixed-resources-codes" +
-                               "&propertyValue%5B%5D=" + encodeURIComponent(sequenceId);
-              // Disciplines if exists
-              if(sessionDisciplines) {
-                for(var i = 0, len = sessionDisciplines.length; i < len; i++) {
-                  dataString += "&propertyNamespace%5B%5D=" +
-                                "&propertyName%5B%5D=tags" +
-                                "&propertyValue%5B%5D=" + encodeURIComponent(sessionDisciplines[i]);
-                }
-              }
-              // Hide folder from navigation
-              dataString += "&propertyNamespace%5B%5D=" + encodeURIComponent("http://www.uio.no/navigation") +
-                            "&propertyName%5B%5D=hidden" +
-                            "&propertyValue%5B%5D=true";
-              dataString += "&csrf-prevention-token=" + csrf;
-              vrtxAdmin.serverFacade.postHtml(form.attr("action"), dataString, {
-                success: function (results, status, resp) {
-                  createFixedResourceSubfolder(form, csrf);
-                }
-              });
+              createFixedResourceFolder(form, csrf);
             } else {
               var msg = vrtxAdmin.serverFacade.error(xhr, textStatus, true);
               vrtxAdmin.displayErrorMsg(msg);
@@ -843,6 +838,15 @@ function createFixedResourcesFolders(cs, elm, baseUrl) {
       }
     }
   });
+}
+
+/*
+ * Add create property
+ */
+function addCreateProperty(ns, name, val) {
+  return "&propertyNamespace%5B%5D=" + encodeURIComponent(ns) +
+         "&propertyName%5B%5D=" + name +
+         "&propertyValue%5B%5D=" + encodeURIComponent(val);
 }
 
 /*

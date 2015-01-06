@@ -1919,20 +1919,21 @@ VrtxEditor.prototype.htmlFacade = {
 
       // Has content
       if(val && val.length) {
-        if(editorDetectChangeFunc(sessionId, val, rawOrig[name], name === "vrtxResourcesText")) { // If has changed
+        if(editorDetectChangeFunc(sessionId, val, rawOrig[name], name === "vrtxResourcesText")) { // Has changed
           var isChangedFromTP = editorDetectChangeFunc(sessionId, val, rawOrigTP[name.split("vrtx")[1].toLowerCase()], name === "vrtxResourcesText");
           if(isChangedFromTP) { // Differs from TP
             vrtxAdmin.log({msg: "ADD / CHANGE " + name + (typeof val === "string" ? " " + val : "")});
             rawPtr[name] = val;
             hasChanges = true;
           } else { // Otherwise Delete
-            vrtxAdmin.log({msg: "DEL " + name + (typeof val === "string" ? " " + val : "")});
-            delete rawPtr[name];
-            hasChanges = true;
+            if(rawOrig[name] != undefined) { // If exists
+              vrtxAdmin.log({msg: "DEL " + name + (typeof val === "string" ? " " + val : "")});
+              delete rawPtr[name];
+              hasChanges = true;
+            }
           }
         }
-        // Not has changed: do nothing
-      } else { // Is empty
+      } else { // Empty
         // Is "vrtxStaff" and has "staff" set to []
         if(name === "vrtxStaff" && rawOrigTP[name.split("vrtx")[1].toLowerCase()]) {
 	      if(rawPtr[name] == undefined || rawPtr[name].length > 0) {

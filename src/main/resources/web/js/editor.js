@@ -1917,23 +1917,31 @@ VrtxEditor.prototype.htmlFacade = {
         }
       }
 
-      // Changes in Vortex properties
-      if(val && val.length) { // If changes in Vortex properties and differs from TP/UIOWS-data
-        if(editorDetectChangeFunc(sessionId, val, rawOrig[name], name === "vrtxResourcesText") &&
-           editorDetectChangeFunc(sessionId, val, rawOrigTP[name.split("vrtx")[1].toLowerCase()], name === "vrtxResourcesText")) {
-          vrtxAdmin.log({msg: "ADD / CHANGE " + name + (typeof val === "string" ? " " + val : "")});
-          rawPtr[name] = val;
-          hasChanges = true;
+      // Has content
+      if(val && val.length) {
+        if(editorDetectChangeFunc(sessionId, val, rawOrig[name], name === "vrtxResourcesText")) { // If has changed
+          var isChangedFromTP = editorDetectChangeFunc(sessionId, val, rawOrigTP[name.split("vrtx")[1].toLowerCase()], name === "vrtxResourcesText");
+          if(isChangedFromTP) { // Differs from TP
+            vrtxAdmin.log({msg: "ADD / CHANGE " + name + (typeof val === "string" ? " " + val : "")});
+            rawPtr[name] = val;
+            hasChanges = true;
+          } else { // Otherwise Delete
+            vrtxAdmin.log({msg: "DEL " + name + (typeof val === "string" ? " " + val : "")});
+            delete rawPtr[name];
+            hasChanges = true;
+          }
         }
-      } else { // If removed in Vortex properties
-        if(name === "vrtxStaff" && rawOrigTP[name.split("vrtx")[1].toLowerCase()]) { // If is "vrtxStaff" and has "staff" set to []
+        // Not has changed: do nothing
+      } else { // Is empty
+        // Is "vrtxStaff" and has "staff" set to []
+        if(name === "vrtxStaff" && rawOrigTP[name.split("vrtx")[1].toLowerCase()]) {
 	      if(rawPtr[name] == undefined || rawPtr[name].length > 0) {
             vrtxAdmin.log({msg: "DEL EMPTY " + name + (typeof val === "string" ? " " + val : "")});
             rawPtr[name] = [];
             hasChanges = true;
 	      }
-        } else {
-	      if(rawOrig[name] != undefined) {
+        } else { // Otherwise Delete
+	      if(rawOrig[name] != undefined) { // If exists
             vrtxAdmin.log({msg: "DEL " + name + (typeof val === "string" ? " " + val : "")});
             delete rawPtr[name];
             hasChanges = true;

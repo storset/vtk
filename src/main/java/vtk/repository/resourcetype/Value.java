@@ -357,7 +357,7 @@ public class Value implements Cloneable, Comparable<Value> {
         case PRINCIPAL:
             return new Value(this.principalValue);
         case BINARY:
-            return new Value(this.binaryValue, getType());
+            return new Value(this.binaryValue, Type.BINARY);
         case JSON:
             return new Value(getStringValue(), Type.JSON);
         default:

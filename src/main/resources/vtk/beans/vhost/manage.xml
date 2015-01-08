@@ -149,7 +149,6 @@
           <property name="headers">
             <map>
               <entry key="X-FRAME-OPTIONS" value="SAMEORIGIN" />
-              <entry key="X-UA-Compatible" value="IE=edge" />
             </map>
           </property>
           <property name="exceptionAttribute" value="manage.preventXFrameOptionsHeader" />

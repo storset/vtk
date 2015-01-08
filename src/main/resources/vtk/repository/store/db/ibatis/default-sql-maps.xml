@@ -867,7 +867,6 @@
     <result property="uid" column="user_id"/>
     <result property="timestamp" column="timestamp" jdbcType="TIMESTAMP" javaType="java.sql.Timestamp" />
     <result property="checksum" column="checksum" />
-    <result property="changeAmount" column="change_amount" />
   </resultMap>
 
   <resultMap id="RevisionAclEntry" class="java.util.HashMap">
@@ -885,8 +884,8 @@
 
   <insert id="insertRevision" parameterClass="java.util.Map">
     insert into simple_content_revision
-      (id, resource_id, revision_name, user_id, timestamp, checksum, change_amount)
-    values (#revisionId#, #resourceId#, #name#, #uid#, #timestamp#, #checksum#, #changeAmount#)
+      (id, resource_id, revision_name, user_id, timestamp, checksum)
+    values (#revisionId#, #resourceId#, #name#, #uid#, #timestamp#, #checksum#)
   </insert>
 
   <update id="updateRevision" parameterClass="java.util.Map">
@@ -894,8 +893,7 @@
       set revision_name = #name#,
           user_id = #uid#,
           timestamp = #timestamp#,
-          checksum = #checksum#,
-          change_amount = #changeAmount#
+          checksum = #checksum#
       where id = #revisionId# and resource_id = #resourceId#
   </update>
 
@@ -904,7 +902,7 @@
   </delete>
 
   <select id="listRevisionsByResource" parameterClass="java.util.Map" resultMap="Revision">
-    select id, resource_id, revision_name, user_id, timestamp, checksum, change_amount
+    select id, resource_id, revision_name, user_id, timestamp, checksum
          from simple_content_revision where resource_id = #resourceId#
          order by timestamp desc
   </select>

@@ -48,6 +48,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.orm.ibatis.SqlMapClientCallback;
+
 import vtk.repository.Acl;
 import vtk.repository.Privilege;
 import vtk.repository.Resource;
@@ -113,8 +114,6 @@ public class DefaultRevisionStore extends AbstractSqlMapDataAccessor implements 
             String name = (String) map.get("name");
             String uid = map.get("uid").toString();
             String checksum = map.get("checksum").toString();
-            n = (Number) map.get("changeAmount");
-            Integer changeAmount = n != null ? n.intValue() : null;
             Revision.Type type = Revision.Type.WORKING_COPY.name().equals(name) ? 
                     Revision.Type.WORKING_COPY : Revision.Type.REGULAR;
             Acl acl = aclMap.get(revId);
@@ -127,7 +126,6 @@ public class DefaultRevisionStore extends AbstractSqlMapDataAccessor implements 
                     .timestamp(timestamp)
                     .acl(acl)
                     .checksum(checksum)
-                    .changeAmount(changeAmount)
                     .build();
             result.add(rev);
         }         
@@ -164,7 +162,6 @@ public class DefaultRevisionStore extends AbstractSqlMapDataAccessor implements 
         parameters.put("name", revision.getName());
         parameters.put("timestamp", revision.getTimestamp());
         parameters.put("checksum", revision.getChecksum());
-        parameters.put("changeAmount", revision.getChangeAmount());
         
         String sqlMap = getSqlMap("insertRevision");
         getSqlMapClientTemplate().insert(sqlMap, parameters);
@@ -245,7 +242,6 @@ public class DefaultRevisionStore extends AbstractSqlMapDataAccessor implements 
             parameters.put("name", revision.getName());
             parameters.put("timestamp", revision.getTimestamp());
             parameters.put("checksum", revision.getChecksum());
-            parameters.put("changeAmount", revision.getChangeAmount());
             
             String sqlMap = getSqlMap("updateRevision");
             getSqlMapClientTemplate().update(sqlMap, parameters);

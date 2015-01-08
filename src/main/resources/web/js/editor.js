@@ -1725,10 +1725,7 @@ function scrollToElm(movedElm) {
  */
 VrtxEditor.prototype.htmlFacade = {
   /* 
-   * Turn a block of JSON into HTML (Only working for Schedule per. 14.08.2014)
-   * 
-   * TODO: undefined checks should probably be with typeof against the string
-   * 
+   * Turn a block of JSON into HTML (only working for Schedule)
    */
   jsonToHtml: function(isMedisin, id, sessionId, idForLookup, session, fixedResourcesUrl, fixedResources, descs, i18n, embeddedAdminService) {
     var html = "";
@@ -1817,21 +1814,6 @@ VrtxEditor.prototype.htmlFacade = {
               }
               html += "</div>";
             }
-            /* Old
-            html += "<div class='vrtx-simple-html'><label>" + i18n[name] + "<abbr tabindex='0' class='tooltips label-tooltips' title='" + i18n.vrtxResourcesFixedInfo + "'></abbr></label>";
-            if(!val) { // Create fixed resources folder
-              html += "<a class='vrtx-button create-fixed-resources-folder' id='create-fixed-resources-folder-" + idForLookup + "SID" + sessionId + "' href='javascript:void(0);'>" + i18n[name + "CreateFolder"] + "</a>";
-            } else { // Admin fixed resources folder
-              if(val.length == undefined) { // Object
-                html += "<iframe class='admin-fixed-resources-iframe' src='" + val.folderUrl + embeddedAdminService + "'></iframe>";
-              } else { // Array
-                for(i = 0, len = val.length; i < len; i++) {
-                  html += "<iframe class='admin-fixed-resources-iframe' src='" + val[i].folderUrl + embeddedAdminService + "'></iframe>";
-                }
-              }
-            }
-            html += "</div>";
-            */
           }
           break;
         case "html":
@@ -1865,7 +1847,7 @@ VrtxEditor.prototype.htmlFacade = {
     return { html: html, multiples: multiples, rtEditors: rtEditors };
   },
  /* 
-  * Turn a block of HTML/DOM into JSON (Only working for Schedule per. 14.08.2014)
+  * Turn a block of HTML/DOM into JSON (only working for Schedule)
   */
   htmlToJson: function (isMedisin, sessionElms, sessionId, descs, rawOrig, rawOrigTP, rawPtr) {
     var vrtxEdit = vrtxEditor;
@@ -1875,7 +1857,9 @@ VrtxEditor.prototype.htmlFacade = {
     for(var name in descs) {
       var desc = descs[name],
           val = "";
-      if(desc.type === "json-fixed" || (desc.notMedisin && isMedisin) || (desc.onlyMedisin && !isMedisin)) {
+      // Skip fixed resources and branch: Medisin | Not Medisin
+      if(desc.type === "json-fixed" || (desc.notMedisin && isMedisin) 
+                                    || (desc.onlyMedisin && !isMedisin)) {
         continue;
       } else if(desc.type === "html") {
         // XXX: support multiple CK-fields starting with same name
@@ -1892,6 +1876,7 @@ VrtxEditor.prototype.htmlFacade = {
       } else if(desc.type === "html") {
         val = vrtxEdit.richtextEditorFacade.getInstanceValue(elm.attr("name"));
       } else {
+        // Reconstruct data from flattened string to objects
         val = elm.val(); // To string (string)
         if(desc.multiple && val.length) { // To array (multiple)
           val = val.split("$$$");
@@ -1917,24 +1902,33 @@ VrtxEditor.prototype.htmlFacade = {
         }
       }
 
-      // Changes in Vortex properties
-      if(val && val.length) { // If changes in Vortex properties and differs from TP/UIOWS-data
-        if(editorDetectChangeFunc(sessionId, val, rawOrig[name], name === "vrtxResourcesText") &&
-           editorDetectChangeFunc(sessionId, val, rawOrigTP[name.split("vrtx")[1].toLowerCase()], name === "vrtxResourcesText")) {
-          vrtxAdmin.log({msg: "ADD / CHANGE " + name + (typeof val === "string" ? " " + val : "")});
-          rawPtr[name] = val;
-          hasChanges = true;
+      // Has content
+      if(val && val.length) {
+        if(editorDetectChangeFunc(sessionId, val, rawOrig[name], name === "vrtxResourcesText")) { // Has changed
+          var isChangedFromTP = editorDetectChangeFunc(sessionId, val, rawOrigTP[name.split("vrtx")[1].toLowerCase()], name === "vrtxResourcesText");
+          if(isChangedFromTP) { // Differs from TP
+            vrtxAdmin.log({msg: "ADD / CHANGE " + name + (typeof val === "string" ? " " + val : "")});
+            rawPtr[name] = val;
+            hasChanges = true;
+          } else { // Otherwise Delete
+            if(rawOrig[name] != undefined) { // If exists
+              vrtxAdmin.log({msg: "DEL " + name + (typeof val === "string" ? " " + val : "")});
+              delete rawPtr[name];
+              hasChanges = true;
+            }
+          }
         }
-      } else { // If removed in Vortex properties
-        if(name === "vrtxStaff" && rawOrigTP[name.split("vrtx")[1].toLowerCase()]) { // If is "vrtxStaff" and has "staff" set to []
+      } else { // Empty
+        // Is "vrtxStaff" and has "staff" set to []
+        if(name === "vrtxStaff" && rawOrigTP[name.split("vrtx")[1].toLowerCase()]) {
 	      if(rawPtr[name] == undefined || rawPtr[name].length > 0) {
-            vrtxAdmin.log({msg: "DEL EMPTY " + name + (typeof val === "string" ? " " + val : "")});
+            vrtxAdmin.log({msg: "DEL EMPTY " + name});
             rawPtr[name] = [];
             hasChanges = true;
 	      }
-        } else {
-	      if(rawOrig[name] != undefined) {
-            vrtxAdmin.log({msg: "DEL " + name + (typeof val === "string" ? " " + val : "")});
+        } else { // Otherwise Delete
+	      if(rawOrig[name] != undefined) { // If exists
+            vrtxAdmin.log({msg: "DEL " + name});
             delete rawPtr[name];
             hasChanges = true;
 	      }

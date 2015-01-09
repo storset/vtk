@@ -102,6 +102,7 @@
       <list>
         <ref bean="resourceTypeIsNotSamletProgram" />
         <ref bean="resourceTypeIsNotSamletRetning" />
+        <ref bean="resourceTypeIsNotCourseSchedule" />
       </list>
     </property>
   </bean>

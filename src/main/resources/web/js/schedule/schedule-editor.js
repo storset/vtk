@@ -757,7 +757,7 @@ function createFixedResourcesFolders(cs, elm, baseUrl) {
     var sequenceId = session.sequenceId;
 
     var collectionTitle = (sessionDisciplines ? sessionDisciplines.join(", ") + " - " : "") + sessionTitle + " - " + sequenceId;
-    var collectionName = vrtxAdmin.inputUpdateEngine.substitute((sessionDisciplines ? sessionDisciplines.join("-") + "-" : "") + sessionTitle + "-" + sequenceId, false);
+    var collectionName = replaceInvalidChar((sessionDisciplines ? sessionDisciplines.join("-") + "-" : "") + sessionTitle + "-" + sequenceId, fileTitleSubstitutions, false);
 
     var collectionBaseUrl = cs.vrtxResourcesFixedUrl;
     if(!/\/$/.test(collectionBaseUrl)) { // Add last '/' if missing

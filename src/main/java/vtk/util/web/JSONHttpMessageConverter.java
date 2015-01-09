@@ -32,9 +32,8 @@
 package vtk.util.web;
 
 import java.io.IOException;
-import net.sf.json.JSON;
-import net.sf.json.JSONException;
-import net.sf.json.JSONSerializer;
+import java.io.OutputStreamWriter;
+
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -42,13 +41,15 @@ import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
-import vtk.util.io.StreamUtil;
+
+import vtk.util.text.Json;
+import vtk.util.text.JsonStreamer;
 
 /**
  * A Spring {@link HttpMessageConverter} which converts
- * HTTP messages to/from instances of {@link net.sf.json.JSON}.
+ * HTTP messages to/from instances of {@link Json.Container}.
  */
-public class JSONHttpMessageConverter extends AbstractHttpMessageConverter<JSON> {
+public class JSONHttpMessageConverter extends AbstractHttpMessageConverter<Json.Container> {
 
     public JSONHttpMessageConverter() {
 		super(MediaType.APPLICATION_JSON);
@@ -56,23 +57,26 @@ public class JSONHttpMessageConverter extends AbstractHttpMessageConverter<JSON>
     
     @Override
     protected boolean supports(Class<?> clazz) {
-        return JSON.class.isAssignableFrom(clazz);
+        return Json.Container.class.isAssignableFrom(clazz);
     }
 
     @Override
-    protected JSON readInternal(Class<? extends JSON> clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
-        String jsonString = StreamUtil.streamToString(inputMessage.getBody(), "utf-8");
+    protected Json.Container readInternal(Class<? extends Json.Container> clazz, HttpInputMessage inputMessage) 
+            throws IOException, HttpMessageNotReadableException {
         try {
-            return JSONSerializer.toJSON(jsonString);
-        } catch (JSONException je) {
-            throw new HttpMessageNotReadableException(je.getMessage(), je);
+            return Json.parseToContainer(inputMessage.getBody());
+        } catch (Throwable t) {
+            throw new HttpMessageNotReadableException(t.getMessage(), t);
         }
     }
 
     @Override
-    protected void writeInternal(JSON t, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
-        String jsonString = t.toString();
-        StreamUtil.dump(jsonString.getBytes("utf-8"), outputMessage.getBody(), false);
+    protected void writeInternal(Json.Container t, HttpOutputMessage outputMessage) 
+            throws IOException, HttpMessageNotWritableException {
+
+        JsonStreamer streamer = new JsonStreamer(new OutputStreamWriter(outputMessage.getBody()), 2, true);
+        if (t.isArray()) streamer.array(t.asArray());
+        else streamer.object(t.asObject());
         outputMessage.getBody().flush();
     }
     

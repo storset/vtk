@@ -30,16 +30,22 @@
  */
 package vtk.util.text;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import static org.junit.Assert.*;
+
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+
 import vtk.util.io.StreamUtil;
 import vtk.util.text.Json.Container;
 
@@ -264,39 +270,5 @@ public class JsonTest {
         assertEquals("default", json.optStringValue("non-existing", "default"));
         assertEquals("default", json.optStringValue("n", "default"));
         
-    }
-    
-    // Compare performance between vtk.util.text.JSON and vtk.util.text.Json
-    @Ignore
-    @Test
-    public void testPerformance() {
-        int count=10;
-        Object r1=null, r2=null;
-        for (int i=0; i<count; i++) {
-            r1 = vtk.util.text.JSON.parse(jsonTestText);
-            r2 = Json.parse(jsonTestText);
-        }
-        System.out.println("Warmup complete.");
-        
-        List<Object> l1 = (List<Object>)r1;
-        List<Object> l2 = (List<Object>)r2;
-        System.out.println("Elements in l1: " + l1.size());
-        System.out.println("Elements in l2: " + l2.size());
-
-        assertEquals(l1.size(), l2.size());
-        
-        long start = System.currentTimeMillis();
-        for (int i=0; i<count; i++) {
-            vtk.util.text.JSON.parse(jsonTestText);
-        }
-        long end = System.currentTimeMillis();
-        System.out.println("vtk.util.text.JSON.parse(String) took " + (end-start) + "ms");
-        
-        start = System.currentTimeMillis();
-        for (int i=0; i<count; i++) {
-            Json.parse(jsonTestText);
-        }
-        end = System.currentTimeMillis();
-        System.out.println("vtk.util.text.Json.parse(String) took " + (end-start) + "ms");
     }
 }

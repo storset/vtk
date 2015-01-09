@@ -37,9 +37,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -49,6 +46,8 @@ import vtk.repository.Path;
 import vtk.repository.Privilege;
 import vtk.repository.Resource;
 import vtk.text.html.HtmlUtil;
+import vtk.util.text.Json;
+import vtk.util.text.JsonStreamer;
 import vtk.web.ACLTooltipHelper;
 import vtk.web.JSONTreeHelper;
 import vtk.web.RequestContext;
@@ -79,10 +78,11 @@ public class ListResourcesService implements Controller {
         return null;
     }
 
-    private void okRequest(JSONArray arr, HttpServletResponse response) throws IOException {
+    private void okRequest(Json.ListContainer arr, HttpServletResponse response) throws IOException {
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("text/plain;charset=utf-8"); /* XXX: Should be application/json? */
-        writeResponse(arr.toString(1), response);
+        String str = JsonStreamer.toJson(arr, 1);
+        writeResponse(str, response);
     }
 
     private void badRequest(Throwable e, HttpServletResponse response) throws IOException {
@@ -103,9 +103,9 @@ public class ListResourcesService implements Controller {
             throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
 
-        JSONArray list = new JSONArray();
+        Json.ListContainer list = new Json.ListContainer();
         for (Resource r : resources) {
-            JSONObject o = new JSONObject();
+            Json.MapContainer o = new Json.MapContainer();
 
             Acl acl = r.getAcl();
             boolean authorizedToRead = aclTooltipHelper.authorizedTo(acl, requestContext.getPrincipal(), Privilege.READ);

@@ -42,8 +42,6 @@ import java.util.Map;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
-import net.sf.json.JSONObject;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -68,6 +66,7 @@ import vtk.security.Principal;
 import vtk.text.html.HtmlFragment;
 import vtk.text.html.HtmlPageFilter;
 import vtk.text.html.HtmlPageParser;
+import vtk.util.text.Json;
 import vtk.util.text.JsonStreamer;
 import vtk.web.RequestContext;
 import vtk.web.service.Service;
@@ -269,10 +268,10 @@ public class StructuredResourceEditor  {
             JSONPropertyDescription jsonDesc = (JSONPropertyDescription) desc;
 
             if (!jsonDesc.isMultiple()) {
-                JSONObject obj = new JSONObject();
+                Json.MapContainer obj = new Json.MapContainer();
                 if (jsonDesc.isWildcard()) {
                     String str = request.getParameter(desc.getName());
-                    obj = JSONObject.fromObject(str);
+                    obj = Json.parseToContainer(str).asObject();
                     
                 } else {
                     for (JSONPropertyAttributeDescription attr : jsonDesc.getAttributes()) {
@@ -305,9 +304,9 @@ public class StructuredResourceEditor  {
                     }
                 }
             }
-            List<JSONObject> resultList = new ArrayList<JSONObject>();
+            List<Json.MapContainer> resultList = new ArrayList<>();
             for (int i = 0; i <= maxIndex; i++) {
-                JSONObject obj = new JSONObject();
+                Json.MapContainer obj = new Json.MapContainer();
                 for (JSONPropertyAttributeDescription attr : jsonDesc.getAttributes()) {
                     String input = desc.getName() + "." + attr.getName() + "." + i;
                     String posted = request.getParameter(input);

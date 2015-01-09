@@ -34,19 +34,21 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONNull;
-import net.sf.json.JSONObject;
-
 import org.jdom.Document;
 import org.jdom.Element;
 import org.springframework.beans.factory.annotation.Required;
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
 import vtk.repository.Property;
 import vtk.repository.PropertyEvaluationContext;
 import vtk.repository.PropertyEvaluationContext.Type;
@@ -59,11 +61,8 @@ import vtk.resourcemanagement.StructuredResourceDescription;
 import vtk.resourcemanagement.StructuredResourceManager;
 import vtk.resourcemanagement.property.PropertyDescription;
 import vtk.text.html.TagsoupParserFactory;
-import vtk.util.io.StreamUtil;
-import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
+import vtk.util.text.Json;
+import vtk.util.text.JsonStreamer;
 
 public class LinksEvaluator implements LatePropertyEvaluator {
 
@@ -82,17 +81,16 @@ public class LinksEvaluator implements LatePropertyEvaluator {
                 evaluateContent = false;
                 
                 InputStream stream = property.getBinaryStream().getStream();
-                String jsonString = StreamUtil.streamToString(stream, "utf-8");
-                JSONArray arr = JSONArray.fromObject(jsonString);
+                Json.ListContainer arr = Json.parseToContainer(stream).asArray();
 
                 for (Object o: arr) {
-                    if (! (o instanceof JSONObject)) {
+                    if (! (o instanceof Json.MapContainer)) {
                         continue;
                     }
-                    JSONObject obj = (JSONObject) o;
-                    String url = obj.getString("url");
-                    String type = obj.getString("type");
-                    LinkSource source = LinkSource.valueOf(obj.getString("source"));
+                    Json.MapContainer obj = (Json.MapContainer) o;
+                    String url = obj.stringValue("url");
+                    String type = obj.stringValue("type");
+                    LinkSource source = LinkSource.valueOf(obj.stringValue("source"));
                     if (source == LinkSource.CONTENT) {
                         Link link = new Link(url, LinkType.valueOf(type), source);
                         if (!collector.link(link)) {
@@ -263,15 +261,15 @@ public class LinksEvaluator implements LatePropertyEvaluator {
             return this.links.isEmpty();
         }
         public byte[] serialize() throws Exception {
-            JSONArray arr = new JSONArray();
+            List<Object> arr = new ArrayList<>();
             for (Link l: this.links) {
-                JSONObject entry = new JSONObject();
+                Map<String, Object> entry = new HashMap<>();
                 entry.put("url", l.getURL());
                 entry.put("type", l.getType());
                 entry.put("source", l.getSource());
                 arr.add(entry);
             }
-            return arr.toString().getBytes("utf-8");
+            return JsonStreamer.toJson(arr).getBytes("utf-8");
         }
     }
 
@@ -413,7 +411,7 @@ public class LinksEvaluator implements LatePropertyEvaluator {
                 Object o = map.get(k);
                 unwrapJSON(o, collector);
             }
-        } else if (!(object instanceof JSONNull)) {
+        } else if (object != null) {
             InputStream is = new ByteArrayInputStream(object.toString().getBytes());
             extractFromHtml(is, collector, LinkSource.CONTENT);
         }

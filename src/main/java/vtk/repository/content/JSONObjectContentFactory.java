@@ -32,35 +32,29 @@ package vtk.repository.content;
 
 import java.io.InputStream;
 
-import net.sf.json.JSONObject;
 import vtk.util.io.StreamUtil;
+import vtk.util.io.BoundedInputStream;
+import vtk.util.text.Json;
 
 /**
- * Content factory for <code>net.sf.json.JSONObject</code> objects.
+ * Content factory for JSON-type resources, produces instances of
+ * {@link Json.MapContainer}.
  */
-public class JSONObjectContentFactory implements ContentFactory<JSONObject> {
+public class JSONObjectContentFactory implements ContentFactory<Json.MapContainer> {
 
     private int maxLength = 10000000;
     
     @Override
-    public Class<JSONObject> getRepresentationType() {
-        return JSONObject.class;
+    public Class<Json.MapContainer> getRepresentationType() {
+        return Json.MapContainer.class;
     }
     
     @Override
-    public JSONObject getContentRepresentation(InputStream content) throws Exception {
-        byte[] buffer = StreamUtil.readInputStream(content, this.maxLength + 1);
-        if (buffer.length > this.maxLength) {
-            throw new Exception("Unable to parse content: maximum size exceeded: " 
-                    + this.maxLength);
-        }
-        String s = new String(buffer, "utf-8");    
-        return JSONObject.fromObject(s);
+    public Json.MapContainer getContentRepresentation(InputStream content) throws Exception {
+        return Json.parseToContainer(new BoundedInputStream(content, maxLength)).asObject();
     }
 
     public void setMaxLength(int maxLength) {
         this.maxLength = maxLength;
     }
-
-
 }

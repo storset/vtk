@@ -69,6 +69,7 @@ import vtk.repository.search.query.PropertyTermQuery;
 import vtk.repository.search.query.Query;
 import vtk.repository.search.query.TermOperator;
 import vtk.repository.search.query.UriPrefixQuery;
+import vtk.util.text.Json;
 import vtk.web.service.Service;
 import vtk.web.service.URL;
 
@@ -315,12 +316,12 @@ public class BrokenLinksReport extends DocumentReporter {
                 Property prop = propertySet.getProperty(brokenLinksCountPropDef);
                 if (prop == null)
                     return true;
-                net.sf.json.JSONObject obj = prop.getJSONValue();
+                Json.MapContainer obj = prop.getJSONValue();
                 for (String includeType : this.includeTypes) {
-                    sum += obj.optInt(includeType);
+                    sum += obj.optIntValue(includeType, 0);
                 }
                 for (String excludeType : this.excludeTypes) {
-                    sum -= obj.optInt(excludeType);
+                    sum -= obj.optIntValue(excludeType, 0);
                 }
 
                 return true;
@@ -457,15 +458,15 @@ public class BrokenLinksReport extends DocumentReporter {
             }
 
             count = 0;
-            net.sf.json.JSONObject obj = prop.getJSONValue();
+            Json.MapContainer obj = prop.getJSONValue();
             for (String includeType : this.includeTypes) {
-                optInt = obj.optInt(includeType);
+                optInt = obj.optIntValue(includeType, 0);
                 sum += optInt;
                 cs.linkCount += optInt;
                 count += optInt;
             }
             for (String excludeType : this.excludeTypes) {
-                optInt = obj.optInt(excludeType);
+                optInt = obj.optIntValue(excludeType, 0);
                 sum -= optInt;
                 cs.linkCount -= optInt;
                 count -= optInt;

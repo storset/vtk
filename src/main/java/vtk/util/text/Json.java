@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.json.simple.parser.ContainerFactory;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -319,10 +320,10 @@ public final class Json {
      */
     public static final class ListContainer extends ArrayList<Object> implements Container {
 
-        private ListContainer() {
+        public ListContainer() {
         }
         
-        private ListContainer(List<Object> array) {
+        public ListContainer(List<Object> array) {
             super(array);
         }
         
@@ -461,7 +462,7 @@ public final class Json {
      */
     public static final class MapContainer extends LinkedHashMap<String,Object> implements Container {
 
-        private MapContainer() {
+        public MapContainer() {
         }
 
         public MapContainer(Map<? extends String, ? extends Object> m) {

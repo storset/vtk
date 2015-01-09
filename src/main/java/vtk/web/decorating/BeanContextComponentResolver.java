@@ -45,6 +45,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+
 import vtk.repository.Repository;
 import vtk.repository.Resource;
 import vtk.repository.TypeInfo;
@@ -52,48 +53,51 @@ import vtk.repository.resourcetype.ResourceTypeDefinition;
 import vtk.web.RequestContext;
 
 public class BeanContextComponentResolver
-  implements ComponentResolver, ApplicationContextAware, InitializingBean {
+    implements ComponentResolver, ApplicationContextAware, InitializingBean {
 
     private static Log logger = LogFactory.getLog(BeanContextComponentResolver.class);
-    
+
     private volatile boolean initialized = false;
     private ApplicationContext applicationContext;
-    private Map<String, DecoratorComponent> components = new HashMap<String, DecoratorComponent>();
-    private Set<String> availableComponentNamespaces = new HashSet<String>();
-    private Set<String> prohibitedComponentNamespaces = new HashSet<String>();
+    private Map<String, DecoratorComponent> components = new HashMap<>();
+    private Set<String> availableComponentNamespaces = new HashSet<>();
+    private Set<String> prohibitedComponentNamespaces = new HashSet<>();
     private ResourceTypeDefinition resourceType;
-    
+
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
-    
+
     public void setAvailableComponentNamespaces(Set<String> availableComponentNamespaces) {
         this.availableComponentNamespaces = availableComponentNamespaces;
     }
 
     public void setInhibitedComponentNamespaces(Set<String> prohibitedComponentNamespaces) {
-    	this.prohibitedComponentNamespaces = prohibitedComponentNamespaces;
+        this.prohibitedComponentNamespaces = prohibitedComponentNamespaces;
     }
 
     public void setResourceType(ResourceTypeDefinition resourceType) {
         this.resourceType = resourceType;
     }
-    
+
+    @Override
     public void afterPropertiesSet() {
         if (this.applicationContext == null) {
             throw new BeanInitializationException(
-                "JavaBean property 'applicationContext' not specified");
+                    "JavaBean property 'applicationContext' not specified");
         }
         if (this.availableComponentNamespaces == null) {
             throw new BeanInitializationException(
-                "JavaBean property 'availableComponentNamespaces' not specified");
+                    "JavaBean property 'availableComponentNamespaces' not specified");
         }
         if (this.prohibitedComponentNamespaces == null) {
             throw new BeanInitializationException(
-                "JavaBean property 'prohibitedComponentNamespaces' not specified");
+                    "JavaBean property 'prohibitedComponentNamespaces' not specified");
         }
     }
-    
+
+    @Override
     public DecoratorComponent resolveComponent(String namespace, String name) {
         if (!this.initialized) {
             init();
@@ -107,17 +111,18 @@ public class BeanContextComponentResolver
         }
         if (logger.isDebugEnabled()) {
             logger.debug("Resolved namespace: '" + namespace + "', name: '" + name
-                         + "' to component:  " + component);
+                    + "' to component:  " + component);
         }
         return component;
     }
-    
-    
+
+
+    @Override
     public List<DecoratorComponent> listComponents() {
         if (!this.initialized) {
             init();
         }
-        List<DecoratorComponent> result = new ArrayList<DecoratorComponent>();
+        List<DecoratorComponent> result = new ArrayList<>();
         for (DecoratorComponent component : this.components.values()) {
             String namespace = component.getNamespace();
             if (this.availableComponentNamespaces != null) {
@@ -134,47 +139,46 @@ public class BeanContextComponentResolver
         }
         return result;
     }
-    
+
 
     private synchronized void init() {
-    	if (this.initialized) return;
-    	
-    	@SuppressWarnings("unchecked")
+        if (this.initialized) return;
+
         Collection<DecoratorComponent> beans = 
-            BeanFactoryUtils.beansOfTypeIncludingAncestors(
-                this.applicationContext, 
-                DecoratorComponent.class, false, false).values();        
-        
+                BeanFactoryUtils.beansOfTypeIncludingAncestors(
+                        this.applicationContext, 
+                        DecoratorComponent.class, false, false).values();        
+
         for (DecoratorComponent component: beans) {
             String ns = component.getNamespace();
             String name = component.getName();
             if (ns == null) {
                 throw new IllegalStateException("Component " + component
-                                                + " has invalid namespace (NULL)");
+                        + " has invalid namespace (NULL)");
             }
             if (!this.availableComponentNamespaces.contains(component.getNamespace())) {
-            	if (!this.availableComponentNamespaces.contains("*")) {
-            		if (logger.isDebugEnabled()) {
-            			logger.debug("Component " + component + " not added.");
+                if (!this.availableComponentNamespaces.contains("*")) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Component " + component + " not added.");
                         continue;
-            		}
-            	}
+                    }
+                }
             }
             if (this.prohibitedComponentNamespaces.contains(component.getNamespace())) {
-        		if (logger.isDebugEnabled()) {
-        			logger.debug("Component " + component + " not added (prohibited namespace).");
-        		}
-        		continue;
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Component " + component + " not added (prohibited namespace).");
+                }
+                continue;
             }
             if (name == null) {
                 throw new IllegalStateException("Component " + component
-                                                + " has invalid name (NULL)");
+                        + " has invalid name (NULL)");
             }
             String key = ns + ":" + name;
             logger.info("Registering decorator component " + component);
             this.components.put(key, component);
         }
-        
+
         this.initialized = true;
     }
 

@@ -36,9 +36,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import net.sf.json.JSONObject;
-
 import org.springframework.beans.factory.annotation.Required;
+
 import vtk.repository.Namespace;
 import vtk.repository.Property;
 import vtk.repository.PropertyEvaluationContext;
@@ -56,7 +55,7 @@ import vtk.resourcemanagement.service.ExternalServiceInvoker;
 import vtk.resourcemanagement.studies.SharedTextResolver;
 import vtk.text.html.HtmlDigester;
 import vtk.text.html.HtmlUtil;
-import vtk.util.text.JSON;
+import vtk.util.text.Json;
 
 public class EvaluatorResolver {
 
@@ -130,14 +129,15 @@ public class EvaluatorResolver {
             if (!emptyValue(value)) {
                 setPropValue(property, value);
             } else {
-                JSONObject json;
+                Json.MapContainer json; 
                 try {
-                    json = ctx.getContent().getContentRepresentation(JSONObject.class);
+                    Json.Container container = ctx.getContent().getContentRepresentation(Json.Container.class);
+                    json = container.asObject(); 
                 } catch (Exception e) {
                     throw new PropertyEvaluationException("Unable to get JSON representation of content", e);
                 }
                 String expression = "properties." + property.getDefinition().getName();
-                value = JSON.select(json, expression);
+                value = Json.select(json, expression);
                 if (emptyValue(value)) {
                     if (propertyDesc.isOverrides()) {
                         // XXX Consider the order of how this is done
@@ -279,15 +279,16 @@ public class EvaluatorResolver {
             if (prop != null) {
                 return prop.getStringValue();
             }
-
-            JSONObject json;
+            Json.MapContainer json; 
             try {
-                json = ctx.getContent().getContentRepresentation(JSONObject.class);
+                Json.Container container = ctx.getContent().getContentRepresentation(Json.Container.class);
+                json = container.asObject(); 
             } catch (Exception e) {
                 throw new PropertyEvaluationException("Unable to get JSON representation of content", e);
             }
+
             String expression = "properties." + propName;
-            Object jsonObject = JSON.select(json, expression);
+            Object jsonObject = Json.select(json, expression);
             if (jsonObject != null) {
                 return jsonObject.toString();
             }

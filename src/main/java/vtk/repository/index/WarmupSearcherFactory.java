@@ -134,7 +134,7 @@ public class WarmupSearcherFactory extends SearcherFactory implements Initializi
             if (logger.isDebugEnabled()) {
                 logger.debug("Search " + search + " matched " + docs.scoreDocs.length + " docs.");
             }
-            int max = Math.min(500, docs.scoreDocs.length);
+            int max = Math.min(250, docs.scoreDocs.length);
             for (int i = 0; i < max; i++) {
                 searcher.doc(docs.scoreDocs[i].doc);
             }

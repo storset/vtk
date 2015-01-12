@@ -541,7 +541,6 @@ function courseSchedule() {
   };
   /*
    * DELETE !(vrtx-props + id + dtStart + dtEnd) from a session
-   *    and !(uid) from session staff and vrtxStaff
    */
   this.deleteUnwantedSessionProps = function(session) {
     for(var prop in session) {
@@ -550,15 +549,18 @@ function courseSchedule() {
       }
     }
   };
+  /*
+   * DELETE !(uid) from staff and vrtxStaff
+   */
   this.deleteUserEnrichments = function(session) {
-    if(session.vrtxStaff) {
-      for(var i = 0, len = session.vrtxStaff.length; i < len; i++) {
-        this.deleteUserEnrichment(session.vrtxStaff[i]);
-      }
-    }
     if(session.staff) {
       for(var i = 0, len = session.staff.length; i < len; i++) {
         this.deleteUserEnrichment(session.staff[i]);
+      }
+    }
+    if(session.vrtxStaff) {
+      for(var i = 0, len = session.vrtxStaff.length; i < len; i++) {
+        this.deleteUserEnrichment(session.vrtxStaff[i]);
       }
     }
   };

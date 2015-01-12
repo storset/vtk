@@ -70,6 +70,7 @@ import vtk.repository.search.query.Query;
 import vtk.repository.search.query.TermOperator;
 import vtk.repository.search.query.UriPrefixQuery;
 import vtk.util.text.Json;
+import vtk.web.RequestContext;
 import vtk.web.service.Service;
 import vtk.web.service.URL;
 
@@ -174,7 +175,7 @@ public class BrokenLinksReport extends DocumentReporter {
 
         result.put("filters", filters);
     }
-
+    
     @Override
     public Map<String, Object> getReportContent(String token, Resource resource, HttpServletRequest request) {
         
@@ -183,7 +184,7 @@ public class BrokenLinksReport extends DocumentReporter {
         /* Regular view */
         if(request.getParameter(getAlternativeName()) == null) {
             result = super.getReportContent(token, resource, request);
-
+            
             populateMap(token, resource, result, request, false);
 
             result.put("brokenLinkCount", getBrokenLinkCount(token, resource, request, (String) result.get("linkType")));
@@ -281,6 +282,7 @@ public class BrokenLinksReport extends DocumentReporter {
         search.setLimit(Integer.MAX_VALUE);
         ConfigurablePropertySelect cfg = new ConfigurablePropertySelect();
         cfg.addPropertyDefinition(this.brokenLinksCountPropDef);
+        cfg.setIncludeAcl(true);
         search.setPropertySelect(cfg);
         search.setSorting(null);
 
@@ -584,7 +586,16 @@ public class BrokenLinksReport extends DocumentReporter {
     protected void handleResult(PropertySet resource, Map<String, Object> model) {
         Property linkCheck = resource.getProperty(this.linkCheckPropDef);
         if (linkCheck == null) {
-            return;
+            // Try re-load from database to get binary prop (binary props not available in search results).
+            try {
+                String token = RequestContext.getRequestContext().getSecurityToken();
+                resource = repository.retrieve(token, resource.getURI(), true);
+                linkCheck = resource.getProperty(this.linkCheckPropDef);
+            } catch (Exception e) {
+            }
+            if (linkCheck == null) {
+                return;
+            }
         }
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) model.get("linkCheck");

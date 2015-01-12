@@ -3067,19 +3067,26 @@ function checkStillAdmin(options) {
   }
 }
 
-function autocompleteUsernames(selector) {
+function autocompleteUsernames(elms, useEnrichment) {
   var _$ = vrtxAdmin._$;
-  var autocompleteTextfields = _$(selector).find('.vrtx-textfield');
+  var autocompleteTextfields = elms.find('.vrtx-textfield');
   var i = autocompleteTextfields.length;
   while (i--) {
-    permissionsAutocomplete(_$(autocompleteTextfields[i]).attr("id"), 'userNames', vrtxAdmin.usernameAutocompleteParams, true);
+    var id = _$(autocompleteTextfields[i]).attr("id");
+    permissionsAutocomplete(id, 'userNames', vrtxAdmin.usernameAutocompleteParams, true);
+    if(typeof useEnrichment === "boolean" && useEnrichment) {
+      autocompleteEnrichedUsers(id);
+    }
   }
 }
 
-function autocompleteUsername(selector, subselector) {
+function autocompleteUsername(selector, subselector, useEnrichment) {
   var autocompleteTextfield = vrtxAdmin._$(selector).find('input#' + subselector);
   if (autocompleteTextfield.length) {
     permissionsAutocomplete(subselector, 'userNames', vrtxAdmin.usernameAutocompleteParams, true);
+    if(typeof useEnrichment === "boolean" && useEnrichment) {
+      autocompleteEnrichedUsers(subselector);
+    }
   }
 }
 

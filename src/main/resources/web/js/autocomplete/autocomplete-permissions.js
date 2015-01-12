@@ -56,3 +56,27 @@ function splitAutocompleteSuggestion(id) {
     }
   });
 }
+
+function autocompleteEnrichedUsers(id) {
+  var hasChosen = false;
+  var fieldId = '#' + id;
+  $(fieldId).result(function(event, data, formatted) {
+    hasChosen = true;
+    $(fieldId).hide();
+    var userEnriched = formatted.split(";");
+    var url = userEnriched[2];
+    var name = userEnriched[0];
+    
+    if(url != "") {
+      var html = "<a target='_blank' class='vrtx-multiple-inputfield-enrichment' href='" + url + "'>" + name + "</a>";
+    } else {
+      var html = "<span class='vrtx-multiple-inputfield-enrichment'>" + name + "</span>";
+    }
+    $($.parseHTML(html)).insertAfter($(fieldId).parent());
+  });
+  $(document).on("focusout", fieldId, function() {
+    if(!hasChosen) {
+      $(fieldId).val("");
+    }
+  });
+}

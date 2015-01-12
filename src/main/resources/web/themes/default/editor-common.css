@@ -135,6 +135,24 @@ h2 {
   display: block;
 }
 
+/* Hide multiple inputfield if field has enrichment */
+.vrtx-multipleinputfield-field.vrtx-multipleinputfield-field-enriched {
+  display: none;
+}
+
+/* Multiple inputfield user link */
+.vrtx-multipleinputfield a.vrtx-multiple-inputfield-enrichment {
+  color: #005aab;
+}
+
+.vrtx-multipleinputfield .vrtx-multiple-inputfield-enrichment {
+  padding-top: 6px;
+  width: 20ex;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
 .vrtx-multipleinputfield.vrtx-multipleinputfield-json-has-title.first  button {
   margin-top: 30px;
 }
@@ -152,9 +170,6 @@ h2 {
 .vrtx-multipleinputfield .vrtx-button.movedown {
   padding-left: 9px;
   padding-right: 9px;
-  /* Inline block version
-  position: relative;
-  bottom: -3px; */
 }
 
 .vrtx-multipleinputfield .vrtx-button.moveup:hover,

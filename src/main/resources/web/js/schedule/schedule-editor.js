@@ -69,7 +69,7 @@ function courseSchedule() {
         if(fixedResources) {
           sequences[sequence.id] = jQuery.extend(true, [], fixedResources);
           this.deleteUnwantedFixedResourcesProps(sequence);
-        }   
+        }
         sessions = sessions.concat(sequence.sessions);
       }
       
@@ -327,6 +327,7 @@ function courseSchedule() {
                        ((prevId || nextId) ? "</div>" : ""),
         sessionContent = vrtxEdit.htmlFacade.jsonToHtml(this.isMedisin, id, sessionId, id, session, this.vrtxResourcesFixedUrl, { "vrtxResourcesFixed": sequences[sequenceId] }, descs, this.i18n, this.embeddedAdminService);
 
+     this.deleteUserEnrichments(session);
      var rawOrigTP = jQuery.extend(true, {}, session);
 
      if(!session.vrtxOrphan) {
@@ -482,7 +483,7 @@ function courseSchedule() {
     }
   };
   /*
-   * DELETE vrtxEditableDescription and !(vrtx-props + id + dtStart + dtEnd) from sessions
+   * DELETE unwanted properties from session and sequence
    */
   this.deleteUnwantedProps = function() {
     for(var type in this.retrievedScheduleData) {
@@ -505,6 +506,9 @@ function courseSchedule() {
           for(var k = 0, sessLen = sessions.length; k < sessLen; k++) {
             if(!sessions[k].vrtxOrphan) {
               this.deleteUnwantedSessionProps(sessions[k]);
+              this.deleteUserEnrichments(sessions[k]);
+            } else {
+              this.deleteUserEnrichments(sessions[k]);
             }
           }
         }
@@ -513,7 +517,7 @@ function courseSchedule() {
     }
   };
  /*
-   * DELETE !folderUrl from objects in vrtxResourcesFixed (if no objects have folderUrl => delete whole vrtxResourcesFixed)
+   * DELETE !folderUrl from objects in vrtxResourcesFixed (if no objects have folderUrl DELETE whole vrtxResourcesFixed)
    */
   this.deleteUnwantedFixedResourcesProps = function(sequence) {
     var newFixedResources = [];
@@ -537,6 +541,7 @@ function courseSchedule() {
   };
   /*
    * DELETE !(vrtx-props + id + dtStart + dtEnd) from a session
+   *    and !(uid) from session staff and vrtxStaff
    */
   this.deleteUnwantedSessionProps = function(session) {
     for(var prop in session) {
@@ -544,6 +549,24 @@ function courseSchedule() {
         delete session[prop];
       }
     }
+  };
+  this.deleteUserEnrichments = function(session) {
+    if(session.vrtxStaff) {
+      for(var i = 0, len = session.vrtxStaff.length; i < len; i++) {
+        this.deleteUserEnrichment(session.vrtxStaff[i]);
+      }
+    }
+    if(session.staff) {
+      for(var i = 0, len = session.staff.length; i < len; i++) {
+        this.deleteUserEnrichment(session.staff[i]);
+      }
+    }
+  };
+  this.deleteUserEnrichment = function(user) {
+    delete user.name;
+    delete user.firstName;
+    delete user.lastName;
+    delete user.url;
   };
   this.checkUnsavedChanges = function() {
     this.saveLastSession();

@@ -101,7 +101,7 @@ $(document).ready(function () {
   vrtxEdit.initPreviewImage();
   
   var waitALittle = setTimeout(function() {
-    autocompleteUsernames(".vrtx-autocomplete-username");
+    autocompleteUsernames($(".vrtx-autocomplete-username"));
     autocompleteTags(".vrtx-autocomplete-tag");
     vrtxEdit.initSendToApproval();
     
@@ -1297,9 +1297,11 @@ function enhanceMultipleInputFields(name, isMovable, isBrowsable, limit, json, i
 
   vrtxEditor.multipleFieldsBoxes[name] = { counter: 1, limit: limit };
 
-  var addFormFieldFunc = addFormField, html = "";
+  var addFormFieldFunc = addFormField, html = "", isEnriched = false;
   for (var i = 0, len = formFields.length; i < len; i++) {
-    html += addFormFieldFunc(name, len, $.trim(formFields[i]), size, isBrowsable, isMovable, isDropdown, true, json, isReadOnly);
+    var htmlEnriched = addFormFieldFunc(name, len, $.trim(formFields[i]), size, isBrowsable, isMovable, isDropdown, true, json, isReadOnly);
+    html += htmlEnriched.html;
+    isEnriched = htmlEnriched.isEnriched;
   }
   html = $.parseHTML(html, document, true);
   $(html).insertBefore("#vrtx-" + name + "-add");
@@ -1314,8 +1316,7 @@ function enhanceMultipleInputFields(name, isMovable, isBrowsable, limit, json, i
 	}
     moreBtn.hide();
   }
-
-  autocompleteUsernames(".vrtx-autocomplete-username");
+  autocompleteUsernames(inputFieldParent.filter(".vrtx-autocomplete-username"), isEnriched);
 }
 
 function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown, init, json, isReadOnly) {
@@ -1342,19 +1343,22 @@ function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown
     browseButton = vrtxEditor.htmlFacade.getMultipleInputfieldsInteractionsButton("browse", "-resource-ref", idstr, "", vrtxAdmin.multipleFormGroupingMessages.browse);
   }
   
-  if(json && value && value.indexOf("###") !== -1) {
-    value = value.split("###");
-    var j = 0;
-    for(var prop in json) {
-      json[prop].val = value[j];
-      j++;
+  var isEnriched = false;
+  var hasEnrichedText = false;
+  var hasEnrichedUrl = false;
+  var jsonProcessed = null;
+  if(json) {
+    if(value && value.indexOf("###") !== -1) {
+      value = value.split("###");
     }
-  } else if(json) {
-    for(var prop in json) {
-      json[prop].val = "";
-    }
+    jsonProcessed = jQuery.extend(true, [], json);
+    var enriched = addFormFieldUserEnrichment(value, jsonProcessed, isEnriched, hasEnrichedText, hasEnrichedUrl);
+    isEnriched = enriched.isEnriched;
+    hasEnrichedText = enriched.hasEnrichedText;
+    hasEnrichedUrl = enriched.hasEnrichedUrl;
   }
-  var html = vrtxEditor.htmlFacade.getMultipleInputfield(name, idstr, i, value, size, browseButton, removeButton, moveUpButton, moveDownButton, isDropdown, json, isReadOnly);
+  
+  var html = vrtxEditor.htmlFacade.getMultipleInputfield(name, idstr, i, value, size, browseButton, removeButton, moveUpButton, moveDownButton, isDropdown, jsonProcessed, isReadOnly, hasEnrichedText, hasEnrichedUrl);
 
   vrtxEditor.multipleFieldsBoxes[name].counter++;
 
@@ -1378,7 +1382,7 @@ function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown
     
     // Setup autocomplete on username fields
     autocompleteUsername(".vrtx-autocomplete-username", idstr + i);
-    autocompleteUsername(".vrtx-autocomplete-username", idstr + "id-" + i); // JSON name='id' fix
+    autocompleteUsername(".vrtx-autocomplete-username", idstr + "id-" + i, isEnriched); // JSON name='id' fix
     
     var focusable = moreBtn.prev().find("input[type='text'], select");
     if(focusable.length) {
@@ -1394,7 +1398,7 @@ function addFormField(name, len, value, size, isBrowsable, isMovable, isDropdown
 	  moreBtn.hide();
     }
   } else {
-    return html;
+    return { "html": html, "isEnriched": isEnriched };
   }
 }
 
@@ -1438,8 +1442,105 @@ function swapContentTmp(moveBtn, move) {
     curElmInputs[i].value = movedElmInputs[i].value;
     movedElmInputs[i].value = tmp;
   }
+  swapEnrichmentTmp(curElm, movedElm, curElmInputs, movedElmInputs);
+  
   movedElmInputs.filter(":first")[0].focus();
 }
+
+/* User Enrichments */
+
+function addFormFieldUserEnrichment(value, json, isEnriched, hasEnrichedText, hasEnrichedUrl) {
+  var urlSep = "%%URL%%";
+  var textSep = "%%TEXT%%";
+  
+  var enrichedUrl = "";
+  var enrichedText = "";
+  if(value && value.length) {
+    var valueIsMultiple = typeof value === "object";
+    var lastVal = valueIsMultiple ? value[value.length - 1] : value;
+    if(lastVal.indexOf("") !== -1) {
+      var enrichedUrl = lastVal.split(urlSep);
+      if(enrichedUrl[1].indexOf("") !== -1) {
+        enrichedText = enrichedUrl[1].split(textSep)[0];
+        enrichedUrl = enrichedUrl[0];
+      } else {
+        enrichedText = "";
+      }
+      value = [ value[0] ];
+    } else if(lastVal.indexOf(textSep) !== -1) {
+      var enrichedText = lastVal.split(textSep)[0];
+      value = [ value[0] ];
+    } else {
+      if(!valueIsMultiple) {
+        value = [ value ];
+      }
+    }
+  } else {
+    value = [ "" ];
+  }
+  var i = 0;
+  var enrichedTextProp = null;
+  var val = "";
+  for(var prop in json) {
+    switch(json[prop].type) {
+      case "enrichedText":
+        isEnriched = true;
+        json[prop].enrichedText = true; // Access for template
+        enrichedTextProp = prop;
+        if(enrichedText.length) {
+          json[prop].enrichedTextVal = enrichedText;
+          hasEnrichedText = true;
+        }
+        break;
+      case "enrichedUrl":
+        isEnriched = true;
+        json[prop].enrichedUrl = true; // Access for template
+        if(enrichedUrl.length) {
+          json[prop].enrichedUrlVal = enrichedUrl;
+          hasEnrichedUrl = true;
+        }
+        break;
+      default:
+        json[prop].val = value[i];
+        if(json[prop].val != "") {
+          val = json[prop].val;
+        }
+        break;
+    }
+    i++;
+  }
+  if(!hasEnrichedText && !hasEnrichedUrl && enrichedTextProp != null && val != "") {
+    json[enrichedTextProp].enrichedTextVal = val;
+    hasEnrichedText = true;
+  }
+  return { "isEnriched": isEnriched,
+           "hasEnrichedText": hasEnrichedText,
+           "hasEnrichedUrl": hasEnrichedUrl };
+}
+
+function swapEnrichmentTmp(curElm, movedElm, curElmInputs, movedElmInputs) {
+  var curElmEnrichment = curElm.find(".vrtx-multiple-inputfield-enrichment");
+  var movedElmEnrichment = movedElm.find(".vrtx-multiple-inputfield-enrichment");
+  if(curElmEnrichment.length) {
+    if(movedElmEnrichment.length) {
+      var tmp = curElmEnrichment[0].outerHTML;
+      curElmEnrichment.replaceWith(movedElmEnrichment[0].outerHTML);
+      movedElmEnrichment.replaceWith(tmp);
+    } else {
+      $(curElmInputs[0]).removeClass("vrtx-multipleinputfield-field-enriched");
+      $(movedElmInputs[0]).addClass("vrtx-multipleinputfield-field-enriched");
+      $(curElmEnrichment.remove())
+        .insertAfter(movedElm.find(".vrtx-multipleinputfield-json-wrapper").filter(":last"));
+    }
+  } else if(movedElmEnrichment.length) {
+    $(movedElmInputs[0]).removeClass("vrtx-multipleinputfield-field-enriched");
+    $(curElmInputs[0]).addClass("vrtx-multipleinputfield-field-enriched");
+    $(movedElmEnrichment.remove())
+      .insertAfter(curElm.find(".vrtx-multipleinputfield-json-wrapper").filter(":last"));
+  }
+}
+
+/* ^ User Enrichments */
 
 /* DEHANCE PART */
 function saveMultipleInputFields(content, arrSeperator) {
@@ -1767,7 +1868,13 @@ VrtxEditor.prototype.htmlFacade = {
           if(val && val.length) {
             for(var j = 0, propsLen = val.length; j < propsLen; j++) {
               for(i = 0; i < descPropsLen; i++) {
-                propsVal += (val[j][descProps[i].name] || "") + "###";
+                if(desc.props[i].type === "enrichedText") {
+                  propsVal += (val[j][descProps[i].name] || "") + "%%TEXT%%";
+                } else if(desc.props[i].type === "enrichedUrl") {
+                  propsVal += (val[j][descProps[i].name] || "") + "%%URL%%";
+                } else {
+                  propsVal += (val[j][descProps[i].name] || "") + "###";
+                }
               }
               if(j < (propsLen - 1)) propsVal += "$$$";
             }
@@ -1887,6 +1994,9 @@ VrtxEditor.prototype.htmlFacade = {
             var newProp = null;
             var prop = val[i].split("###");
             for(var j = 0, descPropsLen = desc.props.length; j < descPropsLen; j++) { // Definition
+              if(desc.props[j].type == "enrichedUrl"
+              || desc.props[j].type == "enrichedText") continue;
+              
               if(prop[j] !== "") {
                 if(!newProp) {
                   newProp = {};
@@ -1980,7 +2090,7 @@ VrtxEditor.prototype.htmlFacade = {
   /* 
    * Type / fields 
    */
-  getMultipleInputfield: function (name, idstr, i, value, size, browseButton, removeButton, moveUpButton, moveDownButton, isDropdown, json, isReadOnly) {
+  getMultipleInputfield: function (name, idstr, i, value, size, browseButton, removeButton, moveUpButton, moveDownButton, isDropdown, json, isReadOnly, hasEnrichedText, hasEnrichedUrl) {
     return vrtxAdmin.templateEngineFacade.render(vrtxEditor.multipleFieldsBoxesTemplates["multiple-inputfield"], {
       idstr: idstr,
       i: i,
@@ -1993,7 +2103,9 @@ VrtxEditor.prototype.htmlFacade = {
       isDropdown: isDropdown,
       dropdownArray: "dropdown" + name,
       json: json,
-      isReadOnly: isReadOnly
+      isReadOnly: isReadOnly,
+      hasEnrichedText: hasEnrichedText,
+      hasEnrichedUrl: hasEnrichedUrl
     });
   },
   getTypeHtml: function (elem, inputFieldName) {

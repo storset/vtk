@@ -202,7 +202,7 @@ public class LuceneQueryBuilder implements InitializingBean {
         if (builder == null) {
             throw new QueryBuilderException("Unsupported query type: " + query.getClass().getName());
         }
-
+        
         return builder.buildQuery();
     }
 
@@ -321,6 +321,7 @@ public class LuceneQueryBuilder implements InitializingBean {
                     && peq.isInverted()) {
                 // Use common cached filter for "navigation:hidden NOT EXISTS" clause
                 return new QueryBuilder() {
+                    
                     @Override
                     public org.apache.lucene.search.Query buildQuery() throws QueryBuilderException {
                         return new ConstantScoreQuery(hiddenFilter);

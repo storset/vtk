@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006–2015, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@ import vtk.repository.resourcetype.PropertyTypeDefinition;
 public interface PropertySelect {
 
     /**
-     * A selector which selects ALL properties available for each result.
+     * A selector which selects all properties available for each result.
      * 
      * <p>This selector does not include ACLs.
      */
@@ -59,7 +59,7 @@ public interface PropertySelect {
     };
     
     /**
-     * A selector which selects ALL properties available and ACL for each result.
+     * A selector which selects all properties available and ACL for each result.
      */
     public static final PropertySelect ALL = new PropertySelect() {
         @Override
@@ -95,7 +95,7 @@ public interface PropertySelect {
     };
     
     /**
-     * @param def
+     * @param def the property
      * @return <code>true</code> if the given property should be selected for
      * loading in search results.
      */

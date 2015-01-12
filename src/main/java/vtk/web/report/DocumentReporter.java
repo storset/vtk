@@ -1,4 +1,4 @@
-/* Copyright (c) 2010,2014, University of Oslo, Norway
+/* Copyright (c) 2010–2015, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -44,6 +44,7 @@ import vtk.repository.Acl;
 import vtk.repository.Privilege;
 import vtk.repository.PropertySet;
 import vtk.repository.Resource;
+import vtk.repository.search.PropertySelect;
 import vtk.repository.search.ResultSet;
 import vtk.repository.search.Search;
 import vtk.security.PrincipalFactory;
@@ -86,6 +87,7 @@ public abstract class DocumentReporter extends AbstractReporter {
         }
         search.setCursor(pos.cursor);
         search.setLimit(pageSize);
+        search.setPropertySelect(PropertySelect.ALL); // Require all props AND also ACLs
 
         ResultSet rs = searcher.execute(token, search);
         if (pos.cursor + Math.min(pageSize, rs.getSize()) >= rs.getTotalHits()) {
@@ -161,7 +163,7 @@ public abstract class DocumentReporter extends AbstractReporter {
     public void setAclTooltipHelper(ACLTooltipHelper aclTooltipHelper) {
         this.aclTooltipHelper = aclTooltipHelper;
     }
-
+    
     private static class Position {
         int cursor = 0;
         int limit = 0;

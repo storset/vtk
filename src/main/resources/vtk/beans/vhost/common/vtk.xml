@@ -59,6 +59,15 @@
     <property name="viewUnauthenticatedParameter" value="x-prevent-decorating"/>
   </bean>
   
+  <bean id="globalHeaders" class="java.util.HashMap">
+    <constructor-arg>
+      <map>
+        <entry key="${versionHeader.name}" value="${versionHeader.value}" />
+      </map>
+    </constructor-arg>
+  </bean>
+
+
   <bean id="services" class="vtk.beans.factory.BeansListingFactoryBean">
     <property name="targetBeansClass" value="vtk.web.service.Service" />
   </bean>

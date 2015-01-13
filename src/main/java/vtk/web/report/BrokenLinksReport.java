@@ -30,8 +30,6 @@
  */
 package vtk.web.report;
 
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,7 +41,6 @@ import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.json.simple.JSONValue;
 import org.springframework.beans.factory.annotation.Required;
 
 import vtk.repository.ContentStream;
@@ -583,7 +580,15 @@ public class BrokenLinksReport extends DocumentReporter {
     }
 
     @Override
-    protected void handleResult(PropertySet resource, Map<String, Object> model) {
+    protected void handleResult(PropertySet propSet, Map<String, Object> model) {
+        // XXX: need to load resource from repository to access binary 'linkCheck' property:
+        Resource resource = null;
+        try {
+            RequestContext requestContext = RequestContext.getRequestContext();
+            resource = requestContext.getRepository().
+                    retrieve(requestContext.getSecurityToken(), propSet.getURI(), true);
+        } catch (Exception e) { throw new RuntimeException(e); }
+        
         Property linkCheck = resource.getProperty(this.linkCheckPropDef);
         if (linkCheck == null) {
             // Try re-load from database to get binary prop (binary props not available in search results).
@@ -606,11 +611,10 @@ public class BrokenLinksReport extends DocumentReporter {
 
         ContentStream binaryStream = linkCheck.getBinaryStream();
 
-        Object obj;
         try {
-            obj = JSONValue.parse(new InputStreamReader(binaryStream.getStream(), "utf-8"));
+            Json.MapContainer obj = Json.parseToContainer(binaryStream.getStream()).asObject();
             map.put(resource.getURI().toString(), obj);
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

@@ -49,6 +49,7 @@ import vtk.repository.search.query.Query;
 import vtk.repository.search.query.QueryBuilder;
 import vtk.repository.search.query.TermOperator;
 import vtk.repository.search.query.UriPrefixQuery;
+import vtk.repository.search.query.UriSetQuery;
 import vtk.repository.search.query.UriTermQuery;
 
 
@@ -121,6 +122,13 @@ public class QueryTreeBuilder implements QueryBuilder {
                     if (uriTerms == null) uriTerms = new ArrayList<>();
                     uriTerms.add(upq.getUri());
                 }
+            } else if (subQuery instanceof UriSetQuery) {
+                UriSetQuery usq = (UriSetQuery)subQuery;
+                if (usq.getOperator() == TermOperator.NI) {
+                    return null;
+                }
+                if (uriTerms == null) uriTerms = new ArrayList<>();
+                uriTerms.addAll(usq.getUris());
             } else {
                 return null;
             }

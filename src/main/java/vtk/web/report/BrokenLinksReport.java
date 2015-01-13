@@ -580,15 +580,7 @@ public class BrokenLinksReport extends DocumentReporter {
     }
 
     @Override
-    protected void handleResult(PropertySet propSet, Map<String, Object> model) {
-        // XXX: need to load resource from repository to access binary 'linkCheck' property:
-        Resource resource = null;
-        try {
-            RequestContext requestContext = RequestContext.getRequestContext();
-            resource = requestContext.getRepository().
-                    retrieve(requestContext.getSecurityToken(), propSet.getURI(), true);
-        } catch (Exception e) { throw new RuntimeException(e); }
-        
+    protected void handleResult(PropertySet resource, Map<String, Object> model) {
         Property linkCheck = resource.getProperty(this.linkCheckPropDef);
         if (linkCheck == null) {
             // Try re-load from database to get binary prop (binary props not available in search results).

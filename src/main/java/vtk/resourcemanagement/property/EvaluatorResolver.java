@@ -56,6 +56,7 @@ import vtk.resourcemanagement.studies.SharedTextResolver;
 import vtk.text.html.HtmlDigester;
 import vtk.text.html.HtmlUtil;
 import vtk.util.text.Json;
+import vtk.util.text.JsonStreamer;
 
 public class EvaluatorResolver {
 
@@ -136,7 +137,7 @@ public class EvaluatorResolver {
                     throw new PropertyEvaluationException("Unable to get JSON representation of content", e);
                 }
                 String expression = "properties." + property.getDefinition().getName();
-                value = Json.select(json, expression);
+                value = JsonStreamer.toJson(Json.select(json, expression));
                 if (emptyValue(value)) {
                     if (propertyDesc.isOverrides()) {
                         // XXX Consider the order of how this is done

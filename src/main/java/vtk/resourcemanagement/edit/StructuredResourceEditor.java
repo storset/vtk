@@ -42,6 +42,8 @@ import java.util.Map;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -80,6 +82,7 @@ public class StructuredResourceEditor  {
     private Locale defaultLocale;
     private String formView;
     private String successView;
+    private static Log logger = LogFactory.getLog(StructuredResourceEditor.class);
 
     @RequestMapping(method=RequestMethod.GET)
     public ModelAndView get() throws Exception {
@@ -91,6 +94,7 @@ public class StructuredResourceEditor  {
     
     @RequestMapping(method=RequestMethod.POST)
     public ModelAndView post(HttpServletRequest request) throws Exception {
+        debugPostRequest(request);
         FormSubmitCommand form = formBackingObject();
         FormDataBinder binder = new FormDataBinder(form, "form", form.getResource().getType());
         binder.bind(request);
@@ -224,7 +228,7 @@ public class StructuredResourceEditor  {
             super(target, objectName);
             this.description = description;
         }
-
+        
         @Override
         public void bind(ServletRequest request) {
             List<PropertyDescription> props = description.getAllPropertyDescriptions();
@@ -282,6 +286,7 @@ public class StructuredResourceEditor  {
                         }
                     }
                 }
+                
                 bindObjectToForm(form, desc, obj);
                 return;
             }
@@ -328,7 +333,7 @@ public class StructuredResourceEditor  {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-        }
+        }        
     }
 
     private String filterValue(String value) throws Exception {
@@ -337,6 +342,16 @@ public class StructuredResourceEditor  {
         fragment = parser.parseFragment(value);
         fragment.filter(safeHtmlFilter);
         return fragment.getStringRepresentation();
+    }
+    
+    private void debugPostRequest(ServletRequest request) {
+        List<String> parameterNames = new ArrayList<>();
+        Enumeration<?> inputs = request.getParameterNames();
+        while (inputs.hasMoreElements()) 
+            parameterNames.add(inputs.nextElement().toString());
+        Path uri = RequestContext.getRequestContext().getResourceURI();
+        logger.debug("POST: " + uri + ": " + request.getContentLength() 
+                + " bytes, parameters: " + parameterNames);
     }
 
     public void unlock() throws Exception {

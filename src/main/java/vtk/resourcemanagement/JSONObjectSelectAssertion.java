@@ -87,8 +87,7 @@ public class JSONObjectSelectAssertion implements RepositoryContentEvaluationAss
         try {
             Json.MapContainer object; 
             try {
-                Json.Container container = content.getContentRepresentation(Json.Container.class);
-                object = container.asObject(); 
+                object = content.getContentRepresentation(Json.MapContainer.class);
             } catch (Exception e) {
                 throw new PropertyEvaluationException("Unable to get JSON representation of content", e);
             }

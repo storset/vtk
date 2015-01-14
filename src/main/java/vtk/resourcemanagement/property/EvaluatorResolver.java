@@ -131,8 +131,7 @@ public class EvaluatorResolver {
             } else {
                 Json.MapContainer json; 
                 try {
-                    Json.Container container = ctx.getContent().getContentRepresentation(Json.Container.class);
-                    json = container.asObject(); 
+                    json = ctx.getContent().getContentRepresentation(Json.MapContainer.class);
                 } catch (Exception e) {
                     throw new PropertyEvaluationException("Unable to get JSON representation of content", e);
                 }

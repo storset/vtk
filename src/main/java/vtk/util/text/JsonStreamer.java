@@ -1,4 +1,4 @@
-/* Copyright (c) 2014 University of Oslo, Norway
+/* Copyright (c) 2014–2015, University of Oslo, Norway
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,33 +32,49 @@ package vtk.util.text;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.reflect.Array;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 /**
- * TODO support serialization of arrays of objects and primitives.
- * 
  * Serialize generic data structures to JSON with a stream-friendly API.
  * 
  * The stream generator is stateful with regard to validation and should prevent client
  * code from creating invalid JSON. It handles comma-separators, value
  * serializing, proper closing of JSON structure and optional pretty printing.
  * 
- * <p>
- * Client code invokes methods to add data forming a logical JSON structure. The
+ * <p>Client code invokes methods to add data forming a logical JSON structure. The
  * serialized data is immediately written to a stream writer instance, but state
  * is kept wrt. to JSON syntax. If client invokes generator methods in wrong
  * order, etc, typically <code>IllegalStateException</code> will be thrown to
  * prevent writing invalid JSON. This condition generally indicates an error in
  * the calling code.
+ * 
+ * <p>
+ * Java type serialization support:
+ * <ul>
+ * <li>Collections of objects will be serialized to JSON arrays recursively.
+ * <li>Java arrays of objects or primitive types will be serialized to JSON
+ * arrays recursively.
+ * <li>Maps are serialized to JSON objects recursively.
+ * <li>Primitive objects of types <code>Boolean</code>, <code>Number</code>,
+ * <code>null</code> and <code>String</code> are serialized to the corresponding
+ * JSON data types.
+ * <li>Objects of type {@link Character} are serialized to JSON strings of length 1.
+ * <li>Objects of other kinds are serialized using their {@link Object#toString()}
+ * representation.
+ * </ul>
  *
- * <p>Note: There is currently no built-in protection against stack overflow
- * error if you try to serialize self-referencing container structures (maps/lists/arrays
- * containing direct or indirect reference cycles)
- * TODO add simple checking to detect ref-cycles between lists/maps on recursive
- * calls.
+ * <p>
+ * Note: There is currently no built-in protection against stack overflow
+ * error if you try to serialize self-referencing container structures
+ * (maps/lists/arrays containing direct or indirect reference cycles)
+ * 
+ * TODO add simple checking to detect ref-cycles between lists/maps on recursive calls.
+ * TODO add support for custom object serialization through "JSONAware" interface
+ * or similar.
  * 
  * <p>
  * This class is not thread safe. You should not share instances of this class
@@ -339,34 +355,41 @@ public class JsonStreamer {
         }
         
         if (object instanceof Map) {
-            return object((Map<String,Object>)object);
+            return object((Map<?,?>)object);
         }
-        if (object instanceof List) {
-            return array((List<Object>)object);
+        if (object instanceof Iterable) {
+            return array((Iterable<?>)object);
         }
-
+        if (object != null) {
+            Class clazz = object.getClass();
+            if (clazz.isArray()) {
+                javaArrayValue(object);
+                return this;
+            }
+        }
+        
         if (!ctx.empty && ctx.state != KEY_VALUE) {
             formatter.writeValueSeparator(ctx.level);
         }
 
         if (ctx.state == KEY_VALUE) {
             ctx.state = OBJECT;
-            formatter.writePrimitiveMemberValue(object, ctx.level);
+            formatter.writeValue(object, ctx.level, false);
         } else {
-            formatter.writePrimitiveArrayValue(object, ctx.level);
+            formatter.writeValue(object, ctx.level, true);
         }
         ctx.empty = false;
         return this;
     }
 
     /**
-     * Write a list (becomes JSON array).
+     * Write a collection of values, which becomes a JSON array.
      * @param values
      * @return
      * @throws IOException 
      * @throws StackOverflowError if object is a structure with reference cycles, which is not supported.
      */
-    public JsonStreamer array(List<Object> values) throws IOException {
+    public JsonStreamer array(Iterable<?> values) throws IOException {
         beginArray();
         for (Object v: values) {
             value(v);
@@ -376,18 +399,20 @@ public class JsonStreamer {
     }
 
     /**
-     * Write a complete object.
+     * Write a complete object from a map. Map keys are converted to JSON object
+     * keys via {@link Object#toString() }.
      * 
-     * @param map the object
+     * @param map the object as a map.
      * @return this <code>JsonStreamer</code> instance.
      * @throws IOException if writing to stream fails
      * @throws IllegalStateException if current state is object with no specified key.
      * @throws StackOverflowError if object is a structure with reference cycles, which is not supported.
      */
-    public JsonStreamer object(Map<String, Object> map) throws IOException {
+    public JsonStreamer object(Map<?, ?> map) throws IOException {
         beginObject();
-        for (Map.Entry<String,Object> entry: map.entrySet()) {
-            member(entry.getKey(), entry.getValue());
+        for (Map.Entry<?,?> entry: map.entrySet()) {
+            Object key = entry.getKey();
+            member(key == null ? "null" : key.toString(), entry.getValue());
         }
         endObject();
         return this;
@@ -461,7 +486,81 @@ public class JsonStreamer {
         }
     }
     
-    // Default serializer/formatter for JSON output
+    // Unwrap and serialize any primitive Java array
+    private void javaArrayValue(Object javaArray) throws IOException {
+        final Class componentType = javaArray.getClass().getComponentType();
+        final int len = Array.getLength(javaArray);
+        
+        beginArray();
+        final Context ctx = contexts.peek();
+        if (componentType.isArray()) {
+            for (int i=0; i<len; i++) {
+                Object subArray = Array.get(javaArray, i);
+                javaArrayValue(subArray);
+                ctx.empty = false;
+            }
+        } else if (componentType == byte.class) {
+            for (int i=0; i<len; i++) {
+                if (!ctx.empty) formatter.writeValueSeparator(ctx.level);
+                formatter.writeValue(Array.getByte(javaArray, i), ctx.level, true);
+                ctx.empty = false;
+            }
+        } else if (componentType == short.class) {
+            for (int i=0; i<len; i++) {
+                if (!ctx.empty) formatter.writeValueSeparator(ctx.level);
+                formatter.writeValue(Array.getShort(javaArray, i), ctx.level, true);
+                ctx.empty = false;
+            }
+        } else if (componentType == int.class) {
+            for (int i=0; i<len; i++) {
+                if (!ctx.empty) formatter.writeValueSeparator(ctx.level);
+                formatter.writeValue(Array.getInt(javaArray, i), ctx.level, true);
+                ctx.empty = false;
+            }
+        } else if (componentType == long.class) {
+            for (int i=0; i<len; i++) {
+                if (!ctx.empty) formatter.writeValueSeparator(ctx.level);
+                formatter.writeValue(Array.getLong(javaArray, i), ctx.level, true);
+                ctx.empty = false;
+            }
+        } else if (componentType == float.class) {
+            for (int i=0; i<len; i++) {
+                if (!ctx.empty) formatter.writeValueSeparator(ctx.level);
+                formatter.writeValue(Array.getFloat(javaArray, i), ctx.level, true);
+                ctx.empty = false;
+            }
+        } else if (componentType == double.class) {
+            for (int i=0; i<len; i++) {
+                if (!ctx.empty) formatter.writeValueSeparator(ctx.level);
+                formatter.writeValue(Array.getDouble(javaArray, i), ctx.level, true);
+                ctx.empty = false;
+            }
+        } else if (componentType == boolean.class) {
+            for (int i=0; i<len; i++) {
+                if (!ctx.empty) formatter.writeValueSeparator(ctx.level);
+                formatter.writeValue(Array.getBoolean(javaArray, i), ctx.level, true);
+                ctx.empty = false;
+            }
+        } else if (componentType == char.class) {
+            for (int i=0; i<len; i++) {
+                if (!ctx.empty) formatter.writeValueSeparator(ctx.level);
+                formatter.writeValue(Array.getChar(javaArray, i), ctx.level, true);
+                ctx.empty = false;
+            }
+        } else {
+            for (int i=0; i<len; i++) {
+                value(Array.get(javaArray, i));
+            }
+        }
+        
+        endArray();
+    }
+    
+    /**
+     * Default serializer/formatter for JSON output
+     * Responsibility of formatting syntactical elements and values
+     * to a writer. Stateless wrt. syntax.
+     */
     private static class Formatter {
         
         private final boolean escapeSlashes;
@@ -496,16 +595,84 @@ public class JsonStreamer {
             writeEscapedStringValue(key);
             w.write(':');
         }
-        
-        void writePrimitiveArrayValue(Object value, int level) throws IOException {
-            writePrimitiveValue(value);
+
+        /**
+         * Write an object value (a non-collection/non-array type).
+         * @param value the value to write
+         * @param level object/array nesting level
+         * @param arrayValue if <code>true</code>, the value is part of a JSON array,
+         * otherwise the value is an object member value.
+         * @throws IOException in case of errors writing to stream
+         */
+        void writeValue(Object value, int level, boolean arrayValue) throws IOException {
+            writeObjectValue(value);
+        }
+
+        /**
+         * See {@link #writeValue(java.lang.Object, int, boolean) }.
+         */
+        void writeValue(char value, int level, boolean arrayValue) throws IOException {
+            writeEscapedStringValue(Character.toString(value));
         }
         
-        void writePrimitiveMemberValue(Object value, int level) throws IOException {
-            writePrimitiveValue(value);
+        /**
+         * See {@link #writeValue(java.lang.Object, int, boolean) }.
+         */
+        void writeValue(boolean value, int level, boolean arrayValue) throws IOException {
+            w.write(value ? "true" : "false");
         }
         
-        private void writePrimitiveValue(Object value) throws IOException {
+        /**
+         * See {@link #writeValue(java.lang.Object, int, boolean) }.
+         */
+        void writeValue(byte value, int level, boolean arrayValue) throws IOException {
+            w.write(Byte.toString(value));
+        }
+        
+        /**
+         * See {@link #writeValue(java.lang.Object, int, boolean) }.
+         */
+        void writeValue(short value, int level, boolean arrayValue) throws IOException {
+            w.write(Short.toString(value));
+        }
+        
+        /**
+         * See {@link #writeValue(java.lang.Object, int, boolean) }.
+         */
+        void writeValue(int value, int level, boolean arrayValue) throws IOException {
+            w.write(Integer.toString(value));
+        }
+        
+        /**
+         * See {@link #writeValue(java.lang.Object, int, boolean) }.
+         */
+        void writeValue(long value, int level, boolean arrayValue) throws IOException {
+            w.write(Long.toString(value));
+        }
+        
+        /**
+         * See {@link #writeValue(java.lang.Object, int, boolean) }.
+         */
+        void writeValue(float value, int level, boolean arrayValue) throws IOException {
+            if (Float.isNaN(value) || Float.isInfinite(value)) {
+                w.write("null");
+            } else {
+                w.write(Float.toString(value));
+            }
+        }
+        
+        /**
+         * See {@link #writeValue(java.lang.Object, int, boolean) }.
+         */
+        void writeValue(double value, int level, boolean arrayValue) throws IOException {
+            if (Double.isNaN(value) || Double.isInfinite(value)) {
+                w.write("null");
+            } else {
+                w.write(Double.toString(value));
+            }
+        }
+        
+        private void writeObjectValue(Object value) throws IOException {
             if (value == null) {
                 w.write("null");
             } else if (value instanceof String) {
@@ -590,11 +757,59 @@ public class JsonStreamer {
         }
 
         @Override
-        void writePrimitiveArrayValue(Object value, int level) throws IOException {
-            writeNewLine(level);
-            super.writePrimitiveArrayValue(value, level);
+        void writeValue(Object value, int level, boolean arrayValue) throws IOException {
+            if (arrayValue) writeNewLine(level);
+            super.writeValue(value, level, arrayValue);
         }
 
+        @Override
+        void writeValue(double value, int level, boolean arrayValue) throws IOException {
+            if (arrayValue) writeNewLine(level);
+            super.writeValue(value, level, arrayValue);
+        }
+
+        @Override
+        void writeValue(float value, int level, boolean arrayValue) throws IOException {
+            if (arrayValue) writeNewLine(level);
+            super.writeValue(value, level, arrayValue);
+        }
+
+        @Override
+        void writeValue(long value, int level, boolean arrayValue) throws IOException {
+            if (arrayValue) writeNewLine(level);
+            super.writeValue(value, level, arrayValue);
+        }
+
+        @Override
+        void writeValue(int value, int level, boolean arrayValue) throws IOException {
+            if (arrayValue) writeNewLine(level);
+            super.writeValue(value, level, arrayValue);
+        }
+
+        @Override
+        void writeValue(short value, int level, boolean arrayValue) throws IOException {
+            if (arrayValue) writeNewLine(level);
+            super.writeValue(value, level, arrayValue);
+        }
+
+        @Override
+        void writeValue(byte value, int level, boolean arrayValue) throws IOException {
+            if (arrayValue) writeNewLine(level);
+            super.writeValue(value, level, arrayValue);
+        }
+
+        @Override
+        void writeValue(boolean value, int level, boolean arrayValue) throws IOException {
+            if (arrayValue) writeNewLine(level);
+            super.writeValue(value, level, arrayValue);
+        }
+
+        @Override
+        void writeValue(char value, int level, boolean arrayValue) throws IOException {
+            if (arrayValue) writeNewLine(level);
+            super.writeValue(value, level, arrayValue);
+        }
+        
         @Override
         void writeMemberKeyAndColon(String key, int level) throws IOException {
             writeNewLine(level);

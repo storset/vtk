@@ -180,7 +180,7 @@ public class JsonBuilder {
      * Like {@link JsonStreamer#array(java.util.List) }, but no {@link java.io.IOException}
      * can be thrown. 
      */
-    public JsonBuilder array(List<Object> values) {
+    public JsonBuilder array(Iterable<?> values) {
         try {
             js.array(values);
         } catch (IOException io) {}
@@ -191,7 +191,7 @@ public class JsonBuilder {
      * Like {@link JsonStreamer#object(java.util.Map) }, but no {@link java.io.IOException}
      * can be thrown.
      */
-    public JsonBuilder object(Map<String, Object> map) {
+    public JsonBuilder object(Map<?, ?> map) {
         try {
             js.object(map);
         } catch (IOException io) {}

@@ -208,6 +208,17 @@ public class JsonBuilder {
         } catch (IOException io) {}
         return this;
     }
+
+    /**
+     * Like {@link JsonStreamer#membersOf(java.util.Map) }, but no {@link java.io.IOException}
+     * can be thrown.
+     */
+    public JsonBuilder membersOf(Map<?, ?> map) {
+        try {
+            js.membersOf(map);
+        } catch (IOException io) {}
+        return this;
+    }
     
     /**
      * Like {@link JsonStreamer#memberIfNotNull(java.lang.String, java.lang.Object) }, 

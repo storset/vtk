@@ -48,10 +48,10 @@ import vtk.util.text.JsonStreamer;
  * <ul>
  * <li>{@code java.util.Map} (JSON objects)
  * <li>{@code java.util.List} (JSON arrays)
- * <li>{@code java.lang.Object[]} (JSON arrays)
+ * <li>Java arrays (JSON arrays)
  * </ul>
  * 
- * <p>Supoorted primitive types:
+ * <p>Supported primitive data types:
  * <ul>
  * <li>{@code java.lang.String} (JSON strings)
  * <li>{@code java.lang.Number} (JSON numbers)

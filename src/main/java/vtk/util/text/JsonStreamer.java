@@ -417,7 +417,7 @@ public class JsonStreamer {
         endObject();
         return this;
     }
-
+    
     /**
      * Write an object member consisting of a key and a value.
      * @param key the key, cannot be <code>null</code>
@@ -433,6 +433,22 @@ public class JsonStreamer {
         return this;
     }
     
+    /**
+     * Write all members of provided map to current object.
+     * @param map the map from which to write members to current object stream.
+     * @return this <code>JsonStreamer</code> instance.
+     * @throws IOException if writing to stream fails
+     * @throws IllegalStateException if current state is not an object
+     * @throws StackOverflowError if object is a structure with reference cycles, which is not supported.
+     */
+    public JsonStreamer membersOf(Map<?, ?> map) throws IOException {
+        for (Map.Entry<?, ?> entry: map.entrySet()) {
+            Object key = entry.getKey();
+            member(key == null ? "null" : key.toString(), entry.getValue());
+        }
+        return this;
+    }
+
     /**
      * Like {@link #member(java.lang.String, java.lang.Object) }, but only write
      * the member if both key and value are non-null.

@@ -208,6 +208,17 @@ public class JsonStreamerTest {
     }
     
     @Test
+    public void membersOf() throws IOException {
+        Map<Object,Object> m = new LinkedHashMap<>();
+        m.put("x", "y");
+        m.put(null, "null");
+        m.put(1, 1);
+        
+        js.beginObject().member("a", "b").membersOf(m).endObject();
+        assertEquals("{\"a\":\"b\",\"x\":\"y\",\"null\":\"null\",\"1\":1}", sw.toString());
+    }
+    
+    @Test
     public void objectWithNullValues() throws IOException {
         js.beginObject().member("a", null).key("b").value(null).endObject();
         assertEquals("{\"a\":null,\"b\":null}", sw.toString());

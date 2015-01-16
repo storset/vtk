@@ -39,7 +39,9 @@ import vtk.util.text.Json;
  * Cache loader that provides {@link JSON} objects
  */
 public class JSONCacheLoader extends URLConnectionCacheLoader<Json.Container> {
-    
+
+    // XXX limit not enforced, could use BoundedInputStream to apply limit while still
+    // parsing by stream. 
     private int maxLength = 1000000;
 
     @Override

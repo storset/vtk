@@ -1,4 +1,4 @@
-/* Copyright (c) 2014, University of Oslo, Norway
+/* Copyright (c) 2014–2015, University of Oslo, Norway
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -169,7 +169,7 @@ public final class Json {
      * JSON objects and {@link java.util.ArrayList} for JSON arrays. It therefore
      * presents and "unwrapped" view of JSON data with no special containers.
      */
-    private static final class UnwrappedContainerFactory implements ContainerFactory {
+    static final class UnwrappedContainerFactory implements ContainerFactory {
         @Override
         public Map createObjectContainer() {
             return new HashMap<>();
@@ -184,7 +184,7 @@ public final class Json {
      * Container factory which provides specialized container types for extra
      * functionality.
      */
-    private static final class JsonContainerFactory implements ContainerFactory {
+    static final class JsonContainerFactory implements ContainerFactory {
         @Override
         public Map createObjectContainer() {
             return new MapContainer();
@@ -193,6 +193,7 @@ public final class Json {
         public List creatArrayContainer() {
             return new ListContainer();
         }
+        
     }
 
     private static final Pattern ARRAY_SELECTOR = Pattern.compile("^([^\\[\\]]+)\\[([0-9]+)\\]$");
@@ -438,6 +439,42 @@ public final class Json {
             return idx >= 0 && idx < size();
         }
 
+        /**
+         * Conversion of a provided {@code List} to a {@code ListContainer}
+         * structure.
+         * 
+         * <p>XXX Comitted for review; I'm not sure we need this for anything.
+         * If we
+         * decide this is not necessary, just remove it to keep things lean and
+         * simple.
+         * 
+         * <p>All values in list that are lists or other maps will also be converted
+         * recursively. All contained values that are {@code Map} instances must
+         * have string keys, otherwise a {@code ClassCastException} will be
+         * thrown.
+         *
+         * @param array any list
+         * @return a ListContainer with the same values as input map, except all contained
+         * lists/maps values are converted to containers.
+         * @throws ClassCastException if maps occur as values that do not have
+         * string keys.
+         * @throws StackOverflowError if provided structure contains reference cycles
+         * between maps and/or lists.
+         */
+        static ListContainer toContainer(List<?> array) {
+            ListContainer outer = new ListContainer();
+            for (Object o: array) {
+                if (o instanceof Map) {
+                    outer.add(MapContainer.toContainer((Map<String,Object>)o));
+                } else if (o instanceof List) {
+                    outer.add(toContainer((List<?>)o));
+                } else {
+                    outer.add(o);
+                }
+            }
+            return outer;
+        }
+        
     }
 
     /**
@@ -463,10 +500,6 @@ public final class Json {
     public static final class MapContainer extends LinkedHashMap<String,Object> implements Container {
 
         public MapContainer() {
-        }
-
-        public MapContainer(Map<? extends String, ? extends Object> m) {
-            super(m);
         }
 
         @Override
@@ -497,6 +530,26 @@ public final class Json {
             }
             return (MapContainer)o;
         }
+
+        /** 
+         * Get a JSON object value for key as a {@code MapContainer}. But if
+         * no appropriate value exists for the key, return a provided default
+         * value.
+         * 
+         * TODO consider if default value should be converted to MapContainer if used.
+         * 
+         * @param key
+         * @param defaultValue
+         * @return a {@code MapContainer} instance if key with appropriate value was found, otherwise
+         * the <code>defaultValue</code> instance
+         * 
+         */
+        public Map<String,Object> optObjectValue(String key, Map<String,Object> defaultValue) {
+            Object o = get(key);
+            if (o instanceof MapContainer) return (MapContainer)o;
+            
+            return defaultValue;
+        }
         
         /**
          * Return array value for key.
@@ -510,6 +563,24 @@ public final class Json {
                 throw new ValueException("Key does not exist or is not an array value: '" + key + "'");
             }
             return (ListContainer)o;
+        }
+
+        /** 
+         * Get a JSON array value for key as a {@code ListContainer}. But if
+         * no appropriate value exists for the key, return a provided default
+         * value.
+         * 
+         * TODO consider if default value should be converted to ListContainer if used.
+         * 
+         * @param key
+         * @param defaultValue
+         * @return 
+         */
+        public List<Object> optArrayValue(String key, List<Object> defaultValue) {
+            Object o = get(key);
+            if (o instanceof ListContainer) return (ListContainer)o;
+            
+            return defaultValue;
         }
         
         /**
@@ -677,6 +748,50 @@ public final class Json {
          */
         public Object select(String expression) {
             return Json.select(this, expression);
+        }
+        
+        
+        /**
+         * Conversion of a provided {@code Map} to a {@code Container}
+         * structure.
+         *
+         * <p>
+         * XXX Comitted for review; I'm not sure we need this for anything. But can
+         * be used for {@link MapContainer#optObjectValue(java.lang.String, java.util.Map)  MapContainer, to convert default
+         * arg to a MapContainer return value.
+         * 
+         * If we decide this is not necessary, just remove it to keep things lean and simple.
+         *
+         * <p>
+         * All values in map that are lists or other maps will also be converted
+         * recursively. All contained values that are {@code Map} instances must
+         * have string keys, otherwise a {@code ClassCastException} will be
+         * thrown.
+         *
+         * <p>
+         * Note that no deep copy of other value types are done.
+         *
+         * @param map any input map
+         * @return a MapContainer with the same keys/values as input map.
+         * @throws ClassCastException if maps occur as values that do not have
+         * string keys.
+         * @throws StackOverflowError if provided map contains reference cycles
+         * between maps and/or lists.
+         */
+        public static MapContainer toContainer(Map<String, Object> map) {
+            MapContainer root = new MapContainer();
+            for (Map.Entry<String,Object> entry: map.entrySet()) {
+                String key = entry.getKey();
+                Object value = entry.getValue();
+                if (value instanceof Map) {
+                    root.put(key, toContainer((Map<String,Object>)value));
+                } else if (value instanceof List) {
+                    root.put(key, ListContainer.toContainer((List<?>)value));
+                } else {
+                    root.put(key, value);
+                }
+            }
+            return root;
         }
     }
     

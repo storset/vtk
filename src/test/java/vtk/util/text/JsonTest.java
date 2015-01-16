@@ -40,6 +40,9 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +51,8 @@ import org.junit.Test;
 
 import vtk.util.io.StreamUtil;
 import vtk.util.text.Json.Container;
+import vtk.util.text.Json.ListContainer;
+import vtk.util.text.Json.MapContainer;
 
 /**
  * Test {@link vtk.util.text.Json}.
@@ -230,7 +235,7 @@ public class JsonTest {
     
     @Test
     public void mapContainerOptMethods() {
-        Json.Container c = Json.parseToContainer("{\"a\":\"value\", \"b\":null, \"n\":133.33}");
+        Json.Container c = Json.parseToContainer("{\"a\":\"value\", \"b\":null, \"n\":133.33, \"obj\":{\"n\":1}, \"arr\":[]}");
         Json.MapContainer json = c.asObject();
         
         // Null value as default value
@@ -270,5 +275,42 @@ public class JsonTest {
         assertEquals("default", json.optStringValue("non-existing", "default"));
         assertEquals("default", json.optStringValue("n", "default"));
         
+        // Object value (map)
+        MapContainer expectedObj = new MapContainer();
+        expectedObj.put("n", 1L);
+        
+        assertNull(json.optObjectValue("non-existing", null));
+        assertEquals(Collections.EMPTY_MAP, json.optObjectValue("non-existing", Collections.EMPTY_MAP));
+        assertEquals(Collections.EMPTY_MAP, json.optObjectValue("a", Collections.EMPTY_MAP));
+        assertEquals(expectedObj, json.optObjectValue("obj", Collections.EMPTY_MAP));
+        
+        // Array value (list)
+        ListContainer expectedArr = new ListContainer();
+        
+        assertNull(json.optArrayValue("non-existing", null));
+        assertEquals(Collections.EMPTY_LIST, json.optArrayValue("non-existing", Collections.EMPTY_LIST));
+        assertEquals(Collections.EMPTY_LIST, json.optArrayValue("a", Collections.EMPTY_LIST));
+        assertEquals(expectedArr, json.optArrayValue("arr", Collections.EMPTY_LIST));
+    }
+    
+    @Test
+    public void toContainerConversionMethods() {
+        Map<String,Object> map1 = new LinkedHashMap<>();
+        Map<String,Object> map2 = new LinkedHashMap<>();
+        List<Object> l1 = new ArrayList<>();
+        l1.add(1);
+        l1.add(map2);
+        
+        map1.put("a", "b");
+        map2.put("c", "d");
+        map2.put("e", 0.3);
+        map1.put("map", map2);
+        map1.put("list", l1);
+        
+        MapContainer wrapped = MapContainer.toContainer(map1);
+        assertEquals(map1, wrapped);
+        assertTrue(wrapped.get("map") instanceof MapContainer);
+        assertTrue(wrapped.get("list") instanceof ListContainer);
+        assertTrue(((List<?>)wrapped.get("list")).get(1) instanceof MapContainer);
     }
 }

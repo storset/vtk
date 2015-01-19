@@ -57,26 +57,41 @@ function splitAutocompleteSuggestion(id) {
   });
 }
 
-function autocompleteEnrichedUsers(id) {
-  var hasChosen = false;
-  var fieldId = '#' + id;
-  $(fieldId).result(function(event, data, formatted) {
-    hasChosen = true;
-    $(fieldId).hide();
+function enrichedUsersAutocomplete(id, focusClassAfterSelection) {
+  var hasSelected = false;
+  var fieldId = "#" + id;
+  var field = $(fieldId);
+  var fieldParent = field.parent();
+  
+  // Have selected autocomplete result
+  field.result(function(event, data, formatted) {
+    hasSelected = true;
+    
+    // Hide inputfield
+    field.hide();
+    
+    // Add user enrichment
     var userEnriched = formatted.split(";");
     var url = userEnriched[2];
     var name = userEnriched[0];
-    
     if(url != "") {
-      var html = "<a target='_blank' class='vrtx-multiple-inputfield-enrichment' href='" + url + "'>" + name + "</a>";
+      var userEnrichmentHtml = "<a target='_blank' class='vrtx-multiple-inputfield-enrichment' href='" + url + "'>" + name + "</a>";
     } else {
-      var html = "<span class='vrtx-multiple-inputfield-enrichment'>" + name + "</span>";
+      var userEnrichmentHtml = "<span class='vrtx-multiple-inputfield-enrichment'>" + name + "</span>";
     }
-    $($.parseHTML(html)).insertAfter($(fieldId).parent());
+    $($.parseHTML(userEnrichmentHtml)).insertAfter(fieldParent);
+    
+    // Set focus on add button if exists
+    var focusElm = fieldParent.closest(".vrtx-multipleinputfields").find(focusClassAfterSelection);
+    if(focusElm.length) {
+      focusElm[0].focus();
+    }
   });
+  
+  // Not have selected autocomplete result on "focusout"
   $(document).on("focusout", fieldId, function() {
-    if(!hasChosen) {
-      $(fieldId).val("");
+    if(!hasSelected) {
+      field.val("");
     }
   });
 }

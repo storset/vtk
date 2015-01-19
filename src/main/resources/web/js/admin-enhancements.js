@@ -3075,7 +3075,7 @@ function autocompleteUsernames(elms, useEnrichment) {
     var id = _$(autocompleteTextfields[i]).attr("id");
     permissionsAutocomplete(id, 'userNames', vrtxAdmin.usernameAutocompleteParams, true);
     if(typeof useEnrichment === "boolean" && useEnrichment) {
-      autocompleteEnrichedUsers(id);
+      enrichedUsersAutocomplete(id, ".vrtx-button.add");
     }
   }
 }
@@ -3085,7 +3085,7 @@ function autocompleteUsername(selector, subselector, useEnrichment) {
   if (autocompleteTextfield.length) {
     permissionsAutocomplete(subselector, 'userNames', vrtxAdmin.usernameAutocompleteParams, true);
     if(typeof useEnrichment === "boolean" && useEnrichment) {
-      autocompleteEnrichedUsers(subselector);
+      enrichedUsersAutocomplete(subselector, ".vrtx-button.add");
     }
   }
 }

@@ -345,7 +345,7 @@
 
 .ui-accordion .header.ui-accordion-header.ui-state-hover,
 .ui-accordion .header.ui-accordion-header.ui-state-focus {
-  background: #ecf3f9;
+  background-color: #ecf3f9;
 }
 
 .ui-accordion > div > .header.ui-accordion-header.ui-corner-top,
@@ -353,7 +353,8 @@
   background: none;
 }
 
-.ui-accordion .ui-accordion .header.ui-accordion-header.ui-state-hover {
+.ui-accordion .ui-accordion .header.ui-accordion-header.ui-state-hover,
+.ui-accordion .ui-accordion .header.ui-accordion-header.ui-state-focus {
   background: url(../images/line-dotted.gif) repeat-x top left !important;
 }
 

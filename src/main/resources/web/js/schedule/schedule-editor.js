@@ -440,7 +440,13 @@ function courseSchedule() {
         };
         var accResources = new VrtxAccordion(optsExternalStaff);
         accResources.create();
-        externalStaff.addClass("fast");
+        externalStaff.addClass("fast").attr("tabindex", "0");
+        externalStaff.keydown(function(e) {
+          if((e.which && e.which === 13) || (e.keyCode && e.keyCode === 13)) {
+            $(this).find("> label").click();
+            e.stopPropagation();
+          }
+        });
       }
       
       var resources = contentElm.find(".vrtx-fixed-resources-semester");
@@ -461,7 +467,13 @@ function courseSchedule() {
         };
         var accResources = new VrtxAccordion(optsResources);
         accResources.create();
-        resources.addClass("fast");
+        resources.addClass("fast").attr("tabindex", "0");
+        resources.keydown(function(e) {
+          if((e.which && e.which === 13) || (e.keyCode && e.keyCode === 13)) {
+            $(this).find("> label").click();
+            e.stopPropagation();
+          }
+        });
       }
     }
   };

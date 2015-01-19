@@ -44,7 +44,7 @@ var scheduleI18n = {
   "cancel": "Cancel",
 
   "vrtxTitle": "Name of activity",
-  "vrtxStaff": "Staff (enter username)",
+  "vrtxStaff": "Staff (from UiO)",
   "vrtxStaffExternal": "External staff",
   "vrtxStaffExternal-name": "Name",
   "vrtxStaffExternal-url": "Web address",

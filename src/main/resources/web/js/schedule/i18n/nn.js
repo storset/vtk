@@ -44,7 +44,7 @@ var scheduleI18n = {
   "cancel": "Avbryt",
 
   "vrtxTitle": "Namn på aktiviteten",
-  "vrtxStaff": "Forelesere (fyll inn brukernamn)",
+  "vrtxStaff": "Forelesere (fra UiO)",
   "vrtxStaffExternal": "Eksterne forelesere",
   "vrtxStaffExternal-name": "Namn",
   "vrtxStaffExternal-url": "Webadresse",

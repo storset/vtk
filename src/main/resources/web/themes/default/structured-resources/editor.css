@@ -343,7 +343,8 @@
   cursor: pointer;
 }
 
-.ui-accordion .header.ui-accordion-header.ui-state-hover {
+.ui-accordion .header.ui-accordion-header.ui-state-hover,
+.ui-accordion .header.ui-accordion-header.ui-state-focus {
   background: #ecf3f9;
 }
 

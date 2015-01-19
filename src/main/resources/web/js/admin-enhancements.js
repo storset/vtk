@@ -1373,7 +1373,7 @@ VrtxAdmin.prototype.initScrollBreadcrumbs = function initScrollBreadcrumbs() {
     vrtxAdm.crumbsInner.addClass("animate");
   }, 120);
 
-  eventListen(vrtxAdm.cachedDoc, "keydown", ".vrtx-breadcrumb-level", function (ref) {
+  eventListen(vrtxAdm.cachedDoc, "keypress", ".vrtx-breadcrumb-level", function (ref) {
     window.location.href = $(ref).find("a").attr("href");
   }, "clickOrEnter", 10);
   

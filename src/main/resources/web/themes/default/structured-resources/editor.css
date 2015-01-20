@@ -353,6 +353,7 @@
   background: none;
 }
 
+/* Ensure dotted background on inner accordions */
 .ui-accordion .ui-accordion .header.ui-accordion-header.ui-state-hover,
 .ui-accordion .ui-accordion .header.ui-accordion-header.ui-state-focus,
 .ui-accordion .ui-accordion .header.ui-accordion-header.ui-corner-top,

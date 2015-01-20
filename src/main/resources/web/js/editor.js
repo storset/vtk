@@ -1458,9 +1458,9 @@ function addFormFieldUserEnrichment(value, json, isEnriched, hasEnrichedText, ha
   if(value && value.length) {
     var valueIsMultiple = typeof value === "object";
     var lastVal = valueIsMultiple ? value[value.length - 1] : value;
-    if(lastVal.indexOf("") !== -1) {
+    if(lastVal.indexOf(urlSep) !== -1) {
       var enrichedUrl = lastVal.split(urlSep);
-      if(enrichedUrl[1].indexOf("") !== -1) {
+      if(enrichedUrl[1].indexOf(textSep) !== -1) {
         enrichedText = enrichedUrl[1].split(textSep)[0];
         enrichedUrl = enrichedUrl[0];
       } else {

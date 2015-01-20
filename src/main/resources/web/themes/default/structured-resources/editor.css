@@ -354,7 +354,10 @@
 }
 
 .ui-accordion .ui-accordion .header.ui-accordion-header.ui-state-hover,
-.ui-accordion .ui-accordion .header.ui-accordion-header.ui-state-focus {
+.ui-accordion .ui-accordion .header.ui-accordion-header.ui-state-focus,
+.ui-accordion .ui-accordion .header.ui-accordion-header.ui-corner-top,
+.ui-accordion .ui-accordion .header.ui-accordion-header.ui-state-hover.ui-corner-top,
+.ui-accordion .ui-accordion .header.ui-accordion-header.ui-state-focus.ui-corner-top {
   background: url(../images/line-dotted.gif) repeat-x top left !important;
 }
 

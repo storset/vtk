@@ -81,44 +81,12 @@
   </licenses>
   
   <distributionManagement>
-    <site>
-      <id>webdav-site</id>
-      <url>dav:https://www-dav.usit.uio.no/it/vortex/internt/maven/${project.build.finalName}</url>
-    </site>
-    <repository>
-      <id>nexus-internal</id>
-      <url>https://repo.usit.uio.no/nexus/content/repositories/internal-release</url>
-    </repository>
-    <snapshotRepository>
-      <id>nexus-internal</id>
-      <url>https://repo.usit.uio.no/nexus/content/repositories/internal-snapshots</url>
-    </snapshotRepository>
   </distributionManagement>
   
   <pluginRepositories>
-    <pluginRepository>
-      <id>nexus-public</id>
-      <url>https://repo.usit.uio.no/nexus/content/groups/public/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </pluginRepository>
   </pluginRepositories>
   
   <repositories>
-    <repository>
-      <id>nexus-public</id>
-      <url>https://repo.usit.uio.no/nexus/content/groups/public/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
   </repositories>
 
   <properties>
@@ -666,10 +634,10 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>owasp-java-html-sanitizer</groupId>
-      <artifactId>owasp-java-html-sanitizer</artifactId>
-      <version>r106</version>
-      <scope>compile</scope>
+        <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
+        <artifactId>owasp-java-html-sanitizer</artifactId>
+        <version>r136</version>
+        <scope>compile</scope>
     </dependency>
 
     <!-- runtime dependencies -->
@@ -686,7 +654,7 @@
     <dependency>
       <groupId>org.aspectj</groupId>
       <artifactId>aspectjweaver</artifactId>
-      <version>1.6.12</version>
+      <version>1.8.2</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
@@ -746,11 +714,11 @@
       <version>3.4</version>
     </dependency>
 
-    <dependency>
-      <groupId>org.outerj.daisy</groupId>
-      <artifactId>daisydiff</artifactId>
-      <version>1.2</version>
-    </dependency>
+    <!--<dependency>-->
+      <!--<groupId>org.outerj.daisy</groupId>-->
+      <!--<artifactId>daisydiff</artifactId>-->
+      <!--<version>1.2-NX2</version>-->
+    <!--</dependency>-->
 
     <!-- Jackson -->
     <dependency>

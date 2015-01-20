@@ -4,7 +4,7 @@ are necessary:
 1. Download and install Maven 3
    ( http://maven.apache.org/download.html )
 
-2. Create a database using the DDL in the
+2. Create a database, and use the DDL in the
    'src/main/sql/postgresql-schema.sql' (currently only PostgreSQL is
    supported, but HSQLDB has also been known to work in the past). The
    current PostgreSQL usage requires the language 'plpgsql' to be
@@ -12,7 +12,7 @@ are necessary:
    command 'createlang plpgsql <database>'.
 
 3. Set up the configuration. Configuration should be placed in the
-   files ~/.vtk.properties and ~/.vrtx.properties
+   file ~/.vtk.properties
 
   indexStorageRootPath = [an empty directory for storing indices]
   jdbcUsername = [your JDBC user]

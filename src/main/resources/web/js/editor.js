@@ -107,7 +107,7 @@ $(document).ready(function () {
     
     if(!vrtxEdit.isInAdmin || (vrtxEdit.isInAdmin && !isEmbedded)) {
       var getScriptFn = (typeof $.cachedScript === "function") ? $.cachedScript : $.getScript;
-      var futureStickyBar = (typeof VrtxStickyBar === "undefined") ? getScriptFn("/vrtx/__vrtx/static-resources/js/vrtx-sticky-bar.js") : $.Deferred().resolve();
+      var futureStickyBar = (typeof VrtxStickyBar === "undefined") ? getScriptFn("/__vtk/static/js/vrtx-sticky-bar.js") : $.Deferred().resolve();
       $.when(futureStickyBar).done(function() {     
         var editorStickyBar = new VrtxStickyBar({
           wrapperId: "#vrtx-editor-title-submit-buttons",

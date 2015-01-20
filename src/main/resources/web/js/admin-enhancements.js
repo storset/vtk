@@ -145,7 +145,7 @@ function VrtxAdmin() {
   
   this.messages = {}; /* Populated with i18n in resource-bar.ftl */
   
-  this.rootUrl = "/vrtx/__vrtx/static-resources";
+  this.rootUrl = "/__vtk/static";
 }
 
 var vrtxAdmin = new VrtxAdmin();

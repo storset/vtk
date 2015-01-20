@@ -20,7 +20,7 @@
     <title>Editor</title>
     <@editor.addCkScripts />
 
-    <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/plugins/jquery.hotkeys.js"></script>
+    <script type="text/javascript" src="/__vtk/static/jquery/plugins/jquery.hotkeys.js"></script>
     
     <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
     <#assign isCollection = resource.resource.collection />
@@ -397,7 +397,7 @@
               <#if thumbnail != ''>
                 <img src="${thumbnail?html}" alt="preview" />
               <#else>
-                <img src="/vrtx/__vrtx/static-resources/themes/default/images/no-preview-image.png" alt="no preview" />
+                <img src="/__vtk/static/themes/default/images/no-preview-image.png" alt="no preview" />
               </#if>
             </div>
           </div>
@@ -424,7 +424,7 @@
                 <#if thumbnail != ''>
                   <img src="${thumbnail?html}" alt="preview" />
                 <#else>
-                  <img src="/vrtx/__vrtx/static-resources/themes/default/images/no-preview-image.png" alt="no preview" />
+                  <img src="/__vtk/static/themes/default/images/no-preview-image.png" alt="no preview" />
                 </#if>
               </div>
             </div>

@@ -341,7 +341,7 @@
 }
 
 .forms-new .ui-dialog .ui-dialog-titlebar {
-  background: url(/vrtx/__vrtx/static-resources/themes/default/images/line-dotted.gif) repeat-x scroll left bottom transparent;
+  background: url(/__vtk/static/themes/default/images/line-dotted.gif) repeat-x scroll left bottom transparent;
   border: none;
   padding: 0 0 15px 0;
 }
@@ -381,7 +381,7 @@
 }
 
 .forms-new .ui-dialog .ui-dialog-titlebar-close .ui-icon {
-  background: url(/vrtx/__vrtx/static-resources/themes/default/images/thickbox-close.png) no-repeat center center;
+  background: url(/__vtk/static/themes/default/images/thickbox-close.png) no-repeat center center;
   position: static;
 }
 

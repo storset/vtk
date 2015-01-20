@@ -16,7 +16,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" id="vrtx-preview-popup">
   <head>
     <title><@vrtx.msg code="preview.popup.title" args=["${(title.title)?default(resourceContext.currentResource.name)}"] /></title>
-    <link type="text/css" href="/vrtx/__vrtx/static-resources/themes/default/default.css" rel="stylesheet" />
+    <link type="text/css" href="/__vtk/static/themes/default/default.css" rel="stylesheet" />
     <#include "/system/css.ftl"/> 
     <#include "/system/javascript.ftl"/>
     <#-- TODO: externalize more of the script -->

@@ -16,7 +16,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>${title}</title>
-  <link rel="stylesheet" media="all" href="/vrtx/__vrtx/static-resources/themes/default/embed-media.css" />
+  <link rel="stylesheet" media="all" href="/__vtk/static/themes/default/embed-media.css" />
 </head>
 <body>
 

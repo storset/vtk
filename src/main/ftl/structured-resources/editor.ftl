@@ -13,13 +13,13 @@
   <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
   
   <#if form.getResource().getType().getName()?exists && form.getResource().getType().getName() == "course-schedule">
-    <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/schedule/i18n/${language}.js"></script>
-    <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/schedule/schedule-editor.js"></script>
+    <script type="text/javascript" src="/__vtk/static/js/schedule/i18n/${language}.js"></script>
+    <script type="text/javascript" src="/__vtk/static/js/schedule/schedule-editor.js"></script>
   </#if>
   <@editor.addCkScripts />
   <@vrtxJSONJavascript.script />
   
-  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/plugins/jquery.hotkeys.js"></script> 
+  <script type="text/javascript" src="/__vtk/static/jquery/plugins/jquery.hotkeys.js"></script>
 
   <#global baseFolder = "/" />
   <#if resourceContext.parentURI?exists>

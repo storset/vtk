@@ -13,7 +13,7 @@
   <head>
     <meta name="viewport" content="width=1140, user-scalable=yes" /> 
     <title>${vrtx.getMsg("reauth.title")}</title>
-    <link rel="stylesheet" type="text/css" href="/vrtx/__vrtx/static-resources/themes/default/default.css" />
+    <link rel="stylesheet" type="text/css" href="/__vtk/static/themes/default/default.css" />
     <style type="text/css">
       body, html { background: #fff; }
       body {
@@ -21,7 +21,7 @@
         padding: 15px 25px 25px 25px;
       }
     </style>
-    <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="/__vtk/static/jquery/jquery.min.js"></script>
     <script type="text/javascript"><!--
       $(document).ready(function() {
         $(document).on("click", "#vrtx-reauth-close", function(e) {

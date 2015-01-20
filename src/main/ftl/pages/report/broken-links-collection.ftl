@@ -47,9 +47,9 @@
       }
    // -->
    </script>
-   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/plugins/mustache.js"></script>
-   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/editor.js"></script>
-   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/reports/broken-links.js"></script>
+   <script type="text/javascript" src="/__vtk/static/js/plugins/mustache.js"></script>
+   <script type="text/javascript" src="/__vtk/static/js/editor.js"></script>
+   <script type="text/javascript" src="/__vtk/static/js/reports/broken-links.js"></script>
   </head>
   <body id="vrtx-report-broken-links">
   <#assign linkTypeLocalization>

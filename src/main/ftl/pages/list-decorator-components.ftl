@@ -17,7 +17,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>Available decorator components</title>
-  <link rel="stylesheet" type="text/css" href="/vrtx/__vrtx/static-resources/themes/default/list-decorator-components.css" />
+  <link rel="stylesheet" type="text/css" href="/__vtk/static/themes/default/list-decorator-components.css" />
 </head>
 <body>
   <h1>Available decorator components</h1>

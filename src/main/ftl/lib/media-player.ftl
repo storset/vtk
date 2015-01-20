@@ -26,7 +26,7 @@
     <#if poster??>
       <#local imgSrc = poster />
     <#else>
-      <#local imgSrc = "/vrtx/__vrtx/static-resources/themes/default/icons/video-noflash.png" />
+      <#local imgSrc = "/__vtk/static/themes/default/icons/video-noflash.png" />
       <#local width = "500" />
       <#local height = "279" />
     </#if>
@@ -82,10 +82,10 @@
     .vrtx-media-player-no-flash a.vrtx-media:active .playbutton,
     .vrtx-media-player-no-flash .playbutton:visited,
     .vrtx-media-player-no-flash .playbutton:active {
-      background: url('/vrtx/__vrtx/static-resources/themes/default/icons/video-playbutton.png') no-repeat center center;
+      background: url('/__vtk/static/themes/default/icons/video-playbutton.png') no-repeat center center;
     }
     .vrtx-media-player-no-flash a.vrtx-media:hover .playbutton,
-    .vrtx-media-player-no-flash .playbutton:hover { background-image: url('/vrtx/__vrtx/static-resources/themes/default/icons/video-playbutton-hover.png'); }
+    .vrtx-media-player-no-flash .playbutton:hover { background-image: url('/__vtk/static/themes/default/icons/video-playbutton-hover.png'); }
     </#if>
   </style>
 </#macro>
@@ -107,7 +107,7 @@
   
   <script type="text/javascript"><!--
     if (typeof swfobject == 'undefined') {
-      document.write("<scr" + "ipt src='/vrtx/__vrtx/static-resources/flash/SMP_2.0.2494-patched/10.2/lib/swfobject.js' type='text/javascript'><\/script>");
+      document.write("<scr" + "ipt src='/__vtk/static/flash/SMP_2.0.2494-patched/10.2/lib/swfobject.js' type='text/javascript'><\/script>");
     }
   // -->
   </script>
@@ -129,7 +129,7 @@
         <#if poster?exists>
           flashvars.poster = "${poster?url("UTF-8")}";
         <#else>
-          flashvars.poster = "/vrtx/__vrtx/static-resources/themes/default/icons/video-noflash.png";
+          flashvars.poster = "/__vtk/static/themes/default/icons/video-noflash.png";
         </#if>
 	    flashparams = {																																														
 	      allowFullScreen: "true",

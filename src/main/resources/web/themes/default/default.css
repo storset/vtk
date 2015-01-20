@@ -3287,7 +3287,7 @@ body.embedded2 .expandedForm {
 }
 
 .vrtx-close-dialog-editor {
-  background: url("/vrtx/__vrtx/static-resources/themes/default/images/thickbox-close.png") no-repeat scroll center center transparent;
+  background: url("/__vtk/static/themes/default/images/thickbox-close.png") no-repeat scroll center center transparent;
   display: block;
   width: 20px;
   height: 20px;

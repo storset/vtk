@@ -10,10 +10,10 @@
       </#list>
     </#if>
     <!--[if lte IE 8]>
-      <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie8.css" type="text/css"/>
+      <link rel="stylesheet" href="/__vtk/static/themes/default/default-ie8.css" type="text/css"/>
     <![endif]--> 
     <!--[if lte IE 7]>
-      <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie7.css" type="text/css"/> 
+      <link rel="stylesheet" href="/__vtk/static/themes/default/default-ie7.css" type="text/css"/>
     <![endif]-->
     <#if jsURLs?exists>
       <#list jsURLs as jsURL>

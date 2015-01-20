@@ -109,7 +109,7 @@ var AbstractVrtxSimpleDialog = dejavu.AbstractClass.declare({
     var dialog = this;
     
     // TODO: rootUrl and jQueryUiVersion should be retrieved from Vortex config/properties somehow
-    var rootUrl = "/vrtx/__vrtx/static-resources";
+    var rootUrl = "/__vtk/static";
     var jQueryUiVersion = "1.10.4";
     
     var futureUi = $.Deferred();
@@ -142,7 +142,7 @@ var VrtxLoadingDialog = dejavu.Class.declare({
   initialize: function (opts) {
     this.$super({
       selector: "#dialog-loading",
-      msg: "<img src='/vrtx/__vrtx/static-resources/themes/default/images/loadingAnimation.gif' alt='Loading icon' />",
+      msg: "<img src='/__vtk/static/themes/default/images/loadingAnimation.gif' alt='Loading icon' />",
       title: opts.title,
       hasHtml: true,
       unclosable: true,

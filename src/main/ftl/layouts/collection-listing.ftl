@@ -4,8 +4,8 @@
 
 <#if (conf.auth && entries?exists && entries?size > 0)>
   <div class="vrtx-collection-listing-component-wrapper">
-    <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/include-jquery.js"></script>
-    <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/open-webdav.js"></script>
+    <script type="text/javascript" src="/__vtk/static/jquery/include-jquery.js"></script>
+    <script type="text/javascript" src="/__vtk/static/js/open-webdav.js"></script>
     <div class="vrtx-collection-listing-component">
     <#if (conf.folderTitle && folderTitle?exists)>
       <h3>${folderTitle?string}</h3>

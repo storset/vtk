@@ -41,7 +41,7 @@ public class Namespace {
             "http://www.uio.no/vortex/custom-properties");
 
     public static final Namespace STRUCTURED_RESOURCE_NAMESPACE = new Namespace("resource",
-            "http://www.uio.no/vrtx/__vrtx/ns/structured-resources");
+            "http://www.uio.no/__vtk/ns/structured-resources");
 
     private String prefix;
     private String uri;

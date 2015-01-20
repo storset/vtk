@@ -19,19 +19,19 @@
   || (RequestParameters.action?exists && RequestParameters.action == "upload-file" && resource.collection)
   || (RequestParameters.action?exists && RequestParameters.action == "copy-resources-to-this-folder" && resource.collection)
   || (RequestParameters.action?exists && RequestParameters.action == "move-resources-to-this-folder" && resource.collection)>
-  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/domains/listing.js"></script>
+  <script type="text/javascript" src="/__vtk/static/js/domains/listing.js"></script>
 <#-- Save in editors -->
 <#elseif (RequestParameters.action?exists && RequestParameters.action == "plaintext-edit")
       || (RequestParameters.mode?exists && RequestParameters.mode == "editor" &&
           RequestParameters.action?exists && RequestParameters.action == "edit")
       || (RequestParameters.mode?exists && RequestParameters.mode == "aspects")>
-  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/domains/editors.js"></script>
+  <script type="text/javascript" src="/__vtk/static/js/domains/editors.js"></script>
 <#-- Permissions-->
 <#elseif (RequestParameters.mode?exists && RequestParameters.mode == "permissions")>
-  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/domains/permissions.js"></script>
+  <script type="text/javascript" src="/__vtk/static/js/domains/permissions.js"></script>
 <#-- About -->
 <#elseif (RequestParameters.mode?exists && RequestParameters.mode == "about")>
-  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/domains/about.js"></script>
+  <script type="text/javascript" src="/__vtk/static/js/domains/about.js"></script>
 </#if>
 
 <#-- ********************

@@ -15,7 +15,7 @@
 	  <#if value?has_content >
 	    <img src="${value?html}" alt="preview" />
 	  <#else>
-	    <img src="/vrtx/__vrtx/static-resources/themes/default/images/no-preview-image.png" alt="no preview"/>
+	    <img src="/__vtk/static/themes/default/images/no-preview-image.png" alt="no preview"/>
 	  </#if>
 	  </div>
 	</div>

@@ -714,11 +714,11 @@
       <version>3.4</version>
     </dependency>
 
-    <!--<dependency>-->
-      <!--<groupId>org.outerj.daisy</groupId>-->
-      <!--<artifactId>daisydiff</artifactId>-->
-      <!--<version>1.2-NX2</version>-->
-    <!--</dependency>-->
+    <dependency>
+      <groupId>org.outerj.daisy</groupId>
+      <artifactId>daisydiff</artifactId>
+      <version>1.2-NX2</version>
+    </dependency>
 
     <!-- Jackson -->
     <dependency>

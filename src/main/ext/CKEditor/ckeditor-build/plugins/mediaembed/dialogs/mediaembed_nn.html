@@ -6,8 +6,8 @@
       body { font: normal 12px Arial,Helvetica,Tahoma,Verdana,Sans-Serif; }
       #embed { width: 100%; height: 110px; margin: 5px 0 0 0; border: 1px solid #a0a0a0; font: normal 11px Courier, Fixedsys, serif; color: #333; }
     </style>
-  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/jquery.min.js"></script>
-  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/admin-enhancements.js"></script>
+  <script type="text/javascript" src="/__vtk/static/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="/__vtk/static/js/admin-enhancements.js"></script>
   <script type="text/javascript">
     if(typeof vrtxAdmin !== "undefined") {
       vrtxAdmin.runReadyLoad = false;
@@ -31,7 +31,7 @@
 	      <td>Url:</td>
 	      <td>
 	        <input type="text" id="txtUrl" name="$txtUrl" size="30" />
-	        <button type="button" onclick="browseServer('txtUrl', '/vrtx/__vrtx/static-resources/ckeditor-build', getPath(parent.location.pathname),'/vrtx/__vrtx/app-resources/ckeditor-build/browse?action=browse','Media');">Bla igjennom server</button>
+	        <button type="button" onclick="browseServer('txtUrl', '/__vtk/static/ckeditor-build', getPath(parent.location.pathname),'/__vtk/app-resources/ckeditor-build/browse?action=browse','Media');">Bla igjennom server</button>
 	      </td>
 	    </div>
       </tr>
@@ -46,7 +46,7 @@
 	      <td>Poster Url:</td>
 	      <td>
 	        <input type="text" id="txtPosterUrl" name="$txtPosterUrl" size="30" />
-	        <button type="button" onclick="browseServer('txtPosterUrl', '/vrtx/__vrtx/static-resources/ckeditor-build', getPath(parent.location.pathname),'/vrtx/__vrtx/app-resources/ckeditor-build/browse?action=browse','Image');">Bla igjennom server</button>
+	        <button type="button" onclick="browseServer('txtPosterUrl', '/__vtk/static/ckeditor-build', getPath(parent.location.pathname),'/__vtk/app-resources/ckeditor-build/browse?action=browse','Image');">Bla igjennom server</button>
 	      </td>
 	    </div>
       </tr>        

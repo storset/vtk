@@ -38,7 +38,7 @@
 }
 
 .ac_loading {
-  background: url("/vrtx/__vrtx/static-resources/themes/default/icons/tabmenu-spinner.gif") no-repeat scroll right center transparent;
+  background: url("/__vtk/static/themes/default/icons/tabmenu-spinner.gif") no-repeat scroll right center transparent;
 }
 
 .ac_odd {

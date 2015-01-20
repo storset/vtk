@@ -27,7 +27,7 @@ var VrtxTree = dejavu.Class.declare({
     tree.__opts.pathNum = 0;
     
     // TODO: rootUrl should be retrieved from Vortex config/properties somehow
-    var rootUrl = "/vrtx/__vrtx/static-resources";
+    var rootUrl = "/__vtk/static";
     
     $.loadCSS(window.location.protocol + "//" + window.location.host + rootUrl + "/themes/default/report/jquery.treeview.css");
     var futureTree = $.Deferred();

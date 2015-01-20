@@ -65,7 +65,7 @@
          <div class="vrtx-image-container">
            <#if vrtx.isOfType("audio", r.resourceType) >
              <a href="${entry.url?html}">
-               <img src="/vrtx/__vrtx/static-resources/themes/default/icons/audio-icon.png" alt="" />
+               <img src="/__vtk/static/themes/default/icons/audio-icon.png" alt="" />
              </a>
            <#elseif vrtx.isOfType("video", r.resourceType)>
                <#local posterImgURI = vrtx.propValue(r, 'poster-image') />

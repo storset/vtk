@@ -56,7 +56,7 @@ public class SqlDaoUtilsTest {
                 SqlDaoUtils.getUriSqlWildcard(Path.fromString("/foo@bar%"), '@'));
 
         assertEquals("/vrtx/@_@_vrtx/@%foo@%/@@children/%",
-                SqlDaoUtils.getUriSqlWildcard(Path.fromString("/vrtx/__vrtx/%foo%/@children"), '@'));
+                SqlDaoUtils.getUriSqlWildcard(Path.fromString("/__vtk/%foo%/@children"), '@'));
 
     }
 

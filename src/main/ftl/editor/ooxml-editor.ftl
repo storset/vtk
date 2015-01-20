@@ -9,7 +9,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>OoXml Editor</title>
-    <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/plugins/jquery.hotkeys.js"></script>
+    <script type="text/javascript" src="/__vtk/static/jquery/plugins/jquery.hotkeys.js"></script>
     <script type="text/javascript"><!--
       $(function() {
          var agent = navigator.userAgent.toLowerCase();         

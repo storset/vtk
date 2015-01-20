@@ -49,6 +49,7 @@ import vtk.repository.Path;
 import vtk.repository.Property;
 import vtk.repository.Repository;
 import vtk.repository.Resource;
+import vtk.repository.ResourceNotFoundException;
 import vtk.repository.ResourceTypeTree;
 import vtk.repository.resourcetype.PropertyTypeDefinition;
 import vtk.repository.resourcetype.ResourceTypeDefinition;
@@ -347,6 +348,8 @@ public class TitleResolverImpl implements ApplicationListener<ContextRefreshedEv
             InputStream inputStream = this.repository.getInputStream(null, this.configPath, true);
             this.config = new PathMappingConfig(inputStream);
             this.templateCache.clear();
+        } catch (ResourceNotFoundException e) {
+            logger.info("No title config at " + this.configPath);
         } catch(Throwable t) {
             logger.warn("Unable to load title configuration file: " 
                     + this.configPath + ": " + t.getMessage(), t);

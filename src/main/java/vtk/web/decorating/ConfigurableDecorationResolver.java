@@ -148,6 +148,8 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
         try {
             InputStream inputStream = this.repository.getInputStream(null, this.configPath, true);
             this.config = new PathMappingConfig(inputStream);
+        } catch (ResourceNotFoundException e) {
+            logger.info("No decoration config at " + this.configPath);
         } catch(Throwable t) {
             logger.warn("Unable to load decoration configuration file: " 
                     + this.configPath + ": " + t.getMessage(), t);

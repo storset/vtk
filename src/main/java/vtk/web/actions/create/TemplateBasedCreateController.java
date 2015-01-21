@@ -241,6 +241,7 @@ public class TemplateBasedCreateController extends SimpleFormController {
         if (createDocumentCommand.getSourceURI() == null || createDocumentCommand.getSourceURI().trim().equals("")) {
             errors.rejectValue("sourceURI", "manage.create.document.missing.template",
                     "You must choose a document type");
+            return;
         }
 
         RequestContext requestContext = RequestContext.getRequestContext();
